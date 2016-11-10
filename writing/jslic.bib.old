@@ -1,0 +1,10 @@
+
+@techreport{JSLIC,
+    author = {{J}oel {S}vensson},
+    title = {{O}bsidian: {GPU} {K}ernel {P}rogramming in {H}askell},
+    Institution = {{C}omputer {S}cience and {E}nginering, {C}halmers {U}niversity of {T}echnology, {G}othenburg}, 
+    Note = {ISSN 1652-876X},
+    Number = {77L},
+    Year = {2011},
+    URL = {\url{http://publications.lib.chalmers.se/cpl/record/index.xsql?pubid=136543}},
+}

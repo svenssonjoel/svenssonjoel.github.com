@@ -1,0 +1,206 @@
+<HTML>
+
+<HEAD>   </HEAD> 
+
+
+<TITLE>Joel Svensson</TITLE>
+
+
+
+<BODY bgcolor=#C0C0C0>
+ 
+<H2>Joel Svensson</H2>
+<!--
+<img allign=left hspace=9 height=400 alt="Nerd" src="./images/NerdInWonderland.jpg">
+
+<img allign=left hspace=9 height=200 alt="Joel" src="./images/joel.jpg">
+<a href="http://www.fsf.org/register_form?referrer=9105"><img src="http://static.fsf.org/nosvn/associate/fsf-9105.png" alt="[FSF Associate Member]" /></a>
+ -->
+<hr>
+
+<h3>About me</h3>
+<img allign=left hspace=9 height=100 alt="Joel" src="./images/joel.jpg"> <br>
+I am currently working as a postdoc at Chalmers University of Technology.<br><br> 
+I spent 2014 and 2015 at Indiana University in Bloomington as a postdoc.<br><br> 
+I defended my Ph.D. in December 2013 at the <a href="http://www.chalmers.se/cse/EN/"> Department of Computer Science and Engineering</a> at Chalmers University of Technology.
+My supervisors during my Ph.D studies were <a href="http://www.cse.chalmers.se/~ms">Mary Sheeran </a>, 
+<a href="http://www.cse.chalmers.se/~koen">Koen Claessen </a> and 
+<a href="http://www.cse.chalmers.se/~josefs">Josef Svenningsson </a>. 
+
+
+
+<!-- <h3>Find me</h3> -->
+<!-- <ul> -->
+<!-- <li><b>Office:</b><br> -->
+<!-- 	Room 5463 in the EDIT building<br> -->
+<!--         Rannvagen 6B<br> -->
+<!--         412 96 Gothenburg -->
+<!-- <li><b>Phone:</b> +46 31-772 10 79 -->
+<!-- <li><b>Email:</b> <a href="mailto://joels@chalmers.se"> joels@chalmers.se </a> -->
+<!-- <li><b>IRC:</b> #obsidian-dsl on FreeNode -->
+<!-- </ul> -->
+
+<!--
+<h3>Course involvement</h3>
+
+
+LP4, VT2010: <a href="http://www.cse.chalmers.se/edu/course/TDA956/"> Hardware Description and Verification </a> <br>
+LP4, VT2010: Algorithms  <br>
+LP4, VT2009: <a href="http://www.cse.chalmers.se/edu/course/TDA956/"> Hardware Description and Verification </a> <br>
+LP1, HT2008: <a href="http://www.cs.chalmers.se/Cs/Grundutb/Kurser/form/index.html"> Software Engineering using Formal Methods </a> <br>
+LP1, HT2008: <a href="http://www.cs.chalmers.se/Cs/Grundutb/Kurser/funht/"> Introduction to functional programming </a>  <br>
+LP4, VT2008: <a href="http://www.cs.chalmers.se/Cs/Grundutb/Kurser/svh/index.html"> Hardware Description and Verification </a> <br>
+-->
+
+<br>
+<hr>
+
+<h2>Research</h2>
+  <b> Reconfigurable computing: </b> <br> 
+
+  <br> 
+  <br> 
+  <b> Embedded languages and parallelism:</b> <br>
+  We are exploring ways to program highly parallel computers such as a GPU. 
+  Currently there are GPUs available with over a thousand 
+  processing elements. Our approach so far is to develop an embedded
+  language in the style of Lava, using combinators to describe 
+  parallel computation structures. Presently we call this language Obsidian. 
+  Recently we have also started experiment with Haskell embeddings of 
+  <a href="http://software.intel.com/en-us/articles/intel-array-building-blocks">Intel's Array Building Blocks</a>, ArBB.
+  This embedded language we call EmbArBB. <br> 
+ <!-- <b>A master thesis project:</b><br> -->
+ <!--  Recently the Intel ArBB project was retired. This makes EmbArBB an embedded  -->
+ <!--  language with no code generating backend. I still believe that there are  -->
+ <!--  some really interesting aspects of the ArBB programming model, such as its  -->
+ <!--  viability for both GPU and CPU execution. I propose implementing  -->
+ <!--  a new backend for EmbArBB using either OpenCL (for CPU/GPU execution) or  -->
+ <!--  LLVM (for CPU execution) or, for someone really brave, Obsidian as a Master  -->
+ <!--  thesis project. If you are interested in Functional programming, Embedded  -->
+ <!--  languages and parallelism, please contact me about this project. Good  -->
+ <!--  background knowledge for this project could be the PFP or AFP course or a  -->
+ <!--  burning interest in Parallism or GPUs. <br> -->
+  
+<h3>Presentation slides</h3>
+
+<ul>
+<li><b>PFP Course 2016</b><a href="./slides/PFP_LECTURE_2016.pdf"> Parallel Functional Programming </a>
+<li><b>FHPC 2014</b><a href="https://www.youtube.com/watch?v=d6csiFJkTjI"> Video </a>
+<li><b>PFP Course 2013</b><a href="./slides/lecture2.pdf">Obsidian: Internals</a>(April 2013)
+<li><b>PFP Course 2013</b><a href="./slides/lecture1.pdf">GPU Programming: Imperative and Functional Approaches</a>(April 2013)
+<li><b>FHPC 2012</b><a href="./slides/AlmostFreePresentation.pdf">Parallel Programming in Haskell Almost for Free</a> (Sep 2012) 
+<a href="http://www.youtube.com/watch?v=XGXfFox8qs8"> Video </a> 
+<li><b>Intel 2011</b><a href="./slides/Harbb.pdf"> Haskell+ArBB presentation.</a>(2011)<br>
+<li><b><a href="./slides/shadowmapping.pdf"> Intro to basic Shadow mapping.</a> (2010)<br>
+<li><b>Lic Presentation</b><a href="./slides/licpres.pdf"> slides. </a> <br>
+<li><b><a href="http://www.cs.chalmers.se/Cs/Grundutb/Kurser/svh/index.html"> HDV </a> Course 2009</b> <a href="./slides/obsidian_090514.pdf">Obsidian: GPGPU
+    Programming in Haskell.</a>
+ (May 2009)
+<li><b>IFL 2008</b> <a href="./slides/ifl2008_obsidian.pdf">Obsidian: A Domain 
+ Specific Embedded Language for Parallel Programming of Graphics Processors.</a>
+ (Sep 2008)
+<li><b>DCC 2008</b> <a href="./slides/dcc2008_obsidian.pdf">Obsidian: GPU
+ Programming in Haskell </a> (Mar 2008)
+<li><b>Master thesis presentation</b> <a href="./slides/masterpres.pdf">An 
+ Embedded language for data-parallel programming</a> (Feb 2008)
+</ul>
+    
+<h3>Guides</h3>
+<ul>
+<li><b> OpenCL on the Zynq: <a href=./writing/ZynqOpenCL.pdf> Getting started guide: OpenCL on the Zynq</a>
+</ul>
+
+<h3>Technical reports</h3>
+<ul>
+<li> Bo Joel Svensson: <a href=./writing/ZynqBandwidth.pdf> Exploring OpenCL Memory Throughput on the Zynq </a> (2016) 
+<li> Bo Joel Svensson, Mary Sheeran, Ryan Newton: <a href="http://www.cs.indian
+a.edu/cgi-bin/techreports/TRNNN.cgi?trnum=TR712">A Language for Nested Data Parallel Design-space Exploration on GPUs</a> (2014)
+<li><b>(Thesis)</b> Bo Joel Svensson: <a href="./thesis/thesis.pdf">Embedded Languages for Data-Parallel Programming</a> (2013)
+<li><b>(Licentiate Thesis)</b> Joel Svensson:  <a href="./writing/lic.pdf">Obsidian:GPU Kernel Programming in Haskell</a>  (2011)
+  <a href="./writing/jslic.bib">BIBTEX</a>
+<li> Joel Svensson, Koen Claessen, Mary Sheeran: 
+  <a href="./writing/GPGPU_tech.pdf">GPGPU Kernel Implementation using an Embedded Language: a Status Report</a> (Jan 2010)
+
+</ul>
+
+
+<h3>Publications</h3>
+<ul>
+<li><b>(FHPC 2016) Martin Dybdal, Martin Elsman, Bo Joel Svensson and Mary Sheeran: <a href=./writing/fhpc16-preprint.pdf> Low-level functional GPU programming for parallel algorithms </a> 
+<li><b>(CPC 2016) Martin Dybdal, Martin Elsman, Bo Joel Svensson and Mary Sheeran: <a href=./writing/CPC2016_paper_13.pdf> Low-level functional GPU programming for parallel algorithms </a> 
+<li><b>(PLDI 2016) Buddhika Chamith, Bo Joel Svensson, Luke Dalessandro, Ryan R. Newton: <a href=./writing/crossmod_draft.pdf> Living on the edge: Rapid-toggling probes with cross modification on x86</a>
+<li><b>(JFP 2016) Bo Joel Svensson, Mary Sheeran, Ryan Newton: <a href=http://journals.cambridge.org/action/displayFulltext?type=1&fid=10242178&jid=JFP&volumeId=26&issueId=-1&aid=10242156> A Language for Hierarchical Data Parallel Design-space Exploration on GPUs </a>
+<li><b>(FHPC 2015) Michael Vollmer, Bo Joel Svensson, Eric Holk, Ryan R. Newton: <a href=./writing/MetaAuto.pdf>Meta-Programming and Auto-Tuning in the Search for High Performance GPU Code</a>
+<li><b>(FHPC 2015) Bo Joel Svensson, Michael Vollmer, Eric Holk, Trevor L. McDonell, Ryan R. Newton: <a href=./writing/multidev.pdf> Converting Data-Parallelism to Task-Parallelism by Rewrites</a> 
+<li><b>(FHPC 2014) Bo Joel Svensson, Josef Svenningsson: <a href=./writing/defuncEmb.pdf>Defunctionalizing Push Arrays</a> (2014)
+<li><b>(CACM)</b> Bo Joel Svensson, Mary Sheeran, Ryan Newton: <a href="http://cacm.acm.org/magazines/2014/6/175181-design-exploration-through-code-generating-dsls/fulltext">Design Exploration through Code-generating DSLs</a> (2014)
+<li><b>(ACM Queue)</b> Bo Joel Svensson, Mary Sheeran, Ryan Newton: <a href="http://dl.acm.org/citation.cfm?id=2626374">Design Exploration through Code-generating DSLs</a> (2014)
+<li><b>(ICFP 2013)</b> Josef Svenningsson, Bo Joel Svensson: <a href="./writing/bb.pdf">Simple and Compositional Reification of Monadic Embedded Languages</a> (2013)
+<li><b>(FHPC 2013)</b> Josef Svenningsson, Bo Joel Svensson, Mary Sheeran: <a href="./writing/csort.pdf">Counting and Occurrence sort for GPUs using an Embedded Language</a> (2013)
+<li><b>(FHPC 2012)</b> Bo Joel Svensson, Mary Sheeran: <a href="./writing/almost_free.pdf"> Parallel Programming in Haskell Almost for Free</a> (2012)
+<li><b>(DAMP 2012)</b> Koen Claessen, Mary Sheeran, Bo Joel Svensson: <a href="./writing/expressive.pdf"> Expressive Array Constructs in an Embedded GPU Kernel Programming Language</a> (2012) <a href="./expressive.html"> (more info) </a>
+<li><b>(FASPP 2011)</b> Bo Joel Svensson, Ryan Newton:  <a href="./writing/faspp2011_haskell_arbb.pdf">Programming Future Parallel Architectures with Haskell and ArBB</a>  (2011)
+<li><b>(PAPP 2010)</b> Joel Svensson, Koen Claessen, Mary Sheeran:
+  <a href="http://www.sciencedirect.com/science?_ob=ArticleURL&_udi=B9865-506HM1Y-86&_user=10&_coverDate=05%2F31%2F2010&_rdoc=230&_fmt=high&_orig=browse&_srch=doc-info(%23toc%2359117%232010%23999989998%232084734%23FLP%23display%23Volume)&_cdi=59117&_sort=d&_docanchor=&view=c&_ct=311&_acct=C000050221&_version=1&_urlVersion=0&_userid=10&md5=e80230792f0cba7f0c994856bde90b78"> GPGPU kernel implementation and refinement using Obsidian </a> (May 2010)
+<li><b>(IFL 2008)</b> Joel Svensson, Mary Sheeran, Koen Claessen: 
+  <a href="./writing/obsidian_ifl2008.pdf">Obsidian: A Domain Specific Embedded Language for Parallel Programming of Graphics Processors</a> (Sep 2008)
+<li><b>(DCC 2008)</b> Joel Svensson, Mary Sheeran, Koen Claessen: 
+  <a href="./writing/dccpaper_obsidian.pdf">Obsidian: GPU Programming in 
+   Haskell</a> (Mar 2008)
+<!--
+<li><b>(Course handin)</b> Joel Svensson: <a href="./writing/optobsidian.pdf"> 
+  Optimising Obsidian Programs Through Derivations</a> (June 2008) 
+-->
+<!--
+<li><b>(Master thesis)</b> Joel Svensson: <a href="./writing/joelmscthesis.pdf"> 
+  An embedded language for data-parallel programming</a> (Jan 2008)
+-->
+</ul>
+<!--
+<h3>Drafts</h3>
+-->
+
+<hr>
+<h3>Related to Obsidian</h3>
+<ul>
+<li> Niklas Ulvinge: <a href="http://publications.lib.chalmers.se/records/fulltext/194157/194157.pdf"> Increasing programmability of an embedded domain specific language for GPGPU kernels using static analysis</a> (2014)
+<li> Chris Ouwehand: <a href="./writing/GPUFL.pdf">GPU Programming in Functional Languages</a> (2013)
+<li> Alex Cole, Alistair A. McEwan, Geoffrey Mainland: <a href="http://www.y-less.com/list.php?id=2"> Beauty And The Beast: Exploiting GPUs in Haskell</a> (2012) 
+</ul>
+
+<hr>
+<h3>Download Obsidian, EmbArBB and other Projects</h3>
+From Github <a href ="http://svenssonjoel.github.com"> (svenssonjoel) </a><br>
+
+<hr>
+
+<h3> Counting sort</h3>
+<a href="./csort.html"> link </a><br>
+<hr>
+<h3>Related links</h3>
+<a href="http://www.gpgpu.org"> www.gpgpu.org </a> <br>
+<a href="http://www.nvidia.com/cuda"> NVIDIA CUDA </a> <br>
+<a href="http://software.intel.com/en-us/articles/intel-array-building-blocks">Intel's Array Building Blocks</a><br> 
+<br>
+
+<!---
+<h3>Unrelated links</h3>
+<a href="http://www.borastaekwon-do.se"> Bor&aring;s TaeKwon-Do</a><br> 
+--> 
+
+<!--
+<br>
+<br>
+<h3>Push examples</h3>
+<a href="./code/GCDObsidian-0.0.2.tar.gz"> Version of Obsidian that works with example file below.</a><br>
+<a href="./code/Example.hs"> Example will appear shortly.</a><br>
+-->
+<hr>
+
+<br><br><br><br><br><br>
+<a href="http://www.chalmers.se/HyperText/Standardtext.html"> Disclaimer </a> <br>
+
+
+
+</BODY>
+</HTML>

@@ -1,0 +1,46 @@
+
+<table border="0">
+<tr>
+<td> 
+<img allign=left hspace=9 width=350 alt="Joel" src="./images/sorter.jpg">
+<td>
+<h2>Expressive array constructs in an embedded GPU Kernel programming language</h2>
+<b>Abstract:</b>Graphics Processing Units (GPUs) are powerful computing devices
+that with the advent of CUDA/OpenCL are becomming useful for
+general purpose computations. Obsidian is an embedded domain
+specific language that generates CUDA kernels from functional de-
+scriptions. A symbolic array construction allows us to guarantee
+that intermediate arrays are fused away. However, the current ar-
+ray construction has some drawbacks; in particular, arrays cannot
+be combined efficiently. We add a new type of push arrays to the
+existing Obsidian system in order to solve this problem. The two
+array types complement each other, and enable the definition of
+combinators that both take apart and combine arrays, and that result
+in efficient generated code. This extension to Obsidian is demon-
+strated on a sequence of sorting kernels, with good results. The
+example also illustrates the use of combinators for expressing the
+structure of parallel algorithms. The work presented is preliminary,
+and the combinators presented must be generalised. However, the
+raw speed of the generated kernels bodes well.
+</td>
+</tr>
+</table> 
+
+
+
+
+<hr>
+This page will contain extra material, such as Haskell source and generated code.<br>
+
+
+<br>
+<hr> 
+<a href="./writing/paper"> Article </a> Arriving shortly<br>
+<a href="./writing/bibtex"> bib </a> Arriving shortly.<br>
+
+<a href="./code/GCDObsidian-0.0.2.tar.gz"> Obsidian </a> The version of Obsidian that we used during the writing of this article.<br>
+<a href="./code/Examples.hs"> Examples </a> Arriving shortly.<br>
+
+
+
+
