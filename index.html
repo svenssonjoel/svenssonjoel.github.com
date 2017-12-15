@@ -14,7 +14,7 @@
 </HEAD> 
 
 
-<TITLE>Bo Joel Svensson</TITLE>
+<TITLE>Functional Programming, GPUs, FPGAs</TITLE>
 
 
 
@@ -34,14 +34,14 @@
 <a href="http://www.github.com/svenssonjoel"> Github </a>  <br>
 <a href="http://www.researchgate.net/profile/Bo_Joel_Svensson"> Researchgate </a> <br>
 <a href="https://scholar.google.se/citations?user=Ja6gzfgAAAAJ&hl=en">  Google Scholar</a> <br> <br> 
-
+<!---
 I was working as a postdoc at Chalmers University of Technology until Jan 2017.<br><br> 
 I spent 2014 and 2015 at Indiana University in Bloomington as a postdoc.<br><br> 
 I defended my Ph.D. in December 2013 at the <a href="http://www.chalmers.se/cse/EN/"> Department of Computer Science and Engineering</a> at Chalmers University of Technology.
 My supervisors during my Ph.D studies were <a href="http://www.cse.chalmers.se/~ms">Mary Sheeran </a>, 
 <a href="http://www.cse.chalmers.se/~koen">Koen Claessen </a> and 
 <a href="http://www.cse.chalmers.se/~josefs">Josef Svenningsson </a>. 
-
+-->
 
 
 <!-- <h3>Find me</h3> -->
@@ -71,16 +71,25 @@ LP4, VT2008: <a href="http://www.cs.chalmers.se/Cs/Grundutb/Kurser/svh/index.htm
 <hr>
 
 <h2>Research</h2>
+  
+  <b> Autonomous Vehicles, Vehicle Electronic Architecture, Embedded Systems </b>
+  These are my current areas of research. 
+  
   <b> Reconfigurable computing: </b> <br> 
-  Work on application acceleration by utilising reconfigurable hardware. 
+  I have worked on acceleration of applications by utilising reconfigurable hardware, Field Programmable Gate Arrays (FPGAs), Xiling Zynq 7000 devices to be specific.
+  This work focused on OpenCL (High level synthesis) generated hardware kernels treated as compute black boxes. We experimented 
+  with surrounding support infrastructure for making these OpenCL kernels execute more efficiently, for example by moving scheduling 
+  of kernels into hardware, relieving processing system of the ZYNQ this task. My research in this area ended when I left Chalmers 
+  but I continue to explore the ZYNQ platform and (plan to) write down what I learn in the form of guides for beginners of ZYNQ and FPGAs. 
+  
   <br> 
   <br> 
   <b> Embedded languages and parallelism:</b> <br>
-  We are exploring ways to program highly parallel computers such as a GPU. 
+  During my Ph.D. studies we were exploring ways to program highly parallel computers such as a GPU. 
   Currently there are GPUs available with over a thousand 
   processing elements. Our approach so far is to develop an embedded
   language in the style of Lava, using combinators to describe 
-  parallel computation structures. Presently we call this language Obsidian. 
+  parallel computation structures. We call this language Obsidian. CUDA C programs are generated when running an Obisidian program. 
   We have also experimented with Haskell embeddings of 
   <a href="http://software.intel.com/en-us/articles/intel-array-building-blocks">Intel's Array Building Blocks</a>, ArBB.
   This embedded language we call EmbArBB. <br> 
