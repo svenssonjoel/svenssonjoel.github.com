@@ -52,6 +52,34 @@
     max-width: 100%
 } 
   
+@media (max-width: 1200px) {
+  #videos {
+  -moz-column-count:    4;
+  -webkit-column-count: 4;
+  column-count:         4;
+  }
+}
+@media (max-width: 1000px) {
+  #videos {
+  -moz-column-count:    3;
+  -webkit-column-count: 3;
+  column-count:         3;
+  }
+}
+@media (max-width: 800px) {
+  #videos {
+  -moz-column-count:    2;
+  -webkit-column-count: 2;
+  column-count:         2;
+  }
+}
+@media (max-width: 400px) {
+  #videos {
+  -moz-column-count:    1;
+  -webkit-column-count: 1;
+  column-count:         1;
+  }
+} 
   
 </style>
 
@@ -94,7 +122,8 @@
 <hr>
 
 <h2>Videos</h2>
-
+  
+<div style="height:480px;width:auto;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;"> 
   <section id="Videos"> 
     <a href= https://youtu.be/WKCE0G_sxuM> 
       <img src="https://img.youtube.com/vi/WKCE0G_sxuM/0.jpg" alt="thumb" />
@@ -104,8 +133,7 @@
     <a>
       <div class="yt-link">
     <a href=https://youtu.be/jPmD3B72aCs> 
-    <img src="https://img.youtube.com/vi/jPmD3B72aCs/0.jpg" alt="thumb" />
-    <p>KiCad OpAmp Simulation - In time I want to learn how to do some audio stuff.(2019)</p>
+      <img src="https://img.youtube.com/vi/jPmD3B72aCs/0.jpg" alt="thumb" />
     <a>  
     <a href=https://youtu.be/lTRKGpohqJk> 
       <img src="https://img.youtube.com/vi/lTRKGpohqJk/0.jpg" alt="thumb" />
@@ -226,6 +254,7 @@
     <a>  
     
   </section>  
+</div> 
   
 <!--  
 <div style="height:480px;width:auto;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;"> 
@@ -483,7 +512,8 @@
     <img src="https://img.youtube.com/vi/XGXfFox8qs8/0.jpg" alt="thumb" />
     <p> FHPC 2012 Video </p>
     <a>  
-</div>  
+</div> 
+</div> 
 -->
       
   <!--<a href=https://youtu.be/drmXdoRu3AQ> Trying to understand Bluetooth Low Energy by writing a Qt Program </a> (2019)<br>-->
@@ -521,7 +551,7 @@
   <!--<a href=https://youtu.be/gP7LMV8jKK8> FMRC V2 PART 2: Adding DRV8847 chips and trying out KICADs hiearchical labels </a> (2019)<br>-->
   <!--<a href=https://youtu.be/TqqdmnVX5Wo> FMRC V2 PART 1: new 5V regulator that can do 3A </a> (2019)<br>-->    
       
-</div> 
+
   
 <br>
 <hr>
