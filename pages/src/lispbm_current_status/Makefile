@@ -3,12 +3,15 @@ MD = $(wildcard *.md)
 
 HTML = $(patsubst %.md,%.html,$(MD))
 
-DIR := $(notdir $(CURDIR))
+DIR   = $(notdir $(CURDIR))
+
+TITLE = Another Lisp for Microcontrollers Called LispBM
 
 all: $(HTML)
 
 %.html: %.md
-	cat ../pre.html $< ../post.html | pandoc -f gfm -o $@
+
+	(sed "s/###123###/$(TITLE)/g" ../pre.html; cat $< < ../post.html) | pandoc -f gfm -o $@ 
 
 	mkdir -p ../../$(DIR)
 	mkdir -p ../../$(DIR)/media
