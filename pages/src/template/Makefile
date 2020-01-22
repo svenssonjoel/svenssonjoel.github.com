@@ -10,7 +10,7 @@ all: $(HTML)
 %.html: %.md
 	cat ../pre.html $< ../post.html | pandoc -f gfm -o $@
 
-	mkdir -p ../../pub/$(DIR)
-	mkdir -p ../../pub/$(DIR)/media
-	cp *.html ../../pub/$(DIR) 
-	$(cp ./media/* ../../pub/$(DIR)media || :)
+	mkdir -p ../../$(DIR)
+	mkdir -p ../../$(DIR)/media
+	cp *.html ../../$(DIR) 
+	$(cp ./media/* ../../$(DIR)media || :)
