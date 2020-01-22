@@ -1,0 +1,16 @@
+
+MD = $(wildcard *.md)
+
+HTML = $(patsubst %.md,%.html,$(MD))
+
+DIR := $(notdir $(CURDIR))
+
+all: $(HTML)
+
+%.html: %.md
+	cat ../pre.html $< ../post.html | pandoc -f gfm -o $@
+
+	mkdir -p ../../pub/$(DIR)
+	mkdir -p ../../pub/$(DIR)/media
+	cp *.html ../../pub/$(DIR) 
+	$(cp ./media/* ../../pub/$(DIR)media || :)
