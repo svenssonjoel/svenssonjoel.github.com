@@ -1,10 +1,12 @@
 
 
-# Another Lisp for Microcontrollers
+# Another Lisp for Microcontrollers Called LispBM 
 
 ## Background and Introduction
 
-## Heap
+### Dependencies, Supported Hardware and RTOSes
+
+## Heap Consisting of Cons-cells
 
 ## Symbols
 
