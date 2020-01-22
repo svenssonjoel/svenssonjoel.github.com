@@ -101,7 +101,7 @@ the CDR position to terminate the list.
 Now, if we give `(+ 1 2)` to a Lisp interpreter, it will evaluate it
 and arrive at the answer `3`. The first stage in this, though, is to
 read the string `(+ 1 2)` into the heap (generating the linked list of
-symbols and values), this is called *Reading*. There after the lisp
+symbols and values), this is called *Reading*. Following that the lisp
 interpreter will start to consume the linked list to reduce it to an
 answer, called *evaluating*. Finally the result is *printed*. This is
 what a *REPL* does, it reads, evaluates and prints and then it does it
@@ -155,7 +155,6 @@ Where *VALUE* is defined as:
 ```
 typedef uint32_t VALUE;
 ```
-
 
 
 ## Symbols
