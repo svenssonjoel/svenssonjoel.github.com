@@ -14,3 +14,6 @@ all: $(HTML)
 	mkdir -p ../../$(DIR)/media
 	cp *.html ../../$(DIR) 
 	$(cp ./media/* ../../$(DIR)media || :)
+
+clean:
+	rm *.html

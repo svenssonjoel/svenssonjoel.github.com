@@ -2,9 +2,9 @@
 
 # Template Page
 ```c
- apa
-    bepa
-    cepa
+for (int i = 0; i < 100; i ++) {
+    apa();
+}
 ```
 
 ___
