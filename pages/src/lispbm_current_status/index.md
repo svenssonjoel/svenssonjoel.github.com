@@ -95,7 +95,7 @@ then, the expression `(+ 1 2)` will in memory be made up out of a
 first cons cell containing `+` in its first position (or car) and a
 pointed to the next cell in its second (cdr) position. Likewise, the
 next cell contains the `1` in the car position and a pointer to the
-next cell in the car. The last cell in the linked up structure of
+next cell in the cdr. The last cell in the linked up structure of
 cons cells contains a `2` in car and a special symbol called `nil` in
 the cdr position to terminate the list.
 
