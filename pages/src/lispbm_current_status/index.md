@@ -479,7 +479,7 @@ one. Bit position 1 is used for the Garbage Collectors mark-bit but
 only in the `car` position, in the `cdr` this bit is unused. Bit
 position 2 is unused. Depending on how large the heap is there is some
 number of bits unused on the most significant side as well. The
-example shows the bits used for a 64MB heab.
+example shows the bits used for a 64MB heap.
 
 For a value there are 28 bits left. Bit 0 and 1 work exactly as in the
 case above for pointers. That is, bit 0 and 1 are used to
