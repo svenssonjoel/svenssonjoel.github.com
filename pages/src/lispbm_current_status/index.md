@@ -501,14 +501,16 @@ After allocating the heap, the next step is to link all the cons cells
 that it consists of into a single, long, linked list called the
 `free_list`.
 
-When a program is requestion a fresh cons cell, for example from a
+When a program is requesting a fresh cons cell, for example from a
 usage of the `cons` function, the head (car) of the `free_list` is
 provided. The `free_list` variable is then set to the cdr of
 itself. This operation is performed by the function
 `heap_allocate_cell` in file `heap.c`. If there are no free cells on
 the `free_list` the heap allocation returns a symbol indicating out of
 heap. This will trigger the evaluator to perform a round of garbage
-collection. 
+collection.
+
+![Heap allocate cell](./media/heap_allocate_cell.png "Heap allocate cell")
 
 ## Symbols
 

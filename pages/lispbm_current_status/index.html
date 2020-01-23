@@ -268,7 +268,8 @@ Bit val: 0  0  0  0  0  0  XX XXXX XXXX XXXX XXXX XXXX X 0 0 0
 </ol>
 <p>That was a lot of text about values for a section about the heap. But these two concepts are pretty tightly linked as all that extra runtime information bookkeeping has to go in there and be available to for example the garbage collector.</p>
 <p>After allocating the heap, the next step is to link all the cons cells that it consists of into a single, long, linked list called the <code>free_list</code>.</p>
-<p>When a program is requestion a fresh cons cell, for example from a usage of the <code>cons</code> function, the head (car) of the <code>free_list</code> is provided. The <code>free_list</code> variable is then set to the cdr of itself. This operation is performed by the function <code>heap_allocate_cell</code> in file <code>heap.c</code>. If there are no free cells on the <code>free_list</code> the heap allocation returns a symbol indicating out of heap. This will trigger the evaluator to perform a round of garbage collection.</p>
+<p>When a program is requesting a fresh cons cell, for example from a usage of the <code>cons</code> function, the head (car) of the <code>free_list</code> is provided. The <code>free_list</code> variable is then set to the cdr of itself. This operation is performed by the function <code>heap_allocate_cell</code> in file <code>heap.c</code>. If there are no free cells on the <code>free_list</code> the heap allocation returns a symbol indicating out of heap. This will trigger the evaluator to perform a round of garbage collection.</p>
+<p><img src="./media/heap_allocate_cell.png" title="Heap allocate cell" alt="Heap allocate cell" /></p>
 <h2 id="symbols">Symbols</h2>
 <h2 id="the-environment">The Environment</h2>
 <h2 id="parsing">Parsing</h2>
