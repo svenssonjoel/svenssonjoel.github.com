@@ -284,11 +284,123 @@ After defining `apa` to be 1 this is what it will evaluate to.
 
 ### `let`
 
+`let` is used to bind a variable (symbol) to a value locally. It takes
+two arguments where the first is a list of bindings and the second is
+an expression which will be evaluated in an environment extended with
+those given bindings.
+
+```
+# (let ((a 10)) (+ a 1))
+> 11
+```
+
+If you want to set up more bindings with `let` it looks like this:
+
+```
+# (let ((a 10) (b 20) (c 30)) (+ a b c))
+> 60
+```
+It is also possible to nest `let` bindings and locally override a binding:
+
+```
+# (let ((a 1)) (+ a (let ((a 10)) (+ a a))))
+> 21
+```
+
+Below is an example that shows that a local binding also overrides a
+global binding and that the global binding is left unchanged when
+leaving the local scope.
+
+```
+# (let ((apa 1000)) (+ apa 1))
+> 1001
+# apa
+> 1
+```
+
+The form of `let` used in lispBM allows an earlier binding in the list
+of bindings to be used as part of computations in later bindings.
+
+```
+# (let ((g 1) (h (+ g 1000))) h)
+> 1001
+
+```
+
 ### `lambda` and Closures
+
+New functions are defined using `lambda` that takes two arguments a
+list of parameter names and an expression. Using `lambda` creates an
+anonymous function that can be either directly applied or bound to a
+name using either `define` or `let`.
+
+Here is an example of a directly applied anonymous function:
+```
+# ((lambda (x) (+ x x)) 2)
+> 4
+``` 
+
+That is a lot of parentheses and may be hard to read. Binding the
+anonymous function to a name may help a bit.
+
+```
+# (define f (lambda (x) (+ x x)))
+> t
+# (f 2)
+> 4
+# 
+```
+
+Evaluating the expression '(lambda (x) (+ x x))` results in a `closure`.
+```
+# (lambda (x) (+ x x))
+> (closure ((x nil) ((+ (x (x nil))) (nil nil))))
+```
+
+The `closure` looks very similar to the original `lambda` except that
+it has one more parameter, an environment. When forming a `closure`
+any local bindings that are needed within the expression body of the
+lambda is sucked into this closure-local environment. This is what
+makes it possible for us to write functions that return functions.
+Here is an example of a closure with sucked-in values from the
+surrounding local scope:
+
+```
+# (let ((y 100)) (lambda (x) (+ x y)))
+> (closure ((x nil) ((+ (x (y nil))) (((y 100) nil) nil))))
+
+```
+
+Here we can see that the binding `(y 100)` is present in the `closure`
+object created.
+
 
 ### `progn`
 
-### A Larger Example
+The `progn` primitive evaluates a sequence (an arbitrary number of) expressions for
+side-effects and finally returns the value of the last expression in
+the sequence as the final result.
+
+```
+# (progn (print "Hello world" \#newline) (+ 1 2))
+Hello world
+> 3
+```
+
+The `print` function used in this example is an
+*extension*. Extensions are a way to add platform dependent
+functionality to lispBM. The target platforms have many different ways
+of dealing with this kind of IO so I don't want to build any
+expectations on existing methods of presenting text into lispBM
+itself. 
+
+
+### A Slightly Larger Example 
+
+Here is a larger example that makes combined use of many of the
+features introduced above. It is a function that computes the nth
+fibonacci number in a tail-recursive way. There will be more about
+tail-recursion in the section about the evaluator. 
 
 ```lisp
 (define fib (lambda (n)
@@ -301,11 +413,15 @@ After defining `apa` to be 1 this is what it will evaluate to.
 
 (fib 10)
 ```
+
 This example code evaluates to `55`.
 
 
-## Heap Consisting of Cons cells
+With this example we conclude the walkthrough of some fundamental
+language constructs that can be used in lispBM programs. From now on
+this text will be mostly about how these things are implemented.
 
+## Heap Consisting of Cons cells
 
 Within the lispBM runtime system a cons cell is represented by the struct:
 ```
@@ -353,16 +469,17 @@ Bit pos: 31 30 29 28 27 26                               2 1 0
 Bit val: 0  0  0  0  0  0  XX XXXX XXXX XXXX XXXX XXXX X 0 0 0
 ```
 
-Since the value of the pointer (made up by the Xed out bits above) is
-only meant to reference other cons cells (which are 8 bytes apart) the
-bottom three bits are unused. The zero in position 0 is used to
-differentiate between pointer and value, thus all pointers will have a
-zero there and all values will have a one. Bit position 1 is used for
-the Garbage Collectors mark-bit but only in the `car` position, in the
-`cdr` this bit is unused. Bit position 2 is unused. Depending on how
-large the heap is there is some number of bits unused on the most
-significant side as well. The example shows the bits used for a 64MB
-heab. 
+Since the value of the pointer (really it is an index into the array
+that represents the heap storage), made up by the Xed out bits above,
+is only meant to reference other cons cells (which are 8 bytes apart
+in the allocated heap) the bottom three bits are unused. The zero in
+position 0 is used to differentiate between pointer and value, thus
+all pointers will have a zero there and all values will have a
+one. Bit position 1 is used for the Garbage Collectors mark-bit but
+only in the `car` position, in the `cdr` this bit is unused. Bit
+position 2 is unused. Depending on how large the heap is there is some
+number of bits unused on the most significant side as well. The
+example shows the bits used for a 64MB heab.
 
 For a value there are 28 bits left. Bit 0 and 1 work exactly as in the
 case above for pointers. That is, bit 0 and 1 are used to
