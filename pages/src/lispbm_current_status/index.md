@@ -469,7 +469,7 @@ Bit pos: 31 30 29 28 27 26                               2 1 0
 Bit val: 0  0  0  0  0  0  XX XXXX XXXX XXXX XXXX XXXX X 0 0 0
 ```
 
-Since the value of the pointer (really it is an index into the array
+Since the value of the pointer (really an index into the array
 that represents the heap storage), made up by the Xed out bits above,
 is only meant to reference other cons cells (which are 8 bytes apart
 in the allocated heap) the bottom three bits are unused. The zero in
@@ -495,11 +495,20 @@ The different types of values are:
 That was a lot of text about values for a section about the heap. But
 these two concepts are pretty tightly linked as all that extra runtime
 information bookkeeping has to go in there and be available to for
-example the garbage collector. Back to the heap.
+example the garbage collector.
 
 After allocating the heap, the next step is to link all the cons cells
 that it consists of into a single, long, linked list called the
 `free_list`.
+
+When a program is requestion a fresh cons cell, for example from a
+usage of the `cons` function, the head (car) of the `free_list` is
+provided. The `free_list` variable is then set to the cdr of
+itself. This operation is performed by the function
+`heap_allocate_cell` in file `heap.c`. If there are no free cells on
+the `free_list` the heap allocation returns a symbol indicating out of
+heap. This will trigger the evaluator to perform a round of garbage
+collection. 
 
 ## Symbols
 
