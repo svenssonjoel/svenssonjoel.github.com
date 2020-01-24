@@ -18,17 +18,18 @@ The [MIT 6.001 Structure and Interpretation of Computer
 Programs](https://www.youtube.com/watch?v=-J_xL4IGhJA&list=PLE18841CABEA24090)
 series of lecturs is a lot of fun and I recommend everyone to watch
 it. I watched this lecture series several times while entertaining the
-idea of some day implement some kind of a Lisp. However, I didn't want to
-implement a Lisp interpreter in Lisp, or even in Haskell, it would
-feel a bit like cheating. 
+idea of some day implement some kind of a Lisp. However, I didn't want
+to implement a Lisp interpreter in Lisp, or even in Haskell, it would
+feel a bit like cheating. So instead, the idea is to combine these two
+newly found interests (MCUs and Lips).
 
 The [lispBM](https://github.com/svenssonjoel/lispBM) project is my
 (ongoing) attempt to learn some about lisp while at the same time
-learn more about MCUs while making them more accessible, once you get
+learn more about MCUs to make them more accessible to me, once you get
 used to having a REPL it is hard to go back.
 
 I don't have very much experience or long background in programming
-numerous Lipses, so my attempt of making one is most likely very
+numerous Lisps, so my attempt of making one is most likely very
 naive. A small amount of dabbling with [Emacs
 Lisp](https://www.gnu.org/software/emacs/manual/html_node/elisp/) and
 I did like skimming [Land Of Lisp](https://nostarch.com/lisp.htm) but
@@ -445,12 +446,12 @@ other things), signed and unsigned integers and characters. The
 `VALUE` type is also large enough to hold a pointer within the heap
 used to set up linked datastructures. But there is also a lot of
 bookkeeping that needs to be tracked within the 32bit word (an
-alternative would be to use additional fields withing the `cons_t`
+alternative would be to use additional fields within the `cons_t`
 structure for this information. This would mean that the whole 32bit
 word is usable to store data, but it would increase the memory
 footprint of the heap.).
 
-The information that is kept withing the 32bits of a `VALUE` is:
+The information that is kept within the 32bits of a `VALUE` is:
 
 1. one mark-bit for the *Garbage Collector* (explained in a later section).
 2. one bit that differentiates between pointers and values.
