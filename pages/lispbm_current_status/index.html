@@ -295,9 +295,10 @@ Bit val: 0  0  0  0  0  0  XX XXXX XXXX XXXX XXXX XXXX X 0 0 0
 </code></pre>
 <p>The <code>hash_string</code> function is called with a <code>modulo</code> of <code>0xFFFF</code> which means that the return value can never be <code>0xFFFF</code>. This frees up 4096 symbols that it is impossible to <strong>create</strong> from a source string entered by the lispBM programmer. These 4096 symbols are treated specially in the implementation for things like signaling errors and for symbols that are present by default (such as <code>nil</code> and <code>define</code>).</p>
 <h2 id="environments">Environments</h2>
-<p>Environments store mappings between symbols and expressions. In lispBM enviroments are implemented as lists made from cons cells on the heap. The files <code>env.c</code> and <code>env.h</code> contains four functions used to manipulate environments.</p>
+<p>Environments store mappings between symbols and expressions. In lispBM enviroments are implemented as lists made from cons cells on the heap. The files <code>env.c</code> and <code>env.h</code> contains five functions used to manipulate environments.</p>
 <pre><code>VALUE env_copy_shallow(VALUE env);
 VALUE env_lookup(VALUE sym, VALUE env);
+VALUE env_set(VALUE env, VALUE key, VALUE val);
 VALUE env_modify_binding(VALUE env, VALUE key, VALUE val);
 VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
 </code></pre>

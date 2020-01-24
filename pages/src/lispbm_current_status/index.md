@@ -601,12 +601,13 @@ for symbols that are present by default (such as `nil` and `define`).
 
 Environments store mappings between symbols and expressions. In lispBM
 enviroments are implemented as lists made from cons cells on the heap.
-The files `env.c` and `env.h` contains four functions used to
+The files `env.c` and `env.h` contains five functions used to
 manipulate environments.
 
 ```
 VALUE env_copy_shallow(VALUE env);
 VALUE env_lookup(VALUE sym, VALUE env);
+VALUE env_set(VALUE env, VALUE key, VALUE val);
 VALUE env_modify_binding(VALUE env, VALUE key, VALUE val);
 VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
 ```
