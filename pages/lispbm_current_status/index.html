@@ -202,7 +202,7 @@ Free cons cells: 1501
 &gt; 4
 # 
 </code></pre>
-<p>Evaluating the expression '(lambda (x) (+ x x))<code>results in a</code>closure`.</p>
+<p>Evaluating the expression <code>(lambda (x) (+ x x))</code> results in a <code>closure</code>.</p>
 <pre><code># (lambda (x) (+ x x))
 &gt; (closure ((x nil) ((+ (x (x nil))) (nil nil))))
 </code></pre>
@@ -233,13 +233,15 @@ Hello world
 <p>This example code evaluates to <code>55</code>.</p>
 <p>With this example we conclude the walkthrough of some fundamental language constructs that can be used in lispBM programs. From now on this text will be mostly about how these things are implemented.</p>
 <h2 id="heap-consisting-of-cons-cells">Heap Consisting of Cons cells</h2>
+<p>The implementation of the heap is found in the files <code>heap.c</code> under <code>src</code> and <code>heap.h</code> under <code>include</code>. The <code>heap.h</code>file also contains quite a bit of commentary showing the choices I was contemplating there.</p>
+<p>A type called <code>VALUE</code> is defined in <code>typedefs.h</code> and represents values that make sense in the lisp computation. <code>VALUE</code> is really just a 32Bit unsigned integer. I mention <code>VALUE</code> here as it is frequently used throughout. Another type that is quite frequently in use is <code>UINT</code> which is the same size as <code>VALUE</code> but does not necessarily make sence in the lisp world. <code>UINT</code> is used when it is important that the size matches that of a <code>VALUE</code>. Maybe because it will be turned into a <code>VALUE</code>. When it does not matter if a type matches in size with <code>VALUE</code>, I use <code>int</code> or <code>bool</code> or whatever is needed. This is the case when data that is used only internally in the runtime system. I am not very strict on conventions and will at some point try to take a pass over all code and make it a bit more aligned in that sense.</p>
 <p>Within the lispBM runtime system a cons cell is represented by the struct:</p>
 <pre><code>typedef struct {
   VALUE car;
   VALUE cdr;
 } cons_t;
 </code></pre>
-<p>Where <em>VALUE</em> is defined as:</p>
+<p>Where <code>VALUE</code> and <code>UINT</code> are defined as:</p>
 <pre><code>typedef uint32_t VALUE;
 </code></pre>
 <p>As an example a heap of 1024 cons cells is allocated as follows</p>
@@ -257,7 +259,7 @@ Hello world
 <pre><code>Bit pos: 31 30 29 28 27 26                               2 1 0
 Bit val: 0  0  0  0  0  0  XX XXXX XXXX XXXX XXXX XXXX X 0 0 0
 </code></pre>
-<p>Since the value of the pointer (really an index into the array that represents the heap storage), made up by the Xed out bits above, is only meant to reference other cons cells (which are 8 bytes apart in the allocated heap) the bottom three bits are unused. The zero in position 0 is used to differentiate between pointer and value, thus all pointers will have a zero there and all values will have a one. Bit position 1 is used for the Garbage Collectors mark-bit but only in the <code>car</code> position, in the <code>cdr</code> this bit is unused. Bit position 2 is unused. Depending on how large the heap is there is some number of bits unused on the most significant side as well. The example shows the bits used for a 64MB heap.</p>
+<p>Since the value of the pointer, made up by the Xed out bits above, is only meant to reference other cons cells (which are 8 bytes apart in the allocated heap) the bottom three bits are unused. The zero in position 0 is used to differentiate between pointer and value, thus all pointers will have a zero there and all values will have a one. Bit position 1 is used for the Garbage Collectors mark-bit but only in the <code>car</code> position, in the <code>cdr</code> this bit is unused. Bit position 2 is unused. Depending on how large the heap is there is some number of bits unused on the most significant side as well. The example shows the bits used for a 64MB heap.</p>
 <p>For a value there are 28 bits left. Bit 0 and 1 work exactly as in the case above for pointers. That is, bit 0 and 1 are used to differentiation with a pointer and garbage collection. Bits 2 and 3 are used to encode 4 different <em>types</em> of values.</p>
 <p>The different types of values are:</p>
 <ol>
@@ -271,7 +273,34 @@ Bit val: 0  0  0  0  0  0  XX XXXX XXXX XXXX XXXX XXXX X 0 0 0
 <p>When a program is requesting a fresh cons cell, for example from a usage of the <code>cons</code> function, the head (car) of the <code>free_list</code> is provided. The <code>free_list</code> variable is then set to the cdr of itself. This operation is performed by the function <code>heap_allocate_cell</code> in file <code>heap.c</code>. If there are no free cells on the <code>free_list</code> the heap allocation returns a symbol indicating out of heap. This will trigger the evaluator to perform a round of garbage collection.</p>
 <p><img src="./media/heap_allocate_cell.png" title="Heap allocate cell" alt="Heap allocate cell" /></p>
 <h2 id="symbols">Symbols</h2>
-<h2 id="the-environment">The Environment</h2>
+<p>Symbols are represented by text strings in source (or in what you enter into the REPL). So for example if the line <code>(define accumulator 0)</code> is entered into the REPL, <code>accumulator</code> is a symbol. The word <code>define</code> is actually also a symbol.</p>
+<p>But as we have seen symbols can live on the heap. This means that the string of text that is the symbol in the source code must be turned into something that can be stored in a <code>VALUE</code>.</p>
+<p>In lispBM the files <code>symrepr.h</code> and <code>symrepr.c</code> takes care of this conversion from text strings to integer values. It is also important that the backwards mapping from the integer value to the text string is maintained so that the string representation can be presented to the user of the REPL rather than just some obscure number. There are currently two different implementations maintaining this mapping of symbols as integers to symbols as string and the other way around. One implementation based on a hash-table and one based on a linked-list. The hash-table implementation has a larger memory footprint but should allow for faster lookups while the linked-list implementation uses memory proportional to the number of symbols that have been introduced. When using lispBM on, for example, an STM32 with less memory the linked-list implementation is used.</p>
+<p>Symbols are stored on the heap and thus they must fit into a <code>VALUE</code>. This means there are only 28Bits are available to represent different symbols since there are 4Bits that represent type and used by garbage colletor and so on (28 bits should be plenty enough though!.).</p>
+<p>Using the hash-table or the linked-list the conversion process is very similar.</p>
+<p>The string representaion of a symbol is hashed into a 16Bit value. Actually a value between <code>0</code> and <code>0xFFFE</code>. This means that there can be collisions where 2 different symbols have the same 16Bit id. Collisions resolved by each bucket of the hash-table (or each element of the linked-list) contain a linked-list of length at most 4096. So if two values collide and have the same 16Bit id, they will get an additional 12Bits of id that depends upon how deeply within the (bucket) linked list they are.</p>
+<pre><code>UINT hash_string(char *str, UINT modulo) {
+
+  UINT r = 1;
+  size_t n = strlen(str);
+
+  for (UINT i = 0; i &lt; n; i ++) {
+    UINT sp = small_primes[i % SMALL_PRIMES];
+    UINT v = (UINT)str[i];
+    r = (r + (sp * v)) % modulo;
+  }
+
+  return r;
+}
+</code></pre>
+<p>The <code>hash_string</code> function is called with a <code>modulo</code> of <code>0xFFFF</code> which means that the return value can never be <code>0xFFFF</code>. This frees up 4096 symbols that it is impossible to <strong>create</strong> from a source string entered by the lispBM programmer. These 4096 symbols are treated specially in the implementation for things like signaling errors and for symbols that are present by default (such as <code>nil</code> and <code>define</code>).</p>
+<h2 id="environments">Environments</h2>
+<p>Environments store mappings between symbols and expressions. In lispBM enviroments are implemented as lists made from cons cells on the heap. The files <code>env.c</code> and <code>env.h</code> contains four functions used to manipulate environments.</p>
+<pre><code>VALUE env_copy_shallow(VALUE env);
+VALUE env_lookup(VALUE sym, VALUE env);
+VALUE env_modify_binding(VALUE env, VALUE key, VALUE val);
+VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
+</code></pre>
 <h2 id="parsing">Parsing</h2>
 <h2 id="printing">Printing</h2>
 <h2 id="compressed-source-code">Compressed Source Code</h2>

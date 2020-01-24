@@ -352,7 +352,7 @@ anonymous function to a name may help a bit.
 # 
 ```
 
-Evaluating the expression '(lambda (x) (+ x x))` results in a `closure`.
+Evaluating the expression `(lambda (x) (+ x x))` results in a `closure`.
 ```
 # (lambda (x) (+ x x))
 > (closure ((x nil) ((+ (x (x nil))) (nil nil))))
@@ -425,6 +425,24 @@ this text will be mostly about how these things are implemented.
 
 ## Heap Consisting of Cons cells
 
+The implementation of the heap is found in the files `heap.c` under
+`src` and `heap.h` under `include`. The `heap.h`file also contains
+quite a bit of commentary showing the choices I was contemplating
+there.
+
+A type called `VALUE` is defined in `typedefs.h` and represents values
+that make sense in the lisp computation. `VALUE` is really just a
+32Bit unsigned integer. I mention `VALUE` here as it is frequently
+used throughout. Another type that is quite frequently in use is
+`UINT` which is the same size as `VALUE` but does not necessarily make
+sence in the lisp world. `UINT` is used when it is important that the
+size matches that of a `VALUE`. Maybe because it will be turned into a
+`VALUE`. When it does not matter if a type matches in size with
+`VALUE`, I use `int` or `bool` or whatever is needed. This is the case
+when data that is used only internally in the runtime system. I am not
+very strict on conventions and will at some point try to take a pass
+over all code and make it a bit more aligned in that sense.
+
 Within the lispBM runtime system a cons cell is represented by the struct:
 ```
 typedef struct {
@@ -432,7 +450,7 @@ typedef struct {
   VALUE cdr;
 } cons_t;
 ```
-Where *VALUE* is defined as:
+Where `VALUE` and `UINT` are defined as:
 ```
 typedef uint32_t VALUE;
 ```
@@ -471,8 +489,7 @@ Bit pos: 31 30 29 28 27 26                               2 1 0
 Bit val: 0  0  0  0  0  0  XX XXXX XXXX XXXX XXXX XXXX X 0 0 0
 ```
 
-Since the value of the pointer (really an index into the array
-that represents the heap storage), made up by the Xed out bits above,
+Since the value of the pointer, made up by the Xed out bits above,
 is only meant to reference other cons cells (which are 8 bytes apart
 in the allocated heap) the bottom three bits are unused. The zero in
 position 0 is used to differentiate between pointer and value, thus
@@ -516,7 +533,85 @@ collection.
 
 ## Symbols
 
-## The Environment
+Symbols are represented by text strings in source (or in what you
+enter into the REPL). So for example if the line `(define accumulator
+0)` is entered into the REPL, `accumulator` is a symbol. The word
+`define` is actually also a symbol.
+
+But as we have seen symbols can live on the heap. This means that the
+string of text that is the symbol in the source code must be turned
+into something that can be stored in a `VALUE`.
+
+In lispBM the files `symrepr.h` and `symrepr.c` takes care of this
+conversion from text strings to integer values. It is also important
+that the backwards mapping from the integer value to the text string
+is maintained so that the string representation can be presented to
+the user of the REPL rather than just some obscure number. There are
+currently two different implementations maintaining this mapping of
+symbols as integers to symbols as string and the other way around. One
+implementation based on a hash-table and one based on a
+linked-list. The hash-table implementation has a larger memory
+footprint but should allow for faster lookups while the linked-list
+implementation uses memory proportional to the number of symbols that
+have been introduced. When using lispBM on, for example, an STM32 with
+less memory the linked-list implementation is used.
+
+Symbols are stored on the heap and thus they must fit into a
+`VALUE`. This means there are only 28Bits are available to represent
+different symbols since there are 4Bits that represent type and used
+by garbage colletor and so on (28 bits should be plenty enough
+though!.).
+
+Using the hash-table or the linked-list the conversion process is very
+similar.
+
+The string representaion of a symbol is hashed into a 16Bit
+value. Actually a value between `0` and `0xFFFE`. This means that
+there can be collisions where 2 different symbols have the same 16Bit
+id. Collisions resolved by each bucket of the hash-table (or each
+element of the linked-list) contain a linked-list of length at most
+4096. So if two values collide and have the same 16Bit id, they will
+get an additional 12Bits of id that depends upon how deeply within the
+(bucket) linked list they are.
+
+```
+UINT hash_string(char *str, UINT modulo) {
+
+  UINT r = 1;
+  size_t n = strlen(str);
+
+  for (UINT i = 0; i < n; i ++) {
+    UINT sp = small_primes[i % SMALL_PRIMES];
+    UINT v = (UINT)str[i];
+    r = (r + (sp * v)) % modulo;
+  }
+
+  return r;
+}
+```
+
+The `hash_string` function is called with a `modulo` of `0xFFFF` which
+means that the return value can never be `0xFFFF`. This frees up 4096
+symbols that it is impossible to **create** from a source string
+entered by the lispBM programmer. These 4096 symbols are treated
+specially in the implementation for things like signaling errors and
+for symbols that are present by default (such as `nil` and `define`).
+
+## Environments
+
+Environments store mappings between symbols and expressions. In lispBM
+enviroments are implemented as lists made from cons cells on the heap.
+The files `env.c` and `env.h` contains four functions used to
+manipulate environments.
+
+```
+VALUE env_copy_shallow(VALUE env);
+VALUE env_lookup(VALUE sym, VALUE env);
+VALUE env_modify_binding(VALUE env, VALUE key, VALUE val);
+VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
+```
+
+
 
 ## Parsing
 
