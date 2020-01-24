@@ -393,7 +393,8 @@ The `print` function used in this example is an
 functionality to lispBM. The target platforms have many different ways
 of dealing with this kind of IO so I don't want to build any
 expectations on existing methods of presenting text into lispBM
-itself. 
+itself. There are still a few calls to `printf` present in lispBM but
+removing these are on the todo-list.
 
 
 ### A Slightly Larger Example 

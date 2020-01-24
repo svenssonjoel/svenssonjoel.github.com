@@ -218,7 +218,7 @@ Free cons cells: 1501
 Hello world
 &gt; 3
 </code></pre>
-<p>The <code>print</code> function used in this example is an <em>extension</em>. Extensions are a way to add platform dependent functionality to lispBM. The target platforms have many different ways of dealing with this kind of IO so I don't want to build any expectations on existing methods of presenting text into lispBM itself.</p>
+<p>The <code>print</code> function used in this example is an <em>extension</em>. Extensions are a way to add platform dependent functionality to lispBM. The target platforms have many different ways of dealing with this kind of IO so I don't want to build any expectations on existing methods of presenting text into lispBM itself. There are still a few calls to <code>printf</code> present in lispBM but removing these are on the todo-list.</p>
 <h3 id="a-slightly-larger-example">A Slightly Larger Example</h3>
 <p>Here is a larger example that makes combined use of many of the features introduced above. It is a function that computes the nth fibonacci number in a tail-recursive way. There will be more about tail-recursion in the section about the evaluator.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb20-1"><a href="#cb20-1"></a>(define fib (<span class="kw">lambda</span> (n)</span>
