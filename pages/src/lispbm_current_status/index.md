@@ -687,7 +687,7 @@ point in the stream (counted from the head of the stream).
 4. `drop` removes N characters from the stream.
 
 The reason it is abstracted like this is that lispBM can read both
-plain strings of ascii characters as well as a compressed stream of
+plain strings of ASCII characters as well as a compressed stream of
 characters. In the case of reading a compressed stream this approach
 with an arbitrary `peek` will result in the stream being decoded
 multiple times (but only up peek-depth), trading compute resources for
@@ -730,7 +730,7 @@ style evaluator. While implementing this I looked at a lot at
 me quite a bit. However, writing this in C rather than, I think it
 was, Javascript introduces some extra complexities. One big difference
 is that it seems to be possible in javascript to create functions on
-the fly, which I guess is "impossible" in C (if you dont have some
+the fly, which I guess is "impossible" in C (if you don't have some
 kind of a JIT compilation library in there as well). This is a
 feature that seems to be quite handy when creating a so-called
 continuation.
@@ -821,7 +821,7 @@ VALUE run_eval(eval_context_t *ctx);
 The `run_eval` function takes a `eval_context_t` as argument. There is
 a global such context that is initiated by the `cps_eval_program`
 function before it in turn calls `run_eval`.  The eval context
-contains and keeps track of environment, current evaluation poin and
+contains and keeps track of environment, current evaluation point and
 the continuation stack.
 
 ```
@@ -873,7 +873,7 @@ The `r` variable defined above represents the result of the
 computation and is what will be returned from `run_eval` in the end.
 
 What is essential here is that within the loop there is a `switch`
-statment that branches depending on what kind of expression is in the
+statement that branches depending on what kind of expression is in the
 variable `curr_exp` within the context.
 
 ```
@@ -932,7 +932,7 @@ represents defining a binding in the global environment. If the first
 element of the list is `lambda', the list represents a function
 definition and so on for all the *special forms*.
 
-Let's look at a few of the possible cases withing the `PTR_TYPE_CONS`
+Let's look at a few of the possible cases within the `PTR_TYPE_CONS`
 case, starting with the `'` *quote* case.
 
 ```
@@ -945,7 +945,7 @@ case, starting with the `'` *quote* case.
 
 This case is also one of the simpler ones. `r` is set to the rest of the list and we apply the continuation.
 
-Now it is time for a more intersting case, `define`.
+Now it is time for a more interesting case, `define`.
 
 ```
 	if (dec_sym(head) == symrepr_define()) {
@@ -979,7 +979,7 @@ thing that will happen is that the value expression is evaluated and
 once that reduces to a basic case the continuation `SET_GLOBAL_ENV`
 will be applied.
 
-One more example to close the circle with the intial example that I
+One more example to close the circle with the initial example that I
 got from Lisperator. The function application case.
 
 In the evaluator the function application case is what is used if no
@@ -1062,7 +1062,7 @@ with `define` that pushed the `SET_GLOBAL_ENV` continuation.
 ```
 
 It relies on a helper function that updates the actual environment
-`cont_set_global`. If this was to fail (fataly) `done` would be set to true and res
+`cont_set_global`. If this was to fail (fatally) `done` would be set to true and res
 will be an error indicating symbol. If it is successful `app_cont` is set to true
 and the result (which should be `t`) is returned.
 
@@ -1079,7 +1079,7 @@ and the result (which should be `t`) is returned.
 The `FUNCTION` continuation pops off the function expression from the stack and
 then pushes 'arg` that represents the argument list and the `FUNCTION_APP` continuation to the stack.
 
-Then the context is set up so that the function expression is evalated
+Then the context is set up so that the function expression is evaluated
 into a function object (`closure`, extension, built in function).
 
 ```

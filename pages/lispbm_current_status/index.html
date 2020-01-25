@@ -324,7 +324,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
 <li><code>peek</code> takes an integer offset and returns a character found at the point in the stream (counted from the head of the stream).</li>
 <li><code>drop</code> removes N characters from the stream.</li>
 </ol>
-<p>The reason it is abstracted like this is that lispBM can read both plain strings of ascii characters as well as a compressed stream of characters. In the case of reading a compressed stream this approach with an arbitrary <code>peek</code> will result in the stream being decoded multiple times (but only up peek-depth), trading compute resources for memory usage.</p>
+<p>The reason it is abstracted like this is that lispBM can read both plain strings of ASCII characters as well as a compressed stream of characters. In the case of reading a compressed stream this approach with an arbitrary <code>peek</code> will result in the stream being decoded multiple times (but only up peek-depth), trading compute resources for memory usage.</p>
 <h2 id="printing">Printing</h2>
 <p>The printing of expressions is an area that has not been given a lot of love or attention in lispBM. Printing functionality is contained in files <code>print.c</code> and <code>print.h</code> and provides the functions <code>simple_print</code> and <code>simple_snprint</code>. These functions recurse over a heap representation of an expression and can get stuck if the there is a circular structure on the heap, so they must be used carefully.</p>
 <p>The <code>simple_snprint</code> prints into a buffer provided from the user and it does not grow that buffer. <code>simple_print</code>, however, uses <code>printf</code>. Here using the <code>snprint</code> variant is preferred, then let some HAL functionality take care of relaying the print buffer to the user maybe over UART. Having a the <code>printf</code> based version is of course convenient when working on X86 (32Bit) under linux for testing and debugging.</p>
@@ -333,7 +333,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
 <pre><code>VALUE eval_cps_program(VALUE lisp);
 </code></pre>
 <p>The argument <code>lisp</code> should be a list of lispBM expressions on the heap. These will be evaluated from the first to the last one. The result that the last expression evaluates to is returned to the caller of <code>eval_cps_program</code>.</p>
-<p>The evaluator used in lispBM is an attempt at a continuation passing style evaluator. While implementing this I looked at a lot at <a href="http://lisperator.net/pltut/cps-evaluator/">Lisperator</a> and it helped me quite a bit. However, writing this in C rather than, I think it was, Javascript introduces some extra complexities. One big difference is that it seems to be possible in javascript to create functions on the fly, which I guess is "impossible" in C (if you dont have some kind of a JIT compilation library in there as well). This is a feature that seems to be quite handy when creating a so-called continuation.</p>
+<p>The evaluator used in lispBM is an attempt at a continuation passing style evaluator. While implementing this I looked at a lot at <a href="http://lisperator.net/pltut/cps-evaluator/">Lisperator</a> and it helped me quite a bit. However, writing this in C rather than, I think it was, Javascript introduces some extra complexities. One big difference is that it seems to be possible in javascript to create functions on the fly, which I guess is "impossible" in C (if you don't have some kind of a JIT compilation library in there as well). This is a feature that seems to be quite handy when creating a so-called continuation.</p>
 <p>The following code snippet is borrowed from <a href="http://lisperator.net/pltut/cps-evaluator/">Lisperator</a>:</p>
 <pre><code>function evaluate(exp, env, callback) {
     switch (exp.type) {
@@ -377,7 +377,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
 <p>While the function <code>cps_eval_program</code> is what the REPL calls, the function that does the actual evaluation is called <code>run_eval</code>.</p>
 <pre><code>VALUE run_eval(eval_context_t *ctx);
 </code></pre>
-<p>The <code>run_eval</code> function takes a <code>eval_context_t</code> as argument. There is a global such context that is initiated by the <code>cps_eval_program</code> function before it in turn calls <code>run_eval</code>. The eval context contains and keeps track of environment, current evaluation poin and the continuation stack.</p>
+<p>The <code>run_eval</code> function takes a <code>eval_context_t</code> as argument. There is a global such context that is initiated by the <code>cps_eval_program</code> function before it in turn calls <code>run_eval</code>. The eval context contains and keeps track of environment, current evaluation point and the continuation stack.</p>
 <pre><code>typedef struct eval_context_s{
   VALUE program;
   VALUE curr_exp;
@@ -409,7 +409,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
 </code></pre>
 <p>Some things related to garbage collection are omitted from <code>run_eval</code> at this point. I hope to soon write a text about the garbage collection and will then revisit the evaluater there.</p>
 <p>The <code>r</code> variable defined above represents the result of the computation and is what will be returned from <code>run_eval</code> in the end.</p>
-<p>What is essential here is that within the loop there is a <code>switch</code> statment that branches depending on what kind of expression is in the variable <code>curr_exp</code> within the context.</p>
+<p>What is essential here is that within the loop there is a <code>switch</code> statement that branches depending on what kind of expression is in the variable <code>curr_exp</code> within the context.</p>
 <pre><code>    VALUE value;  // a temporary value used throughout.
     switch (type_of(ctx-&gt;curr_exp)) {
     case VAL_TYPE_I:
@@ -439,7 +439,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
       if (type_of(head) == VAL_TYPE_SYMBOL) {
 </code></pre>
 <p>In the case of a list the evaluator can take many different paths depending on what the first element of that list is. For example, if the first element is the symbol <code>define</code>, the list of expressions represents defining a binding in the global environment. If the first element of the list is `lambda', the list represents a function definition and so on for all the <em>special forms</em>.</p>
-<p>Let's look at a few of the possible cases withing the <code>PTR_TYPE_CONS</code> case, starting with the <code>'</code> <em>quote</em> case.</p>
+<p>Let's look at a few of the possible cases within the <code>PTR_TYPE_CONS</code> case, starting with the <code>'</code> <em>quote</em> case.</p>
 <pre><code>    if (dec_sym(head) == symrepr_quote()) {
       r = car(cdr(ctx-&gt;curr_exp));
       app_cont = true;
@@ -447,7 +447,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
     }
 </code></pre>
 <p>This case is also one of the simpler ones. <code>r</code> is set to the rest of the list and we apply the continuation.</p>
-<p>Now it is time for a more intersting case, <code>define</code>.</p>
+<p>Now it is time for a more interesting case, <code>define</code>.</p>
 <pre><code>    if (dec_sym(head) == symrepr_define()) {
       VALUE key = car(cdr(ctx-&gt;curr_exp));
       VALUE val_exp = car(cdr(cdr(ctx-&gt;curr_exp)));
@@ -466,7 +466,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
 </code></pre>
 <p>The <code>define</code> form takes two arguments the key and an expression. In lispBM when using <code>define</code> the value expression is evaluated before the key-val binding is created. So the key is bound to the evaluated result of the value expression. There is a small bit of error checking here in case someone tries to rebind <code>nil</code>.</p>
 <p>The interesting part is the last three lines. Here the key and the continuation identifier for <code>SET_GLOBAL_ENV</code> are both pushed onto the continuation stack. The <code>curr_exp</code> of the context is set to the value expression and the the eval loop starts over. This means that the next thing that will happen is that the value expression is evaluated and once that reduces to a basic case the continuation <code>SET_GLOBAL_ENV</code> will be applied.</p>
-<p>One more example to close the circle with the intial example that I got from Lisperator. The function application case.</p>
+<p>One more example to close the circle with the initial example that I got from Lisperator. The function application case.</p>
 <p>In the evaluator the function application case is what is used if no other special form (<code>define</code>, <code>lambda</code>, `if', ...) was an applicable case.</p>
 <pre><code>      push_u32_2(ctx-&gt;K, head, enc_u(FUNCTION));
       if (type_of(cdr(ctx-&gt;curr_exp)) == VAL_TYPE_SYMBOL &amp;&amp;
@@ -515,7 +515,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
       *app_cont = true;
     return res;
 </code></pre>
-<p>It relies on a helper function that updates the actual environment <code>cont_set_global</code>. If this was to fail (fataly) <code>done</code> would be set to true and res will be an error indicating symbol. If it is successful <code>app_cont</code> is set to true and the result (which should be <code>t</code>) is returned.</p>
+<p>It relies on a helper function that updates the actual environment <code>cont_set_global</code>. If this was to fail (fatally) <code>done</code> would be set to true and res will be an error indicating symbol. If it is successful <code>app_cont</code> is set to true and the result (which should be <code>t</code>) is returned.</p>
 <pre><code> case FUNCTION: {
     VALUE fun;
     pop_u32(ctx-&gt;K, &amp;fun);
@@ -526,7 +526,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
   }
 </code></pre>
 <p>The <code>FUNCTION</code> continuation pops off the function expression from the stack and then pushes 'arg<code>that represents the argument list and the</code>FUNCTION_APP` continuation to the stack.</p>
-<p>Then the context is set up so that the function expression is evalated into a function object (<code>closure</code>, extension, built in function).</p>
+<p>Then the context is set up so that the function expression is evaluated into a function object (<code>closure</code>, extension, built in function).</p>
 <pre><code> case ARG_LIST: {
     VALUE rest;
     VALUE acc;
