@@ -595,7 +595,7 @@ similar.
 The string representation of a symbol is hashed into a 16Bit
 value. Actually a value between `0` and `0xFFFE`. This means that
 there can be collisions where 2 different symbols have the same 16Bit
-id. Collisions resolved by each bucket of the hash-table (or each
+id. Collisions are resolved by each bucket of the hash-table (or each
 element of the linked-list) contain a linked-list of length at most
 4096. So if two values collide and have the same 16Bit id, they will
 get an additional 12Bits of id that depends upon how deeply within the
