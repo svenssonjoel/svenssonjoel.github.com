@@ -499,7 +499,7 @@ footprint of the heap.).
 
 The information that is kept within the 32bits of a `VALUE` is:
 
-1. one mark-bit for the *Garbage Collector* (explained in a later section).
+1. one mark-bit for the *Garbage Collector* (explained in a future blog post).
 2. one bit that differentiates between pointers and values.
 3. In the case of a value, an additional 2 further bits are used to
 encode the type of that value.

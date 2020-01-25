@@ -260,7 +260,7 @@ Hello world
 <p>The <code>VALUE</code> type is a 32bit word used to store: symbols (these are special values that represent variables, pieces of syntax and many other things), signed and unsigned integers and characters. The <code>VALUE</code> type is also large enough to hold a pointer within the heap used to set up linked data-structures. But there is also a lot of bookkeeping that needs to be tracked within the 32bit word (an alternative would be to use additional fields within the <code>cons_t</code> structure for this information. This would mean that the whole 32bit word is usable to store data, but it would increase the memory footprint of the heap.).</p>
 <p>The information that is kept within the 32bits of a <code>VALUE</code> is:</p>
 <ol>
-<li>one mark-bit for the <em>Garbage Collector</em> (explained in a later section).</li>
+<li>one mark-bit for the <em>Garbage Collector</em> (explained in a future blog post).</li>
 <li>one bit that differentiates between pointers and values.</li>
 <li>In the case of a value, an additional 2 further bits are used to encode the type of that value.</li>
 <li>In the case of a pointer, there are several bits that are unused. This is because the heap is <em>small</em> (from kilobytes on the small MCUs up to 64MB on the Zynq) and to represent these <em>offsets</em> not that many bits are needed.</li>
