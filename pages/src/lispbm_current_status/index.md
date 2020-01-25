@@ -1110,6 +1110,23 @@ we are done and can apply the continuation. If it is not empty a
 second round of `ARG_LIST` continuation is initiated in the same way
 as it was first done in the evaluation function.
 
+So, The point of implementing the evaluator in this convoluted way
+using continuation passing style. As I understand it (and what
+experiments seems to show) is that with this evaluator It is possible
+to evaluate tail-recursive functions such that it does not result in
+memory usage that grows with each recursive call. One thing I want to
+be able to run on the microcontrollers are infinite loops. In lispBM I
+would express such a function as a tail-recursion and it should be
+possible to run in indefinitely. I think another option would be to
+transform the program itself (the program to evaluate) into what is
+called continuation passing style. Then an evaluator for that
+continuation passing style program could be written in a way that has
+the same property. I think there are some cases in the evaluator where
+one has to be very careful with in what order things are done to fall
+into the growing stack problem. Also, I have no strong argument that
+this evaluator is currently totally correct. It does seem to run quite
+well though!
+
 I hope this gives a taste of how the CPS evaluator works. If you have
 insights or questions please contact me. 
 
