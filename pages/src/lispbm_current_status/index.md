@@ -458,7 +458,7 @@ quite a bit of commentary showing the choices I was contemplating
 there.
 
 A type called `VALUE` is defined in `typedefs.h` and represents values
-that make sense in the lisp computation. `VALUE` is really just a
+that make sense in a lisp computation. `VALUE` is really just a
 32Bit unsigned integer. I mention `VALUE` here as it is frequently
 used throughout. Another type that is quite frequently in use is
 `UINT` which is the same size as `VALUE` but does not necessarily make
