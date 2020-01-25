@@ -1122,10 +1122,10 @@ transform the program itself (the program to evaluate) into what is
 called continuation passing style. Then an evaluator for that
 continuation passing style program could be written in a way that has
 the same property. I think there are some cases in the evaluator where
-one has to be very careful with in what order things are done to fall
-into the growing stack problem. Also, I have no strong argument that
-this evaluator is currently totally correct. It does seem to run quite
-well though!
+one has to be very careful with in what order things are done not to
+fall into the growing stack problem. Also, I have no strong argument
+that this evaluator is currently totally correct. It does seem to run
+quite well though!
 
 I hope this gives a taste of how the CPS evaluator works. If you have
 insights or questions please contact me. 
