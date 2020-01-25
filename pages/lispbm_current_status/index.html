@@ -91,7 +91,7 @@
 <pre><code># &#39;((+ 1 2) (+ 3 4) (+ 5 6))
 &gt; ((+ (1 (2 nil))) ((+ (3 (4 nil))) ((+ (5 (6 nil))) nil)))
 </code></pre>
-<p>So the difference here is that with <code>list</code> each element is evaluated and what <code>'</code> really does is to just give back its argument unevaluated. So To make lists, in general, use <code>list</code>, even though <code>'</code> can be used in some cases (such as <code>'(1 2 3)</code>.</p>
+<p>So the difference here is that with <code>list</code> each element is evaluated and what <code>'</code> really does is to just give back its argument unevaluated. So To make lists, in general, use <code>list</code>, even though <code>'</code> can be used in some cases (such as <code>'(1 2 3)</code>).</p>
 <p><img src="./media/read_eval_quoted.png" title="Read and evaluate a
 quoted expression" alt="Read eval qouted" /></p>
 <p>In the paragraphs above there are a couple of words that I emphasized without much explanation. These are words that (as I understand it) are part of the Lisp vocabulary. The heap consists of cons cells, only large enough to hold two pointers or values (or mix there-of) so a symbol (such as <code>+</code>) also has to be represented by a number no larger than a pointer in number of bits. This means that values (characters, signed or unsigned integers), symbols, pointers all can appear on either car or cdr part of a cell. To tell them apart a couple of bits are sacrificed. I will go into the details about this in the section about the heap below.</p>

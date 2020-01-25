@@ -156,7 +156,7 @@ If trying to use `'` in this case the result would be:
 So the difference here is that with `list` each element is evaluated
 and what `'` really does is to just give back its argument
 unevaluated. So To make lists, in general, use `list`, even though `'`
-can be used in some cases (such as `'(1 2 3)`.
+can be used in some cases (such as `'(1 2 3)`).
 
 
 ![Read eval qouted](./media/read_eval_quoted.png "Read and evaluate a
