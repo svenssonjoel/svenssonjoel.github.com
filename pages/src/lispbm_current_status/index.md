@@ -761,7 +761,15 @@ on if `_PRELUDE` is defined or not.
 
 ```
 
-## Future Work
+## Things Left Out
+
+1. Garbage Collector.
+2. Compression of source code.
+3. Interfacing with ChibiOS.
+4. Interfacing with ZephyrOS.
+5. Build for a bare-metal zynq. (Using Xilinx HAL) 
+
+I hope to write about these aspects of lispBM at a later time.
 
 ___
 

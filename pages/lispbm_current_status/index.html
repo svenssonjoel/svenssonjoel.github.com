@@ -388,7 +388,15 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
           (foldl f (f i (car xs)) (cdr xs)))))
 
 </code></pre>
-<h2 id="future-work">Future Work</h2>
+<h2 id="things-left-out">Things Left Out</h2>
+<ol>
+<li>Garbage Collector.</li>
+<li>Compression of source code.</li>
+<li>Interfacing with ChibiOS.</li>
+<li>Interfacing with ZephyrOS.</li>
+<li>Build for a bare-metal zynq. (Using Xilinx HAL)</li>
+</ol>
+<p>I hope to write about these aspects of lispBM at a later time.</p>
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>© Copyright 2020 Bo Joel Svensson</p>
