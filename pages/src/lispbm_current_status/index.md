@@ -528,7 +528,7 @@ number of bits unused on the most significant side as well. The
 example shows the bits used for a 64MB heap.
 
 For a value there are 28 bits left. Bit 0 and 1 work exactly as in the
-case above for pointers. That is, bit 0 and 1 are used to
+case above for pointers. That is, bit 0 and 1 are used for
 differentiation with a pointer and garbage collection. Bits 2 and 3
 are used to encode 4 different *types* of values.
 

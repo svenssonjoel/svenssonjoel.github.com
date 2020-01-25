@@ -270,7 +270,7 @@ Hello world
 Bit val: 0  0  0  0  0  0  XX XXXX XXXX XXXX XXXX XXXX X 0 0 0
 </code></pre>
 <p>Since the value of the pointer, made up by the Xed out bits above, is only meant to reference other cons cells (which are 8 bytes apart in the allocated heap) the bottom three bits are unused. The zero in position 0 is used to differentiate between pointer and value, thus all pointers will have a zero there and all values will have a one. Bit position 1 is used for the Garbage Collector's mark-bit but only in the <code>car</code> position, in the <code>cdr</code> this bit is unused. Bit position 2 is unused. Depending on how large the heap is there is some number of bits unused on the most significant side as well. The example shows the bits used for a 64MB heap.</p>
-<p>For a value there are 28 bits left. Bit 0 and 1 work exactly as in the case above for pointers. That is, bit 0 and 1 are used to differentiation with a pointer and garbage collection. Bits 2 and 3 are used to encode 4 different <em>types</em> of values.</p>
+<p>For a value there are 28 bits left. Bit 0 and 1 work exactly as in the case above for pointers. That is, bit 0 and 1 are used for differentiation with a pointer and garbage collection. Bits 2 and 3 are used to encode 4 different <em>types</em> of values.</p>
 <p>The different types of values are:</p>
 <ol>
 <li>symbols.</li>
