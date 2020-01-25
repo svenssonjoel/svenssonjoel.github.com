@@ -282,7 +282,8 @@ branch.
 ```
 
 This function application adds an entry into the environment that
-states that `apa` is defined to `1`. Typing `:info` in the REPL should this mapping.
+states that `apa` is defined to `1`. Typing `:info` in the REPL should
+show this mapping.
 
 ```
 # :info
