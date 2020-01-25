@@ -10,13 +10,14 @@ whole lot of experience in low-level programming of devices like the
 [NRF52](https://www.nordicsemi.com/Products/Low-power-short-range-wireless/nRF52833/GetStarted)
 or the ARM Cortex A9 of the Xilinx Zynq chip on the [Trenz
 ZynqBerry](https://shop.trenz-electronic.de/en/TE0726-03M-ZynqBerry-Module-with-Xilinx-Zynq-7010-in-Raspberry-Pi-Form-Faktor). But
-I do enjoy learning about them, **slowly**. The Code in C, Cross-compile,
-Flash and Debug loop (CCFDL?) is a bit heavy though. Wouldn't it be nice with a
-REPL (Read, Evaluate and Print Loop)?
+I do enjoy learning about them, **slowly**. The Code in C,
+Cross-compile, Flash and Debug loop (CCFDL?) is a bit heavy
+though. Wouldn't it be nice with a REPL (Read, Evaluate and Print
+Loop)?
 
 The [MIT 6.001 Structure and Interpretation of Computer
 Programs](https://www.youtube.com/watch?v=-J_xL4IGhJA&list=PLE18841CABEA24090)
-series of lecturs is a lot of fun and I recommend everyone to watch
+series of lectures is a lot of fun and I recommend everyone to watch
 it. I watched this lecture series several times while entertaining the
 idea of some day implement some kind of a Lisp. However, I didn't want
 to implement a Lisp interpreter in Lisp, or even in Haskell, it would
@@ -25,8 +26,8 @@ newly found interests (MCUs and Lips).
 
 The [lispBM](https://github.com/svenssonjoel/lispBM) project is my
 (ongoing) attempt to learn some about lisp while at the same time
-learn more about MCUs to make them more accessible to me, once you get
-used to having a REPL it is hard to go back.
+learn more about MCUs and to make them more accessible to me, once you
+get used to having a REPL it is hard to go back.
 
 I don't have very much experience or long background in programming
 numerous Lisps, so my attempt of making one is most likely very
@@ -41,7 +42,7 @@ Now I know that there are many other MCU-lisps. I have tried not to
 peek at the insides of these at all. But I looked at
 [Lisperator](http://lisperator.net/pltut/) for some tips with the
 evaluator, I would definitely recommend this tutorial. I have probably
-stared at the tail-call optimizing evaulator at Lisperator for hours
+stared at the tail-call optimizing evaluator at Lisperator for hours
 trying to understand what is going on there. I am not going to pretend
 that I fully understand it yet. Early on I used the
 [MPC](https://github.com/orangeduck/mpc) Micro Parser Combinators for
@@ -73,7 +74,9 @@ helps a lot to have access to a *Hardware Abstraction Layer*, HAL. So
 far lispBM has been compiled into code based on
 [ChibiOs](http://chibios.org/dokuwiki/doku.php) and
 [ZephyrOs](https://www.zephyrproject.org/) both providing a lot of HAL
-functionality.
+functionality. LispBM has also been tried on the ARM A9 core of the
+Xilinx Zynq 7000 here depending on HAL that is provided with the
+Xilinx toolchain.
 
 
 ## A Few Thoughts on Lisp
@@ -90,15 +93,15 @@ that it is stored as a linked list where the first element is the
 *values* `1` and `2`. The elements and pointers to the next cell are
 stored in what is called *cons cells*. a cons cell consists of enough
 bytes of memory to hold two pointers or two values or some two element
-permutation of pointer and value (all the details of this as it is
+permutation of pointer and value (many of the details of this as
 implemented in lispBM can be found later in this text). In more detail
 then, the expression `(+ 1 2)` will in memory be made up out of a
 first cons cell containing `+` in its first position (or car) and a
 pointed to the next cell in its second (cdr) position. Likewise, the
 next cell contains the `1` in the car position and a pointer to the
-next cell in the cdr. The last cell in the linked up structure of
-cons cells contains a `2` in car and a special symbol called `nil` in
-the cdr position to terminate the list.
+next cell in the cdr. The last cell in the linked up structure of cons
+cells contains a `2` in car and a special symbol called `nil` in the
+cdr position to terminate the list.
 
 ![Cons cell](./media/cons_cell.png "Cons cell")
 
@@ -134,7 +137,30 @@ means "do evaluate this". As an example the expression `(eval '(+ 1
 construct code **on the fly** in memory and then have the interpreter
 compute the result.
 
-![Read eval qouted](./media/read_eval_quoted.png "Read and evaluate a quoted expression")
+Using `'` to create a list works well in some simple cases like
+above. A more down-to-earth way to create a list is to use the `list`
+function.
+
+```
+# (list (+ 1 2) (+ 3 4) (+ 5 6))
+> (3 (7 (11 nil)))
+```
+
+If trying to use `'` in this case the result would be:
+
+```
+# '((+ 1 2) (+ 3 4) (+ 5 6))
+> ((+ (1 (2 nil))) ((+ (3 (4 nil))) ((+ (5 (6 nil))) nil)))
+```
+
+So the difference here is that with `list` each element is evaluated
+and what `'` really does is to just give back its argument
+unevaluated. So To make lists, in general, use `list`, even though `'`
+can be used in some cases (such as `'(1 2 3)`.
+
+
+![Read eval qouted](./media/read_eval_quoted.png "Read and evaluate a
+ quoted expression")
 
 In the paragraphs above there are a couple of words that I emphasized
 without much explanation. These are words that (as I understand it)
@@ -401,7 +427,7 @@ removing these are on the todo-list.
 
 Here is a larger example that makes combined use of many of the
 features introduced above. It is a function that computes the nth
-fibonacci number in a tail-recursive way. There will be more about
+Fibonacci number in a tail-recursive way. There will be more about
 tail-recursion in the section about the evaluator. 
 
 ```lisp
@@ -419,7 +445,7 @@ tail-recursion in the section about the evaluator.
 This example code evaluates to `55`.
 
 
-With this example we conclude the walkthrough of some fundamental
+With this example we conclude the walk through of some fundamental
 language constructs that can be used in lispBM programs. From now on
 this text will be mostly about how these things are implemented.
 
@@ -435,7 +461,7 @@ that make sense in the lisp computation. `VALUE` is really just a
 32Bit unsigned integer. I mention `VALUE` here as it is frequently
 used throughout. Another type that is quite frequently in use is
 `UINT` which is the same size as `VALUE` but does not necessarily make
-sence in the lisp world. `UINT` is used when it is important that the
+sense in the lisp world. `UINT` is used when it is important that the
 size matches that of a `VALUE`. Maybe because it will be turned into a
 `VALUE`. When it does not matter if a type matches in size with
 `VALUE`, I use `int` or `bool` or whatever is needed. This is the case
@@ -463,7 +489,7 @@ The `VALUE` type is a 32bit word used to store: symbols (these are
 special values that represent variables, pieces of syntax and many
 other things), signed and unsigned integers and characters. The
 `VALUE` type is also large enough to hold a pointer within the heap
-used to set up linked datastructures. But there is also a lot of
+used to set up linked data-structures. But there is also a lot of
 bookkeeping that needs to be tracked within the 32bit word (an
 alternative would be to use additional fields within the `cons_t`
 structure for this information. This would mean that the whole 32bit
@@ -559,13 +585,13 @@ less memory the linked-list implementation is used.
 Symbols are stored on the heap and thus they must fit into a
 `VALUE`. This means there are only 28Bits are available to represent
 different symbols since there are 4Bits that represent type and used
-by garbage colletor and so on (28 bits should be plenty enough
+by garbage collector and so on (28 bits should be plenty enough
 though!.).
 
 Using the hash-table or the linked-list the conversion process is very
 similar.
 
-The string representaion of a symbol is hashed into a 16Bit
+The string representation of a symbol is hashed into a 16Bit
 value. Actually a value between `0` and `0xFFFE`. This means that
 there can be collisions where 2 different symbols have the same 16Bit
 id. Collisions resolved by each bucket of the hash-table (or each
@@ -600,7 +626,7 @@ for symbols that are present by default (such as `nil` and `define`).
 ## Environments
 
 Environments store mappings between symbols and expressions. In lispBM
-enviroments are implemented as lists made from cons cells on the heap.
+environments are implemented as lists made from cons cells on the heap.
 The files `env.c` and `env.h` contains five functions used to
 manipulate environments.
 
@@ -623,7 +649,7 @@ value part is returned. If no binding that matches is found, a special
 symbol called error_not_found is returned. 
 
 The `env_set` and the `env_lookup` functions are used by the evaluator
-to implement the the funcion `define` and for looking up what
+to implement the the function `define` and for looking up what
 variables are bound to as in `(+ a b). The rest of the functions,
 `env_copy_shallow`, `env_modify_binding` and `env_build_params_args`
 have more specific use cases related to `let` and `closure` and
@@ -642,7 +668,7 @@ generated from these setups seemed clunky and obscure. I did not
 really know how to port that code over to an embedded platform. Maybe
 parser generators specifically for embedded platforms should be a
 thing? These should generate code with an absolute minimal set of
-dependencies and they could even require the user of them to implemnet
+dependencies and they could even require the user of them to implement
 a small interfacing layer that provides the functionality needed in
 terms of the operations available in the HAL used. Such generated
 parser should also use as little memory as possible and maybe be ok
@@ -681,7 +707,7 @@ it does not grow that buffer. `simple_print`, however, uses `printf`.
 Here using the `snprint` variant is preferred, then let some HAL
 functionality take care of relaying the print buffer to the user maybe
 over UART. Having a the `printf` based version is of course convenient
-when working on X86 (32Bit) under linux for testing and debuging.
+when working on X86 (32Bit) under linux for testing and debugging.
 
 ## Evaluating Expressions
 
@@ -767,7 +793,9 @@ on if `_PRELUDE` is defined or not.
 2. Compression of source code.
 3. Interfacing with ChibiOS.
 4. Interfacing with ZephyrOS.
-5. Build for a bare-metal zynq. (Using Xilinx HAL) 
+5. Build for a bare-metal zynq (using Xilinx HAL).
+6. Built in functions (`fundamental.c` and `fundamental.h`).
+7. Extensions (`extensions.c` and `extensions.h`).
 
 I hope to write about these aspects of lispBM at a later time.
 
