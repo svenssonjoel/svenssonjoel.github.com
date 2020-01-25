@@ -453,7 +453,7 @@ this text will be mostly about how these things are implemented.
 ## Heap Consisting of Cons cells
 
 The implementation of the heap is found in the files `heap.c` under
-`src` and `heap.h` under `include`. The `heap.h`file also contains
+`src` and `heap.h` under `include`. The `heap.h` file also contains
 quite a bit of commentary showing the choices I was contemplating
 there.
 
