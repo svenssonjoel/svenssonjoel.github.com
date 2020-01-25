@@ -651,7 +651,7 @@ symbol called error_not_found is returned.
 
 The `env_set` and the `env_lookup` functions are used by the evaluator
 to implement the function `define` and for looking up what
-variables are bound to as in `(+ a b). The rest of the functions,
+variables are bound to as in `(+ a b)`. The rest of the functions,
 `env_copy_shallow`, `env_modify_binding` and `env_build_params_args`
 have more specific use cases related to `let` and `closure` and
 applications that will be pointed out in the section about evaluation. 
