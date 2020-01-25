@@ -690,17 +690,17 @@ The reason it is abstracted like this is that lispBM can read both
 plain strings of ascii characters as well as a compressed stream of
 characters. In the case of reading a compressed stream this approach
 with an arbitrary `peek` will result in the stream being decoded
-multiple times, trading compute resources for memory usage.
+multiple times (but only up peek-depth), trading compute resources for
+memory usage.
 
 ## Printing
 
 The printing of expressions is an area that has not been given a lot
 of love or attention in lispBM. Printing functionality is contained in
 files `print.c` and `print.h` and provides the functions
-`simple_print` and `simple_snprint`. These functions loop over a heap
-representation of an expression recursively and can get stuck if the
-there is a circular structure on the heap, so they must be used
-carefully.
+`simple_print` and `simple_snprint`. These functions recurse over a
+heap representation of an expression and can get stuck if the there is
+a circular structure on the heap, so they must be used carefully.
 
 The `simple_snprint` prints into a buffer provided from the user and
 it does not grow that buffer. `simple_print`, however, uses `printf`.
@@ -710,6 +710,408 @@ over UART. Having a the `printf` based version is of course convenient
 when working on X86 (32Bit) under linux for testing and debugging.
 
 ## Evaluating Expressions
+
+The functions that are used in evaluating lispBM expressions is found
+in the file `eval_cps.c` with accompanying `eval_cps.h` file of
+course. The entry point function here is called `eval_cps_program`:
+
+```
+VALUE eval_cps_program(VALUE lisp);
+```
+
+The argument `lisp` should be a list of lispBM expressions on the
+heap. These will be evaluated from the first to the last one. The
+result that the last expression evaluates to is returned to the caller
+of `eval_cps_program`. 
+
+The evaluator used in lispBM is an attempt at a continuation passing
+style evaluator. While implementing this I looked at a lot at
+[Lisperator](http://lisperator.net/pltut/cps-evaluator/) and it helped
+me quite a bit. However, writing this in C rather than, I think it
+was, Javascript introduces some extra complexities. One big difference
+is that it seems to be possible in javascript to create functions on
+the fly, which I guess is "impossible" in C (if you dont have some
+kind of a JIT compilation library in there as well). This is a
+feature that seems to be quite handy when creating a so-called
+continuation.
+
+The following code snippet is borrowed from
+[Lisperator](http://lisperator.net/pltut/cps-evaluator/):
+
+```
+function evaluate(exp, env, callback) {
+    switch (exp.type) {
+
+...
+
+    case "call":
+        evaluate(exp.func, env, function(func){
+            (function loop(args, i){
+                if (i < exp.args.length) evaluate(exp.args[i], env, function(arg){
+                    args[i + 1] = arg;
+                    loop(args, i + 1);
+                }); else {
+                    func.apply(null, args);
+                }
+            })([ callback ], 0);
+        });
+        return;
+
+...
+    }
+}
+```
+
+The code above shows how function application can be evaluated in
+continuation passing style in a more expressive language than C.
+
+The "call" case above is used to evaluate something like `(f a b c)`
+where `f` is an expression that evaluates to a function (for example a
+`lambda` in lispBM).  `a`, `b` and `c` are the expressions passed as
+argument. The application could as an example look like this: `(f (+ 1
+2) (- 3 2) 1)`.
+
+So, within the "call" case above, the evaluate function is called with `f`
+and an environment as arguments. It is also passed a function
+that is created on the spot (the continuation), `function(func){
+... }`.
+
+The continuation function represents what to do next. Here it iterates
+over the arguments arguments to `f` and evaluates them one after other
+and puts the results in a list. Once all arguments are evaluated, the
+function can be applied to them; It is already evaluated into some
+applicable func object at this point. For more in depth information on
+this go to [Lisperator](http://lisperator.net/pltut/cps-evaluator/).
+
+Now, In C it is not (easily) possible to do generate a continuation
+function in this way. But fortunately it is not necessary to be able
+to create totally arbitrary functions (at least this is what it seems
+like to me), just a few different kinds of continuations has to be
+implemented. Maybe it is possible to think of the approach used in
+lispBM as a kind of defunctionalized continuation passing style?
+
+The implementation of evaluation in lispBM relies on a stack holding
+32Bit words (same size as `values`) that represents the continuation
+together with a set of 9 predefined continuation functions that are
+identified by the following definitions:
+
+```
+#define DONE              1
+#define SET_GLOBAL_ENV    2
+#define FUNCTION_APP      3
+#define FUNCTION          4
+#define BIND_TO_KEY_REST  5
+#define IF                6
+#define ARG_LIST          7
+#define EVAL              8
+#define PROGN_REST        9
+```
+
+I'm going to try to illustrate how this works by showing a few cases
+from the evaluator in lispBM. But first a few concepts must be
+introduced for it to make sense.
+
+While the function `cps_eval_program` is what the REPL calls, the function that does
+the actual evaluation is called `run_eval`. 
+
+```
+VALUE run_eval(eval_context_t *ctx);
+```
+
+The `run_eval` function takes a `eval_context_t` as argument. There is
+a global such context that is initiated by the `cps_eval_program`
+function before it in turn calls `run_eval`.  The eval context
+contains and keeps track of environment, current evaluation poin and
+the continuation stack.
+
+```
+typedef struct eval_context_s{
+  VALUE program;
+  VALUE curr_exp;
+  VALUE curr_env;
+  stack *K;
+  struct eval_context_s *next;
+} eval_context_t;
+
+```
+
+The very first thing that `run_eval` does is push a continuation onto
+the continuation stack:
+
+```
+VALUE run_eval(eval_context_t *ctx){
+
+  push_u32(ctx->K, enc_u(DONE));
+``` 
+
+The `DONE` continuation will now be present as the only element on the
+stack. This continuation represents that computation of the program is
+finished. 
+
+Next a `run_eval` enters into a loop:
+
+```
+  VALUE r = NIL;
+  bool done = false;
+  bool app_cont = false;
+
+  while (!done) {
+
+    if (app_cont) {
+       r = apply_continuation(ctx, r, &done, &app_cont);
+       continue;
+     }
+    ...
+
+```
+
+Some things related to garbage collection are omitted from `run_eval`
+at this point. I hope to soon write a text about the garbage
+collection and will then revisit the evaluater there.
+
+The `r` variable defined above represents the result of the
+computation and is what will be returned from `run_eval` in the end.
+
+What is essential here is that within the loop there is a `switch`
+statment that branches depending on what kind of expression is in the
+variable `curr_exp` within the context.
+
+```
+    VALUE value;  // a temporary value used throughout.
+    switch (type_of(ctx->curr_exp)) {
+    case VAL_TYPE_I:
+      app_cont = true;
+      r = ctx->curr_exp;
+      break;
+```
+
+If the expression is an integer it is an easy case. The `app_cont`
+variable is set to true which means that in the next iteration of the
+while loop the continuation will be applied.
+
+Another not to tricky case is when `curr_exp` is a variable.
+
+```
+    case VAL_TYPE_SYMBOL:
+      value = env_lookup(ctx->curr_exp, ctx->curr_env);
+      if (type_of(value) == VAL_TYPE_SYMBOL &&
+	  dec_sym(value) == symrepr_not_found()) {
+        r = enc_sym(symrepr_eerror());
+	done = true;
+	continue;
+      } 
+      app_cont = true;
+      r = value;
+      break;
+```
+
+In the `VAL_TYPE_SYMBOL` case the `curr_exp` represents a symbol and
+is looked up in the environment. If the symbol is not found the result
+of the computation is set to an error symbol signaling evaluation
+error and the `done` flag is set to `true`. If the symbol has a
+binding, `r` is set to this binding and the next step will apply the
+continuation.
+
+The `VAL_TYPE_SYMBOL` case is slightly simplified as shown above. It
+also looks up the symbol in `curr_env` which holds local environments.
+It also check if the symbol corresponds to some built in function or
+some extension. But this is left out from here.
+
+If the `curr_exp` is a list we end up in the following case:
+
+```
+    case PTR_TYPE_CONS:
+      head = car(ctx->curr_exp);
+      if (type_of(head) == VAL_TYPE_SYMBOL) {
+``` 
+
+In the case of a list the evaluator can take many different paths
+depending on what the first element of that list is. For example, if
+the first element is the symbol `define`, the list of expressions
+represents defining a binding in the global environment. If the first
+element of the list is `lambda', the list represents a function
+definition and so on for all the *special forms*.
+
+Let's look at a few of the possible cases withing the `PTR_TYPE_CONS`
+case, starting with the `'` *quote* case.
+
+```
+	if (dec_sym(head) == symrepr_quote()) {
+	  r = car(cdr(ctx->curr_exp));
+	  app_cont = true;
+	  continue;
+	}
+```
+
+This case is also one of the simpler ones. `r` is set to the rest of the list and we apply the continuation.
+
+Now it is time for a more intersting case, `define`.
+
+```
+	if (dec_sym(head) == symrepr_define()) {
+	  VALUE key = car(cdr(ctx->curr_exp));
+	  VALUE val_exp = car(cdr(cdr(ctx->curr_exp)));
+
+	  if (type_of(key) != VAL_TYPE_SYMBOL ||
+	      key == NIL) {
+	    done = true;
+	    r =  enc_sym(symrepr_eerror());
+	    continue;
+	  }
+
+	  push_u32_2(ctx->K, key, enc_u(SET_GLOBAL_ENV));
+	  ctx->curr_exp = val_exp;
+	  continue;
+	}
+```
+
+The `define` form takes two arguments the key and an expression. In
+lispBM when using `define` the value expression is evaluated before
+the key-val binding is created. So the key is bound to the evaluated
+result of the value expression. There is a small bit of error checking
+here in case someone tries to rebind `nil`.
+
+The interesting part is the last three lines. Here the key and the
+continuation identifier for `SET_GLOBAL_ENV` are both pushed onto the
+continuation stack. The `curr_exp` of the context is set to the value
+expression and the the eval loop starts over. This means that the next
+thing that will happen is that the value expression is evaluated and
+once that reduces to a basic case the continuation `SET_GLOBAL_ENV`
+will be applied.
+
+One more example to close the circle with the intial example that I
+got from Lisperator. The function application case.
+
+In the evaluator the function application case is what is used if no
+other special form (`define`, `lambda`, `if', ...) was an applicable
+case.
+
+```
+      push_u32_2(ctx->K, head, enc_u(FUNCTION));
+      if (type_of(cdr(ctx->curr_exp)) == VAL_TYPE_SYMBOL &&
+	  cdr(ctx->curr_exp) == NIL) {
+	// no arguments)
+	app_cont = true;
+	r = NIL;
+	continue;
+      } else {
+	push_u32_4(ctx->K, ctx->curr_env, NIL,
+		   cdr(cdr(ctx->curr_exp)), enc_u(ARG_LIST));
+
+	ctx->curr_exp = car(cdr(ctx->curr_exp));
+	continue;
+      }
+```
+
+This starts out by pushing the head of the list (that represents the
+function) and a value representing the `FUNCTION' continuation onto
+the stack. Then either there are no arguments to the function or there
+are. If there are none we set `app_cont` and let the continuation
+proceed. Which will go directly into the `FUNCTION` continuation and compute it.
+If there are arguments four things are pushed onto the continuation stack:
+
+1. The current environment (that all of these arguments should be evaluated in)
+2. An empty accumulator list.
+3. The tail of the list of arguments.
+4. The `ARG_LIST` continuation.
+
+Then the `curr_exp` in the context is set to the first element of the
+argument list and the evaluator loops restarts from the beginning.
+
+
+So, if the `app_cont` flag is set when we enter a new iteration of the loop we
+jump to an `apply_continuation` function.
+
+```
+VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *app_cont) {
+``` 
+
+This function is a huge switch statement that depends on what the top
+value of the continuation stack is. The first couple of lines look
+like this.  Here the top of the stack is popped, some variables
+defined, `app_cont` set to a default `false` state.
+
+```
+VALUE k;
+  pop_u32(ctx->K, &k);
+
+  VALUE res;
+
+  *app_cont = false;
+
+  switch(dec_u(k)) {
+  case DONE:
+    *done = true;
+    return arg;
+```
+
+The line above also shows what happen in the case of the `DONE`
+continuation. This case sets `done` to `true` in order to break the
+eval loop and returns the argument passed to the continuation as a
+result.
+
+Let's revisit those cases from the evaluator that pushed continuations. Starting
+with `define` that pushed the `SET_GLOBAL_ENV` continuation.
+
+```
+ case SET_GLOBAL_ENV:
+    res = cont_set_global_env(ctx, arg, done, perform_gc);
+    if (!(*done)) 
+      *app_cont = true;
+    return res;
+```
+
+It relies on a helper function that updates the actual environment
+`cont_set_global`. If this was to fail (fataly) `done` would be set to true and res
+will be an error indicating symbol. If it is successful `app_cont` is set to true
+and the result (which should be `t`) is returned.
+
+```
+ case FUNCTION: {
+    VALUE fun;
+    pop_u32(ctx->K, &fun);
+    push_u32_2(ctx->K, arg, enc_u(FUNCTION_APP));
+    
+    ctx->curr_exp = fun;
+    return NONSENSE; // Should return something that is very easy to recognize as nonsense 
+  }
+```
+The `FUNCTION` continuation pops off the function expression from the stack and
+then pushes 'arg` that represents the argument list and the `FUNCTION_APP` continuation to the stack.
+
+Then the context is set up so that the function expression is evalated
+into a function object (`closure`, extension, built in function).
+
+```
+ case ARG_LIST: {
+    VALUE rest;
+    VALUE acc;
+    VALUE env;
+    pop_u32_3(ctx->K, &rest, &acc, &env);
+    VALUE acc_ = cons(arg, acc);
+    if (type_of(rest) == VAL_TYPE_SYMBOL &&
+	rest == NIL) {
+      *app_cont = true;
+      return acc_;
+    }
+    VALUE head = car(rest);
+    push_u32_4(ctx->K, env, acc_, cdr(rest), enc_u(ARG_LIST));
+    ctx->curr_env = env;
+    ctx->curr_exp = head;
+    return NONSENSE;
+  }
+```
+
+The `ARG_LIST` continuation pops of the environment, accumulator and
+"rest of the list of arguments" from the stack. It conses the arg
+(which is the first evaluated argument) to the accumulator and then
+checks if the "rest of the list of arguments" is empty. In that case
+we are done and can apply the continuation. If it is not empty a
+second round of `ARG_LIST` continuation is initiated in the same way
+as it was first done in the evaluation function.
+
+I hope this gives a taste of how the CPS evaluator works. If you have
+insights or questions please contact me. 
 
 ## A Prelude of Convenient Lisp Functions
 
@@ -793,7 +1195,7 @@ on if `_PRELUDE` is defined or not.
 2. Compression of source code.
 3. Interfacing with ChibiOS.
 4. Interfacing with ZephyrOS.
-5. Build for a bare-metal zynq (using Xilinx HAL).
+5. Build for a bare-metal Zynq 7010 (using Xilinx HAL).
 6. Built in functions (`fundamental.c` and `fundamental.h`).
 7. Extensions (`extensions.c` and `extensions.h`).
 
