@@ -650,7 +650,7 @@ value part is returned. If no binding that matches is found, a special
 symbol called error_not_found is returned. 
 
 The `env_set` and the `env_lookup` functions are used by the evaluator
-to implement the the function `define` and for looking up what
+to implement the function `define` and for looking up what
 variables are bound to as in `(+ a b). The rest of the functions,
 `env_copy_shallow`, `env_modify_binding` and `env_build_params_args`
 have more specific use cases related to `let` and `closure` and
@@ -975,7 +975,7 @@ here in case someone tries to rebind `nil`.
 The interesting part is the last three lines. Here the key and the
 continuation identifier for `SET_GLOBAL_ENV` are both pushed onto the
 continuation stack. The `curr_exp` of the context is set to the value
-expression and the the eval loop starts over. This means that the next
+expression and the eval loop starts over. This means that the next
 thing that will happen is that the value expression is evaluated and
 once that reduces to a basic case the continuation `SET_GLOBAL_ENV`
 will be applied.
