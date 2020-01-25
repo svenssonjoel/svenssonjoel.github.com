@@ -477,7 +477,7 @@ typedef struct {
   VALUE cdr;
 } cons_t;
 ```
-Where `VALUE` and `UINT` are defined as:
+Where `VALUE` is defined as:
 ```
 typedef uint32_t VALUE;
 ```
