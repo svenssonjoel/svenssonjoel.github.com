@@ -328,7 +328,7 @@ of bindings to be used as part of computations in later bindings.
 
 ```
 
-### `lambda` and Closures
+### `lambda` and `closure`
 
 New functions are defined using `lambda` that takes two arguments a
 list of parameter names and an expression. Using `lambda` creates an
@@ -605,34 +605,76 @@ The files `env.c` and `env.h` contains five functions used to
 manipulate environments.
 
 ```
-VALUE env_copy_shallow(VALUE env);
-VALUE env_lookup(VALUE sym, VALUE env);
 VALUE env_set(VALUE env, VALUE key, VALUE val);
+VALUE env_lookup(VALUE sym, VALUE env);
+VALUE env_copy_shallow(VALUE env);
 VALUE env_modify_binding(VALUE env, VALUE key, VALUE val);
 VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
 ```
 
+The function `env_set` adds a key-value pair to an
+environment. However, if the key-value binding already exists in the
+environment then this existing binding is updated instead.
 
+Looking up in the environment is done using the `env_lookup`
+function. This function loops over the cons cells that make up the
+environment and if a key-value pair matches the key provided, the
+value part is returned. If no binding that matches is found, a special
+symbol called error_not_found is returned. 
+
+The `env_set` and the `env_lookup` functions are used by the evaluator
+to implement the the funcion `define` and for looking up what
+variables are bound to as in `(+ a b). The rest of the functions,
+`env_copy_shallow`, `env_modify_binding` and `env_build_params_args`
+have more specific use cases related to `let` and `closure` and
+applications that will be pointed out in the section about evaluation. 
 
 ## Parsing
 
-## Printing
+The Current parser, contained in files `tokpar.c` and `tokpar.h`. This
+code is a bit of a quick hack but seems to work in practice. Earlier
+the MPC library (Parser combinators for C) was used but showed to be
+too memory hungry for my liking. And before finding MPC I looked
+briefly at more traditional parser generators such as
+![BNFC](https://bnfc.digitalgrammars.com/),
+![Flex](https://github.com/westes/flex) and
+![Bison](https://www.gnu.org/software/bison/). But the C code
+generated from these setups seemed clunky and obscure. I did not
+really know how to port that code over to an embedded platform. Maybe
+parser generators specifically for embedded platforms should be a
+thing? These should generate code with an absolute minimal set of
+dependencies and they could even require the user of them to implemnet
+a small interfacing layer that provides the functionality needed in
+terms of the operations available in the HAL used. Such generated
+parser should also use as little memory as possible and maybe be ok
+with operating in a small (fixed size) memory area provided as an
+argument from the user.
 
-## Compressed Source Code
+The parser in lispBm operates on an abstracted character stream that provides
+four operations: `more`, `get`, `peek` and `drop`.
+
+1. `more` checks if there are elements left in the character stream
+and returns a boolean.
+2. `get` returns the character at the head of the character stream and removes it from the stream.
+3. `peek` takes an integer offset and returns a character found at the
+point in the stream (counted from the head of the stream).
+4. `drop` removes N characters from the stream.
+
+The reason it is abstracted like this is that lispBM can read both
+plain strings of ascii characters as well as a compressed stream of
+characters. In the case of reading a compressed stream this approach
+with an arbitrary `peek` will result in the stream being decoded
+multiple times, trading compute resources for memory usage.
+
+## Printing
 
 ## Built in Functions
 
-## Add Custom Functionality Using Extensions 
-
-## Garbage Collection
+Certain symbols are mapped to a set of built in functions or operators.
 
 ## Evaluating Expressions
 
 ## A Prelude of Convenient Lisp Functions
-
-## Interfacing with ChibiOs
-
-## Interfacing with ZephyrOs
 
 ## Future Work
 
