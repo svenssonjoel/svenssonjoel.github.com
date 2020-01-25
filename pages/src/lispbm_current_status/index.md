@@ -75,7 +75,7 @@ far lispBM has been compiled into code based on
 [ChibiOs](http://chibios.org/dokuwiki/doku.php) and
 [ZephyrOs](https://www.zephyrproject.org/) both providing a lot of HAL
 functionality. LispBM has also been tried on the ARM A9 core of the
-Xilinx Zynq 7000 here depending on HAL that is provided with the
+Xilinx Zynq 7000 here depending on the HAL that is provided with the
 Xilinx toolchain.
 
 
