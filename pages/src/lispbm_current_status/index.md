@@ -898,8 +898,8 @@ Another not to tricky case is when `curr_exp` is a variable.
       if (type_of(value) == VAL_TYPE_SYMBOL &&
 	  dec_sym(value) == symrepr_not_found()) {
         r = enc_sym(symrepr_eerror());
-	done = true;
-	continue;
+        done = true;
+        continue;
       } 
       app_cont = true;
       r = value;
