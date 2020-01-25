@@ -22,7 +22,7 @@ it. I watched this lecture series several times while entertaining the
 idea of some day implement some kind of a Lisp. However, I didn't want
 to implement a Lisp interpreter in Lisp, or even in Haskell, it would
 feel a bit like cheating. So instead, the idea is to combine these two
-newly found interests (MCUs and Lips).
+newly found interests (MCUs and Lisps).
 
 The [lispBM](https://github.com/svenssonjoel/lispBM) project is my
 (ongoing) attempt to learn some about lisp while at the same time
@@ -48,7 +48,7 @@ that I fully understand it yet. Early on I used the
 [MPC](https://github.com/orangeduck/mpc) Micro Parser Combinators for
 parsing expressions. This is the same parser generator code that is
 used in [BuidYourOwnLisp](http://www.buildyourownlisp.com/). However,
-when going towards smaller MCUs (with less than 256k or RAM) the MPC
+when going towards smaller MCUs (with less than 256k of RAM) the MPC
 library showed to be a bit to hungry on memory and I had to hack something
 up (more about that in the section about parsing).
 
@@ -97,7 +97,7 @@ permutation of pointer and value (many of the details of this as
 implemented in lispBM can be found later in this text). In more detail
 then, the expression `(+ 1 2)` will in memory be made up out of a
 first cons cell containing `+` in its first position (or car) and a
-pointed to the next cell in its second (cdr) position. Likewise, the
+pointer to the next cell in its second (cdr) position. Likewise, the
 next cell contains the `1` in the car position and a pointer to the
 next cell in the cdr. The last cell in the linked up structure of cons
 cells contains a `2` in car and a special symbol called `nil` in the
@@ -661,9 +661,9 @@ The Current parser used in lispBM is contained in files `tokpar.c` and
 `tokpar.h`. Earlier the MPC library (Parser combinators for C) was used
 but showed to be too memory hungry for my liking. And before finding
 MPC I looked briefly at more traditional parser generators such as
-![BNFC](https://bnfc.digitalgrammars.com/),
-![Flex](https://github.com/westes/flex) and
-![Bison](https://www.gnu.org/software/bison/). But the C code
+[BNFC](https://bnfc.digitalgrammars.com/),
+[Flex](https://github.com/westes/flex) and
+[Bison](https://www.gnu.org/software/bison/). But the C code
 generated from these setups seemed clunky and obscure. I did not
 really know how to port that code over to an embedded platform. Maybe
 parser generators specifically for embedded platforms should be a
