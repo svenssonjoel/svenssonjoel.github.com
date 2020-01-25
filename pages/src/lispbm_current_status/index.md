@@ -631,11 +631,10 @@ applications that will be pointed out in the section about evaluation.
 
 ## Parsing
 
-The Current parser, contained in files `tokpar.c` and `tokpar.h`. This
-code is a bit of a quick hack but seems to work in practice. Earlier
-the MPC library (Parser combinators for C) was used but showed to be
-too memory hungry for my liking. And before finding MPC I looked
-briefly at more traditional parser generators such as
+The Current parser used in lispBM is contained in files `tokpar.c` and
+`tokpar.h`. Earlier the MPC library (Parser combinators for C) was used
+but showed to be too memory hungry for my liking. And before finding
+MPC I looked briefly at more traditional parser generators such as
 ![BNFC](https://bnfc.digitalgrammars.com/),
 ![Flex](https://github.com/westes/flex) and
 ![Bison](https://www.gnu.org/software/bison/). But the C code
@@ -650,12 +649,13 @@ parser should also use as little memory as possible and maybe be ok
 with operating in a small (fixed size) memory area provided as an
 argument from the user.
 
-The parser in lispBm operates on an abstracted character stream that provides
+The parser in lispBM operates on an abstracted character stream that provides
 four operations: `more`, `get`, `peek` and `drop`.
 
 1. `more` checks if there are elements left in the character stream
 and returns a boolean.
-2. `get` returns the character at the head of the character stream and removes it from the stream.
+2. `get` returns the character at the head of the character stream and
+removes it from the stream.
 3. `peek` takes an integer offset and returns a character found at the
 point in the stream (counted from the head of the stream).
 4. `drop` removes N characters from the stream.
@@ -667,6 +667,21 @@ with an arbitrary `peek` will result in the stream being decoded
 multiple times, trading compute resources for memory usage.
 
 ## Printing
+
+The printing of expressions is an area that has not been given a lot
+of love or attention in lispBM. Printing functionality is contained in
+files `print.c` and `print.h` and provides the functions
+`simple_print` and `simple_snprint`. These functions loop over a heap
+representation of an expression recursively and can get stuck if the
+there is a circular structure on the heap, so they must be used
+carefully.
+
+The `simple_snprint` prints into a buffer provided from the user and
+it does not grow that buffer. `simple_print`, however, uses `printf`.
+Here using the `snprint` variant is preferred, then let some HAL
+functionality take care of relaying the print buffer to the user maybe
+over UART. Having a the `printf` based version is of course convenient
+when working on X86 (32Bit) under linux for testing and debuging.
 
 ## Built in Functions
 
