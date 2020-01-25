@@ -725,7 +725,7 @@ result that the last expression evaluates to is returned to the caller
 of `eval_cps_program`. 
 
 The evaluator used in lispBM is an attempt at a continuation passing
-style evaluator. While implementing this I looked at a lot at
+style evaluator. While implementing this I looked a lot at
 [Lisperator](http://lisperator.net/pltut/cps-evaluator/) and it helped
 me quite a bit. However, writing this in C rather than, I think it
 was, Javascript introduces some extra complexities. One big difference
