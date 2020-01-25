@@ -1077,7 +1077,7 @@ and the result (which should be `t`) is returned.
   }
 ```
 The `FUNCTION` continuation pops off the function expression from the stack and
-then pushes 'arg` that represents the argument list and the `FUNCTION_APP` continuation to the stack.
+then pushes `arg` that represents the argument list and the `FUNCTION_APP` continuation to the stack.
 
 Then the context is set up so that the function expression is evaluated
 into a function object (`closure`, extension, built in function).
@@ -1090,7 +1090,7 @@ into a function object (`closure`, extension, built in function).
     pop_u32_3(ctx->K, &rest, &acc, &env);
     VALUE acc_ = cons(arg, acc);
     if (type_of(rest) == VAL_TYPE_SYMBOL &&
-	rest == NIL) {
+        rest == NIL) {
       *app_cont = true;
       return acc_;
     }

@@ -525,7 +525,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
     return NONSENSE; // Should return something that is very easy to recognize as nonsense 
   }
 </code></pre>
-<p>The <code>FUNCTION</code> continuation pops off the function expression from the stack and then pushes 'arg<code>that represents the argument list and the</code>FUNCTION_APP` continuation to the stack.</p>
+<p>The <code>FUNCTION</code> continuation pops off the function expression from the stack and then pushes <code>arg</code> that represents the argument list and the <code>FUNCTION_APP</code> continuation to the stack.</p>
 <p>Then the context is set up so that the function expression is evaluated into a function object (<code>closure</code>, extension, built in function).</p>
 <pre><code> case ARG_LIST: {
     VALUE rest;
@@ -534,7 +534,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
     pop_u32_3(ctx-&gt;K, &amp;rest, &amp;acc, &amp;env);
     VALUE acc_ = cons(arg, acc);
     if (type_of(rest) == VAL_TYPE_SYMBOL &amp;&amp;
-    rest == NIL) {
+        rest == NIL) {
       *app_cont = true;
       return acc_;
     }
