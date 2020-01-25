@@ -521,7 +521,7 @@ is only meant to reference other cons cells (which are 8 bytes apart
 in the allocated heap) the bottom three bits are unused. The zero in
 position 0 is used to differentiate between pointer and value, thus
 all pointers will have a zero there and all values will have a
-one. Bit position 1 is used for the Garbage Collectors mark-bit but
+one. Bit position 1 is used for the Garbage Collector's mark-bit but
 only in the `car` position, in the `cdr` this bit is unused. Bit
 position 2 is unused. Depending on how large the heap is there is some
 number of bits unused on the most significant side as well. The
