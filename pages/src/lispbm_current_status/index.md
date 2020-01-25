@@ -1032,7 +1032,7 @@ like this.  Here the top of the stack is popped, some variables
 defined, `app_cont` set to a default `false` state.
 
 ```
-VALUE k;
+  VALUE k;
   pop_u32(ctx->K, &k);
 
   VALUE res;

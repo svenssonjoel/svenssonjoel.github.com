@@ -495,7 +495,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
 <pre><code>VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *app_cont) {
 </code></pre>
 <p>This function is a huge switch statement that depends on what the top value of the continuation stack is. The first couple of lines look like this. Here the top of the stack is popped, some variables defined, <code>app_cont</code> set to a default <code>false</code> state.</p>
-<pre><code>VALUE k;
+<pre><code>  VALUE k;
   pop_u32(ctx-&gt;K, &amp;k);
 
   VALUE res;
