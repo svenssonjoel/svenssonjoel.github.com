@@ -483,7 +483,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
         continue;
       }
 </code></pre>
-<p>This starts out by pushing the head of the list (that represents the function) and a value representing the <code>FUNCTION' continuation onto the stack. Then either there are no arguments to the function or there are. If there are none we set </code>app_cont<code>and let the continuation proceed. Which will go directly into the</code>FUNCTION` continuation and compute it. If there are arguments four things are pushed onto the continuation stack:</p>
+<p>This starts out by pushing the head of the list (that represents the function) and a value representing the <code>FUNCTION</code> continuation onto the stack. Then either there are no arguments to the function or there are. If there are none we set <code>app_cont</code> and let the continuation proceed. Which will go directly into the <code>FUNCTION</code> continuation and compute it. If there are arguments four things are pushed onto the continuation stack:</p>
 <ol>
 <li>The current environment (that all of these arguments should be evaluated in)</li>
 <li>An empty accumulator list.</li>

@@ -1004,7 +1004,7 @@ other special form (`define`, `lambda`, `if', ...) was applicable.
 ```
 
 This starts out by pushing the head of the list (that represents the
-function) and a value representing the `FUNCTION' continuation onto
+function) and a value representing the `FUNCTION` continuation onto
 the stack. Then either there are no arguments to the function or there
 are. If there are none we set `app_cont` and let the continuation
 proceed. Which will go directly into the `FUNCTION` continuation and compute it.
