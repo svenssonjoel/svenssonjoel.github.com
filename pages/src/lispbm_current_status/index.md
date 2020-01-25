@@ -984,23 +984,22 @@ One more example to close the circle with the initial example that I
 got from Lisperator. The function application case.
 
 In the evaluator the function application case is what is used if no
-other special form (`define`, `lambda`, `if', ...) was an applicable
-case.
+other special form (`define`, `lambda`, `if', ...) was applicable.
 
 ```
       push_u32_2(ctx->K, head, enc_u(FUNCTION));
       if (type_of(cdr(ctx->curr_exp)) == VAL_TYPE_SYMBOL &&
 	  cdr(ctx->curr_exp) == NIL) {
-	// no arguments)
-	app_cont = true;
-	r = NIL;
-	continue;
+        // no arguments
+        app_cont = true;
+        r = NIL;
+        continue;
       } else {
-	push_u32_4(ctx->K, ctx->curr_env, NIL,
-		   cdr(cdr(ctx->curr_exp)), enc_u(ARG_LIST));
+        push_u32_4(ctx->K, ctx->curr_env, NIL,
+                   cdr(cdr(ctx->curr_exp)), enc_u(ARG_LIST));
 
-	ctx->curr_exp = car(cdr(ctx->curr_exp));
-	continue;
+        ctx->curr_exp = car(cdr(ctx->curr_exp));
+        continue;
       }
 ```
 
