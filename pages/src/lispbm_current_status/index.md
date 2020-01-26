@@ -584,7 +584,7 @@ have been introduced. When using lispBM on, for example, an STM32 with
 less memory the linked-list implementation is used.
 
 Symbols are stored on the heap and thus they must fit into a
-`VALUE`. This means there are only 28Bits are available to represent
+`VALUE`. This means there are only 28Bits available to represent
 different symbols since there are 4Bits that represent type and used
 by garbage collector and so on (28 bits should be plenty enough
 though!.).
