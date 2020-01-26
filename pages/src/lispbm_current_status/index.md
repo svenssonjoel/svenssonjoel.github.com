@@ -1206,6 +1206,18 @@ on if `_PRELUDE` is defined or not.
 
 ```
 
+EDIT: Here is a simpler variant of the `iota` function provided by [Josef Svenningsson](http://www.cse.chalmers.se/~josefs/).
+
+```
+(define iota (lambda (n)
+         (let ((iacc (lambda (acc i)
+                 (if (< i 0)
+                 acc
+                   (iacc (cons i acc) (- i 1))))))
+         (iacc nil n))))
+```
+
+
 ## Things Left Out
 
 1. Garbage Collector.

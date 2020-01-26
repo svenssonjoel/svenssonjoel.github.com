@@ -620,6 +620,14 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
           (foldl f (f i (car xs)) (cdr xs)))))
 
 </code></pre>
+<p>EDIT: Here is a simpler variant of the <code>iota</code> function provided by <a href="http://www.cse.chalmers.se/~josefs/">Josef Svenningsson</a>.</p>
+<pre><code>(define iota (lambda (n)
+         (let ((iacc (lambda (acc i)
+                 (if (&lt; i 0)
+                 acc
+                   (iacc (cons i acc) (- i 1))))))
+         (iacc nil n))))
+</code></pre>
 <h2 id="things-left-out">Things Left Out</h2>
 <ol>
 <li>Garbage Collector.</li>
