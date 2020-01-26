@@ -6,6 +6,7 @@ HTML = $(patsubst %.md,%.html,$(MD))
 DIR   = $(notdir $(CURDIR))
 TITLE = Template Page
 DESCRIPTION = Template description
+KEYWORDS = Template 
 YEAR  = 2020
 
 all: $(HTML)
