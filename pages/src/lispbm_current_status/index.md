@@ -1117,7 +1117,7 @@ to evaluate tail-recursive functions such that it does not result in
 memory usage that grows with each recursive call. One thing I want to
 be able to run on the microcontrollers are infinite loops. In lispBM I
 would express such a function as a tail-recursion and it should be
-possible to run in indefinitely. I think another option would be to
+possible to run it indefinitely. I think another option would be to
 transform the program itself (the program to evaluate) into what is
 called continuation passing style. Then an evaluator for that
 continuation passing style program could be written in a way that has
