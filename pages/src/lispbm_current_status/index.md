@@ -777,12 +777,14 @@ and an environment as arguments. It is also passed a function
 that is created on the spot (the continuation), `function(func){
 ... }`.
 
-The continuation function represents what to do next. Here it iterates
-over the arguments arguments to `f` and evaluates them one after other
-and puts the results in a list. Once all arguments are evaluated, the
-function can be applied to them; It is already evaluated into some
-applicable func object at this point. For more in depth information on
-this go to [Lisperator](http://lisperator.net/pltut/cps-evaluator/).
+The continuation function represents what to do next (that is, after
+evaluating the function itself in this case). The continuation
+specified here iterates over the arguments arguments to `f` and
+evaluates them one after other and puts the results in a list. Once
+all arguments are evaluated, the function can be applied to them; It
+is already evaluated into some applicable func object at this
+point. For more in depth information on this go to
+[Lisperator](http://lisperator.net/pltut/cps-evaluator/).
 
 Now, In C it is not (easily) possible to do generate a continuation
 function in this way. But fortunately it is not necessary to be able
