@@ -435,7 +435,7 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
       break;
 </code></pre>
 <p>In the <code>VAL_TYPE_SYMBOL</code> case the <code>curr_exp</code> represents a symbol and is looked up in the environment. If the symbol is not found the result of the computation is set to an error symbol signaling evaluation error and the <code>done</code> flag is set to <code>true</code>. If the symbol has a binding, <code>r</code> is set to this binding and the next step will apply the continuation.</p>
-<p>The <code>VAL_TYPE_SYMBOL</code> case is slightly simplified as shown above. It also looks up the symbol in <code>curr_env</code> which holds local environments. It also check if the symbol corresponds to some built in function or some extension. But this is left out from here.</p>
+<p>The <code>VAL_TYPE_SYMBOL</code> case is slightly simplified as shown above. In the actual implementation it also looks up the symbol in the global environment and only if it is not present in either there will be an error. There is also a check if the symbol corresponds to some built in function or some extension. But this is left out from here.</p>
 <p>If the <code>curr_exp</code> is a list we end up in the following case:</p>
 <pre><code>    case PTR_TYPE_CONS:
       head = car(ctx-&gt;curr_exp);

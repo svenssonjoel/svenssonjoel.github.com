@@ -913,10 +913,11 @@ error and the `done` flag is set to `true`. If the symbol has a
 binding, `r` is set to this binding and the next step will apply the
 continuation.
 
-The `VAL_TYPE_SYMBOL` case is slightly simplified as shown above. It
-also looks up the symbol in `curr_env` which holds local environments.
-It also check if the symbol corresponds to some built in function or
-some extension. But this is left out from here.
+The `VAL_TYPE_SYMBOL` case is slightly simplified as shown above. In
+the actual implementation it also looks up the symbol in the global
+environment and only if it is not present in either there will be an
+error. There is also a check if the symbol corresponds to some built
+in function or some extension. But this is left out from here.
 
 If the `curr_exp` is a list we end up in the following case:
 
