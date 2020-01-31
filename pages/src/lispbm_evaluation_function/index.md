@@ -23,7 +23,7 @@ where the computation was paused.
 3. Evaluation should be correct in relation to environments (such that the
 body of a let is evaluated in an environment extended with the
 bindings). There are also other examples of where similar properties
-should hold. 
+should hold, such as when `lambda`s are evaluated into `closure`s. 
 
 4. Evaluating an expression should give the expected result. 
 
@@ -77,8 +77,11 @@ contain information about what to do with that number. The
 `perform_gc` flag is set (as hinted above), when heap is full and we
 cannot proceed unless gc is executed. 
 
+
+## Global Data and Some Smaller Functions
+
 Now to the code! Evaluation makes use of almost everything else. So
-most of the lispBM header are included.
+most of the lispBM header files are included.
 
 ```
 #include "symrepr.h"
@@ -112,6 +115,12 @@ there was the three continuations `FUNCTION`, `FUNCTION_APP` and
 #define APPLICATION_ARGS  8
 ```
 
+There is a little bit of global state maintained by the evaluator. It
+consists of the global environment (where things `define`d go) and the
+evaluation context. There are also some `VALUE`s, `NIL` and `NONSENSE`
+these symbols are just given names that are easier to write and stand
+out a bit as they are used quite frequently. 
+
 
 ```
 static VALUE eval_cps_global_env;
@@ -120,6 +129,14 @@ static VALUE NONSENSE;
 
 eval_context_t *eval_context = NULL;
 ```
+
+Then there are a bunch of functions that handle evaluation
+contexts. These are not very important now. They are written in this
+way because of a vague plan to let the evaluator work on more than one
+context where each context represents a task. Since it is possible to
+pause the evaluation of a context it should be possible to also
+implement task switching by pausing one context and then activating
+another.
 
 ```
 eval_context_t *eval_cps_get_current_context(void) {
@@ -143,12 +160,20 @@ void eval_cps_drop_top_context(void) {
   stack_del(ctx->K);
   free(ctx);
 }
-``` 
+```
+
+The `eval_cps_get_env` is meant to be called by the REPL
+implementation in case it is interested in knowing the contents of the
+environment.
+
 ``` 
 VALUE eval_cps_get_env(void) {
   return eval_cps_global_env;
 }
 ``` 
+
+The `eval_cps_bi_eval` function connects to the `fundamental.c` module
+and provides the fundamental function called `eval`.
 
 ```
 VALUE eval_cps_bi_eval(VALUE exp) {
@@ -160,6 +185,12 @@ VALUE eval_cps_bi_eval(VALUE exp) {
 ``` 
 
 ## Starting Up and Shutting Down
+
+The `eval_cps_init` functions initializes the evaluation state. It
+takes an argument that decides whether or not the continuation stack
+is allowed to grow or if it will be of fixed size. The global
+environment is initialized and a single mapping is added that map
+`nil` to `nil`. The global evaluation context is allocated. 
 
 ```
 int eval_cps_init(bool grow_continuation_stack) {
@@ -181,12 +212,17 @@ int eval_cps_init(bool grow_continuation_stack) {
 
   return res;
 }
+```
 
+The following function frees up the allocated state used by the evaluator.
+
+``` 
 void eval_cps_del(void) {
   stack_del(eval_context->K);
   free(eval_context);
 }
 ```
+
 ## Entrypoint Function
 
 ```
