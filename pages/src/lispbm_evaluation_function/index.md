@@ -228,8 +228,8 @@ void eval_cps_del(void) {
 The function that is called from the REPL is called `eval_cps_program`
 and takes a list of expressions as argument. This function currently
 modifies the global evaluation context and then loops over the list of
-expressions and evaluates them from first to last. the result of the
-last expression is returned to the caller. 
+expressions and evaluates them from first to last using the `run_eval`
+function. the result of the last expression is returned to the caller.
 
 ```
 VALUE eval_cps_program(VALUE lisp) {
@@ -735,6 +735,93 @@ VALUE cont_set_global_env(eval_context_t *ctx, VALUE val, bool *done, bool *perf
 ```
 
 ## When Property 1 is Not Honored
+
+```
+int push_u32(stack *s, UINT val) {
+  int res = 1;
+  s->data[s->sp] = val;
+  s->sp++;
+  if ( s->sp >= s->size) {
+    res = stack_grow(s);
+  }
+  return res;
+}
+```
+
+```
+int push_u32(stack *s, UINT val) {
+  int res = 1;
+  s->data[s->sp] = val;
+  printf("Stack sp %d : ",s->sp); simple_print(val); printf("\n");
+  s->sp++;
+  if ( s->sp >= s->size) {
+    res = stack_grow(s);
+  }
+  return res;
+}
+```
+
+```
+  case PROGN_REST: {
+    VALUE rest;
+    pop_u32(ctx->K, &rest);
+    if (type_of(rest) == VAL_TYPE_SYMBOL && rest == NIL) {
+      res = arg;
+      *app_cont = true;
+      return res;
+    }
+
+    if (symrepr_is_error(rest)) {
+      res = rest;
+      *done = true;
+      return res;
+    }
+    // allow for tail recursion
+    if (type_of(cdr(rest)) == VAL_TYPE_SYMBOL &&
+	cdr(rest) == NIL) {
+      ctx->curr_exp = car(rest);
+      return NONSENSE;
+    }
+    // Else create a continuation 
+    push_u32_2(ctx->K, cdr(rest), enc_u(PROGN_REST));
+    ctx->curr_exp = car(rest);
+    return NONSENSE;
+  }
+```
+
+
+
+
+
+
+```
+  case PROGN_REST: {
+    VALUE rest;
+    pop_u32(ctx->K, &rest);
+    if (type_of(rest) == VAL_TYPE_SYMBOL && rest == NIL) {
+      res = arg;
+      *app_cont = true;
+      return res;
+    }
+
+    if (symrepr_is_error(rest)) {
+      res = rest;
+      *done = true;
+      return res;
+    }
+    // allow for tail recursion
+    if (type_of(cdr(rest)) == VAL_TYPE_SYMBOL &&
+	cdr(rest) == NIL) {
+      ctx->curr_exp = car(rest);
+      return NONSENSE;
+    }
+    // Else create a continuation 
+    push_u32_2(ctx->K, cdr(rest), enc_u(PROGN_REST));
+    ctx->curr_exp = car(rest);
+    return NONSENSE;
+  }
+```
+
 
 ___
 
