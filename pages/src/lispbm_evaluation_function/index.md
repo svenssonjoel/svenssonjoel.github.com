@@ -225,6 +225,12 @@ void eval_cps_del(void) {
 
 ## Entrypoint Function
 
+The function that is called from the REPL is called `eval_cps_program`
+and takes a list of expressions as argument. This function currently
+modifies the global evaluation context and then loops over the list of
+expressions and evaluates them from first to last. the result of the
+last expression is returned to the caller. 
+
 ```
 VALUE eval_cps_program(VALUE lisp) {
 
@@ -248,6 +254,9 @@ VALUE eval_cps_program(VALUE lisp) {
   return res;
 }
 ``` 
+
+So now all the surrounding functions are covered, somewhat, and we can
+go in depth with the evaluation function, `run_eval`.
 
 ## Evaluation Loop
 
