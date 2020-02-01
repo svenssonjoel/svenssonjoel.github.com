@@ -1286,7 +1286,7 @@ Stack sp 3 : print
 ```
 
 Here execution was stopped after a short while with ctrl+c and we
-can se that the stack pointer is at most 11 and also that we have
+can see that the stack pointer is at most 11 and also that we have
 incremented `x` to 3160 by now. Looks a lot better! 
 
 ___
