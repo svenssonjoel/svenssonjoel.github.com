@@ -34,10 +34,20 @@ they are addressed.
 
 After writing down the [overview of
 lispBM](../lispbm_current_status/index.html), some possible
-simplifications was spotted. Those simplifications (and improvements)
-have been applied here. While applying those simplification I fell
-into the trap of not honoring property 1. But the problem was possible
-to fix. I will point out this problematic example later in this text.
+simplifications was spotted. During this refactoring I also noticed a
+case of violating property 1. The code that evaluates the `PROGN`
+functionality was written in a way that led to ever-growing memory use
+if involved in a infinite recursion. For example:
+
+```
+(define f
+  (lambda (x)
+    (progn (print "hello")
+	   (f (+ x 1)))))
+````
+
+But the problem was possible to fix. I will point out where I fell in
+the trap later.
 
 Property 1, is tackled by implementing the evaluator in continuation
 passing style and as a while loop with explicitly managed state. For
@@ -260,6 +270,7 @@ go in depth with the evaluation function, `run_eval`.
 
 ## Evaluation Loop
 
+The run eval function starts out with pushing the `DONE` continuation onto the stack and defines some state needed throughout the evaluation:
 ```
 VALUE run_eval(eval_context_t *ctx){
 
@@ -271,68 +282,146 @@ VALUE run_eval(eval_context_t *ctx){
   bool app_cont = false;
 
   uint32_t non_gc = 0;
+```
 
+1. The `r` value is what will hold the result of evaluating the
+expression. `r` also holds intermediate results throughout evaluation.
+
+2. The `done` flag signals that evaluation is finished, either
+successfully or ended in an error.
+
+3. The `perform_gc` flag, if set, indicates that this iteration of the
+evaluation loop will be dedicated to garbage collection.
+
+4. The `app_cont` flag signals that a continuation should be applied
+at this point.
+
+5. There is a counter `non_gc` that counts how many time the loop
+iterated without the garbage collector running. So if `perform_gc` is
+set and the counter is 0, we are really entirely out of memory. I
+think the counter should be replaced with a boolean flag that
+indicates if GC was run in the iteration before. 
+
+After defining up these bookkeeping variables, the loop that runs
+`while (!done)` is started.
+
+```
   while (!done) {
     
 #ifdef VISUALIZE_HEAP
     heap_vis_gen_image();
 #endif
+```
 
+The `heap_vis` is a module of lispBM that can be used for debugging
+purposes. Every time `heap_vis_gen_image()` is caled a image is
+generated that has one pixel per cons-cell on the heap. Different
+colors in this image represent things like *free*, *marked* and *in
+use*.
+
+Next there is a check if this iteration will include a round of garbage collection.
+``` 
     if (perform_gc) {
       if (non_gc == 0) {
-	done = true;
-	r = enc_sym(symrepr_merror());
-	continue;
+        done = true;
+        r = enc_sym(symrepr_merror());
+        continue;
       }
       non_gc = 0;
       heap_perform_gc_aux(eval_cps_global_env,
-			  ctx->curr_env,
-			  ctx->curr_exp,
-			  ctx->program,
-			  r,
-			  ctx->K->data,
-			  ctx->K->sp);
+                          ctx->curr_env,
+                          ctx->curr_exp,
+                          ctx->program,
+                          r,
+                          ctx->K->data,
+                          ctx->K->sp);
       perform_gc = false;
     } else {
       non_gc ++;
     }
+```
 
+If `perform_gc` is set, and we are not in the problematic case when gc
+was run last iteration, a call to `heap_perform_gc_aux` will
+happen. The arguments to this functions are the things that the mark
+phase should mark as being in use. This involves the continuation
+stack! The continuation stack can hold pointers to heap structures
+that are needed in the future and that are not pointed to by any
+environment. 
+
+
+If the `app_cont` flag is set, the execution path goes into a function
+called `apply_contiuation` that takes all the status flags as well as
+the current intermediate result `r` as input. The `apply_continuation`
+function will pop the top off from the stack and use the value stored
+there to decide what continuation (from the list of defined
+continuations) to apply. The `r` value is given to this continuation
+but it may also pop additional arguments from the stack.
+
+```
     if (app_cont) {
       r = apply_continuation(ctx, r, &done, &perform_gc, &app_cont);
       continue;
     }
+```     
 
+Now it is time for the big `switch` statement that evaluates each of
+the different language constructs. The value `head` is used later when
+the current expression is a list, depending on what the head of that
+list is evaluation will take different paths. The `value` variable is
+a temporary used through out. 
+
+```
     VALUE head;
     VALUE value = enc_sym(symrepr_eerror());
 
     switch (type_of(ctx->curr_exp)) {
+```
 
+The first case deals with symbols. When a symbol is evaluated it is
+looked up in the environment, local and global. A symbol can, however,
+also refer to a fundamental function (such as `+`) or to an extension
+(user provided c function). If the symbol is not found in any
+environment and does not represent a fundamental or extension an
+evaluation error is returned and the `done` flag is set. 
+
+```
     case VAL_TYPE_SYMBOL:
 
       value = env_lookup(ctx->curr_exp, ctx->curr_env);
       if (type_of(value) == VAL_TYPE_SYMBOL &&
-	  dec_sym(value) == symrepr_not_found()) {
+          dec_sym(value) == symrepr_not_found()) {
+	  
+        value = env_lookup(ctx->curr_exp, eval_cps_global_env); 
 
-	value = env_lookup(ctx->curr_exp, eval_cps_global_env); 
+        if (type_of(value) == VAL_TYPE_SYMBOL &&
+            dec_sym(value) == symrepr_not_found()) {
 
-	if (type_of(value) == VAL_TYPE_SYMBOL &&
-	    dec_sym(value) == symrepr_not_found()) {
-
-	  if (is_fundamental(ctx->curr_exp)) {
-	    value = ctx->curr_exp;
-	  } else if (extensions_lookup(dec_sym(ctx->curr_exp)) == NULL) {
-	    r = enc_sym(symrepr_eerror());
-	    done = true;
-	    continue;
-	  } else {
-	    value = ctx->curr_exp; // symbol representing extension
-	                           // evaluates to itself at this stage.
-	  }
-	}
+          if (is_fundamental(ctx->curr_exp)) {
+            value = ctx->curr_exp;
+          } else if (extensions_lookup(dec_sym(ctx->curr_exp)) == NULL) {
+            r = enc_sym(symrepr_eerror());
+            done = true;
+            continue;
+          } else {
+            value = ctx->curr_exp; // symbol representing extension
+                                   // evaluates to itself at this stage.
+          }
+        }
       }
       app_cont = true;
       r = value;
       break;
+```
+
+Next the switch statement deals with the other basic types, numbers
+and arrays, that don't need further evaluation but rather just that
+they will be passed as argument to some continuation. This is done by
+setting the `app_cont` flag and setting `r` to the what we want passed
+to the continuation as argument.  
+
+
+```
     case PTR_TYPE_BOXED_F:
     case PTR_TYPE_BOXED_U:
     case PTR_TYPE_BOXED_I:
@@ -343,152 +432,174 @@ VALUE run_eval(eval_context_t *ctx){
       app_cont = true;
       r = ctx->curr_exp;
       break;
+```
+
+The next two cases `ref` and `stream` are not implemented and are
+currently just vague ideas.
+
+
+```
     case PTR_TYPE_REF:
     case PTR_TYPE_STREAM:
       r = enc_sym(symrepr_eerror());
       done = true;
       break;
+```
+
+So, if the expression is not a symbol or other basic type, it should
+be a list. The next case checks if the expression is a list and then
+depending on what the head of that list is the evaluation takes
+different paths.
+
+```
     case PTR_TYPE_CONS:
       head = car(ctx->curr_exp);
+```
 
+The head of the list is stored in the `head` variable for easy access.
+
+
+```
       if (type_of(head) == VAL_TYPE_SYMBOL) {
 
-	// Special form: QUOTE
-	if (dec_sym(head) == symrepr_quote()) {
-	  r = car(cdr(ctx->curr_exp));
-	  app_cont = true;
-	  continue;
-	}
+        // Special form: QUOTE
+        if (dec_sym(head) == symrepr_quote()) {
+          r = car(cdr(ctx->curr_exp));
+          app_cont = true;
+          continue;
+        }
+``` 
 
-	// Special form: DEFINE
-	if (dec_sym(head) == symrepr_define()) {
-	  VALUE key = car(cdr(ctx->curr_exp));
-	  VALUE val_exp = car(cdr(cdr(ctx->curr_exp)));
+```
+        // Special form: DEFINE
+        if (dec_sym(head) == symrepr_define()) {
+          VALUE key = car(cdr(ctx->curr_exp));
+          VALUE val_exp = car(cdr(cdr(ctx->curr_exp)));
 
-	  if (type_of(key) != VAL_TYPE_SYMBOL ||
-	      key == NIL) {
-	    done = true;
-	    r =  enc_sym(symrepr_eerror());
-	    continue;
-	  }
+          if (type_of(key) != VAL_TYPE_SYMBOL ||
+              key == NIL) {
+            done = true;
+            r =  enc_sym(symrepr_eerror());
+            continue;
+          }
 
-	  push_u32_2(ctx->K, key, enc_u(SET_GLOBAL_ENV));
-	  ctx->curr_exp = val_exp;
-	  continue;
-	}
+          push_u32_2(ctx->K, key, enc_u(SET_GLOBAL_ENV));
+          ctx->curr_exp = val_exp;
+          continue;
+        }
 
-	// Special form: PROGN
-	if (dec_sym(head) == symrepr_progn()) {
-	  VALUE exps = cdr(ctx->curr_exp);
+        // Special form: PROGN
+        if (dec_sym(head) == symrepr_progn()) {
+          VALUE exps = cdr(ctx->curr_exp);
 
-	  if (type_of(exps) == VAL_TYPE_SYMBOL && exps == NIL) {
-	    r = enc_sym(symrepr_nil());
-	    app_cont = true;
-	    continue;
-	  }
+          if (type_of(exps) == VAL_TYPE_SYMBOL && exps == NIL) {
+            r = enc_sym(symrepr_nil());
+            app_cont = true;
+            continue;
+          }
 
-	  if (symrepr_is_error(exps)) {
-	    r = exps;
-	    done = true;
-	    continue;
-	  }
-	  push_u32_2(ctx->K, cdr(exps), enc_u(PROGN_REST));
-	  ctx->curr_exp = car(exps);
-	  continue;
-	}
+          if (symrepr_is_error(exps)) {
+            r = exps;
+            done = true;
+            continue;
+          }
+          push_u32_2(ctx->K, cdr(exps), enc_u(PROGN_REST));
+          ctx->curr_exp = car(exps);
+          continue;
+        }
 
-	// Special form: LAMBDA
-	if (dec_sym(head) == symrepr_lambda()) {
+        // Special form: LAMBDA
+        if (dec_sym(head) == symrepr_lambda()) {
 
-	  VALUE env_cpy = env_copy_shallow(ctx->curr_env);
+          VALUE env_cpy = env_copy_shallow(ctx->curr_env);
 	  
-	  if (type_of(env_cpy) == VAL_TYPE_SYMBOL &&
-	      dec_sym(env_cpy) == symrepr_merror()) {
-	    perform_gc = true;
-	    app_cont = false;
-	    continue; // perform gc and resume evaluation at same expression
-	  }
+          if (type_of(env_cpy) == VAL_TYPE_SYMBOL &&
+              dec_sym(env_cpy) == symrepr_merror()) {
+             perform_gc = true;
+             app_cont = false;
+             continue; // perform gc and resume evaluation at same expression
+          }
 
-	  VALUE env_end;
-	  VALUE body;
-	  VALUE params;
-	  VALUE closure;
-	  env_end = cons(env_cpy,NIL);
-	  body    = cons(car(cdr(cdr(ctx->curr_exp))), env_end);
-	  params  = cons(car(cdr(ctx->curr_exp)), body);
-	  closure = cons(enc_sym(symrepr_closure()), params);
+          VALUE env_end;
+          VALUE body;
+          VALUE params;
+          VALUE closure;
+          env_end = cons(env_cpy,NIL);
+          body    = cons(car(cdr(cdr(ctx->curr_exp))), env_end);
+          params  = cons(car(cdr(ctx->curr_exp)), body);
+          closure = cons(enc_sym(symrepr_closure()), params);
 
-	  if (type_of(env_end) == VAL_TYPE_SYMBOL ||
-	      type_of(body)    == VAL_TYPE_SYMBOL ||
-	      type_of(params)  == VAL_TYPE_SYMBOL ||
-	      type_of(closure) == VAL_TYPE_SYMBOL) {
-	    perform_gc = true;
-	    app_cont = false;
-	    continue; // perform gc and resume evaluation at same expression
-	  }
+          if (type_of(env_end) == VAL_TYPE_SYMBOL ||
+              type_of(body)    == VAL_TYPE_SYMBOL ||
+              type_of(params)  == VAL_TYPE_SYMBOL ||
+              type_of(closure) == VAL_TYPE_SYMBOL) {
+            perform_gc = true;
+            app_cont = false;
+            continue; // perform gc and resume evaluation at same expression
+          }
 
-	  app_cont = true;
-	  r = closure;
-	  continue;
-	}
+          app_cont = true;
+          r = closure;
+          continue;
+        }
 
-	// Special form: IF
-	if (dec_sym(head) == symrepr_if()) {
+        // Special form: IF
+        if (dec_sym(head) == symrepr_if()) {
 
-	  push_u32_3(ctx->K,
-		     car(cdr(cdr(cdr(ctx->curr_exp)))), // Else branch
-		     car(cdr(cdr(ctx->curr_exp))),      // Then branch
-		     enc_u(IF));
-	  ctx->curr_exp = car(cdr(ctx->curr_exp));
-	  continue;
-	}
-	// Special form: LET
-	if (dec_sym(head) == symrepr_let()) {
-	  VALUE orig_env = ctx->curr_env;
-	  VALUE binds    = car(cdr(ctx->curr_exp)); // key value pairs.
-	  VALUE exp      = car(cdr(cdr(ctx->curr_exp))); // exp to evaluate in the new env.
+          push_u32_3(ctx->K,
+                     car(cdr(cdr(cdr(ctx->curr_exp)))), // Else branch
+                     car(cdr(cdr(ctx->curr_exp))),      // Then branch
+                     enc_u(IF));
+          ctx->curr_exp = car(cdr(ctx->curr_exp));
+          continue;
+        }
+        // Special form: LET
+        if (dec_sym(head) == symrepr_let()) {
+          VALUE orig_env = ctx->curr_env;
+          VALUE binds    = car(cdr(ctx->curr_exp)); // key value pairs.
+          VALUE exp      = car(cdr(cdr(ctx->curr_exp))); // exp to evaluate in the new env.
 
-	  VALUE curr = binds;
-	  VALUE new_env = orig_env;
+          VALUE curr = binds;
+          VALUE new_env = orig_env;
 
-	  if (type_of(binds) != PTR_TYPE_CONS) {
-	    // binds better be nil or there is a programmer error.
-	    ctx->curr_exp = exp;
-	    continue;
-	  }
+          if (type_of(binds) != PTR_TYPE_CONS) {
+            // binds better be nil or there is a programmer error.
+            ctx->curr_exp = exp;
+            continue;
+          }
 
-	  // Implements letrec by "preallocating" the key parts
-	  while (type_of(curr) == PTR_TYPE_CONS) {
-	    VALUE key = car(car(curr));
-	    VALUE val = NIL;
-	    VALUE binding;
-	    binding = cons(key, val);
-	    new_env = cons(binding, new_env);
+          // Implements letrec by "preallocating" the key parts
+          while (type_of(curr) == PTR_TYPE_CONS) {
+            VALUE key = car(car(curr));
+            VALUE val = NIL;
+            VALUE binding;
+            binding = cons(key, val);
+            new_env = cons(binding, new_env);
 
-	    if (type_of(binding) == VAL_TYPE_SYMBOL ||
-		type_of(new_env) == VAL_TYPE_SYMBOL) {
-	      perform_gc = true;
-	      app_cont = false;
-	      continue;
-	    }
-	    curr = cdr(curr);
-	  }
+            if (type_of(binding) == VAL_TYPE_SYMBOL ||
+                type_of(new_env) == VAL_TYPE_SYMBOL) {
+              perform_gc = true;
+              app_cont = false;
+              continue;
+            }
+            curr = cdr(curr);
+          }
 
-	  VALUE key0 = car(car(binds));
-	  VALUE val0_exp = car(cdr(car(binds)));
+          VALUE key0 = car(car(binds));
+          VALUE val0_exp = car(cdr(car(binds)));
 
-	  push_u32_5(ctx->K, exp, cdr(binds), new_env,
-		     key0, enc_u(BIND_TO_KEY_REST));
-	  ctx->curr_exp = val0_exp;
-	  ctx->curr_env = new_env;
-	  continue;
-	}
+          push_u32_5(ctx->K, exp, cdr(binds), new_env,
+                     key0, enc_u(BIND_TO_KEY_REST));
+          ctx->curr_exp = val0_exp;
+          ctx->curr_env = new_env;
+          continue;
+        }
       } // If head is symbol
       push_u32_4(ctx->K,
-		 ctx->curr_env,
-		 enc_u(0),
-		 cdr(ctx->curr_exp),
-		 enc_u(APPLICATION_ARGS));
+                 ctx->curr_env,
+                 enc_u(0),
+                 cdr(ctx->curr_exp),
+                 enc_u(APPLICATION_ARGS));
 
       ctx->curr_exp = head; // evaluate the function
       continue;
@@ -737,23 +848,11 @@ VALUE cont_set_global_env(eval_context_t *ctx, VALUE val, bool *done, bool *perf
 ## When Property 1 is Not Honored
 
 
-
 ```
 int push_u32(stack *s, UINT val) {
   int res = 1;
   s->data[s->sp] = val;
-  s->sp++;
-  if ( s->sp >= s->size) {
-    res = stack_grow(s);
-  }
-  return res;
-}
-```
-
-```
-int push_u32(stack *s, UINT val) {
-  int res = 1;
-  s->data[s->sp] = val;
+  /* Added printf */
   printf("Stack sp %d : ",s->sp); simple_print(val); printf("\n");
   s->sp++;
   if ( s->sp >= s->size) {
