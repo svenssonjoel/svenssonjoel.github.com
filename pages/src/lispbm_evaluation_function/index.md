@@ -34,7 +34,7 @@ they are addressed.
 
 After writing down the [overview of
 lispBM](../lispbm_current_status/index.html), some possible
-simplifications was spotted. During this refactoring I also noticed a
+simplifications was spotted. While refactoring these I also noticed a
 case of violating property 1. The code that evaluates the `PROGN`
 functionality was written in a way that led to ever-growing memory use
 if involved in a infinite recursion. For example:
@@ -87,6 +87,15 @@ contain information about what to do with that number. The
 `perform_gc` flag is set (as hinted above), when heap is full and we
 cannot proceed unless gc is executed. 
 
+## Often Used Dependencies
+
+There a couple of often used functions throughout the `eval_cps` code
+that comes from other parts of lispBM. Many of these are called
+`enc_X` where `X` can be something like `sym`, `i`, `u` and so
+on. These functions encode values from *the C world* into lispBM
+`VALUE`s, for example `enc_i' turns a C integer into a lispBM `VALUE`
+representing a 28Bit integer. Similarly there are functions called
+`dec_X` that transform values in the other direction.
 
 ## Global Data and Some Smaller Functions
 
@@ -108,21 +117,21 @@ most of the lispBM header files are included.
 
 Below are the new set of continuation functions (after changes applied
 since [the earlier text on
-lispBM](../lispbm_current_status/index.html)). There are now only 8
+lispBM](../lispbm_current_status/index.html)). There are now only 7
 continuation functions instead of 9. The difference is that before
 there was the three continuations `FUNCTION`, `FUNCTION_APP` and
 `ARG_LIST` that are now replaced by just `APPLICATION` and
-`APPLICATION_ARGS`. 
+`APPLICATION_ARGS`. There was also one continuation function that was
+nolonger used at all and could be dropped.
 
 ``` 
 #define DONE              1
 #define SET_GLOBAL_ENV    2
 #define BIND_TO_KEY_REST  3
 #define IF                4
-#define EVAL              5
-#define PROGN_REST        6
-#define APPLICATION       7
-#define APPLICATION_ARGS  8
+#define PROGN_REST        5
+#define APPLICATION       6
+#define APPLICATION_ARGS  7
 ```
 
 There is a little bit of global state maintained by the evaluator. It
@@ -470,6 +479,18 @@ The head of the list is stored in the `head` variable for easy access.
         }
 ``` 
 
+The `QUOTE` case is easy. It corresponds to an expression such as for
+example `'(+ 1 2)`, so `r` is set to `(+ 1 2)` and then the
+continuation is applied.
+
+
+The `define` form takes two arguments, a symbol and an expression. The
+expression is evaluated and then the result of that evaluation is
+stored in a mapping from the symbol to the value in the
+environment. This will be the first case where a continuation is
+created. This function also performs a check to see that the
+programmer is not rebinding nil. 
+
 ```
         // Special form: DEFINE
         if (dec_sym(head) == symrepr_define()) {
@@ -487,7 +508,27 @@ The head of the list is stored in the `head` variable for easy access.
           ctx->curr_exp = val_exp;
           continue;
         }
+```
 
+The `key` and `val_exp` variables are set to the arguments to
+`define`. The at the end the `key` and the continuation
+`SET_GLOBAL_ENV` are pushed to the continuation stack. The current
+expression is set to `val_exp`. This means that in the next iteration
+the evaluation loop will evaluate the `val_exp`. When evaluating
+`val_exp` is done, the continuation will be called with the result of
+that evaluation and an additional argument, the `key`, that is already
+on the stack. So when entering into the `SET_GLOBAL_ENV` continuation
+all the data is available to create the global binding.
+
+
+The `progn` takes a sequence of expressions as arguments that are all
+supposed to be evaluated in turn, from the first to the last. The
+result of evaluating the last expression in the sequence is the result
+of the whole thing. There is a check for an empty sequence of
+expressions which results in `nil` otherwise a continuation is created
+in this case as well.
+
+```
         // Special form: PROGN
         if (dec_sym(head) == symrepr_progn()) {
           VALUE exps = cdr(ctx->curr_exp);
@@ -507,7 +548,24 @@ The head of the list is stored in the `head` variable for easy access.
           ctx->curr_exp = car(exps);
           continue;
         }
+```
 
+The `progn` case sets up for the continuation by setting the current
+expression to the head of the sequence of expressions. the *pointer
+to* the rest of the list is pushed onto the stack as well as the
+`PROGN_REST` continuation. The `PROGN_REST` continuation thus has two
+arguments to work with once it gets called. The result of the
+previouvsly evaluated expression (head) and the rest of the
+sequence. Later in this text we will see exactly what the continuation
+functions does in all of these cases.
+
+
+The `lambda` case does not create a continuation but it is interesting
+for another reason.  This is the first example of a case that
+allocates heap memory and thus must be pausable and restartable in the
+case that there is no free heap space. 
+
+```
         // Special form: LAMBDA
         if (dec_sym(head) == symrepr_lambda()) {
 
@@ -542,7 +600,32 @@ The head of the list is stored in the `head` variable for easy access.
           r = closure;
           continue;
         }
+```
 
+The `lambda` starts out by doing a shallow copy of the local
+environment, this means that skeleton of the environment is traversed
+and copied but the copy will point to the same mappings as the
+original. So only enough new cons-cells are used to for the
+skeleton-structure of the environment, none for the data itself. This
+consing can fail with an *memory error*, `symrepr_merror()`, symbol as
+result in which case we are out of heap. In this case the `perform_gc`
+flag is set and `app_cont` is cleared. An important detail is that it
+does not alter the current expression which means that once the
+evaluation starts up again the current expression will still be the
+same lambda case. Thus evaluation will resume. There are more
+complicated cases of this where changes to the stack have been made
+and we have to restore this to proper state before continuing, this
+will appear later.
+
+After copying the environment, a `closure` is created from the
+environment copy and the contents of the `lambda`. This again uses
+cons and allocates heap space and is followed by a similar check for a
+memory error. If it all works out though, `app_cont` is set and `r` is
+set to the `closure` and evaluation continues. 
+
+
+Now the `if` case: 
+```
         // Special form: IF
         if (dec_sym(head) == symrepr_if()) {
 
@@ -553,6 +636,22 @@ The head of the list is stored in the `head` variable for easy access.
           ctx->curr_exp = car(cdr(ctx->curr_exp));
           continue;
         }
+```
+
+The `if` case sets up for a continuation that takes the then and else
+branch expressions as arguments. Then the current expression is set to
+be the boolean expression that is used to select then or else. So once
+the boolean has been evaluated we will enter into the continuation
+that can then set up the system for either evaluating the then or the
+else branch.
+
+
+The `let` takes two arguments, a list of bindings to extend the local
+environment with and an expression to evaluate in the extended
+environment. So, to begin with these pieces are bound to variables
+`orig_env`, `binds` and `exp` for easy access.
+
+```
         // Special form: LET
         if (dec_sym(head) == symrepr_let()) {
           VALUE orig_env = ctx->curr_env;
@@ -594,6 +693,32 @@ The head of the list is stored in the `head` variable for easy access.
           ctx->curr_env = new_env;
           continue;
         }
+```
+
+The kind of `let` implemented here allows bindings defined early in
+the list of bindings to be used in the definition of the later
+ones. This is accomplished by a two phase approach where first the
+environment containing the bindings is created using just the keys
+(and mapping each of the keys to nil). Then the expressions whose
+results are to be bound to the keys are evaluated one after the other,
+in order, in this new environment. Once an expression is evaluated the
+mapping for that key (that currently is `nil`) is updated. Of course
+it is not possible to use a later binding in a currently evaluated
+expression as that binding would return 'nil` rather than what it is
+supposed to.
+
+So after setting up the environment with `key` - `nil` bindings, a
+continuation is created and the current expression is set to evaluate
+the first value to be bound.
+
+
+Now we have dealt with all special forms (but one) the application
+form. Once getting to this point we just assume that if the current
+expression is a list, then it is a function application. This may turn
+out to be wrong (as it may also be a programmer mistake) in which case
+evaluation results in an error.
+
+```
       } // If head is symbol
       push_u32_4(ctx->K,
                  ctx->curr_env,
@@ -603,6 +728,23 @@ The head of the list is stored in the `head` variable for easy access.
 
       ctx->curr_exp = head; // evaluate the function
       continue;
+```
+
+This case creates a continuation that needs to have access to the
+current environment, a counter `enc_u(0)` (to count arguments), the
+list of arguments `cdr(ctx->curr_exp)` and the continuation itself is
+called `APPLICATION_ARGS`. The current exoression is set to the head
+of the list. This will be evaluated next and will result in either a
+*function object* of some kind or an error. A function object could
+for example be a closure or a symbol pointing out a fundamental
+operation or an extension. 
+
+
+This concludes the evaluation function. The rest just checks for some
+serious erros and if the loop is exited `r` is returned as the result
+of evaluation.
+
+```
     default:
       // BUG No applicable case!
       done = true;
@@ -616,6 +758,16 @@ The head of the list is stored in the `head` variable for easy access.
 
 ## Continuation points and apply continuation
 
+So far there have been a number of examples of the creation of
+continuations but what happens when these are applied is still untold.
+The `apply_continuation` function, that takes care of this
+continuation applican, is about the same size as `run_eval` and really
+they interact at a quite deep level. `run_eval` calls
+`apply_continuation` and `apply_continuation` changes the evaluation
+context meaning it influences what the next iteration of the evaluation
+loop does.  
+
+
 ``` 
 VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *perform_gc, bool *app_cont){
 
@@ -625,19 +777,49 @@ VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *perfo
   VALUE res;
 
   *app_cont = false;
+```
 
+`apply_continuation` starts out by popping of the top of the stack
+that should contain one of the continuation function identifiers
+defined close to the top of this document. The rest of the function
+is, just like the evaluation loop, a large switch statement. 
+
+
+```
   switch(dec_u(k)) {
   case DONE:
     *done = true;
     return arg;
-  case EVAL:
-    ctx->curr_exp = arg;
-    return NONSENSE;
+```
+
+In case we have reached the `DONE` continuation, pushed onto the stack
+when entering `run_eval`, we are done, the `done` flag is set and the
+argument to the continuation `arg` is returned. `arg` corresponds to
+the variable `r` in the evaluator.
+
+```
   case SET_GLOBAL_ENV:
     res = cont_set_global_env(ctx, arg, done, perform_gc);
     if (!(*done)) 
       *app_cont = true;
     return res;
+```
+
+The `SET_GLOBAL_ENV` continuation is broken out into a separate
+function. I cannot really decide if I should break all of these cases
+out into functions or not. The `cont_set_blobal_env` function is shown
+further down.
+
+Now, the `PROGN` continuation is where a property one breaking mistake
+was made. Towards the end of the function there is a comment `// allow
+for tail recursion` right before a conditional that checks if the rest
+of the sequence of expressions is nil. If it is nil, we are currently
+in tail-call position and should not push anything to the stack that
+we have to potentially wait a long time before it is freed. Forgetting
+about this special case means a nil is pushed to the stack, only to be
+dealt with once the tail-call is handled. 
+
+```
   case PROGN_REST: {
     VALUE rest;
     pop_u32(ctx->K, &rest);
@@ -663,6 +845,33 @@ VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *perfo
     ctx->curr_exp = car(rest);
     return NONSENSE;
   }
+```
+
+The `PROGN` case sets up the head of the sequence of expressions to
+evaluated in the next iteration of the evaluation loop and pushes the
+rest of the sequence along with the same `PROGN_REST` continuation
+onto the stack.
+
+
+
+The `APPLICATION` case is a bit long and messy but really tricky
+compared to the other cases. It just gets a bit messy because there
+are a number of things that can be applied. There are `closure`s,
+`fundamental` operations and `extension`s and each of these get a
+special case in the `APPLICATION` continuation.
+
+When entering into the `APPLICATION` case, all the arguments, a
+counter and the function are present of the stack. in the case of
+`fundamental` or `extension` operations this knowledge is utilized and
+a pointer to the first argument on the stack is passed to the
+function.  When it comes to the closures however, the arguments are
+extracted from the stack and added to an augmented environment for the
+closures body to evaluate in.
+
+It is important that after running a `fundamental` or an `extension`
+the stack is cleared, or we will fall into the property 1 issue again.
+
+```
   case APPLICATION: { 
     VALUE count;
     pop_u32(ctx->K, &count);
@@ -755,6 +964,10 @@ VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *perfo
     *app_cont = true;
     return ext_res;
   }
+```
+
+The `APPLICATION_ARGS' continuation handles evaluation of the list of arguments to a function. 
+``` 
   case APPLICATION_ARGS: {
     VALUE count;
     VALUE env;
@@ -775,6 +988,27 @@ VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *perfo
     ctx->curr_env = env;
     return NONSENSE; 
   }
+```
+
+Here the current expression is set up to evaluare the head of the list
+of the rest of the arguments. A continuation is created for evaluating
+the rest of the aguments. When creating this continuation the
+number-of-arguments counter is incremented.
+
+Each time `APPLICATION_ARGS` is entered the previously evaluated
+argument (or the function in case of the first call to
+`APPLICATION_ARGS`) is pushed onto the stack. This means that the
+stack is now also the vehicle for transport of arguments to the
+functions. When the list of arguments have been fully evaluated, the
+stack will contain the function, all of the arguments and the counter
+value and a `APPLICATION` continuation is created. 
+
+
+The `BIND_TO_KEY_REST` continuation, that is created in the `let` case
+of the evaluation loop, takes care of evaluating all the expressions
+to be bound to variables in the local environment. 
+
+```
   case BIND_TO_KEY_REST:{
     VALUE key;
     VALUE env;
@@ -802,6 +1036,19 @@ VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *perfo
     ctx->curr_env = env;
     return NONSENSE;
   }
+```
+
+Each time `BIND_TO_KEY_REST` is called the environment is modified
+with the recently evaluated value. Once all bindings have been dealt
+with, the let body is set up to be evaluated withing the newly formed
+local environment.
+
+
+The `IF` continuation gets the result of evaluating the boolean
+condition as an argument. It then sets up for evaluation of either the
+then or the else branch in the evaluation loop.
+
+```
   case IF: {
     VALUE then_branch;
     VALUE else_branch;
@@ -815,6 +1062,13 @@ VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *perfo
     }
     return NONSENSE;
   }
+```
+
+
+Now, if we do reach the end of this switch, something is very wrong
+and an error is return and evaluation is aborted.
+
+```
   } // end switch
   *done = true;
   return enc_sym(symrepr_eerror());
