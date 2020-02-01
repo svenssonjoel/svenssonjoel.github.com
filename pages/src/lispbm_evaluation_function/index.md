@@ -736,6 +736,8 @@ VALUE cont_set_global_env(eval_context_t *ctx, VALUE val, bool *done, bool *perf
 
 ## When Property 1 is Not Honored
 
+
+
 ```
 int push_u32(stack *s, UINT val) {
   int res = 1;
@@ -790,10 +792,6 @@ int push_u32(stack *s, UINT val) {
 ```
 
 
-
-
-
-
 ```
   case PROGN_REST: {
     VALUE rest;
@@ -820,6 +818,48 @@ int push_u32(stack *s, UINT val) {
     ctx->curr_exp = car(rest);
     return NONSENSE;
   }
+```
+
+
+```
+Lisp REPL started!
+Type :quit to exit.
+     :info for statistics.
+# (define f (lambda (x) (progn (print "hello") (f (+ x 1)))))
+Stack sp 0 : 1
+Stack sp 1 : f
+Stack sp 2 : 2
+> t
+# (f 0)
+Stack sp 0 : 1
+Stack sp 1 : nil
+Stack sp 2 : 0
+Stack sp 3 : (0 nil)
+Stack sp 4 : 8
+Stack sp 1 : (closure ((x nil) ((progn ((print ("hello" nil)) ((f ((+ (x (1 nil))) nil)) nil))) (nil nil))))
+Stack sp 2 : nil
+Stack sp 3 : 1
+Stack sp 4 : nil
+Stack sp 5 : 8
+Stack sp 2 : 0
+Stack sp 3 : 1
+Stack sp 4 : 7
+Stack sp 1 : ((f ((+ (x (1 nil))) nil)) nil)
+Stack sp 2 : 6
+Stack sp 3 : ((x 0) nil)
+Stack sp 4 : 0
+...
+Stack sp 98 : 48
+Stack sp 99 : 1
+Stack sp 100 : 7
+Stack sp 97 : ((f ((+ (x (1 nil))) nil)) nil)
+Stack sp 98 : 6
+Stack sp 99 : ((x 48) nil)
+Stack sp 100 : 0
+Stack sp 101 : ("hello" nil)
+Stack sp 102 : 8
+Segmentation fault
+
 ```
 
 
