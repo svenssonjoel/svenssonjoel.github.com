@@ -93,7 +93,7 @@ There a couple of often used functions throughout the `eval_cps` code
 that comes from other parts of lispBM. Many of these are called
 `enc_X` where `X` can be something like `sym`, `i`, `u` and so
 on. These functions encode values from *the C world* into lispBM
-`VALUE`s, for example `enc_i' turns a C integer into a lispBM `VALUE`
+`VALUE`s, for example `enc_i` turns a C integer into a lispBM `VALUE`
 representing a 28Bit integer. Similarly there are functions called
 `dec_X` that transform values in the other direction.
 
