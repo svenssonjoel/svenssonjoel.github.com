@@ -1076,6 +1076,17 @@ and an error is return and evaluation is aborted.
 
 ```
 
+Back to that broken out function that sets the global environment. It
+does the work needed for the `SET_GLOBAL_ENV` continuation. The `key`
+to use is on the stack and the value is passed as argument to the
+continuation. Not we set up a new environment which is the `key` -
+`val` pair consed onto the old global environment. This consing (that
+is done inside of the `env_set` function) can fail as usual and we
+need to be able to be able to pause the computation and perform
+garbage collection. However, if all works out fine, the global
+variable `eval_cps_global_env` is updated with the value of the newly
+created one.
+
 ```
 VALUE cont_set_global_env(eval_context_t *ctx, VALUE val, bool *done, bool *perform_gc){
 
@@ -1101,6 +1112,13 @@ VALUE cont_set_global_env(eval_context_t *ctx, VALUE val, bool *done, bool *perf
 
 ## When Property 1 is Not Honored
 
+In order to see what happens when we fail to honor property 1, the
+`push_u32` function that is used in all functions that push onto the
+stack is augmented with a print statement. This print statement prints
+the stack pointer `sp` and the value that is being pushed onto the
+stack. This experiment is run with a stack that does not allow
+growing, this is checked internally in the function `stack_grow` and
+it will not reallocate the stack if this flag is set.
 
 ```
 int push_u32(stack *s, UINT val) {
@@ -1116,34 +1134,9 @@ int push_u32(stack *s, UINT val) {
 }
 ```
 
-```
-  case PROGN_REST: {
-    VALUE rest;
-    pop_u32(ctx->K, &rest);
-    if (type_of(rest) == VAL_TYPE_SYMBOL && rest == NIL) {
-      res = arg;
-      *app_cont = true;
-      return res;
-    }
-
-    if (symrepr_is_error(rest)) {
-      res = rest;
-      *done = true;
-      return res;
-    }
-    // allow for tail recursion
-    if (type_of(cdr(rest)) == VAL_TYPE_SYMBOL &&
-	cdr(rest) == NIL) {
-      ctx->curr_exp = car(rest);
-      return NONSENSE;
-    }
-    // Else create a continuation 
-    push_u32_2(ctx->K, cdr(rest), enc_u(PROGN_REST));
-    ctx->curr_exp = car(rest);
-    return NONSENSE;
-  }
-```
-
+The `PROGN_REST` continuation is a good target to introduce this error
+in.  Below is what it looks like with the code that makes it `//allow
+for tail recursion`.
 
 ```
   case PROGN_REST: {
@@ -1172,7 +1165,40 @@ int push_u32(stack *s, UINT val) {
     return NONSENSE;
   }
 ```
+So let's modify the code by removing that little block. Now it looks as follows. 
 
+```
+  case PROGN_REST: {
+    VALUE rest;
+    pop_u32(ctx->K, &rest);
+    if (type_of(rest) == VAL_TYPE_SYMBOL && rest == NIL) {
+      res = arg;
+      *app_cont = true;
+      return res;
+    }
+
+    if (symrepr_is_error(rest)) {
+      res = rest;
+      *done = true;
+      return res;
+    }
+    // Else create a continuation 
+    push_u32_2(ctx->K, cdr(rest), enc_u(PROGN_REST));
+    ctx->curr_exp = car(rest);
+    return NONSENSE;
+  }
+```
+
+Now if we build lispBM and the REPL with this faulty code and enter the following program which is a tail-recursive run-forever program.
+
+```
+(define f
+  (lambda (x)
+    (progn (print "hello")
+	   (f (+ x 1)))))
+```
+
+The following is the result:
 
 ```
 Lisp REPL started!
@@ -1201,7 +1227,7 @@ Stack sp 1 : ((f ((+ (x (1 nil))) nil)) nil)
 Stack sp 2 : 6
 Stack sp 3 : ((x 0) nil)
 Stack sp 4 : 0
-...
+... 
 Stack sp 98 : 48
 Stack sp 99 : 1
 Stack sp 100 : 7
@@ -1215,6 +1241,53 @@ Segmentation fault
 
 ```
 
+The stack just keeps growing until it hits about 100 elements (the
+size of the stack) and a segfault is triggered. We can also see that `x`
+has reached the value 48, so 48 iterations of the infinite recursion
+have been executed and I guess we can conclude that the stack is
+growing with approximately 2 element per iteration.
+
+When the REPL runs with the fixed code and the same program it keeps runnning:
+
+```
+Stack sp 1 : (closure ((x nil) ((progn ((print ("hello" nil)) ((f ((+ (x (1 nil))) nil)) nil))) (nil nil))))
+Stack sp 2 : ((x 3159) nil)
+Stack sp 3 : 1
+Stack sp 4 : nil
+Stack sp 5 : 7
+Stack sp 6 : ((x 3159) nil)
+Stack sp 7 : 0
+Stack sp 8 : (x (1 nil))
+Stack sp 9 : 7
+Stack sp 6 : +
+Stack sp 7 : ((x 3159) nil)
+Stack sp 8 : 1
+Stack sp 9 : (1 nil)
+Stack sp 10 : 7
+Stack sp 7 : 3159
+Stack sp 8 : ((x 3159) nil)
+Stack sp 9 : 2
+Stack sp 10 : nil
+Stack sp 11 : 7
+Stack sp 8 : 1
+Stack sp 9 : 2
+Stack sp 10 : 6
+Stack sp 2 : 3160
+Stack sp 3 : 1
+Stack sp 4 : 6
+Stack sp 1 : ((f ((+ (x (1 nil))) nil)) nil)
+Stack sp 2 : 5
+Stack sp 3 : ((x 3160) nil)
+Stack sp 4 : 0
+Stack sp 5 : ("hello" nil)
+Stack sp 6 : 7
+Stack sp 3 : print
+
+```
+
+Here execution was stopped after a short while with ctrl+c and we
+can se that the stack pointer is at most 11 and also that we have
+incremented `x` to 3160 by now. Looks a lot better! 
 
 ___
 
