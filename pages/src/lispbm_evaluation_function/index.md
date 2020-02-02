@@ -17,8 +17,8 @@ The goal is that the evaluator should have a certain set of properties.
 possible without ever-growing memory consumption.
 
 2. At any point where heap space is allocated it must be possible to
-pause the computation, perform gc, and then pick up execution again
-where the computation was paused.
+pause the computation, perform *garbage collection* (gc), and then
+pick up execution again where the computation was paused.
 
 3. Evaluation should be correct in relation to environments (such that the
 body of a let is evaluated in an environment extended with the
@@ -122,7 +122,7 @@ continuation functions instead of 9. The difference is that before
 there was the three continuations `FUNCTION`, `FUNCTION_APP` and
 `ARG_LIST` that are now replaced by just `APPLICATION` and
 `APPLICATION_ARGS`. There was also one continuation function that was
-nolonger used at all and could be dropped.
+no longer used at all and could be dropped.
 
 ``` 
 #define DONE              1
@@ -242,7 +242,7 @@ void eval_cps_del(void) {
 }
 ```
 
-## Entrypoint Function
+## Entry-point Function
 
 The function that is called from the REPL is called `eval_cps_program`
 and takes a list of expressions as argument. This function currently
@@ -279,7 +279,10 @@ go in depth with the evaluation function, `run_eval`.
 
 ## Evaluation Loop
 
-The run eval function starts out with pushing the `DONE` continuation onto the stack and defines some state needed throughout the evaluation:
+The run eval function starts out with pushing the `DONE` continuation
+onto the stack and defines some state needed throughout the
+evaluation:
+
 ```
 VALUE run_eval(eval_context_t *ctx){
 
@@ -300,7 +303,7 @@ expression. `r` also holds intermediate results throughout evaluation.
 successfully or ended in an error.
 
 3. The `perform_gc` flag, if set, indicates that this iteration of the
-evaluation loop will be dedicated to garbage collection.
+evaluation loop will include a round of garbage collection.
 
 4. The `app_cont` flag signals that a continuation should be applied
 at this point.
@@ -322,13 +325,15 @@ After defining up these bookkeeping variables, the loop that runs
 #endif
 ```
 
-The `heap_vis` is a module of lispBM that can be used for debugging
-purposes. Every time `heap_vis_gen_image()` is caled a image is
+`heap_vis` is a module of lispBM that can be used for debugging
+purposes. Every time `heap_vis_gen_image()` is called an image is
 generated that has one pixel per cons-cell on the heap. Different
 colors in this image represent things like *free*, *marked* and *in
 use*.
 
-Next there is a check if this iteration will include a round of garbage collection.
+Next there is a check if this iteration will include a round of
+garbage collection.
+
 ``` 
     if (perform_gc) {
       if (non_gc == 0) {
@@ -360,7 +365,7 @@ environment.
 
 
 If the `app_cont` flag is set, the execution path goes into a function
-called `apply_contiuation` that takes all the status flags as well as
+called `apply_continuation` that takes all the status flags as well as
 the current intermediate result `r` as input. The `apply_continuation`
 function will pop the top off from the stack and use the value stored
 there to decide what continuation (from the list of defined
@@ -378,7 +383,7 @@ Now it is time for the big `switch` statement that evaluates each of
 the different language constructs. The value `head` is used later when
 the current expression is a list, depending on what the head of that
 list is evaluation will take different paths. The `value` variable is
-a temporary used through out. 
+a temporary used throughout. 
 
 ```
     VALUE head;
@@ -511,7 +516,7 @@ programmer is not rebinding nil.
 ```
 
 The `key` and `val_exp` variables are set to the arguments to
-`define`. The at the end the `key` and the continuation
+`define`. Then at the end, the `key` and the continuation
 `SET_GLOBAL_ENV` are pushed to the continuation stack. The current
 expression is set to `val_exp`. This means that in the next iteration
 the evaluation loop will evaluate the `val_exp`. When evaluating
@@ -555,7 +560,7 @@ expression to the head of the sequence of expressions. the *pointer
 to* the rest of the list is pushed onto the stack as well as the
 `PROGN_REST` continuation. The `PROGN_REST` continuation thus has two
 arguments to work with once it gets called. The result of the
-previouvsly evaluated expression (head) and the rest of the
+previously evaluated expression (head) and the rest of the
 sequence. Later in this text we will see exactly what the continuation
 functions does in all of these cases.
 
@@ -733,7 +738,7 @@ evaluation results in an error.
 This case creates a continuation that needs to have access to the
 current environment, a counter `enc_u(0)` (to count arguments), the
 list of arguments `cdr(ctx->curr_exp)` and the continuation itself is
-called `APPLICATION_ARGS`. The current exoression is set to the head
+called `APPLICATION_ARGS`. The current expression is set to the head
 of the list. This will be evaluated next and will result in either a
 *function object* of some kind or an error. A function object could
 for example be a closure or a symbol pointing out a fundamental
@@ -741,7 +746,7 @@ operation or an extension.
 
 
 This concludes the evaluation function. The rest just checks for some
-serious erros and if the loop is exited `r` is returned as the result
+serious errors and if the loop is exited `r` is returned as the result
 of evaluation.
 
 ```
@@ -761,7 +766,7 @@ of evaluation.
 So far there have been a number of examples of the creation of
 continuations but what happens when these are applied is still untold.
 The `apply_continuation` function, that takes care of this
-continuation applican, is about the same size as `run_eval` and really
+continuation application, is about the same size as `run_eval` and really
 they interact at a quite deep level. `run_eval` calls
 `apply_continuation` and `apply_continuation` changes the evaluation
 context meaning it influences what the next iteration of the evaluation
@@ -807,7 +812,7 @@ the variable `r` in the evaluator.
 
 The `SET_GLOBAL_ENV` continuation is broken out into a separate
 function. I cannot really decide if I should break all of these cases
-out into functions or not. The `cont_set_blobal_env` function is shown
+out into functions or not. The `cont_set_global_env` function is shown
 further down.
 
 Now, the `PROGN` continuation is where a property one breaking mistake
@@ -990,9 +995,9 @@ The `APPLICATION_ARGS' continuation handles evaluation of the list of arguments 
   }
 ```
 
-Here the current expression is set up to evaluare the head of the list
+Here the current expression is set up to evaluate the head of the list
 of the rest of the arguments. A continuation is created for evaluating
-the rest of the aguments. When creating this continuation the
+the rest of the arguments. When creating this continuation the
 number-of-arguments counter is incremented.
 
 Each time `APPLICATION_ARGS` is entered the previously evaluated
@@ -1040,7 +1045,7 @@ to be bound to variables in the local environment.
 
 Each time `BIND_TO_KEY_REST` is called the environment is modified
 with the recently evaluated value. Once all bindings have been dealt
-with, the let body is set up to be evaluated withing the newly formed
+with, the let body is set up to be evaluated within the newly formed
 local environment.
 
 
@@ -1247,7 +1252,7 @@ has reached the value 48, so 48 iterations of the infinite recursion
 have been executed and I guess we can conclude that the stack is
 growing with approximately 2 element per iteration.
 
-When the REPL runs with the fixed code and the same program it keeps runnning:
+When the REPL runs with the fixed code and the same program it keeps running:
 
 ```
 Stack sp 1 : (closure ((x nil) ((progn ((print ("hello" nil)) ((f ((+ (x (1 nil))) nil)) nil))) (nil nil))))
