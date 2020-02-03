@@ -1,0 +1,90 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Boxed Values</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Boxed Values in LispBM">
+  <meta name="keywords" content="Lisp MCU Boxed Values Heap Representation">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  body, html {
+    margin-left: 5%;
+    margin-right: 5%;
+    font-size: large;
+    zoom-level: 150%;
+  }
+
+  pre {
+    background-color: white;
+    word-wrap: normal;
+    overflow-x: auto;
+    white-space: pre;
+    margin-left: 2%;
+    margin-right: 2%;
+  }
+
+  img {
+    max-width:100%;
+    height:auto;
+  }
+  
+  .yt-link {
+    text-align: center;
+  }
+
+  .yt-link img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%
+  } 
+
+} 
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="boxed-values">Boxed Values</h1>
+<p>LispBM can encode values of 4 different types into the <code>car</code> or <code>cdr</code> of a cons-cell. How this works can be found in the earler <a href="../lispbm_current_status/index.html">walkthrough of lispBM</a>. The 4 types that can be encoded are, <code>symbol</code>, <code>character</code>, <code>integer</code> and <code>unsigned integer</code>. All of these types are 28Bit.</p>
+<p>To be able to express computations on 32Bit values, <code>integer</code>, <code>unsigned integer</code> and <code>float</code> as well as arrays, a set of <em>boxed</em> types were introduced.</p>
+<p>The boxed values, except arrays, are stored in cons cells but have an extra level of indirection in the form of a typed pointer. Since the lisp heap is small there are unused bits on the most significant side. The 4 most significant bits are used to encode different typed pointers. Currently the following kinds of typed pointers are in use:</p>
+<pre><code>#define PTR_TYPE_CONS        0x10000000u
+#define PTR_TYPE_BOXED_I     0x20000000u
+#define PTR_TYPE_BOXED_U     0x30000000u
+#define PTR_TYPE_BOXED_F     0x40000000u
+#define PTR_TYPE_ARRAY       0xD0000000u
+</code></pre>
+<p>As an example, a float value is encoded as a cons cell where all the 32Bits of the <code>car</code> are used for the floating point value. The <code>cdr</code> of this cell contail a special symbol <code>DEF_REPR_BOXED_F_TYPE</code>. The special symbols used in the <code>cdr</code> position of boxed values are listed below.</p>
+<pre><code>#define DEF_REPR_ARRAY_TYPE     0x20FFFF
+#define DEF_REPR_BOXED_I_TYPE   0x21FFFF
+#define DEF_REPR_BOXED_U_TYPE   0x22FFFF
+#define DEF_REPR_BOXED_F_TYPE   0x23FFFF
+</code></pre>
+<p>Only the <code>cdr</code> field of a cons cell hold a GC bit so there is no problem in using all 32Bits of the <code>car</code> if only it can be identified properly.</p>
+<p>Arrays are a special case and not fully implemented yet. Currently the only thing that is an array in lispBM is a text string. Most of the plumbing is there for implementing arrays of any other lispBM value type, it just needs to be hacked up. Arrays are encoded in a very similar way to boxed values, just that instead of a 32Bit value in the <code>car</code> slot there is an arbitrary pointer. The array storage itself is allocated using <code>malloc</code>. When garbage collection frees a cons cell with the special symbol <code>DEF_REPR_ARRAY_TYPE</code>, it also calls <code>free</code> on the pointer in the <code>car</code> position.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
