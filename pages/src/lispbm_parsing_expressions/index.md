@@ -2,28 +2,47 @@
 
 # How lispBM Parses Source Code
 
-The code for parsing [lispBM](../lispbm_current_status/index.html)
-source into heap representations is located in the files `tokpar.c`
-and `tokpar.h`.  The parser can handle parsing both plain text source
-code and compressed source data. This text will however just show the
-plain text case, saving compression and parsing of compressed code for
-later.
+I really didn't want to have to write a tokenizer and parser *by hand*
+for lispBM. Writing something like this is not what I feel entirely
+comfortable with. But, it is important to step out of the comfort zone
+now and then. 
+
+For a long time the lispBM parser was implemented using the
+[MPC](https://github.com/orangeduck/mpc) library. This worked very
+well and all I had to do was come up with a set of regular expressions
+that expressed what kind of syntactical objects the parser should be
+able to recognize and specify up how these were to be related to
+eachother in a tree structure (the parse tree). With that little bit
+of code in place MPC provided the parser that read source code
+returned a tree data structure. Then a little bit of code is needed to
+traverse the tree and generate the heap structure. On the
+microcontrollers that lispBM target, memory is a valuable resource and
+MPC was a bit hungry on that resource. So that is why this code came
+to be. 
+
+The code for parsing lispBM source into heap representations is
+located in the files `tokpar.c` and `tokpar.h`.  The parser can handle
+parsing both plain text source code and compressed source data. This
+text will however just show the plain text case, saving compression
+and parsing of compressed code for later.
 
 
-The parsing is done reading *tokens* from the source code. The tokens
-represent, in a way, complete syntactical *object*. in the lispBM
-tokenizer that means that for example `(` is one token and `3.14159`
-is another. That is a token can be one or more consecutive
-characters. The parser then uses this tokenizer functions to read out
-syntactical objects from the text and producing heap representation
-from them. 
+The parsing is done by reading *tokens* from the source code. The
+tokens represent, in a way, complete syntactical *objects*. In the
+lispBM tokenizer that means that for example `(` is one token and
+`3.14159` is another. That is, a token can be one or more consecutive
+characters. The parser then uses these tokens read out from the text
+to produce corresponding heap representation.
+
+If you are interested in more of an overview of what lispBM is, read
+[here](../lispbm_current_status/index.html).
 
 ## Plumbing 
 
 The file `tokpar.c` starts off by defining a few names for the
 different tokens that make up valid lispBM programs. A value to
-represent error to find a valid token is also defined as well as a
-value that signals that the end of the source code has been reached.
+represent error is also defined as well as a value that signals that
+the end of the source code has been reached.
 
 
 ```
@@ -63,14 +82,15 @@ typedef struct {
 
 the `token` type can represent all the valid tokens using the `union`
 field in the `struct`. There is a `type` field to differentiate between
-types this will be set to one of the defined values above. If there is
+types this will be set to one of the defined values above. If there are
 no more tokens the `type` field is set to `TOKENIZER_END` and if there
 is an error it will be `TOKENIZER_ERROR`.
 
 
 We also need to keep track of where in the source text we are
 currently reading tokens from. This state is managed by a `struct`
-called `tokenizer_state` 
+called `tokenizer_state`, holding a pointer to the string and an index
+(`pos`).
 
 ```
 typedef struct {
@@ -80,7 +100,7 @@ typedef struct {
 ``` 
 
 The next `struct`, called `tokenizer_char_stream` exists with the
-purpose of making code reuse between the tokenizer for plain string
+purpose of making code reuse between the tokenizer for plain strings
 and compressed strings better. It is an abstracted representation of a
 stream of characters that we can `peek` into, `drop` from and so on.
 
@@ -101,7 +121,7 @@ buffer.
 
 
 Then a set of functions that work on any `tokenizer_char_stream` are
-defined to make the code more readable. 
+defined to make the code more readable.  
 
 ```
 bool more(tokenizer_char_stream str) {
@@ -156,7 +176,7 @@ void drop_string(tokenizer_char_stream str, int n) {
 
 That is what is needed when it comes to plumbing (and *helper
 functions*) and it is time to implement the tokenizer. First off there
-is one function per token that can be thought of as a *try to tokenize
+is one function per token. These functions can be thought of as a *try to tokenize
 as* functions. These all return an integer that is `0` in case it
 could not read its dedicated kind of token from the head of the
 stream. If the token can be read from the stream, the number of
@@ -192,9 +212,10 @@ int tok_quote(tokenizer_char_stream str) {
 ```
 
 Symbols are made up of a set of allowed characters. The characters
-that are alloved in the first position of a symbol is different from
+that are allowed in the first position of a symbol is different from
 those allowed in any of the other positions. The following two boolean
-functions return `true` for valid symbol characters.
+functions return `true` for valid symbol characters and `false`
+otherwise, of course.
 
 ``` 
 bool symchar0(char c) {
@@ -247,13 +268,14 @@ int tok_symbol(tokenizer_char_stream str, char** res) {
 ``` 
 
 The `tok_symbol` function checks if the next character in the stream
-is a valid beginning character for a symbol. If it is it loops through
-the string as long as each character it looks at is a valid *inner*
-symbol character. As soon as a non symbol character is found the loop
-exits and the valid characters are taken out from the stream (using
-`get`) and added to the result `res` pointer provided. From this code
-you can also see that `tolower` is used on the symbols. This means
-that the strings `APA` and `apa` refer to the same symbol in lispBM.
+is a valid beginning character for a symbol. If it is the function
+loops through the string as long as each character it looks at is a
+valid *inner* symbol character. As soon as a non symbol character is
+found the loop exits and the valid characters are taken out from the
+stream (using `get`) and added to the result `res` pointer
+provided. From this code you can also see that `tolower` is used on
+the symbols. This means that the strings `APA` and `apa` refer to the
+same symbol in lispBM. 
 
 ```
 int tok_string(tokenizer_char_stream str, char **res) {
@@ -297,7 +319,7 @@ there is another `"` is read into the result. The `tok_string`
 function needs to be improved a bit to recognize some kind of escaped
 characters (like newline), which it currently doesn't. If you enter
 the string `"hello \n"` or even `(print "hello \n")`, for example,
-into the REPL it will reply with `hello \n` and not `hello` following
+into the REPL it will reply with `hello \n` and not `hello` followed
 by a line break. As we will see below character literals are given to
 the REPL as `\#a`, for the character `a` and the newline character is
 expressed as `\#newline`, maybe it would make sense to also escape the
@@ -453,7 +475,7 @@ int tok_U(tokenizer_char_stream str, UINT *res) {
 ```
 
 Floating point numbers are identified by there being a decimal point
-somewhere within the number. So the tokenizer is reads numerals for as
+somewhere within the number. So the tokenizer reads numerals for as
 long as possible, then at some point it should find a `.` and some
 following digits. Once the string has been identified as a float
 value, the characters involved are extracted into a buffer and
@@ -491,16 +513,16 @@ int tok_F(tokenizer_char_stream str, FLOAT *res) {
 The `next_token` function extracts a token from the stream if one is
 available. If the end of the stream is reached a `TOKENIZER_END` token is returned.
 
-Between tokens one whitespace may be required, but there is never any
+Between tokens, one whitespace may be required but there is never any
 requirement for more than one whitespace between tokens. So, before
 trying to fetch the next token all heading whitespace on the stream is
 read out and discarded. Comments in the source is also treated just
 like whitespace.
 
-The each of the tokenizer functions (the *try to tokenize* functions)
+Then each of the tokenizer functions (the *try to tokenize* functions)
 are applied one after the other in order of kind and size of token
-they match. The first of these to return a value larger than 0 signals what token
-was available and `next_token` returns.
+they match. The first of these to return a value larger than 0 signals
+what token was available and `next_token` returns.
 
 The order, from larger to smaller tokens, is important in the cases
 where different tokens have the same valid initial sub-string. In
@@ -742,9 +764,9 @@ VALUE parse_sexp(token tok, tokenizer_char_stream str) {
 }
 ```
 
-The `parse_sexp_list` is conceptually similar to `parse_program` it to
-parses a head part using `parse_sexp` and then it parses the rest
-using `parse_list`. It generates cons cells on the heap to tie the
+The `parse_sexp_list` is conceptually similar to `parse_program` it also
+parses the head part using `parse_sexp` and then it parses the rest
+using `parse_sexp_list`. It generates cons cells on the heap to tie the
 results together. Differently from `parse_program`, `parse_sexp_list`
 is done when in encounters an closing parenthesis in which case it
 returns a `nil` to close the list.
