@@ -307,7 +307,7 @@ to the same representation here make sense.
  
 
 So, currently, the `tok_char` function below looks for the character
-syntax, that is, `\#` followed by a character.
+syntax, that is `\#`, followed by a character.
 
 ``` 
 int tok_char(tokenizer_char_stream str, char *res) {
@@ -334,7 +334,13 @@ int tok_char(tokenizer_char_stream str, char *res) {
   }
   return count;
 }
-``` 
+```
+
+The tokenizers for 28 and 32 bit signed and unsigned integers are all
+very similar.  Some of them, 28bit unsigned, 32bit signed and 32bit
+unsigned, require that the number is followed by a type qualifier such
+as `u28`, `u32` or `i32` so that the appropriate type can be set for,
+and the suitable cons cell structure can be allocated.
 
 ``` 
 int tok_i(tokenizer_char_stream str, INT *res) {
@@ -397,6 +403,10 @@ int tok_u(tokenizer_char_stream str, UINT *res) {
 }
 ``` 
 
+32bit values can also be entered using hexadecimal notation. The
+tokenizer for this case is a little bit larger to also handle reading
+this hexidecimal notation.
+
 ```
 int tok_U(tokenizer_char_stream str, UINT *res) {
   UINT acc = 0;
@@ -442,6 +452,13 @@ int tok_U(tokenizer_char_stream str, UINT *res) {
 }
 ```
 
+Floating point numbers are identified by there being a decimal point
+somewhere within the number. So the tokenizer is reads numerals for as
+long as possible, then at some point it should find a `.` and some
+following digits. Once the string has been identified as a float
+value, the characters involved are extracted into a buffer and
+converted to a float using `strtod`. 
+
 ```
 int tok_F(tokenizer_char_stream str, FLOAT *res) {
 
@@ -471,8 +488,28 @@ int tok_F(tokenizer_char_stream str, FLOAT *res) {
 }
 ```
 
+The `next_token` function extracts a token from the stream if one is
+available. If the end of the stream is reached a `TOKENIZER_END` token is returned.
+
+Between tokens one whitespace may be required, but there is never any
+requirement for more than one whitespace between tokens. So, before
+trying to fetch the next token all heading whitespace on the stream is
+read out and discarded. Comments in the source is also treated just
+like whitespace.
+
+The each of the tokenizer functions (the *try to tokenize* functions)
+are applied one after the other in order of kind and size of token
+they match. The first of these to return a value larger than 0 signals what token
+was available and `next_token` returns.
+
+The order, from larger to smaller tokens, is important in the cases
+where different tokens have the same valid initial sub-string. In
+these cases it is important to get the longest, most specific, match.
+
+
 ```
 token next_token(tokenizer_char_stream str) {
+
   token t;
 
   INT i_val;
@@ -577,12 +614,47 @@ token next_token(tokenizer_char_stream str) {
 }
 ```
 
-## Parsing 
+## Parsing
+
+The parser is, I believe, an example of a recursive descent parser. It
+is split up into a number of mutually recursive functions. The
+functions involved are: `tokpar_parse` (the entry point),
+`parse_program`, `parse_sexp` and `parse_sexp_list`.  The `sexp` in
+these function names comes from
+[s-expression](https://en.wikipedia.org/wiki/S-expression) which is
+what the kind of nested-tree-structured list-based expressions that
+lisp use are called.
+
+The `tokpar_parse` functions sets up a tokenizer state and a tokenizer
+character stream and then call `parse_program` on that stream.
 
 ```
-VALUE parse_sexp(token tok, tokenizer_char_stream str);
-VALUE parse_sexp_list(token tok, tokenizer_char_stream str);
+VALUE tokpar_parse(char *string) {
 
+  tokenizer_state ts;
+  ts.str = string;
+  ts.pos = 0;
+
+  tokenizer_char_stream str;
+  str.state = &ts;
+  str.more = more_string;
+  str.peek = peek_string;
+  str.drop = drop_string;
+  str.get  = get_string;
+
+  return parse_program(str);
+}
+```
+
+`parse_program` parses a sequence of expressions from the stream. It
+does this calling `parse_sexp` on the tokenizer character stream,
+which if successful creates the heap representaion of that first
+expression. It then recurses on the rest of the character stream and
+allocates a cons cell on the heap to combine the result of the
+recursive call and the call to `parse_sexp`. If an error occurs or the
+stream ends, the function returns.
+
+``` 
 VALUE parse_program(tokenizer_char_stream str) {
   token tok = next_token(str);
   VALUE head;
@@ -602,6 +674,13 @@ VALUE parse_program(tokenizer_char_stream str) {
   return cons(head, tail);
 }
 ``` 
+
+The `parse_sexp` function gets a token and a tokenizer character
+stream as input. It checks what token it got as input and then selects
+a case in a `switch` statement. One interesting case is when the token
+is an opening parenthesis in which case we are dealing with a lisp
+list and the `parse_sexp_list` function should take over. In other
+cases `parse_sexp` create heap representations for the tokens.
 
 ```
 VALUE parse_sexp(token tok, tokenizer_char_stream str) {
@@ -663,6 +742,13 @@ VALUE parse_sexp(token tok, tokenizer_char_stream str) {
 }
 ```
 
+The `parse_sexp_list` is conceptually similar to `parse_program` it to
+parses a head part using `parse_sexp` and then it parses the rest
+using `parse_list`. It generates cons cells on the heap to tie the
+results together. Differently from `parse_program`, `parse_sexp_list`
+is done when in encounters an closing parenthesis in which case it
+returns a `nil` to close the list.
+
 ```
 VALUE parse_sexp_list(token tok, tokenizer_char_stream str) {
 
@@ -692,23 +778,8 @@ VALUE parse_sexp_list(token tok, tokenizer_char_stream str) {
 }
 ```
 
-```
-VALUE tokpar_parse(char *string) {
+That is it for parsing as it is done in lispBM. If you spot problems I am very thankful to hear about it. 
 
-  tokenizer_state ts;
-  ts.str = string;
-  ts.pos = 0;
-
-  tokenizer_char_stream str;
-  str.state = &ts;
-  str.more = more_string;
-  str.peek = peek_string;
-  str.drop = drop_string;
-  str.get  = get_string;
-
-  return parse_program(str);
-}
-```
 ___
 
 [HOME](https://svenssonjoel.github.io)

@@ -1,0 +1,666 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Parsing Lisp Expressions</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="How LispBM Parses Expressions">
+  <meta name="keywords" content="Parsing Lisp C Compression Code">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  body, html {
+    margin-left: 5%;
+    margin-right: 5%;
+    font-size: large;
+    zoom-level: 150%;
+  }
+
+  pre {
+    background-color: white;
+    word-wrap: normal;
+    overflow-x: auto;
+    white-space: pre;
+    margin-left: 2%;
+    margin-right: 2%;
+  }
+
+  img {
+    max-width:100%;
+    height:auto;
+  }
+  
+  .yt-link {
+    text-align: center;
+  }
+
+  .yt-link img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%
+  } 
+
+} 
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="how-lispbm-parses-source-code">How lispBM Parses Source Code</h1>
+<p>The code for parsing <a href="../lispbm_current_status/index.html">lispBM</a> source into heap representations is located in the files <code>tokpar.c</code> and <code>tokpar.h</code>. The parser can handle parsing both plain text source code and compressed source data. This text will however just show the plain text case, saving compression and parsing of compressed code for later.</p>
+<p>The parsing is done reading <em>tokens</em> from the source code. The tokens represent, in a way, complete syntactical <em>object</em>. in the lispBM tokenizer that means that for example <code>(</code> is one token and <code>3.14159</code> is another. That is a token can be one or more consecutive characters. The parser then uses this tokenizer functions to read out syntactical objects from the text and producing heap representation from them.</p>
+<h2 id="plumbing">Plumbing</h2>
+<p>The file <code>tokpar.c</code> starts off by defining a few names for the different tokens that make up valid lispBM programs. A value to represent error to find a valid token is also defined as well as a value that signals that the end of the source code has been reached.</p>
+<pre><code>#define TOKOPENPAR      0
+#define TOKCLOSEPAR     1
+#define TOKQUOTE        2
+#define TOKSYMBOL       3
+#define TOKINT          4
+#define TOKUINT         5
+#define TOKBOXEDINT     6
+#define TOKBOXEDUINT    7
+#define TOKBOXEDFLOAT   8
+#define TOKSTRING       9
+#define TOKCHAR         10
+#define TOKENIZER_ERROR 1024
+#define TOKENIZER_END   2048
+</code></pre>
+<p>There is a function called <code>next_token</code> that returns the next token in the source string. The return value is of the following type:</p>
+<pre><code>typedef struct {
+
+  unsigned int type;
+
+  unsigned int text_len;
+  union {
+    char  c;
+    char  *text;
+    INT   i;
+    UINT  u;
+    FLOAT f;
+  }data;
+} token;
+</code></pre>
+<p>the <code>token</code> type can represent all the valid tokens using the <code>union</code> field in the <code>struct</code>. There is a <code>type</code> field to differentiate between types this will be set to one of the defined values above. If there is no more tokens the <code>type</code> field is set to <code>TOKENIZER_END</code> and if there is an error it will be <code>TOKENIZER_ERROR</code>.</p>
+<p>We also need to keep track of where in the source text we are currently reading tokens from. This state is managed by a <code>struct</code> called <code>tokenizer_state</code></p>
+<pre><code>typedef struct {
+  char *str;
+  unsigned int pos;
+} tokenizer_state;
+</code></pre>
+<p>The next <code>struct</code>, called <code>tokenizer_char_stream</code> exists with the purpose of making code reuse between the tokenizer for plain string and compressed strings better. It is an abstracted representation of a stream of characters that we can <code>peek</code> into, <code>drop</code> from and so on.</p>
+<pre><code>typedef struct tcs{
+  void *state;
+  bool (*more)(struct tcs);
+  char (*get)(struct tcs);
+  char (*peek)(struct tcs, int);
+  void (*drop)(struct tcs, int);
+} tokenizer_char_stream;
+</code></pre>
+<p>The <code>void *state</code> can be instantiated with either the <code>tokenizer_state</code> seen above or another variant of state for compressed source that also contains for example a decompression buffer.</p>
+<p>Then a set of functions that work on any <code>tokenizer_char_stream</code> are defined to make the code more readable.</p>
+<pre><code>bool more(tokenizer_char_stream str) {
+  return str.more(str);
+}
+
+char get(tokenizer_char_stream str) {
+  return str.get(str);
+}
+
+char peek(tokenizer_char_stream str,int n) {
+  return str.peek(str,n);
+}
+
+void drop(tokenizer_char_stream str,int n) {
+  str.drop(str,n);
+}
+</code></pre>
+<p>And the implementation of the different stream functions for the plain string case are defined as follows. When creating a <code>tokenizer_char_stream</code> for use on plain strings the function pointers in the struct has to be pointed to these (or similar) functions.</p>
+<pre><code>bool more_string(tokenizer_char_stream str) {
+  tokenizer_state *s = (tokenizer_state*)str.state;
+  return s-&gt;str[s-&gt;pos] != 0;
+}
+
+char get_string(tokenizer_char_stream str) {
+  tokenizer_state *s = (tokenizer_state*)str.state;
+  char c = s-&gt;str[s-&gt;pos];
+  s-&gt;pos = s-&gt;pos + 1;
+  return c;
+}
+
+char peek_string(tokenizer_char_stream str, int n) {
+  tokenizer_state *s = (tokenizer_state*)str.state;
+  // TODO error checking ?? how ?
+  char c = s-&gt;str[s-&gt;pos + n];
+  return c;
+}
+
+void drop_string(tokenizer_char_stream str, int n) {
+  tokenizer_state *s = (tokenizer_state*)str.state;
+  s-&gt;pos = s-&gt;pos + n;
+}
+</code></pre>
+<h2 id="tokenizer">Tokenizer</h2>
+<p>That is what is needed when it comes to plumbing (and <em>helper functions</em>) and it is time to implement the tokenizer. First off there is one function per token that can be thought of as a <em>try to tokenize as</em> functions. These all return an integer that is <code>0</code> in case it could not read its dedicated kind of token from the head of the stream. If the token can be read from the stream, the number of consumed characters is returned.</p>
+<p>In the case of the <code>(</code>, <code>)</code> and <code>'</code> tokens, these functions return <code>1</code> if the sought token is there. They produce no other data.</p>
+<pre><code>int tok_openpar(tokenizer_char_stream str) {
+  if (peek(str,0) == &#39;(&#39;) {
+    drop(str,1);
+    return 1;
+  }
+  return 0;
+}
+
+int tok_closepar(tokenizer_char_stream str) {
+  if (peek(str,0) == &#39;)&#39;) {
+    drop(str,1);
+    return 1;
+  }
+  return 0;
+}
+
+int tok_quote(tokenizer_char_stream str) {
+  if (peek(str,0) == &#39;\&#39;&#39;) {
+    drop(str,1);
+    return 1;
+  }
+  return 0;
+}
+</code></pre>
+<p>Symbols are made up of a set of allowed characters. The characters that are alloved in the first position of a symbol is different from those allowed in any of the other positions. The following two boolean functions return <code>true</code> for valid symbol characters.</p>
+<pre><code>bool symchar0(char c) {
+  const char *allowed = &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-*/=&lt;&gt;&quot;;
+
+  int i = 0;
+  while (allowed[i] != 0) {
+    if (c == allowed[i++]) return true;
+  }
+  return false;
+}
+
+bool symchar(char c) {
+  const char *allowed = &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-*/=&lt;&gt;&quot;;
+
+  int i = 0;
+  while (allowed[i] != 0) {
+    if (c == allowed[i++]) return true;
+  }
+  return false;
+}
+</code></pre>
+<p>In addition to returning the number of characters consumed, the rest of the <em>try to tokenize</em> functions also provide a value in the case of success.</p>
+<pre><code>int tok_symbol(tokenizer_char_stream str, char** res) {
+
+  if (!symchar0(peek(str,0)))  return 0;
+
+  int i = 0;
+  int len = 1;
+  int n = 0;
+
+  while (symchar((peek(str,len)))) {
+    len++;
+  }
+
+  *res = malloc(len+1);
+  memset(*res,0,len+1);
+
+  for (i = 0; i &lt; len; i ++) {
+    (*res)[i] = tolower(get(str));
+    n++;
+  }
+  return n;
+}
+</code></pre>
+<p>The <code>tok_symbol</code> function checks if the next character in the stream is a valid beginning character for a symbol. If it is it loops through the string as long as each character it looks at is a valid <em>inner</em> symbol character. As soon as a non symbol character is found the loop exits and the valid characters are taken out from the stream (using <code>get</code>) and added to the result <code>res</code> pointer provided. From this code you can also see that <code>tolower</code> is used on the symbols. This means that the strings <code>APA</code> and <code>apa</code> refer to the same symbol in lispBM.</p>
+<pre><code>int tok_string(tokenizer_char_stream str, char **res) {
+
+  int i = 0;
+  int n = 0;
+  int len = 0;
+  if (!(peek(str,0) == &#39;\&quot;&#39;)) return 0;
+
+  get(str); // remove the &quot; char
+  n++;
+
+  // compute length of string
+  while (peek(str,len) != 0 &amp;&amp;
+     peek(str,len) != &#39;\&quot;&#39;) {
+    len++;
+  }
+
+  // str ends before tokenized string is closed.
+  if ((peek(str,len)) != &#39;\&quot;&#39;) {
+    return 0;
+  }
+
+  // allocate memory for result string
+  *res = malloc(len+1);
+  memset(*res, 0, len+1);
+
+  for (i = 0; i &lt; len; i ++) {
+    (*res)[i] = get(str);
+    n++;
+  }
+
+  get(str);  // throw away the &quot;
+  return (n+1);
+}
+</code></pre>
+<p>The <code>tok_string</code> function is very similar to <code>tok_symbol</code>. If there is an <code>"</code> character at the head of the stream, everything onwards (until there is another <code>"</code> is read into the result. The <code>tok_string</code> function needs to be improved a bit to recognize some kind of escaped characters (like newline), which it currently doesn't. If you enter the string <code>"hello \n"</code> or even <code>(print "hello \n")</code>, for example, into the REPL it will reply with <code>hello \n</code> and not <code>hello</code> following by a line break. As we will see below character literals are given to the REPL as <code>\#a</code>, for the character <code>a</code> and the newline character is expressed as <code>\#newline</code>, maybe it would make sense to also escape the newline character in the same way in a string? I've noticed that emacs-lisp uses the syntax <code>?a</code> for the character a. Maybe going over to the same representation here make sense.</p>
+<p>So, currently, the <code>tok_char</code> function below looks for the character syntax, that is <code>\#</code>, followed by a character.</p>
+<pre><code>int tok_char(tokenizer_char_stream str, char *res) {
+
+  int count = 0;
+  if (peek(str,0) == &#39;\\&#39; &amp;&amp;
+      peek(str,1) == &#39;#&#39; &amp;&amp;
+      peek(str,2) == &#39;n&#39; &amp;&amp;
+      peek(str,3) == &#39;e&#39; &amp;&amp;
+      peek(str,4) == &#39;w&#39; &amp;&amp;
+      peek(str,5) == &#39;l&#39; &amp;&amp;
+      peek(str,6) == &#39;i&#39; &amp;&amp;
+      peek(str,7) == &#39;n&#39; &amp;&amp;
+      peek(str,8) == &#39;e&#39;) {
+    *res = &#39;\n&#39;;
+    drop(str,9);
+    count = 9;
+  } else if (peek(str,0) == &#39;\\&#39; &amp;&amp;
+         peek(str,1) == &#39;#&#39; &amp;&amp;
+         isgraph(peek(str,2))) {
+    *res = peek(str,2);
+    drop(str,3);
+    count = 3;
+  }
+  return count;
+}
+</code></pre>
+<p>The tokenizers for 28 and 32 bit signed and unsigned integers are all very similar. Some of them, 28bit unsigned, 32bit signed and 32bit unsigned, require that the number is followed by a type qualifier such as <code>u28</code>, <code>u32</code> or <code>i32</code> so that the appropriate type can be set for, and the suitable cons cell structure can be allocated.</p>
+<pre><code>int tok_i(tokenizer_char_stream str, INT *res) {
+
+  INT acc = 0;
+  int n = 0;
+
+  while ( peek(str,n) &gt;= &#39;0&#39; &amp;&amp; peek(str,n) &lt;= &#39;9&#39; ){
+    acc = (acc*10) + (peek(str,n) - &#39;0&#39;);
+    n++;
+  }
+
+  // Not needed if strict adherence to ordering of calls to tokenizers.
+  if (peek(str,n) == &#39;U&#39; ||
+      peek(str,n) == &#39;u&#39; ||
+      peek(str,n) == &#39;.&#39; ||
+      peek(str,n) == &#39;I&#39;) return 0;
+
+  drop(str,n);
+  *res = acc;
+  return n;
+}
+
+int tok_I(tokenizer_char_stream str, INT *res) {
+  INT acc = 0;
+  int n = 0;
+
+  while ( peek(str,n) &gt;= &#39;0&#39; &amp;&amp; peek(str,n) &lt;= &#39;9&#39; ){
+    acc = (acc*10) + (peek(str,n) - &#39;0&#39;);
+    n++;
+  }
+
+  if (peek(str,n) == &#39;i&#39; &amp;&amp;
+      peek(str,n+1) == &#39;3&#39; &amp;&amp;
+      peek(str,n+2) == &#39;2&#39;) {
+    *res = acc;
+    drop(str,n+3);
+    return n+3;
+  }
+  return 0;
+}
+
+int tok_u(tokenizer_char_stream str, UINT *res) {
+  UINT acc = 0;
+  int n = 0;
+
+  while ( peek(str,n) &gt;= &#39;0&#39; &amp;&amp; peek(str,n) &lt;= &#39;9&#39; ){
+    acc = (acc*10) + (peek(str,n) - &#39;0&#39;);
+    n++;
+  }
+
+  if (peek(str,n) == &#39;u&#39; &amp;&amp;
+      peek(str,n+1) == &#39;2&#39; &amp;&amp;
+      peek(str,n+2) == &#39;8&#39; ) {
+    *res = acc;
+    drop(str,n+3);
+    return n+3;
+  }
+  return 0;
+}
+</code></pre>
+<p>32bit values can also be entered using hexadecimal notation. The tokenizer for this case is a little bit larger to also handle reading this hexidecimal notation.</p>
+<pre><code>int tok_U(tokenizer_char_stream str, UINT *res) {
+  UINT acc = 0;
+  int n = 0;
+
+  // Check if hex notation is used
+  if (peek(str,0) == &#39;0&#39; &amp;&amp;
+      (peek(str,1) == &#39;x&#39; || peek(str,1) == &#39;X&#39;)) {
+    n+= 2;
+    while ( (peek(str,n) &gt;= &#39;0&#39; &amp;&amp; peek(str,n) &lt;= &#39;9&#39;) ||
+        (peek(str,n) &gt;= &#39;a&#39; &amp;&amp; peek(str,n) &lt;= &#39;f&#39;) ||
+        (peek(str,n) &gt;= &#39;A&#39; &amp;&amp; peek(str,n) &lt;= &#39;F&#39;)){
+      UINT val;
+      if (peek(str,n) &gt;= &#39;a&#39; &amp;&amp; peek(str,n) &lt;= &#39;f&#39;) {
+    val = 10 + (peek(str,n) - &#39;a&#39;);
+      } else if (peek(str,n) &gt;= &#39;A&#39; &amp;&amp; peek(str,n) &lt;= &#39;F&#39;) {
+    val = 10 + (peek(str,n) - &#39;A&#39;);
+      } else {
+    val = peek(str,n) - &#39;0&#39;;
+      }
+      acc = (acc * 0x10) + val;
+      n++;
+    }
+    *res = acc;
+    drop(str,n);
+    return n;
+  }
+
+  // check if nonhex
+  while ( peek(str,n) &gt;= &#39;0&#39; &amp;&amp; peek(str,n) &lt;= &#39;9&#39; ){
+    acc = (acc*10) + (peek(str,n) - &#39;0&#39;);
+    n++;
+  }
+
+  if (peek(str,n) == &#39;u&#39; &amp;&amp;
+      peek(str,n+1) == &#39;3&#39; &amp;&amp;
+      peek(str,n+2) == &#39;2&#39;) {
+    *res = acc;
+    drop(str,n+3);
+    return n+3;
+  }
+  return 0;
+}
+</code></pre>
+<p>Floating point numbers are identified by there being a decimal point somewhere within the number. So the tokenizer is reads numerals for as long as possible, then at some point it should find a <code>.</code> and some following digits. Once the string has been identified as a float value, the characters involved are extracted into a buffer and converted to a float using <code>strtod</code>.</p>
+<pre><code>int tok_F(tokenizer_char_stream str, FLOAT *res) {
+
+  int n = 0;
+  int m = 0;
+  char fbuf[256];
+
+  while ( peek(str,n) &gt;= &#39;0&#39; &amp;&amp; peek(str,n) &lt;= &#39;9&#39;) n++;
+
+  if ( peek(str,n) == &#39;.&#39;) n++;
+  else return 0;
+
+  if ( !(peek(str,n) &gt;= &#39;0&#39; &amp;&amp; peek(str,n) &lt;= &#39;9&#39;)) return 0;
+  while ( peek(str,n) &gt;= &#39;0&#39; &amp;&amp; peek(str,n) &lt;= &#39;9&#39;) n++;
+
+  if (n &gt; 255) m = 255;
+  else m = n;
+
+  int i;
+  for (i = 0; i &lt; m; i ++) {
+    fbuf[i] = get(str);
+  }
+
+  fbuf[i] = 0;
+  *res = strtod(fbuf, NULL);
+  return n;
+}
+</code></pre>
+<p>The <code>next_token</code> function extracts a token from the stream if one is available. If the end of the stream is reached a <code>TOKENIZER_END</code> token is returned.</p>
+<p>Between tokens one whitespace may be required, but there is never any requirement for more than one whitespace between tokens. So, before trying to fetch the next token all heading whitespace on the stream is read out and discarded. Comments in the source is also treated just like whitespace.</p>
+<p>The each of the tokenizer functions (the <em>try to tokenize</em> functions) are applied one after the other in order of kind and size of token they match. The first of these to return a value larger than 0 signals what token was available and <code>next_token</code> returns.</p>
+<p>The order, from larger to smaller tokens, is important in the cases where different tokens have the same valid initial sub-string. In these cases it is important to get the longest, most specific, match.</p>
+<pre><code>token next_token(tokenizer_char_stream str) {
+
+  token t;
+
+  INT i_val;
+  UINT u_val;
+  char c_val;
+  FLOAT f_val;
+  int n = 0;
+
+  if (!more(str)) {
+    t.type = TOKENIZER_END;
+    return t;
+  }
+
+  // Eat whitespace and comments.
+  bool clean_whitespace = true;
+  while ( clean_whitespace ){
+    if ( peek(str,0) == &#39;;&#39; ) {
+      while ( more(str) &amp;&amp; peek(str, 0) != &#39;\n&#39;) {
+    drop(str,1);
+      }
+    } else if ( isspace(peek(str,0))) {
+      drop(str,1);
+    } else {
+      clean_whitespace = false;
+    }
+  }
+
+  // Check for end of string again
+  if (!more(str)) {
+    t.type = TOKENIZER_END;
+    return t;
+  }
+
+  n = 0;
+
+  if ((n = tok_quote(str))) {
+    t.type = TOKQUOTE;
+    return t;
+  }
+
+  if ((n = tok_openpar(str))) {
+    t.type = TOKOPENPAR;
+    return t;
+  }
+
+  if ((n = tok_closepar(str))) {
+    t.type = TOKCLOSEPAR;
+    return t;
+  }
+
+  if ((n = tok_symbol(str, &amp;t.data.text))) {
+    t.text_len = n;
+    t.type = TOKSYMBOL;
+    return t;
+  }
+
+  if ((n = tok_char(str, &amp;c_val))) {
+    t.data.c = c_val;
+    t.type = TOKCHAR;
+    return t;
+  }
+
+  if ((n = tok_string(str, &amp;t.data.text))) {
+    t.text_len = n - 2;
+    t.type = TOKSTRING;
+    return t;
+  }
+
+  if ((n = tok_F(str, &amp;f_val))) {
+    t.data.f = f_val;
+    t.type = TOKBOXEDFLOAT;
+    return t;
+  }
+
+  if ((n = tok_U(str, &amp;u_val))) {
+    t.data.u = u_val;
+    t.type = TOKBOXEDUINT;
+    return t;
+  }
+
+  if ((n = tok_u(str, &amp;u_val))) {
+    t.data.u = u_val;
+    t.type = TOKUINT;
+    return t;
+  }
+
+  if ((n = tok_I(str, &amp;i_val))) {
+    t.data.i = i_val;
+    t.type = TOKBOXEDINT;
+    return t;
+  }
+
+  // Shortest form of integer match. Move to last in chain of numerical tokens.
+  if ((n = tok_i(str, &amp;i_val))) {
+    t.data.i = i_val;
+    t.type = TOKINT;
+    return t;
+  }
+
+  t.type = TOKENIZER_ERROR;
+  return t;
+}
+</code></pre>
+<h2 id="parsing">Parsing</h2>
+<p>The parser is, I believe, an example of a recursive descent parser. It is split up into a number of mutually recursive functions. The functions involved are: <code>tokpar_parse</code> (the entry point), <code>parse_program</code>, <code>parse_sexp</code> and <code>parse_sexp_list</code>. The <code>sexp</code> in these function names comes from <a href="https://en.wikipedia.org/wiki/S-expression">s-expression</a> which is what the kind of nested-tree-structured list-based expressions that lisp use are called.</p>
+<p>The <code>tokpar_parse</code> functions sets up a tokenizer state and a tokenizer character stream and then call <code>parse_program</code> on that stream.</p>
+<pre><code>VALUE tokpar_parse(char *string) {
+
+  tokenizer_state ts;
+  ts.str = string;
+  ts.pos = 0;
+
+  tokenizer_char_stream str;
+  str.state = &amp;ts;
+  str.more = more_string;
+  str.peek = peek_string;
+  str.drop = drop_string;
+  str.get  = get_string;
+
+  return parse_program(str);
+}
+</code></pre>
+<p><code>parse_program</code> parses a sequence of expressions from the stream. It does this calling <code>parse_sexp</code> on the tokenizer character stream, which if successful creates the heap representaion of that first expression. It then recurses on the rest of the character stream and allocates a cons cell on the heap to combine the result of the recursive call and the call to <code>parse_sexp</code>. If an error occurs or the stream ends, the function returns.</p>
+<pre><code>VALUE parse_program(tokenizer_char_stream str) {
+  token tok = next_token(str);
+  VALUE head;
+  VALUE tail;
+
+  if (tok.type == TOKENIZER_ERROR) {
+    return enc_sym(symrepr_rerror());
+  }
+
+  if (tok.type == TOKENIZER_END) {
+    return enc_sym(symrepr_nil());
+  }
+
+  head = parse_sexp(tok, str);
+  tail = parse_program(str);
+
+  return cons(head, tail);
+}
+</code></pre>
+<p>The <code>parse_sexp</code> function gets a token and a tokenizer character stream as input. It checks what token it got as input and then selects a case in a <code>switch</code> statement. One interesting case is when the token is an opening parenthesis in which case we are dealing with a lisp list and the <code>parse_sexp_list</code> function should take over. In other cases <code>parse_sexp</code> create heap representations for the tokens.</p>
+<pre><code>VALUE parse_sexp(token tok, tokenizer_char_stream str) {
+
+  VALUE v;
+  token t;
+
+  switch (tok.type) {
+  case TOKENIZER_END:
+    return enc_sym(symrepr_rerror());
+  case TOKENIZER_ERROR:
+    return enc_sym(symrepr_rerror());
+  case TOKOPENPAR:
+    t = next_token(str);
+    return parse_sexp_list(t,str);
+  case TOKSYMBOL: {
+    UINT symbol_id;
+
+    if (symrepr_lookup(tok.data.text, &amp;symbol_id)) {
+      v = enc_sym(symbol_id);
+    }
+    else if (symrepr_addsym(tok.data.text, &amp;symbol_id)) {
+      v = enc_sym(symbol_id);
+    } else {
+      v = enc_sym(symrepr_rerror());
+    }
+    free(tok.data.text);
+    return v;
+  }
+  case TOKSTRING: {
+    heap_allocate_array(&amp;v, tok.text_len+1, VAL_TYPE_CHAR);
+    array_t *arr = (array_t*)car(v);
+    memset(arr-&gt;data.c, 0, (tok.text_len+1) * sizeof(char));
+    memcpy(arr-&gt;data.c, tok.data.text, tok.text_len * sizeof(char));
+    free(tok.data.text);
+    return v;
+  }
+  case TOKINT:
+    return enc_i(tok.data.i);
+  case TOKUINT:
+    return enc_u(tok.data.u);
+  case TOKCHAR:
+    return enc_char(tok.data.c);
+  case TOKBOXEDINT:
+    return set_ptr_type(cons(tok.data.i, enc_sym(DEF_REPR_BOXED_I_TYPE)), PTR_TYPE_BOXED_I);
+  case TOKBOXEDUINT:
+    return set_ptr_type(cons(tok.data.u, enc_sym(DEF_REPR_BOXED_U_TYPE)), PTR_TYPE_BOXED_U);
+  case TOKBOXEDFLOAT:
+    return set_ptr_type(cons(tok.data.u, enc_sym(DEF_REPR_BOXED_F_TYPE)), PTR_TYPE_BOXED_F);
+  case TOKQUOTE: {
+    t = next_token(str);
+    VALUE quoted = parse_sexp(t, str);
+    if (type_of(quoted) == VAL_TYPE_SYMBOL &amp;&amp;
+    dec_sym(quoted) == symrepr_rerror()) return quoted;
+    return cons(enc_sym(symrepr_quote()), cons (quoted, enc_sym(symrepr_nil()))); 
+  }
+  }
+  return enc_sym(symrepr_rerror());
+}
+</code></pre>
+<p>The <code>parse_sexp_list</code> is conceptually similar to <code>parse_program</code> it to parses a head part using <code>parse_sexp</code> and then it parses the rest using <code>parse_list</code>. It generates cons cells on the heap to tie the results together. Differently from <code>parse_program</code>, <code>parse_sexp_list</code> is done when in encounters an closing parenthesis in which case it returns a <code>nil</code> to close the list.</p>
+<pre><code>VALUE parse_sexp_list(token tok, tokenizer_char_stream str) {
+
+  token t;
+  VALUE head;
+  VALUE tail;
+
+  switch (tok.type) {
+  case TOKENIZER_END:
+    return enc_sym(symrepr_rerror());
+  case TOKENIZER_ERROR:
+    return enc_sym(symrepr_rerror());
+  case TOKCLOSEPAR:
+    return enc_sym(symrepr_nil());
+  default:
+    head = parse_sexp(tok, str);
+    t = next_token(str);
+    tail = parse_sexp_list(t, str);
+    if ((type_of(head) == VAL_TYPE_SYMBOL &amp;&amp;
+     dec_sym(head) == symrepr_rerror() ) ||
+    (type_of(tail) == VAL_TYPE_SYMBOL &amp;&amp;
+     dec_sym(tail) == symrepr_rerror() )) return enc_sym(symrepr_rerror());
+    return cons(head, tail);
+  }
+
+  return enc_sym(symrepr_rerror());
+}
+</code></pre>
+<p>That is it for parsing as it is done in lispBM. If you spot problems I am very thankful to hear about it.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
