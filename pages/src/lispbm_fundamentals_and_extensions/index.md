@@ -4,13 +4,13 @@
 
 My plan with lispBM is that it should run on smaller and memory
 constrained devices such as the STM32F4 (or smaller) and the NRF52. I
-have order a couple ESP32 and 32 bit RISC-V based development board
-and those are the next likely attempts to target. But when programming
-microcontrollers there are often "differences" between families and
-manufacturers. I do, however, expect that there will be some kind of
-really basic functionality between them all. These expected
-functionalities are what is the *fundamental operations*, a small set
-of functions that I want in any lispBM setup.
+have ordered a couple of ESP32s and a 32 bit RISC-V based development
+board and those are the next likely attempts to target. But when
+programming microcontrollers there are often "differences" between
+families and manufacturers. I do, however, expect that there will be
+some kind of really basic functionality between them all. These
+expected functionalities are what is the *fundamental operations*, a
+small set of functions that I want in any lispBM setup.
 
 So when it comes to the things that are expected to be quite different
 between different platforms, these are implemented as user defined
