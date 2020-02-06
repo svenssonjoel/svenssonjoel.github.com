@@ -65,7 +65,7 @@
 <!-- BODY IS INTENTIONALY LEFT OPEN --> 
 
 <h1 id="fundamental-operations-and-platform-specific-extensions">Fundamental Operations and Platform Specific Extensions</h1>
-<p>My plan with lispBM is that it should run on smaller and memory constrained devices such as the STM32F4 (or smaller) and the NRF52. I have ordered a couple of ESP32s and a 32 bit RISC-V based development board and those are the next likely attempts to target. But when programming microcontrollers there are often "differences" between families and manufacturers. I do, however, expect that there will be some kind of really basic functionality between them all. These expected functionalities are the <em>fundamental operations</em>, a small set of functions that I want in any lispBM setup.</p>
+<p>My plan with lispBM is that it should run on smaller and memory constrained devices such as the STM32F4 (or smaller) and the NRF52. I have ordered a couple of ESP32s and a 32 bit RISC-V based development board and those are the next likely attempts to target. But when programming microcontrollers there are often "differences" between families and manufacturers. I do, however, expect that there will be some kind of really basic functionality that is available on all of them. These expected functionalities are the <em>fundamental operations</em>, a small set of functions that I want in any lispBM setup.</p>
 <p>So when it comes to the things that are expected to be quite different between different platforms, these are implemented as user defined <em>extensions</em>. An example of this could be a <code>print</code> function for outputting text. This text could for example be sent over UART or some USB connection, or even Bluetooth as in the NRF52. It is better to just leave this choice open until the specifics of the target platform are known.</p>
 <p>Fundamental operations and extensons are quite similar in many ways. They are both identified by a symbol and both expect that all the arguments they operate on are pushed onto the continuation stack such that argument 1 is furthest down in the stack.</p>
 <p>The symbol used to identify fundamental operations are given a fixed value in the range of <em>special</em> symbols. This means that they are numbers of the form <code>0xXYZFFFF</code> in hexadecimal notation. The extension symbols however are allocated on the symbol representation table when the extension is added to the system.</p>
@@ -74,7 +74,7 @@
 <p>The <code>fundamental_exec</code> function takes a pointer to the first argument (that is, a pointer into the stack at the position of the first argument), the number of arguments and lastly the Symbol value that represents which fundamental operation that should be run.</p>
 <pre><code>extern VALUE fundamental_exec(VALUE* args, UINT nargs, VALUE op);
 </code></pre>
-<p>The <code>fundamental_exec</code> function is called from deep within the <code>apply_continuation</code> in the evaluator. For a look at the entire `apply_continuation function, see <a href="../lispbm_evaluation_function/index.html">A Closer Look at LispBM's Evaluation Function</a>.</p>
+<p>The <code>fundamental_exec</code> function is called from deep within the <code>apply_continuation</code> in the evaluator. For a look at the entire <code>apply_continuation</code> function, see <a href="../lispbm_evaluation_function/index.html">A Closer Look at LispBM's Evaluation Function</a>.</p>
 <pre><code>VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *perform_gc, bool *app_cont){
 
 
@@ -121,7 +121,7 @@
 
 </code></pre>
 <p>First there is a check to see if symbol <code>fun</code> represents a fundamental operation. If the symbol represents a fundamental <code>fundamental_exec</code> is called and provided a pointer to the arguments and number of arguments along with the <code>fun</code> symbol.</p>
-<p>This call could potentially fail with a memory error (out of heap). In this case the stack is restored (the count and the <code>APPLICATION' continuation is pushed back onto the stack) and the </code>perform_gc<code>and</code>app_cont` flags are set. This means that after GC has been run the next thing the evaluator does is call the continuation again and we should arrive at the exact same case, but now with some freed up heap.</p>
+<p>This call could potentially fail with a memory error (out of heap). In this case the stack is restored (the count and the <code>APPLICATION</code> continuation is pushed back onto the stack) and the <code>perform_gc</code> and <code>app_cont</code> flags are set. This means that after GC has been run the next thing the evaluator does is call the continuation again and we should arrive at the exact same case, but now with some freed up heap.</p>
 <p>If executing the fundamental operation is successful, the arguments are removed from the stack and evaluation continues.</p>
 <p>Some of the fundamental operations operate on a fixed number of arguments, such as for example <code>cons</code> and <code>car</code>. Those functions completely ignore any further arguments given, but they do not complain in any way:</p>
 <pre><code># (cons 1 2 3 4 5)

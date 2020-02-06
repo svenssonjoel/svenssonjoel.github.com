@@ -8,9 +8,9 @@ have ordered a couple of ESP32s and a 32 bit RISC-V based development
 board and those are the next likely attempts to target. But when
 programming microcontrollers there are often "differences" between
 families and manufacturers. I do, however, expect that there will be
-some kind of really basic functionality between them all. These
-expected functionalities are the *fundamental operations*, a small set
-of functions that I want in any lispBM setup.
+some kind of really basic functionality that is available on all of
+them. These expected functionalities are the *fundamental operations*,
+a small set of functions that I want in any lispBM setup.
 
 So when it comes to the things that are expected to be quite different
 between different platforms, these are implemented as user defined
@@ -50,7 +50,7 @@ extern VALUE fundamental_exec(VALUE* args, UINT nargs, VALUE op);
 
 The `fundamental_exec` function is called from deep within the
 `apply_continuation` in the evaluator.  For a look at the entire
-`apply_continuation function, see [A Closer Look at LispBM's
+`apply_continuation` function, see [A Closer Look at LispBM's
 Evaluation Function](../lispbm_evaluation_function/index.html).
 
 ```
@@ -106,7 +106,7 @@ is called and provided a pointer to the arguments and number of
 arguments along with the `fun` symbol.
 
 This call could potentially fail with a memory error (out of heap).
-In this case the stack is restored (the count and the `APPLICATION'
+In this case the stack is restored (the count and the `APPLICATION`
 continuation is pushed back onto the stack) and the `perform_gc` and
 `app_cont` flags are set. This means that after GC has been run
 the next thing the evaluator does is call the continuation again
