@@ -34,7 +34,7 @@ table when the extension is added to the system.
 ## Fundamental Operations
 
 The code that is involved in the execution of fundamental operations
-are located in `fundamental.h` and `fundamental.c`. This subsystems
+are located in `fundamental.h` and `fundamental.c`. This subsystem
 needs no initialization and provide only one external function called
 `fundamental_exec`.
 

@@ -70,7 +70,7 @@
 <p>Fundamental operations and extensons are quite similar in many ways. They are both identified by a symbol and both expect that all the arguments they operate on are pushed onto the continuation stack such that argument 1 is furthest down in the stack.</p>
 <p>The symbol used to identify fundamental operations are given a fixed value in the range of <em>special</em> symbols. This means that they are numbers of the form <code>0xXYZFFFF</code> in hexadecimal notation. The extension symbols however are allocated on the symbol representation table when the extension is added to the system.</p>
 <h2 id="fundamental-operations">Fundamental Operations</h2>
-<p>The code that is involved in the execution of fundamental operations are located in <code>fundamental.h</code> and <code>fundamental.c</code>. This subsystems needs no initialization and provide only one external function called <code>fundamental_exec</code>.</p>
+<p>The code that is involved in the execution of fundamental operations are located in <code>fundamental.h</code> and <code>fundamental.c</code>. This subsystem needs no initialization and provide only one external function called <code>fundamental_exec</code>.</p>
 <p>The <code>fundamental_exec</code> function takes a pointer to the first argument (that is, a pointer into the stack at the position of the first argument), the number of arguments and lastly the Symbol value that represents which fundamental operation that should be run.</p>
 <pre><code>extern VALUE fundamental_exec(VALUE* args, UINT nargs, VALUE op);
 </code></pre>
