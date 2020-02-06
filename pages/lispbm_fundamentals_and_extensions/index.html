@@ -1,0 +1,226 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Fundamental Operations and Platform Specific Extensions</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="walkthrough of how the fundamental operations and the system for extensions are implemneted in lispBM">
+  <meta name="keywords" content="lisp stm32 nrf52 extensions evaluation interpretation language fundamental operations">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  body, html {
+    margin-left: 5%;
+    margin-right: 5%;
+    font-size: large;
+    zoom-level: 150%;
+  }
+
+  pre {
+    background-color: white;
+    word-wrap: normal;
+    overflow-x: auto;
+    white-space: pre;
+    margin-left: 2%;
+    margin-right: 2%;
+  }
+
+  img {
+    max-width:100%;
+    height:auto;
+  }
+  
+  .yt-link {
+    text-align: center;
+  }
+
+  .yt-link img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%
+  } 
+
+} 
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="fundamental-operations-and-platform-specific-extensions">Fundamental Operations and Platform Specific Extensions</h1>
+<p>My plan with lispBM is that it should run on smaller and memory constrained devices such as the STM32F4 (or smaller) and the NRF52. I have order a couple ESP32 and 32 bit RISC-V based development board and those are the next likely attempts to target. But when programming microcontrollers there are often "differences" between families and manufacturers. I do, however, expect that there will be some kind of really basic functionality between them all. These expected functionalities are what is the <em>fundamental operations</em>, a small set of functions that I want in any lispBM setup.</p>
+<p>So when it comes to the things that are expected to be quite different between different platforms, these are implemented as user defined <em>extensions</em>. An example of this could be a <code>print</code> function for outputting text. This text could for example be sent over UART or some USB connection, or even Bluetooth as in the NRF52. It is better to just leave this choice open until the specifics of the target platform are known.</p>
+<p>Fundamental operations and extensons are quite similar in many ways. They are both identified by a symbol and both expect that all the arguments they operate on are pushed onto the continuation stack such that argument 1 is furthest down in the stack.</p>
+<p>The symbol used to identify fundamental operations are given a fixed value in the range of <em>special</em> symbols. This means that they are numbers of the form <code>0xXYZFFFF</code> in hexadecimal notation. The extension symbols however are allocated on the symbol representation table when the extension is added to the system.</p>
+<h2 id="fundamental-operations">Fundamental Operations</h2>
+<p>The code that is involved in the execution of fundamental operations are located in <code>fundamental.h</code> and <code>fundamental.c</code>. This subsystems needs no initialization and provide only one external function called <code>fundamental_exec</code>.</p>
+<p>The <code>fundamental_exec</code> function takes a pointer to the first argument (that is, a pointer into the stack at the position of the first argument), the number of arguments and lastly the Symbol value that represents which fundamental operation that should be run.</p>
+<pre><code>extern VALUE fundamental_exec(VALUE* args, UINT nargs, VALUE op);
+</code></pre>
+<p>The <code>fundamental_exec</code> function is called from deep within the <code>apply_continuation</code> in the evaluator. For a look at the entire `apply_continuation function, see <a href="../lispbm_evaluation_function/index.html">A Closer Look at LispBM's Evaluation Function</a>.</p>
+<pre><code>VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *perform_gc, bool *app_cont){
+
+
+    ...
+
+
+    VALUE count;
+    pop_u32(ctx-&gt;K, &amp;count);
+    UINT *fun_args = stack_ptr(ctx-&gt;K, dec_u(count)+1);
+    VALUE fun = fun_args[0];
+
+
+    ...
+ 
+
+    } else if (type_of(fun) == VAL_TYPE_SYMBOL) {
+      
+      VALUE res;
+      
+      if (is_fundamental(fun)) {
+        res = fundamental_exec(&amp;fun_args[1], dec_u(count), fun);
+        if (type_of(res) == VAL_TYPE_SYMBOL &amp;&amp;
+            dec_sym(res) == symrepr_eerror()) {
+      
+          *done = true;
+           return  res;
+        } else if (type_of(res) == VAL_TYPE_SYMBOL &amp;&amp;
+                   dec_sym(res) == symrepr_merror()) {
+          push_u32_2(ctx-&gt;K, count, enc_u(APPLICATION));
+          *perform_gc = true;
+          *app_cont = true;
+          return fun;
+        } 
+        stack_drop(ctx-&gt;K, dec_u(count) + 1);
+        *app_cont = true;
+        return res;
+      }
+    }
+
+
+    ...
+
+}
+
+</code></pre>
+<p>First there is a check to see if symbol <code>fun</code> represents a fundamental operation. If the symbol represents a fundamental <code>fundamental_exec</code> is called and provided a pointer to the arguments and number of arguments along with the <code>fun</code> symbol.</p>
+<p>This call could potentially fail with a memory error (out of heap). In this case the stack is restored (the count and the <code>APPLICATION' continuation is pushed back onto the stack) and the </code>perform_gc<code>and</code>app_cont` flags are set. This means that after GC has been run and the following thing the evaluator does is call the continuation again and we should arrive at the exact same case, but now with some freed up heap.</p>
+<p>If it executing the fundamental operation is successful, the arguments are removed from the stack and evaluation continues.</p>
+<p>Some of the fundamental operations operate on a fixed number of arguments, such as for example <code>cons</code> and <code>car</code>. Those functions completely ignore any further arguments given, but they do not complain in any way:</p>
+<pre><code># (cons 1 2 3 4 5)
+&gt; (1 2)
+
+# (car &#39;(1 2 3 4) &#39;apa &#39;kurt &#39;bertil)
+&gt; 1
+
+# (cdr &#39;(1 2 3 4) &#39;apa &#39;kurt &#39;bertil)
+&gt; (2 (3 (4 nil)))
+</code></pre>
+<p>Other fundamental operation take an arbitrary number of argumens. Of course the size of stack is a limiting factor so stay reasonable. Examples of this kind of functions are <code>list</code> and <code>+</code>.</p>
+<pre><code># (list)
+&gt; nil
+# (list 1)
+&gt; (1 nil)
+# (list 1 2)  
+&gt; (1 (2 nil))
+# (list 1 2 3)   
+&gt; (1 (2 (3 nil)))
+
+# (+) 
+&gt; 0
+# (+ 1)
+&gt; 1
+# (+ 1 2)
+&gt; 3
+# (+ 1 2 3)
+&gt; 6
+</code></pre>
+<p>The <code>fundamental_exec</code> function that perform all these fundamental operations is implement as a huge switch statement on the function symbol. Here I will just show a few representative cases of how these are implemented.</p>
+<p><code>cons</code> takes 2 arguments. It asks the heap for a cons cell and then it sticks the first argument in the <code>car</code> position and the second argument in the <code>cdr</code> position of this cell.</p>
+<pre><code>  case SYM_CONS: {
+    UINT a = args[0];
+    UINT b = args[1];
+    result = cons(a,b);
+    break;
+  }
+</code></pre>
+<p>The C functions that performs the actual "consing" is defined in <code>heap.c</code>. For the fundamental operations <code>car</code> and <code>cdr</code> it is the same, they are also implemented using C function with exactly the same name, defined in <code>heap.c</code>.</p>
+<pre><code> case SYM_CAR: {
+    result = car(args[0]);
+    break;
+  }
+  case SYM_CDR: {
+    result = cdr(args[0]);
+    break;
+  }
+</code></pre>
+<p>The <code>list</code> fundamental, that takes an arbitrary number of arguments, loops over the arguments while it generates a list structure from cons cells. Since the arguments are in order from first to last in the argument array, it iterates over the arguments backwards to start off with consing the last element to <code>nil</code>.</p>
+<pre><code>  case SYM_ADD: {
+    UINT sum = args[0];
+    for (UINT i = 1; i &lt; nargs; i ++) {
+      sum = add2(sum, args[i]);
+      if (type_of(sum) == VAL_TYPE_SYMBOL) {
+        break;
+      }
+    }
+    result = sum;
+    break;
+  }
+</code></pre>
+<p>Likewise the <code>+</code> fundamental loops over the arguments, but here in forwards order (doesn't matter in this case).</p>
+<pre><code>  case SYM_ADD: {
+    UINT sum = args[0];
+    for (UINT i = 1; i &lt; nargs; i ++) {
+      sum = add2(sum, args[i]);
+      if (type_of(sum) == VAL_TYPE_SYMBOL) {
+        break;
+      }
+    }
+    result = sum;
+    break;
+  }
+</code></pre>
+<p>The case <code>SYM_ADD</code> that implements addition contains an <code>add2</code> function. The reason it is not just using the C <code>+</code> operator is because the arguments passed to the <code>+</code> fundamental can be anything (well any number type) for example:</p>
+<pre><code># (+ 1 8.4)
+&gt; {9.400000}
+</code></pre>
+<p>Here <code>1</code> will be parsed as a 28bit integer and <code>8.4</code> will be parsed into a boxed 32bit floating point value. So <code>+</code> has to convert the <code>1</code> "upwards" to a floating point value as well before adding them together. The curly brackets surrounding <code>9.4</code> is how lispBM prints boxed values.</p>
+<p>Another example:</p>
+<pre><code>(+ 1u32 1u28 7.5)
+&gt; {9.500000}
+</code></pre>
+<p>Here the boxed 32bit number <code>1</code> is added to the unboxed <code>1</code> and the boxed float <code>7.5</code>. All of this conversion of types of numbers are handled within the <code>add2</code> function.</p>
+<h2 id="extensions">Extensions</h2>
+<p>Extensions are very similar to fundamentals but are created by the implementor of a REPL (or any other form of interpreter) for a specific platform. Here, a symbol is allocated and used as an identity attached to a function pointer provided by the programmer.</p>
+<p>The following functions are defined in <code>extensions.h</code> and <code>extensions.c</code></p>
+<pre><code>typedef VALUE (*extension_fptr)(VALUE*,int);
+
+extern extension_fptr extensions_lookup(UINT sym);
+extern bool extensions_add(char *sym_str, extension_fptr ext);
+extern void extensions_del(void);
+</code></pre>
+<p>When you add an extension using <code>extensions_add</code> the function pointer and the symbol are added to a linked list. This list is then searched when doing an <code>extension_lookup</code>. Looking up with a symbol that does not correspont to an extension returns <code>NULL</code>.</p>
+<p>Just like fundamental operations all extensions take a pointer to the first argument and the number of arguments as input. But here you are in full control of what you want your extensions to do with these values. For example a possible extension would be to take an ID representing a GPIO pin as input and then toggle that pin in the implementation.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
