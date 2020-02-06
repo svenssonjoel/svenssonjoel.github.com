@@ -4,7 +4,7 @@ MD = $(wildcard *.md)
 HTML = $(patsubst %.md,%.html,$(MD))
 
 DIR   = $(notdir $(CURDIR))
-TITLE = A Closer Look at LispBM's Evaluation function
+TITLE = A Closer Look at LispBM's Evaluation Function
 DESCRIPTION = Evaluation in continuation passing style in C 
 KEYWORDS = Lisp MCU STM32 NRF52 continuation passing style CPS interpreter repl  
 YEAR  = 2020
