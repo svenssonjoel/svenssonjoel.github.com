@@ -65,7 +65,7 @@
 <!-- BODY IS INTENTIONALY LEFT OPEN --> 
 
 <h1 id="fundamental-operations-and-platform-specific-extensions">Fundamental Operations and Platform Specific Extensions</h1>
-<p>My plan with lispBM is that it should run on smaller and memory constrained devices such as the STM32F4 (or smaller) and the NRF52. I have ordered a couple of ESP32s and a 32 bit RISC-V based development board and those are the next likely attempts to target. But when programming microcontrollers there are often "differences" between families and manufacturers. I do, however, expect that there will be some kind of really basic functionality between them all. These expected functionalities are what is the <em>fundamental operations</em>, a small set of functions that I want in any lispBM setup.</p>
+<p>My plan with lispBM is that it should run on smaller and memory constrained devices such as the STM32F4 (or smaller) and the NRF52. I have ordered a couple of ESP32s and a 32 bit RISC-V based development board and those are the next likely attempts to target. But when programming microcontrollers there are often "differences" between families and manufacturers. I do, however, expect that there will be some kind of really basic functionality between them all. These expected functionalities are the <em>fundamental operations</em>, a small set of functions that I want in any lispBM setup.</p>
 <p>So when it comes to the things that are expected to be quite different between different platforms, these are implemented as user defined <em>extensions</em>. An example of this could be a <code>print</code> function for outputting text. This text could for example be sent over UART or some USB connection, or even Bluetooth as in the NRF52. It is better to just leave this choice open until the specifics of the target platform are known.</p>
 <p>Fundamental operations and extensons are quite similar in many ways. They are both identified by a symbol and both expect that all the arguments they operate on are pushed onto the continuation stack such that argument 1 is furthest down in the stack.</p>
 <p>The symbol used to identify fundamental operations are given a fixed value in the range of <em>special</em> symbols. This means that they are numbers of the form <code>0xXYZFFFF</code> in hexadecimal notation. The extension symbols however are allocated on the symbol representation table when the extension is added to the system.</p>
@@ -121,8 +121,8 @@
 
 </code></pre>
 <p>First there is a check to see if symbol <code>fun</code> represents a fundamental operation. If the symbol represents a fundamental <code>fundamental_exec</code> is called and provided a pointer to the arguments and number of arguments along with the <code>fun</code> symbol.</p>
-<p>This call could potentially fail with a memory error (out of heap). In this case the stack is restored (the count and the <code>APPLICATION' continuation is pushed back onto the stack) and the </code>perform_gc<code>and</code>app_cont` flags are set. This means that after GC has been run and the following thing the evaluator does is call the continuation again and we should arrive at the exact same case, but now with some freed up heap.</p>
-<p>If it executing the fundamental operation is successful, the arguments are removed from the stack and evaluation continues.</p>
+<p>This call could potentially fail with a memory error (out of heap). In this case the stack is restored (the count and the <code>APPLICATION' continuation is pushed back onto the stack) and the </code>perform_gc<code>and</code>app_cont` flags are set. This means that after GC has been run the next thing the evaluator does is call the continuation again and we should arrive at the exact same case, but now with some freed up heap.</p>
+<p>If executing the fundamental operation is successful, the arguments are removed from the stack and evaluation continues.</p>
 <p>Some of the fundamental operations operate on a fixed number of arguments, such as for example <code>cons</code> and <code>car</code>. Those functions completely ignore any further arguments given, but they do not complain in any way:</p>
 <pre><code># (cons 1 2 3 4 5)
 &gt; (1 2)
@@ -152,7 +152,7 @@
 # (+ 1 2 3)
 &gt; 6
 </code></pre>
-<p>The <code>fundamental_exec</code> function that perform all these fundamental operations is implement as a huge switch statement on the function symbol. Here I will just show a few representative cases of how these are implemented.</p>
+<p>The <code>fundamental_exec</code> function that perform all these fundamental operations are implemented as a huge switch statement on the function symbol. Here I will just show a few representative cases of how these are implemented.</p>
 <p><code>cons</code> takes 2 arguments. It asks the heap for a cons cell and then it sticks the first argument in the <code>car</code> position and the second argument in the <code>cdr</code> position of this cell.</p>
 <pre><code>  case SYM_CONS: {
     UINT a = args[0];

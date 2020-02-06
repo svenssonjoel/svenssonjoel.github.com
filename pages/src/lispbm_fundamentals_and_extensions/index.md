@@ -9,8 +9,8 @@ board and those are the next likely attempts to target. But when
 programming microcontrollers there are often "differences" between
 families and manufacturers. I do, however, expect that there will be
 some kind of really basic functionality between them all. These
-expected functionalities are what is the *fundamental operations*, a
-small set of functions that I want in any lispBM setup.
+expected functionalities are the *fundamental operations*, a small set
+of functions that I want in any lispBM setup.
 
 So when it comes to the things that are expected to be quite different
 between different platforms, these are implemented as user defined
@@ -108,12 +108,12 @@ arguments along with the `fun` symbol.
 This call could potentially fail with a memory error (out of heap).
 In this case the stack is restored (the count and the `APPLICATION'
 continuation is pushed back onto the stack) and the `perform_gc` and
-`app_cont` flags are set. This means that after GC has been run and
-the following thing the evaluator does is call the continuation again
+`app_cont` flags are set. This means that after GC has been run
+the next thing the evaluator does is call the continuation again
 and we should arrive at the exact same case, but now with some freed
 up heap.
 
-If it executing the fundamental operation is successful, the arguments
+If executing the fundamental operation is successful, the arguments
 are removed from the stack and evaluation continues.
 
 
@@ -158,7 +158,7 @@ reasonable. Examples of this kind of functions are `list` and `+`.
 ```
 
 The `fundamental_exec` function that perform all these fundamental
-operations is implement as a huge switch statement on the function
+operations are implemented as a huge switch statement on the function
 symbol. Here I will just show a few representative cases of how these
 are implemented.
 
