@@ -130,8 +130,10 @@ conditionals that either an array, `PTR_TYPE_ARRAY`, is expected or a
 character, `VAL_TYPE_CHAR`.  Any other type is not accepted and the
 extension just returns nil. Another choice would have been to return
 the type error symbol in this case, or to ignore that argument and
-proceed with printing all printable arguments. This is also an example
-of a function that can take 0 or more arguments.
+proceed with printing all printable arguments.
+
+The print extension is also an example of a function that can take 0
+or more arguments.
 
 ```
 # (print)
