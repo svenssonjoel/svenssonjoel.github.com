@@ -200,7 +200,7 @@ int reset_repl(int heap_size) {
 ```
 
 The boolean argument to `eval_cps_init` indicates if the continuation
-stack is allowed to grow or not.
+stack is allowed to grow or not. In this case it is not.
 
 Later a command will be added to the REPL called `:reset` that will run the
 function above. 
