@@ -2,7 +2,7 @@
 
 # Example Implementation of a REPL Running in a ChibiOs Thread
 
-This text will show an example of how to implmenent a lispBM REPL
+This text will show an example of how to implment a lispBM REPL
 based on ChibiOS for a microcontroller such as the STM32F4. I have
 tried this code on a stm32f407G-discovery board. The version of
 ChibiOS used for that test is `19.1.2`.

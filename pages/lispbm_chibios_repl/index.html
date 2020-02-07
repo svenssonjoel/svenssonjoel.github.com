@@ -65,7 +65,7 @@
 <!-- BODY IS INTENTIONALY LEFT OPEN --> 
 
 <h1 id="example-implementation-of-a-repl-running-in-a-chibios-thread">Example Implementation of a REPL Running in a ChibiOs Thread</h1>
-<p>This text will show an example of how to implmenent a lispBM REPL based on ChibiOS for a microcontroller such as the STM32F4. I have tried this code on a stm32f407G-discovery board. The version of ChibiOS used for that test is <code>19.1.2</code>.</p>
+<p>This text will show an example of how to implment a lispBM REPL based on ChibiOS for a microcontroller such as the STM32F4. I have tried this code on a stm32f407G-discovery board. The version of ChibiOS used for that test is <code>19.1.2</code>.</p>
 <h2 id="input-and-output-on-chibios-basesequentialstream">Input and Output on ChibiOs BaseSequentialStream</h2>
 <p>ChibiOs has an abstraction for byte streams called <code>BaseSequentialStream</code> that you can operate on using the functions <code>streamRead</code>, <code>streamWrite</code>, <code>streamGet</code> and <code>streamPut</code>.</p>
 <p>The <code>streamGet</code> functions read one byte of data from the stream, blocking until data is available. <code>streamPut</code> instead writes one byte of data onto the stream. These two functions can be used to implement a <code>inputline</code> function where for each byte we read into a buffer we check if it is the newline character and in that case return a number indicatinf how many bytes have been read.</p>
