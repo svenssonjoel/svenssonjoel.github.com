@@ -65,11 +65,11 @@
 <!-- BODY IS INTENTIONALY LEFT OPEN --> 
 
 <h1 id="example-implementation-of-a-repl-running-in-a-chibios-thread">Example Implementation of a REPL Running in a ChibiOs Thread</h1>
-<p>This text will show an example of how to implment a lispBM REPL based on ChibiOS for a microcontroller such as the STM32F4. I have tried this code on a stm32f407G-discovery board. The version of ChibiOS used for that test is <code>19.1.2</code>.</p>
-<h2 id="input-and-output-on-chibios-basesequentialstream">Input and Output on ChibiOs BaseSequentialStream</h2>
+<p>This text will show an example of how to implement a lispBM REPL based on ChibiOS for a microcontroller such as the STM32F4. I have tried this code on a stm32f407G-discovery board. The version of ChibiOS used for that test is <code>19.1.2</code>.</p>
+<h2 id="input-and-output-on-a-chibios-basesequentialstream">Input and Output on a ChibiOs BaseSequentialStream</h2>
 <p>ChibiOs has an abstraction for byte streams called <code>BaseSequentialStream</code> that you can operate on using the functions <code>streamRead</code>, <code>streamWrite</code>, <code>streamGet</code> and <code>streamPut</code>.</p>
-<p>The <code>streamGet</code> functions read one byte of data from the stream, blocking until data is available. <code>streamPut</code> instead writes one byte of data onto the stream. These two functions can be used to implement a <code>inputline</code> function where for each byte we read into a buffer we check if it is the newline character and in that case return a number indicatinf how many bytes have been read.</p>
-<p>Arguments to the <code>inputline</code> function is an abstract stream, a target character buffer and the size of that buffer.</p>
+<p>The <code>streamGet</code> functions read one byte of data from the stream, blocking until data is available. <code>streamPut</code> instead writes one byte of data onto the stream. These two functions can be used to implement an <code>inputline</code> function where for each byte we read into a buffer we check if it is the newline character and in that case return a number indicating how many bytes have been read.</p>
+<p>Arguments to the <code>inputline</code> function are an abstract stream, a target character buffer and the size of that buffer.</p>
 <pre><code>int inputline(BaseSequentialStream *chp, char *buffer, int size) {
   int n = 0;
   unsigned char c;
@@ -104,8 +104,8 @@
 }
 </code></pre>
 <p>The function tries to fill up the buffer, by looping from <code>0</code> to <code>size-1</code> and in each iteration getting a character from the stream.</p>
-<p>There are a few special cases here. For example, the character read could be a backspace character. If that is the case a character should be removed from the buffer an the loop counter be decremented, unless of course it is zero.</p>
-<p>Then in the case of a newline character the number of read characters are returned.</p>
+<p>There are a few special cases here. For example, the character read could be a backspace character. If that is the case a character should be removed from the buffer and the loop counter be decremented, unless of course it is zero.</p>
+<p>Then in the case of a newline character, the number of read characters are returned.</p>
 <p>In most cases the character read from the stream is also <em>echoed</em> back onto the stream, so they will appear on the terminal on the other end of the stream as well (where the user sits).</p>
 <h2 id="the-repl-as-a-chibios-thread">The REPL as a ChibiOs Thread</h2>
 <p>With the help of the <code>inputline</code> function defined above we can now start to write a REPL. First, though, I would like to show how to implement a lispBM extension for printing strings.</p>

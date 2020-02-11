@@ -2,14 +2,14 @@
 
 # Example Implementation of a REPL Running in a ChibiOs Thread
 
-This text will show an example of how to implment a lispBM REPL
+This text will show an example of how to implement a lispBM REPL
 based on ChibiOS for a microcontroller such as the STM32F4. I have
 tried this code on a stm32f407G-discovery board. The version of
 ChibiOS used for that test is `19.1.2`.
 
 
 
-## Input and Output on ChibiOs BaseSequentialStream
+## Input and Output on a ChibiOs BaseSequentialStream
 
 ChibiOs has an abstraction for byte streams called
 `BaseSequentialStream` that you can operate on using the functions
@@ -18,12 +18,12 @@ ChibiOs has an abstraction for byte streams called
 The `streamGet` functions read one byte of data from the stream,
 blocking until data is available. `streamPut` instead writes one byte
 of data onto the stream. These two functions can be used to implement
-a `inputline` function where for each byte we read into a buffer we
+an `inputline` function where for each byte we read into a buffer we
 check if it is the newline character and in that case return a number
-indicatinf how many bytes have been read.
+indicating how many bytes have been read.
 
 
-Arguments to the `inputline` function is an abstract stream, a target
+Arguments to the `inputline` function are an abstract stream, a target
 character buffer and the size of that buffer.
 
 
@@ -68,10 +68,10 @@ stream.
 
 There are a few special cases here. For example, the character read
 could be a backspace character. If that is the case a character should
-be removed from the buffer an the loop counter be decremented, unless
+be removed from the buffer and the loop counter be decremented, unless
 of course it is zero.
 
-Then in the case of a newline character the number of read characters
+Then in the case of a newline character, the number of read characters
 are returned.
 
 In most cases the character read from the stream is also *echoed* back
@@ -130,7 +130,7 @@ conditionals that either an array, `PTR_TYPE_ARRAY`, is expected or a
 character, `VAL_TYPE_CHAR`.  Any other type is not accepted and the
 extension just returns nil. Another choice would have been to return
 the type error symbol in this case, or to ignore that argument and
-proceed with printing all printable arguments.
+proceed with printing all printable arguments. 
 
 The print extension is also an example of a function that can take 0
 or more arguments.
