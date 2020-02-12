@@ -275,15 +275,15 @@ int gc_mark_aux(UINT *aux_data, unsigned int aux_size) {
       UINT pt_v = dec_ptr(aux_data[i]);
 
       if ( (pt_t == PTR_TYPE_CONS ||
-	    pt_t == PTR_TYPE_BOXED_I ||
-	    pt_t == PTR_TYPE_BOXED_U ||
-	    pt_t == PTR_TYPE_BOXED_F ||
-	    pt_t == PTR_TYPE_ARRAY ||
-	    pt_t == PTR_TYPE_REF ||
-	    pt_t == PTR_TYPE_STREAM) &&
-	   pt_v < heap_state.heap_size) {
+            pt_t == PTR_TYPE_BOXED_I ||
+            pt_t == PTR_TYPE_BOXED_U ||
+            pt_t == PTR_TYPE_BOXED_F ||
+            pt_t == PTR_TYPE_ARRAY ||
+            pt_t == PTR_TYPE_REF ||
+            pt_t == PTR_TYPE_STREAM) &&
+           pt_v < heap_state.heap_size) {
 
-	gc_mark_phase(aux_data[i]);
+        gc_mark_phase(aux_data[i]);
       }
     }
   }
@@ -319,29 +319,29 @@ int gc_sweep_phase(void) {
       // Check if this cell is a pointer to an array
       // and free it.
       if (type_of(heap[i].cdr) == VAL_TYPE_SYMBOL &&
-	  dec_sym(heap[i].cdr) == DEF_REPR_ARRAY_TYPE) {
-	array_t *arr = (array_t*)heap[i].car;
-	switch(arr->elt_type) {
-	case VAL_TYPE_CHAR:
-	  if (arr->data.c) free(arr->data.c);
-	  break;
-	case VAL_TYPE_I:
-	case PTR_TYPE_BOXED_I:
-	  if (arr->data.i) free(arr->data.i);
-	  break;
-	case VAL_TYPE_U:
-	case PTR_TYPE_BOXED_U:
-	case VAL_TYPE_SYMBOL:
-	  if (arr->data.u) free(arr->data.u);
-	  break;
-	case PTR_TYPE_BOXED_F:
-	  if (arr->data.f) free(arr->data.f);
-	  break;
-	default:
-	  return 0; // Error case: unrecognized element type.
-	}
-	free(arr);
-	heap_state.gc_recovered_arrays++;
+          dec_sym(heap[i].cdr) == DEF_REPR_ARRAY_TYPE) {
+        array_t *arr = (array_t*)heap[i].car;
+        switch(arr->elt_type) {
+        case VAL_TYPE_CHAR:
+          if (arr->data.c) free(arr->data.c);
+          break;
+        case VAL_TYPE_I:
+        case PTR_TYPE_BOXED_I:
+          if (arr->data.i) free(arr->data.i);
+          break;
+        case VAL_TYPE_U:
+        case PTR_TYPE_BOXED_U:
+        case VAL_TYPE_SYMBOL:
+          if (arr->data.u) free(arr->data.u);
+          break;
+        case PTR_TYPE_BOXED_F:
+          if (arr->data.f) free(arr->data.f);
+          break;
+        default:
+          return 0; // Error case: unrecognized element type.
+        }
+        free(arr);
+        heap_state.gc_recovered_arrays++;
       }
 
       // create pointer to use as new freelist
