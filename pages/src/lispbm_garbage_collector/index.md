@@ -61,7 +61,7 @@ are needed in the future. This means the following must be traversed:
 
 The intuition behind these are that (1) the global environment should
 always be available to use, so nothing in there can be removed.  The
-local environment (2) is what the environment we are operating within
+local environment (2) is the environment we are operating within
 right now, so better not remove any of that either.  The current
 expression (3) is an object on the heap, it better remain there if we
 want to keep working with it.  For the program however, really we only
