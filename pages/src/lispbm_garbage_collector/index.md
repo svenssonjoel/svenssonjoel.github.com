@@ -145,7 +145,7 @@ that perform marking.
 
 Out of these `gc_mark_phase` is the most general. It traverses any
 heap structure and marks all reachable nodes. The `gc_mark_freelist`
-function assumes that the argument passed to is i a proper linked-list
+function assumes that the argument passed to is a proper linked-list
 and can iterate over it using a while loop. `gc_mark_aux` is passed an
 array as argument and can also iterate over its argument efficiently.
 

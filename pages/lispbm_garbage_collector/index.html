@@ -120,7 +120,7 @@
 <li><code>gc_mark_phase</code></li>
 <li><code>gc_mark_aux</code></li>
 </ol>
-<p>Out of these <code>gc_mark_phase</code> is the most general. It traverses any heap structure and marks all reachable nodes. The <code>gc_mark_freelist</code> function assumes that the argument passed to is i a proper linked-list and can iterate over it using a while loop. <code>gc_mark_aux</code> is passed an array as argument and can also iterate over its argument efficiently.</p>
+<p>Out of these <code>gc_mark_phase</code> is the most general. It traverses any heap structure and marks all reachable nodes. The <code>gc_mark_freelist</code> function assumes that the argument passed to is a proper linked-list and can iterate over it using a while loop. <code>gc_mark_aux</code> is passed an array as argument and can also iterate over its argument efficiently.</p>
 <pre><code>int gc_mark_phase(VALUE env) {
 
   if (!is_ptr(env)) {
