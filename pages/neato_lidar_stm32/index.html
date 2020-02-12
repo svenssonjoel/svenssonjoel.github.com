@@ -123,9 +123,9 @@
   }
 
   (void)chThdCreateStatic(neatoLidarThreadArea,
-              sizeof(neatoLidarThreadArea),
-              NORMALPRIO,
-              neatoLidarThread, NULL); 
+                          sizeof(neatoLidarThreadArea),
+                          NORMALPRIO,
+                          neatoLidarThread, NULL); 
 }
 </code></pre>
 <p>The <code>neato_lidar_init</code> function configures PC10 and 11 to alternative mode 7. In the stm32f4 datasheet you can find this information in the section about <em>Alternate Function Mapping</em>. It then starts the serial driver.</p>
@@ -166,7 +166,7 @@
     avg_rpm = 0;
     for (int i = 0; i &lt; 200; i ++ ) {
       if (read_packet(&amp;p)) {
-    avg_rpm += p.rpm;
+        avg_rpm += p.rpm;
       }
     }
 
@@ -310,23 +310,23 @@ static THD_FUNCTION(neatoLidarThread, arg) {
       int i = p.index * 4;
       for (int j = 0; j &lt; 4; j ++) {
     if (p.valid[j]) { 
-      distance[i+j] = p.dist[j];
-    } else {
-      distance[i+j] = -1;
-    }     
+          distance[i+j] = p.dist[j];
+        } else {
+          distance[i+j] = -1;
+        }     
       
       }
 
       // Adds a bit of correction to the duty cycle based on current RPM
       // Maybe should filter this for &quot;influence over time&quot; in some way. 
       if (p.rpm &lt; 300) {
-    motor_duty ++;
-    if (motor_duty &gt; 10000) motor_duty = 10000;
-    pwmEnableChannel(&amp;PWMD2, 3 , PWM_PERCENTAGE_TO_WIDTH(&amp;PWMD2,motor_duty));
+        motor_duty ++;
+        if (motor_duty &gt; 10000) motor_duty = 10000;
+        pwmEnableChannel(&amp;PWMD2, 3 , PWM_PERCENTAGE_TO_WIDTH(&amp;PWMD2,motor_duty));
       } else if (p.rpm &gt; 315) {
-    motor_duty --;
-    if (motor_duty &lt; 0) motor_duty = 0;
-    pwmEnableChannel(&amp;PWMD2, 3 , PWM_PERCENTAGE_TO_WIDTH(&amp;PWMD2,motor_duty));
+        motor_duty --;
+        if (motor_duty &lt; 0) motor_duty = 0;
+        pwmEnableChannel(&amp;PWMD2, 3 , PWM_PERCENTAGE_TO_WIDTH(&amp;PWMD2,motor_duty));
       }
       
     } else {

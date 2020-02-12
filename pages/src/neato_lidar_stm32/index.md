@@ -104,9 +104,9 @@ void neato_lidar_init(void) {
   }
 
   (void)chThdCreateStatic(neatoLidarThreadArea,
-			  sizeof(neatoLidarThreadArea),
-			  NORMALPRIO,
-			  neatoLidarThread, NULL); 
+                          sizeof(neatoLidarThreadArea),
+                          NORMALPRIO,
+                          neatoLidarThread, NULL); 
 }
 ```
 
@@ -165,7 +165,7 @@ int calibrate_lidar_motor() {
     avg_rpm = 0;
     for (int i = 0; i < 200; i ++ ) {
       if (read_packet(&p)) {
-	avg_rpm += p.rpm;
+        avg_rpm += p.rpm;
       }
     }
 
@@ -360,23 +360,23 @@ static THD_FUNCTION(neatoLidarThread, arg) {
       int i = p.index * 4;
       for (int j = 0; j < 4; j ++) {
 	if (p.valid[j]) { 
-	  distance[i+j] = p.dist[j];
-	} else {
-	  distance[i+j] = -1;
-	}	  
+          distance[i+j] = p.dist[j];
+        } else {
+          distance[i+j] = -1;
+        }	  
 	  
       }
 
       // Adds a bit of correction to the duty cycle based on current RPM
       // Maybe should filter this for "influence over time" in some way. 
       if (p.rpm < 300) {
-	motor_duty ++;
-	if (motor_duty > 10000) motor_duty = 10000;
-	pwmEnableChannel(&PWMD2, 3 , PWM_PERCENTAGE_TO_WIDTH(&PWMD2,motor_duty));
+        motor_duty ++;
+        if (motor_duty > 10000) motor_duty = 10000;
+        pwmEnableChannel(&PWMD2, 3 , PWM_PERCENTAGE_TO_WIDTH(&PWMD2,motor_duty));
       } else if (p.rpm > 315) {
-	motor_duty --;
-	if (motor_duty < 0) motor_duty = 0;
-	pwmEnableChannel(&PWMD2, 3 , PWM_PERCENTAGE_TO_WIDTH(&PWMD2,motor_duty));
+        motor_duty --;
+        if (motor_duty < 0) motor_duty = 0;
+        pwmEnableChannel(&PWMD2, 3 , PWM_PERCENTAGE_TO_WIDTH(&PWMD2,motor_duty));
       }
       
     } else {
