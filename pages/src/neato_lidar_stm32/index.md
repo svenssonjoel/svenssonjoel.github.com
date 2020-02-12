@@ -3,14 +3,14 @@
 # Interfacing a Neato Lidar with an STM32 under ChibiOS
 
 I bought my Neato lidar very cheaply from Ebay. I did get it to run
-and talk to an stm32f4 under ChibiOs.  But it does seem to not be top
-working order. Good enough to play with though. There are several
+and talk to an stm32f4 under ChibiOs.  But it does seem to not be in
+top working order. Good enough to play with though. There are several
 blogs and forum posts on the web that discuss the Neato lidar in one
 way or another and I pieced together the information needed to talk to
-lidar from such sources. At this time I cannot remember exactly which
-source gave me what insight and I also am uncertain that I managed to
-find all the sources that helped me. So here is a list other sites that
-talk about the Neato lidar in a hobbyist setting:
+the lidar from such sources. At this time I cannot remember exactly
+which source gave me what insight and I also am uncertain that I
+managed to find all the sources that helped me. So here is a list
+other sites that talk about the Neato lidar in a hobbyist setting:
 
 1. [Lidar on RPI](https://hackaday.com/2016/01/22/how-to-use-lidar-with-the-raspberry-pi/)
 2. [Adding Inexpensive Lidar to your Robot](https://www.impulseadventure.com/elec/robot-lidar-neato-xv11.html)
