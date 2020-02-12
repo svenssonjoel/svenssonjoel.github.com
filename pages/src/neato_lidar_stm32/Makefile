@@ -4,9 +4,9 @@ MD = $(wildcard *.md)
 HTML = $(patsubst %.md,%.html,$(MD))
 
 DIR   = $(notdir $(CURDIR))
-TITLE = Template Page
-DESCRIPTION = Template description
-KEYWORDS = Template 
+TITLE = Interfacing with a Neato Lidar
+DESCRIPTION = Connecting an STM32F4 and a Neato Lidar over uart 
+KEYWORDS = Chibios Neato Lidar stm32 stm32f4 uart 
 YEAR  = 2020
 
 all: $(HTML)
