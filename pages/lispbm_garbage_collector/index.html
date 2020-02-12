@@ -1,0 +1,282 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Garbage Collection in LispBM</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="A Walkthrough of the implementation of the garbage collector in lispBM">
+  <meta name="keywords" content="Mark and Sweep Garbage Collector LispBM Lisp Microcontroller MCU STM32 ">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  body, html {
+    margin-left: 5%;
+    margin-right: 5%;
+    font-size: large;
+    zoom-level: 150%;
+  }
+
+  pre {
+    background-color: white;
+    word-wrap: normal;
+    overflow-x: auto;
+    white-space: pre;
+    margin-left: 2%;
+    margin-right: 2%;
+  }
+
+  img {
+    max-width:100%;
+    height:auto;
+  }
+  
+  .yt-link {
+    text-align: center;
+  }
+
+  .yt-link img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%
+  } 
+
+} 
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<p><a href="../../privacy_policy.html"> Read the Privacy Policy </a></p>
+  <hr>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="garbage-collection-in-lispbm">Garbage Collection in LispBM</h1>
+<p>In lispBM a <em>mark and sweep</em> garbage collector is used to obtain automatic management, allocation and freeing, of heap objects. The garbage collector (GC) also manages arrays that are allocated off-heap. There is always a "box" on the heap that points to these off-heap objects (see <a href="../lispbm_boxed_values/index.html">Boxed Values</a> for more details).</p>
+<p>Garbage collection is an area I would like to learn more about. The GC implemented in lispBM is most likely quite naive and definitely not optimized! I wrote it before having access to the book <a href="https://www.amazon.com/Garbage-Collection-Algorithms-Automatic-Management/dp/0471941484?tag=uuid10-20">Garbage Collection: Algorithms for Automatic Dynamic Memory Management</a>. When improvements are applied to the GC (If I get time to more than just skim the book), I will write about that as it happens.</p>
+<p>Even though this is not a very polished piece of code, I think it may be good to document it here. All the earlier texts I've written on the lispBM implementation made me see things that could be improved or fixed! So writing it down was valuable to me, I hope it also of value to someone else.</p>
+<p>The GC is tightly connected to the heap so in the lispBM implementation the GC code is located in the files <code>heap.h</code> and <code>heap.c</code>. For more information about the heap in lispBM read the earlier text <a href="../lispbm_current_status/index.html">Another Lisp for Microcontrollers</a>.</p>
+<h2 id="mark-and-sweep-garbage-collection">Mark and Sweep Garbage Collection</h2>
+<p>In lispBM the heap is made up of cons-cells, which are a pair of 32bit words. Each cons-cell has a mark bit. The purpose of this mark bit was hinted at in <a href="../lispbm_current_status/index.html">Another Lisp for Microcontrollers</a> but all the details of GC was left out. The <code>free_list</code> which is a linked list of all non-used cons-cells was also mentioned in that first text on lispBM, in this text I will try to go into all the details.</p>
+<p>It is up to the garbage collector system to add cons-cells that are no-longer <em>reachable</em> to the free list. This is where the mark bits come in. The idea is that if an object on the heap cannot be reached by following a pointer that the program <em>knows about</em> then that object can be freed and its cons-cells can be moved to the free list. It is however much easier to figure out what can be reached rather than what cannot so the approach is to traverse the current environment and mark everything that can be reached from there as "in-use".</p>
+<p>The way lispBM is implemented, it is important to traverse every data-structure that could potentially hold pointers into the heap that are needed in the future. This means the following must be traversed:</p>
+<ol>
+<li>The global environment,</li>
+<li>The current environment (local environment).</li>
+<li>The current expression.</li>
+<li>The Program (which is a list of expressions that all should be evaluated).</li>
+<li>The <code>r</code> intermediate result that is passed around in the evaluator and <code>apply_continuation</code>.</li>
+<li>The continuation stack</li>
+</ol>
+<p>The intuition behind these are that (1) the global environment should always be available to use, so nothing in there can be removed. The local environment (2) is what the environment we are operating within right now, so better not remove any of that either. The current expression (3) is an object on the heap, it better remain there if we want to keep working with it. For the program however, really we only need to keep <em>the rest of the program</em> but for simplicity the entire program will be traversed and marked. The intermediate result (5) could potentially be a pointer to some data-structure on the heap, better keep that! The continuation stack must not be forgotten, it can hold for example arguments to a function that could also be for example a list on the heap. This is why anything that goes onto the continuation stack is a lispBM <code>VALUE</code>, that is why continuation identifiers, such as <code>PROGN_REST</code>, are encoded as lispBM 28Bit unsigned integers. If we put arbitrary data on the continuation stack, the GC could potentially confuse it for a heap pointer but since it is now a lispBM <code>VALUE</code> it carries additional type information.</p>
+<p>That is how marking of what is in use is done, conceptually. The next step is the sweep. The sweep iterates over the entire heap and for each cons-cell it checks the mark-bit. If the mark-bit is not set for a cons-cell that cell is appended to the free list. The sweep also resets all the mark-bits so that when the next marking session is run, there wont be anything already marked (perhaps incorrectly at this stage).</p>
+<p>At a very high level this is how mark and sweep works, or at least how I understand it should work. We will now go through the code in the lispBM implementation that performs these operations.</p>
+<h2 id="mark-and-sweep-garbage-collection-in-lispbm">Mark and Sweep Garbage Collection in LispBM</h2>
+<p>There is not a whole lot of code involved in the GC in lispBM, maybe something like 100 lines of C. These 100 lines (or so) was, however, quite an effort to produce. It is all in the details here, be off by one anywhere and there will be <em>segfaults</em>. Now, this code probably still has corner cases that end up in not so good states. Its a process, learning by doing.</p>
+<p>There is an entry-point function called <code>heap_perform_gc_aux</code> that takes 7 arguments. The arguments correspond to those 6 items listed above that have to be traversed as part of the marking procedure. The 7th argument is the size of continuation stack.</p>
+<p>As can be seen in the code below, the free list is also traversed and marked. This makes more sense to me than not traversing and marking it, since it would just end up on the free list again in that case but potentially involving a bit more work before getting there.</p>
+<p>So, <code>heap_perform_gc_aux</code> runs a marking algorithm on each of the things that needs to be marked. Once everything is marked a snapshot image can be generated of the heap for visualization purposes. This is controlled by a compile time flag. After marking, it performs a sweep.</p>
+<pre><code>int heap_perform_gc_aux(VALUE env, VALUE env2, VALUE exp, VALUE exp2, VALUE exp3, UINT *aux_data, unsigned int aux_size) {
+  heap_state.gc_num ++;
+  heap_state.gc_recovered = 0;
+  heap_state.gc_marked = 0;
+
+  gc_mark_freelist();
+  gc_mark_phase(exp);
+  gc_mark_phase(exp2);
+  gc_mark_phase(exp3);
+  gc_mark_phase(env);
+  gc_mark_phase(env2);
+  gc_mark_aux(aux_data, aux_size);
+
+#ifdef VISUALIZE_HEAP
+  heap_vis_gen_image();
+#endif
+
+  return gc_sweep_phase();
+}
+</code></pre>
+<p>In <code>heap_perform_gc_aux</code> we can see that there are a few different functions that perform marking.</p>
+<ol>
+<li><code>gc_mark_freelist</code></li>
+<li><code>gc_mark_phase</code></li>
+<li><code>gc_mark_aux</code></li>
+</ol>
+<p>Out of these <code>gc_mark_phase</code> is the most general. It traverses any heap structure and marks all reachable nodes. The <code>gc_mark_freelist</code> function assumes that the argument passed to is i a proper linked-list and can iterate over it using a while loop. <code>gc_mark_aux</code> is passed an array as argument and can also iterate over its argument efficiently.</p>
+<pre><code>int gc_mark_phase(VALUE env) {
+
+  if (!is_ptr(env)) {
+      return 1; // Nothing to mark here
+  }
+
+  if (get_gc_mark(ref_cell(env))) {
+    return 1; // Circular object on heap, or visited..
+  }
+
+  // There is at least a pointer to one cell here. Mark it and recurse over  car and cdr 
+  heap_state.gc_marked ++;
+
+  set_gc_mark(ref_cell(env));
+
+  VALUE t_ptr = type_of(env);
+
+  if (t_ptr == PTR_TYPE_BOXED_I ||
+      t_ptr == PTR_TYPE_BOXED_U ||
+      t_ptr == PTR_TYPE_BOXED_F ||
+      t_ptr == PTR_TYPE_ARRAY) {
+    return 1;
+  } 
+
+  int res = 1;
+  res = res &amp;&amp; gc_mark_phase(car(env));
+  res = res &amp;&amp; gc_mark_phase(cdr(env));
+
+  return res;
+}
+</code></pre>
+<p>The <code>gc_mark_phase</code> function takes a lispBM <code>VALUE</code> as argument. The argument is called <code>env</code> but that is not important, it could be any heap structure.</p>
+<p>The first thing that is checked is if the argument, <code>env</code> is a pointer. If it is not a pointer it is a value of some kind, for example a symbol, this is an indication that we have reached a leaf node and no marking is needed so traversal is aborted. The <code>gc_mark_phase</code> function is recursive, so this leaf node case is also a recursion terminating case.</p>
+<p>If the argument is a pointer, then a second check is performed to see if the cell that the pointer points to is already marked. This could turn up if there is a circular structure stored on the heap. We do not need to traverse down a path that is already marked, so this is also a case that stops recursion.</p>
+<p>If we did not already exit the <code>gc_mark_phase</code> function, it means we have a pointer to something that is not marked. So then we mark it. It could be that the pointer points to a special cell, a so-called boxed value of some kind in that case we do not traverse into it, just mark the box. The contents of the box is an arbitrary value in the car position and a special symbol in the cdr. We cannot go into the box here, because the arbitrary value could be mistaken for a valid heap pointer, but we also know that we do not need to go into the box as it wont contain any further heap pointers.</p>
+<p>And now, if we are still in the function, two recursive calls are made on the <code>car</code> and the <code>cdr</code>.</p>
+<p>The free list is a very special case. We know a lot about this list. It is a proper linked list where the <code>car</code> is always a special symbol (called <em>RECOVERED</em>) and the <code>cdr</code> is either a pointer to another cell or the symbol <code>nil</code>. So we can very efficiently traverse and mark all of the free list. And if we encounter something that does not match the rules above something is wrong and the list is surely corrupted.</p>
+<pre><code>int gc_mark_freelist() {
+
+  VALUE curr;
+  cons_t *t;
+  VALUE fl = heap_state.freelist;
+
+  if (!is_ptr(fl)) {
+    if (val_type(fl) == VAL_TYPE_SYMBOL &amp;&amp;
+    fl == NIL){
+      return 1; // Nothing to mark here
+    } else {
+      return 0;
+    }
+  }
+
+  curr = fl;
+  while (is_ptr(curr)){
+     t = ref_cell(curr);
+     set_gc_mark(t);
+     curr = read_cdr(t);
+
+     heap_state.gc_marked ++;
+  }
+
+  return 1;
+}
+
+
+</code></pre>
+<p>To mark the free list, first check if the free list empty. So, if the free list is the symbol <code>nil</code>, that indicates that there are no free cells and we can return immediately. If it is a symbol but not <code>nil</code> then there is a problem.</p>
+<p>Otherwise, just loop over the linked list as long as the current value is pointer and mark everything along the way.</p>
+<p>The <code>gc_mark_aux</code> function (used for marking the continuation stack) is also very efficient but it has to run the general <code>gc_mark_phase</code> function on each element of the stack that may be a heap structure. In other words, all values can be skipped and ignored.</p>
+<pre><code>int gc_mark_aux(UINT *aux_data, unsigned int aux_size) {
+
+  for (unsigned int i = 0; i &lt; aux_size; i ++) {
+    if (is_ptr(aux_data[i])) {
+
+      TYPE pt_t = ptr_type(aux_data[i]);
+      UINT pt_v = dec_ptr(aux_data[i]);
+
+      if ( (pt_t == PTR_TYPE_CONS ||
+        pt_t == PTR_TYPE_BOXED_I ||
+        pt_t == PTR_TYPE_BOXED_U ||
+        pt_t == PTR_TYPE_BOXED_F ||
+        pt_t == PTR_TYPE_ARRAY ||
+        pt_t == PTR_TYPE_REF ||
+        pt_t == PTR_TYPE_STREAM) &amp;&amp;
+       pt_v &lt; heap_state.heap_size) {
+
+    gc_mark_phase(aux_data[i]);
+      }
+    }
+  }
+
+  return 1;
+}
+
+</code></pre>
+<p>That concludes marking of used heap objects and it is time for the sweep. The sweep function would also have been very tiny if it weren't boxed values that here need some special attention. If we forget about those for a moment, what the sweep does is to loop over the entire heap and in each cell it checks the mark bit. If the bit is not set, the cell is added to the free list.</p>
+<p>The extra complication comes from arrays that are stored in cells where the <code>car</code> is arbitrary pointer (not to the heap) and the <code>cdr</code> is the symbol <code>DEF_REPR_ARRAY_TYPE</code>. If an object with this property is encountered <code>free</code> should be called on the address in the <code>car</code> in addition to adding the cell to the free list.</p>
+<pre><code>int gc_sweep_phase(void) {
+
+  unsigned int i = 0;
+  cons_t *heap = (cons_t *)heap_state.heap;
+
+  for (i = 0; i &lt; heap_state.heap_size; i ++) {
+    if ( !get_gc_mark(&amp;heap[i])){
+
+      // Check if this cell is a pointer to an array
+      // and free it.
+      if (type_of(heap[i].cdr) == VAL_TYPE_SYMBOL &amp;&amp;
+      dec_sym(heap[i].cdr) == DEF_REPR_ARRAY_TYPE) {
+    array_t *arr = (array_t*)heap[i].car;
+    switch(arr-&gt;elt_type) {
+    case VAL_TYPE_CHAR:
+      if (arr-&gt;data.c) free(arr-&gt;data.c);
+      break;
+    case VAL_TYPE_I:
+    case PTR_TYPE_BOXED_I:
+      if (arr-&gt;data.i) free(arr-&gt;data.i);
+      break;
+    case VAL_TYPE_U:
+    case PTR_TYPE_BOXED_U:
+    case VAL_TYPE_SYMBOL:
+      if (arr-&gt;data.u) free(arr-&gt;data.u);
+      break;
+    case PTR_TYPE_BOXED_F:
+      if (arr-&gt;data.f) free(arr-&gt;data.f);
+      break;
+    default:
+      return 0; // Error case: unrecognized element type.
+    }
+    free(arr);
+    heap_state.gc_recovered_arrays++;
+      }
+
+      // create pointer to use as new freelist
+      UINT addr = enc_cons_ptr(i);
+
+      // Clear the &quot;freed&quot; cell.
+      heap[i].car = RECOVERED;
+      heap[i].cdr = heap_state.freelist;
+      heap_state.freelist = addr;
+
+      heap_state.num_alloc --;
+      heap_state.gc_recovered ++;
+    }
+    clr_gc_mark(&amp;heap[i]);
+  }
+  return 1;
+}
+</code></pre>
+<p>When cells are added to the free list the <code>car</code> position is set to the symbol <code>RECOVERED</code>, this is to help with debugging. If all cells that have been freed contain the symbol <code>RECOVERED</code> it is easy to notice if a bug is causing a value that is still in use to be freed as a completely nonsense symbol would appear in the expression.</p>
+<p>The sweep also clears the mark bit of all cells as it traverses the heap so that things are set up properly for the next round of marking.</p>
+<p>Wow. Looking back at this now is interesting. This code was such a struggle to produce at one time and then I haven't really even looked at it again for quite a while. Now it seems like there is almost nothing to it! However, with this kind of code it is all in the details. Getting the details right when also learning about the "big picture" is something to not take lightly.</p>
+<p>If you have questions about this or tips on how I can make it more accessible or suggestions of improvements, I would be very happy.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
