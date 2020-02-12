@@ -4,13 +4,15 @@
 
 I bought my Neato lidar very cheaply from Ebay. I did get it to run
 and talk to an stm32f4 under ChibiOs.  But it does seem to not be in
-top working order. Good enough to play with though. There are several
-blogs and forum posts on the web that discuss the Neato lidar in one
-way or another and I pieced together the information needed to talk to
-the lidar from such sources. At this time I cannot remember exactly
-which source gave me what insight and I also am uncertain that I
-managed to find all the sources that helped me. So here is a list
-other sites that talk about the Neato lidar in a hobbyist setting:
+top working order. Good enough to play with though.
+
+There are several blogs and forum posts on the web that discuss the
+Neato lidar in one way or another and I pieced together the
+information needed to talk to the lidar from such sources. At this
+time I cannot remember exactly which source gave me what insight and I
+am also uncertain that I managed to find all the sources that helped
+me. So here is a list other sites that talk about the Neato lidar in a
+hobbyist setting:
 
 1. [Lidar on RPI](https://hackaday.com/2016/01/22/how-to-use-lidar-with-the-raspberry-pi/)
 2. [Adding Inexpensive Lidar to your Robot](https://www.impulseadventure.com/elec/robot-lidar-neato-xv11.html)
@@ -36,10 +38,9 @@ videos](https://www.youtube.com/playlist?list=PLtf_3TaqZoDM_xsXJHJVC7ktZzplqYM2Z
 ## A little bit about the setup
 
 The FMRC (Four Motor Robot Controller) can independently control 4
-different DC motors independently using 2 DRV8833 or on the newer
-version DRV8847 chips. It has two MCUs, an stm32f4 and an NRF52. When
-it comes to connectivity it has USB, UART, Bluetooth and a CAN
-Transceiver.
+different DC motors using 2 DRV8833 or on the newer version DRV8847
+chips. It has two MCUs, an stm32f4 and an NRF52. When it comes to
+connectivity it has USB, UART, Bluetooth and a CAN Transceiver.
 
 To interface with the Neato lidar, the UART connector is used for data
 and one of the motor drive channels is used to control the RPM of the
@@ -115,13 +116,13 @@ mode 7.  In the stm32f4 datasheet you can find this information in the
 section about *Alternate Function Mapping*. It then starts the serial
 driver.
 
-After setting up the uart, the lidar spinning motor is calibrated. The
-lidar reports its RPM in its output data. So what the calibration is
-doing is trying to find the PWM duty cycle that makes the lidar spin
-at 300RPM. I am not sure that 300RPM is really the ideal. I found this
-number by experiments. It seemed to me that at 300RPM it returned the
-highest number of valid distance readings. This may of course be
-something specific to my used and not 100% *OK* lidar.
+After setting up the uart, the lidar-spinning motor is calibrated. The
+lidar reports its RPM in the data it outputs. So what the calibration
+function is doing is trying to find the PWM duty cycle that makes the
+lidar spin at 300RPM. I am not sure that 300RPM is really the ideal. I
+found this number by experiments. It seemed to me that at 300RPM it
+returned the highest number of valid distance readings. This may of
+course be something specific to my used and not 100% *OK* lidar.
 
 Following the calibration, the `neatoLidarThread` is set up. We will
 look at this code after first looking at the calibration routine.
@@ -130,7 +131,7 @@ introduced. But just assume that there is a way to read the current
 RPM out from the lidar, the details of that are shown later. 
 
 The calibration routine performs a so-called binary search over the
-PWM duty cycles and try to lock down on a duty cycle that results in
+PWM duty cycles and tries to lock down on a duty cycle that results in
 300RPM.
 
 It does this by:
@@ -187,7 +188,7 @@ int calibrate_lidar_motor() {
 ```
 
 The `motor_duty` is a global variable that is later accessed by the
-lidar thread and fine tuned a little bit during operation.
+lidar-thread and fine tuned a little bit during operation.
 
 ```
 static int motor_duty = 5000;
@@ -195,7 +196,7 @@ static int motor_duty = 5000;
 
 
 Each data-packet that is sent from the lidar over the uart contains
-for distance readings.  90 packets are sent from the lidar during one
+four distance readings.  90 packets are sent from the lidar during one
 rotation giving 360 distance readings for a full revolution.
 The struct below represents the data sent in each package.
 It contains:
