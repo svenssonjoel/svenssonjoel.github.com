@@ -107,6 +107,20 @@
 <p>The code for parsing lispBM source into heap representations is located in the files <code>tokpar.c</code> and <code>tokpar.h</code>. The parser can handle parsing both plain text source code and compressed source data. This text will however just show the plain text case, saving compression and parsing of compressed code for later.</p>
 <p>The parsing is done by reading <em>tokens</em> from the source code. The tokens represent, in a way, complete syntactical <em>objects</em>. In the lispBM tokenizer that means that for example <code>(</code> is one token and <code>3.14159</code> is another. That is, a token can be one or more consecutive characters. The parser then uses these tokens read out from the text to produce corresponding heap representation.</p>
 <p>If you are interested in more of an overview of what lispBM is, read <a href="../lispbm_current_status/index.html">here</a>.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- horizontal unit -->
+
+<p><ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-6663189426712847"
+data-ad-slot="2225439322"
+data-ad-format="auto"
+data-full-width-responsive="true"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 <h2 id="plumbing">Plumbing</h2>
 <p>The file <code>tokpar.c</code> starts off by defining a few names for the different tokens that make up valid lispBM programs. A value to represent error is also defined as well as a value that signals that the end of the source code has been reached.</p>
 <pre><code>#define TOKOPENPAR      0
@@ -698,6 +712,20 @@ int tok_u(tokenizer_char_stream str, UINT *res) {
 }
 </code></pre>
 <p>That is it for parsing as it is done in lispBM. If you spot problems I am very thankful to hear about it.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- horizontal unit -->
+
+<p><ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-6663189426712847"
+data-ad-slot="2225439322"
+data-ad-format="auto"
+data-full-width-responsive="true"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>© Copyright 2020 Bo Joel Svensson</p>

@@ -31,6 +31,18 @@ numbers of the form `0xXYZFFFF` in hexadecimal notation.  The
 extension symbols however are allocated on the symbol representation
 table when the extension is added to the system. 
 
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 ## Fundamental Operations
 
 The code that is involved in the execution of fundamental operations
@@ -282,6 +294,19 @@ in full control of what you want your extensions to do with these
 values. For example a possible extension would be to take an ID
 representing a GPIO pin as input and then toggle that pin in the
 implementation. 
+
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ___
 

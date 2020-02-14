@@ -146,6 +146,20 @@
 <p>In most cases the character read from the stream is also <em>echoed</em> back onto the stream, so they will appear on the terminal on the other end of the stream as well (where the user sits).</p>
 <h2 id="the-repl-as-a-chibios-thread">The REPL as a ChibiOs Thread</h2>
 <p>With the help of the <code>inputline</code> function defined above we can now start to write a REPL. First, though, I would like to show how to implement a lispBM extension for printing strings.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- horizontal unit -->
+
+<p><ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-6663189426712847"
+data-ad-slot="2225439322"
+data-ad-format="auto"
+data-full-width-responsive="true"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 <h3 id="example-of-a-lispbm-extension">Example of a LispBM Extension</h3>
 <p>The previous text, on <a href="../lispBM/fundamentals_and_extensions/index.html">Fundamentals and Extensions</a>, outlined how fundamentals and extensions work <em>internally</em> but didn't provide any example extension. So this example may make the extensions concept a bit more concrete.</p>
 <p>The extension <code>ext_print</code> takes a pointer to the first argument and the number of arguments as input. This is the interface used for all extensions. All arguments are lispBM <code>VALUE</code>s so the extension function itself has to decode these into things that make sense in a C program.</p>

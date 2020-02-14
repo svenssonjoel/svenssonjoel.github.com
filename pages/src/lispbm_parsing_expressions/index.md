@@ -37,6 +37,18 @@ to produce corresponding heap representation.
 If you are interested in more of an overview of what lispBM is, read
 [here](../lispbm_current_status/index.html).
 
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 ## Plumbing 
 
 The file `tokpar.c` starts off by defining a few names for the
@@ -801,6 +813,19 @@ VALUE parse_sexp_list(token tok, tokenizer_char_stream str) {
 ```
 
 That is it for parsing as it is done in lispBM. If you spot problems I am very thankful to hear about it. 
+
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ___
 

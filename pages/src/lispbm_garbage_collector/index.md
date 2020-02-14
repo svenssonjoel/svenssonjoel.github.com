@@ -29,6 +29,18 @@ implementation the GC code is located in the files `heap.h` and
 read the earlier text [Another Lisp for
 Microcontrollers](../lispbm_current_status/index.html).
 
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 ## Mark and Sweep Garbage Collection
 
 In lispBM the heap is made up from cons-cells, which each is a pair of
@@ -380,6 +392,18 @@ picture" is something to not take lightly.
 
 If you have questions about this or tips on how I can make it more
 accessible or suggestions of improvements, I would be very happy.
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ___
 

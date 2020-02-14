@@ -119,6 +119,20 @@
 </code></pre>
 <p>Only the <code>cdr</code> field of a cons cell hold a GC bit so there is no problem in using all 32Bits of the <code>car</code> if only it can be identified properly.</p>
 <p>Arrays are a special case and not fully implemented yet. Currently the only thing that is an array in lispBM is a text string. Most of the plumbing is there for implementing arrays of any other lispBM value type, it just needs to be hacked up. Arrays are encoded in a very similar way to boxed values, just that instead of a 32Bit value in the <code>car</code> slot there is an arbitrary pointer. The array storage itself is allocated using <code>malloc</code>. When garbage collection frees a cons cell with the special symbol <code>DEF_REPR_ARRAY_TYPE</code>, it also calls <code>free</code> on the pointer in the <code>car</code> position.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- horizontal unit -->
+
+<p><ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-6663189426712847"
+data-ad-slot="2225439322"
+data-ad-format="auto"
+data-full-width-responsive="true"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>© Copyright 2020 Bo Joel Svensson</p>

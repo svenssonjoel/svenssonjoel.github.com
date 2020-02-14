@@ -78,6 +78,17 @@ functionality. LispBM has also been tried on the ARM A9 core of the
 Xilinx Zynq 7000 here depending on the HAL that is provided with the
 Xilinx toolchain.
 
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ## A Few Thoughts on Lisp
 
@@ -1232,6 +1243,18 @@ EDIT: Here is a simpler variant of the `iota` function provided by [Josef Svenni
 7. Extensions (`extensions.c` and `extensions.h`).
 
 I hope to write about these aspects of lispBM at a later time.
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ___
 

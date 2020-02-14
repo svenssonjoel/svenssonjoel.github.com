@@ -87,6 +87,18 @@ contain information about what to do with that number. The
 `perform_gc` flag is set (as hinted above), when heap is full and we
 cannot proceed unless gc is executed. 
 
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 ## Often Used Dependencies
 
 There a couple of often used functions throughout the `eval_cps` code
@@ -1293,6 +1305,19 @@ Stack sp 3 : print
 Here execution was stopped after a short while with ctrl+c and we
 can see that the stack pointer is at most 11 and also that we have
 incremented `x` to 3160 by now. Looks a lot better! 
+
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ___
 
