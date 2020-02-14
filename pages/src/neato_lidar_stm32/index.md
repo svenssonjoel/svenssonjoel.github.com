@@ -35,6 +35,18 @@ videos](https://www.youtube.com/playlist?list=PLtf_3TaqZoDM_xsXJHJVC7ktZzplqYM2Z
 
 ![Neato Lidar](./media/neato1.jpg)
 
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- horizontal unit -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6663189426712847"
+     data-ad-slot="2225439322"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 ## A little bit about the setup
 
 The FMRC (Four Motor Robot Controller) can independently control 4
