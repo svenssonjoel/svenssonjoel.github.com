@@ -8,7 +8,6 @@ tried this code on a stm32f407G-discovery board. The version of
 ChibiOS used for that test is `19.1.2`.
 
 
-
 ## Input and Output on a ChibiOs BaseSequentialStream
 
 ChibiOs has an abstraction for byte streams called
