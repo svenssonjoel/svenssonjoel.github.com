@@ -171,19 +171,104 @@ upper/lower case combo all refer to the same symbol:
 > 1
 # 
 ```
+-----
+*Edit 2020-02-15*
 
-Two functions is defined for accessing the maximum key and code
-length.
+After writing this down I am now thinking that having very similar
+lengths of the code words is probably not a very good idea at all. It
+may be better to allow for the longer multibyte keys (such as
+`define`) to have a higher number of code bits if it means that some
+shorter keys can have really short codes.
+
+So I tweaked the python script that generates the codes a bit and had
+it generate this sequence of codes:
 
 ```
-int length_max_compressible() {
-  return MAX_KEY_LENGTH;
-}
-
-int length_max_decompressible() {
-  return MAX_CODE_LENGTH;
-}
+#define NUM_CODES 64
+#define MAX_KEY_LENGTH 6
+#define MAX_CODE_LENGTH 10
+char *codes[NUM_CODES][2] = {
+    { "nil", "010011100" },
+    { "cdr", "0100111010" },
+    { "car", "0100111011" },
+    { "cons", "0100111100" },
+    { "let", "0100111101" },
+    { "define", "0100111110" },
+    { "progn", "0100111111" },
+    { "quote", "010011000" },
+    { "list", "010011001" },
+    { "if", "010011010" },
+    { "lambda", "010011011" },
+    { "((", "1110" },
+    { "))", "001" },
+    { ")", "1111" },
+    { "(", "000" },
+    { "z", "110110" },
+    { "y", "011101" },
+    { "x", "110100" },
+    { "w", "101110" },
+    { "v", "100110" },
+    { "u", "011100" },
+    { "t", "100111" },
+    { "s", "101100" },
+    { "r", "101101" },
+    { "q", "101111" },
+    { "p", "011110" },
+    { "o", "011111" },
+    { "n", "100011" },
+    { "m", "110111" },
+    { "l", "110000" },
+    { "k", "100000" },
+    { "j", "01000" },
+    { "i", "101001" },
+    { "h", "101010" },
+    { "g", "011011" },
+    { "f", "100100" },
+    { "e", "101000" },
+    { "d", "110010" },
+    { "c", "100010" },
+    { "b", "100101" },
+    { "a", "110001" },
+    { "9", "1101011" },
+    { "8", "1000010" },
+    { "7", "1000011" },
+    { "6", "1010110" },
+    { "5", "1010111" },
+    { "4", "1100110" },
+    { "3", "1100111" },
+    { "2", "010010" },
+    { "1", "1101010" },
+    { "0", "0110101" },
+    { " ", "0110011" },
+    { "'", "0101011" },
+    { "\\", "0101100" },
+    { "\"", "0101110" },
+    { "#", "0101111" },
+    { ".", "0110001" },
+    { ">", "0110010" },
+    { "<", "0101000" },
+    { "=", "0101101" },
+    { "/", "0110100" },
+    { "*", "0101010" },
+    { "-", "0110000" },
+    { "+", "0101001" }
+    };
 ```
+
+Now, There wont actually be an optimal sequence of codes when using
+this approach at all since the codes are not based on statistics from
+the currently compressed program. But given that all the codes here
+are contain fewer bits than the corresponding characters would (as
+8bit chars), this approach will make most programs somewhat smaller.
+since string literals are not compressed and the compressed data
+contains the size in bits of the data, stored in the first 4 bytes, it
+is possible to come up with obscure programs that are larger after
+compressing them. For example the program consisting only of the
+expression `"hello world"`, would be larger compressed than not.
+
+-----
+
+
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <!-- horizontal unit -->

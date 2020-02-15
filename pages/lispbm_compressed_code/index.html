@@ -203,15 +203,82 @@ char *codes[NUM_CODES][2] = {
 &gt; 1
 # 
 </code></pre>
-<p>Two functions is defined for accessing the maximum key and code length.</p>
-<pre><code>int length_max_compressible() {
-  return MAX_KEY_LENGTH;
-}
-
-int length_max_decompressible() {
-  return MAX_CODE_LENGTH;
-}
+<hr />
+<p><em>Edit 2020-02-15</em></p>
+<p>After writing this down I am now thinking that having very similar lengths of the code words is probably not a very good idea at all. It may be better to allow for the longer multibyte keys (such as <code>define</code>) to have a higher number of code bits if it means that some shorter keys can have really short codes.</p>
+<p>So I tweaked the python script that generates the codes a bit and had it generate this sequence of codes:</p>
+<pre><code>#define NUM_CODES 64
+#define MAX_KEY_LENGTH 6
+#define MAX_CODE_LENGTH 10
+char *codes[NUM_CODES][2] = {
+    { &quot;nil&quot;, &quot;010011100&quot; },
+    { &quot;cdr&quot;, &quot;0100111010&quot; },
+    { &quot;car&quot;, &quot;0100111011&quot; },
+    { &quot;cons&quot;, &quot;0100111100&quot; },
+    { &quot;let&quot;, &quot;0100111101&quot; },
+    { &quot;define&quot;, &quot;0100111110&quot; },
+    { &quot;progn&quot;, &quot;0100111111&quot; },
+    { &quot;quote&quot;, &quot;010011000&quot; },
+    { &quot;list&quot;, &quot;010011001&quot; },
+    { &quot;if&quot;, &quot;010011010&quot; },
+    { &quot;lambda&quot;, &quot;010011011&quot; },
+    { &quot;((&quot;, &quot;1110&quot; },
+    { &quot;))&quot;, &quot;001&quot; },
+    { &quot;)&quot;, &quot;1111&quot; },
+    { &quot;(&quot;, &quot;000&quot; },
+    { &quot;z&quot;, &quot;110110&quot; },
+    { &quot;y&quot;, &quot;011101&quot; },
+    { &quot;x&quot;, &quot;110100&quot; },
+    { &quot;w&quot;, &quot;101110&quot; },
+    { &quot;v&quot;, &quot;100110&quot; },
+    { &quot;u&quot;, &quot;011100&quot; },
+    { &quot;t&quot;, &quot;100111&quot; },
+    { &quot;s&quot;, &quot;101100&quot; },
+    { &quot;r&quot;, &quot;101101&quot; },
+    { &quot;q&quot;, &quot;101111&quot; },
+    { &quot;p&quot;, &quot;011110&quot; },
+    { &quot;o&quot;, &quot;011111&quot; },
+    { &quot;n&quot;, &quot;100011&quot; },
+    { &quot;m&quot;, &quot;110111&quot; },
+    { &quot;l&quot;, &quot;110000&quot; },
+    { &quot;k&quot;, &quot;100000&quot; },
+    { &quot;j&quot;, &quot;01000&quot; },
+    { &quot;i&quot;, &quot;101001&quot; },
+    { &quot;h&quot;, &quot;101010&quot; },
+    { &quot;g&quot;, &quot;011011&quot; },
+    { &quot;f&quot;, &quot;100100&quot; },
+    { &quot;e&quot;, &quot;101000&quot; },
+    { &quot;d&quot;, &quot;110010&quot; },
+    { &quot;c&quot;, &quot;100010&quot; },
+    { &quot;b&quot;, &quot;100101&quot; },
+    { &quot;a&quot;, &quot;110001&quot; },
+    { &quot;9&quot;, &quot;1101011&quot; },
+    { &quot;8&quot;, &quot;1000010&quot; },
+    { &quot;7&quot;, &quot;1000011&quot; },
+    { &quot;6&quot;, &quot;1010110&quot; },
+    { &quot;5&quot;, &quot;1010111&quot; },
+    { &quot;4&quot;, &quot;1100110&quot; },
+    { &quot;3&quot;, &quot;1100111&quot; },
+    { &quot;2&quot;, &quot;010010&quot; },
+    { &quot;1&quot;, &quot;1101010&quot; },
+    { &quot;0&quot;, &quot;0110101&quot; },
+    { &quot; &quot;, &quot;0110011&quot; },
+    { &quot;&#39;&quot;, &quot;0101011&quot; },
+    { &quot;\\&quot;, &quot;0101100&quot; },
+    { &quot;\&quot;&quot;, &quot;0101110&quot; },
+    { &quot;#&quot;, &quot;0101111&quot; },
+    { &quot;.&quot;, &quot;0110001&quot; },
+    { &quot;&gt;&quot;, &quot;0110010&quot; },
+    { &quot;&lt;&quot;, &quot;0101000&quot; },
+    { &quot;=&quot;, &quot;0101101&quot; },
+    { &quot;/&quot;, &quot;0110100&quot; },
+    { &quot;*&quot;, &quot;0101010&quot; },
+    { &quot;-&quot;, &quot;0110000&quot; },
+    { &quot;+&quot;, &quot;0101001&quot; }
+    };
 </code></pre>
+<p>Now, There wont actually be an optimal sequence of codes when using this approach at all since the codes are not based on statistics from the currently compressed program. But given that all the codes here are contain fewer bits than the corresponding characters would (as 8bit chars), this approach will make most programs somewhat smaller. since string literals are not compressed and the compressed data contains the size in bits of the data, stored in the first 4 bytes, it is possible to come up with obscure programs that are larger after compressing them. For example the program consisting only of the expression <code>"hello world"</code>, would be larger compressed than not.</p>
+<hr />
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
 <!-- horizontal unit -->
