@@ -277,7 +277,7 @@ char *codes[NUM_CODES][2] = {
     { &quot;+&quot;, &quot;0101001&quot; }
     };
 </code></pre>
-<p>Now, There wont actually be an optimal sequence of codes when using this approach at all since the codes are not based on statistics from the currently compressed program. But given that all the codes here are contain fewer bits than the corresponding characters would (as 8bit chars), this approach will make most programs somewhat smaller. since string literals are not compressed and the compressed data contains the size in bits of the data, stored in the first 4 bytes, it is possible to come up with obscure programs that are larger after compressing them. For example the program consisting only of the expression <code>"hello world"</code>, would be larger compressed than not.</p>
+<p>Now, There wont actually be an optimal sequence of codes when using this approach at all since the codes are not based on statistics from the currently compressed program. But given that all the codes here contain fewer bits than the corresponding characters would (as 8bit chars), this approach will make most programs somewhat smaller. since string literals are not compressed and the compressed data contains the size in bits of the data, stored in the first 4 bytes, it is possible to come up with obscure programs that are larger after compressing them. For example the program consisting only of the expression <code>"hello world"</code>, would be larger compressed than not.</p>
 <hr />
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 

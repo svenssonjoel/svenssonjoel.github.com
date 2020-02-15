@@ -258,7 +258,7 @@ char *codes[NUM_CODES][2] = {
 Now, There wont actually be an optimal sequence of codes when using
 this approach at all since the codes are not based on statistics from
 the currently compressed program. But given that all the codes here
-are contain fewer bits than the corresponding characters would (as
+contain fewer bits than the corresponding characters would (as
 8bit chars), this approach will make most programs somewhat smaller.
 since string literals are not compressed and the compressed data
 contains the size in bits of the data, stored in the first 4 bytes, it
