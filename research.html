@@ -1,0 +1,291 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Research</TITLE>
+  
+  <meta charset="UTF-8">
+  <meta name="description" content="Research related stuff. List of publications and such">
+  <meta name="keywords" content="research functional programming fp haskell gpu parallelism">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("./images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+  
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  } 
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>Research</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="./index.html"> Home </a>
+  <a href="./privacy_policy.html">Privacy Policy</a>
+  <a href="./about.html"> About </a>
+  <a class="active" href="./research.html"> Research </a>
+</div>
+
+<h2>Research</h2>
+
+  <b> Functional Programming and microcontrollers, Functional Programming in hardware design, Functional Programming in IoT</b><br>
+  Mostly as a hobby, but also as a way to learn about microcontrollers while doing something fun, I develop a Lisp interpreter that
+  runs on the STM32 and NRF52 microcontrollers that I call <a href="https://github.com/svenssonjoel/lispBM"> LispBM</a>.
+  <br><br>      
+      
+      
+  <b> Autonomous Vehicles, Vehicle Electronic Architecture, Embedded Systems </b><br>
+  At RISE I have been involved in work related to the <a href=www.github.se/vedderb/rise_sdvp>RISE Self Driving Vehicle Platform</a>
+  together with <a href=https://vedder.se/>Benjamin Vedder</a>. Benjamin is not at RISE anymore but I enjoyed working with him a lot.
+  I have also been a part of a research project involving <a href=http://propart-project.eu/> UWB positioning and Galileo </a> and
+  the <a href=https://www.vinnova.se/en/p/chronos-part-2/> Chronos </a> projects about testing autonomous and ADAS functionality at AstaZero.
+  At RISE I had the chance to get started on PCB design under the mentorship of Benjamin Vedder. <br> <br>
+  
+  <b> Reconfigurable computing </b> <br> 
+  I have worked on acceleration of applications by utilising reconfigurable hardware, Field Programmable Gate Arrays (FPGAs), Xiling Zynq 7000 devices to be specific.
+  This work focused on OpenCL (High level synthesis) generated hardware kernels treated as compute black boxes. We experimented 
+  with surrounding support infrastructure for making these OpenCL kernels execute more efficiently, for example by moving scheduling 
+  of kernels into hardware, relieving the processing system of the ZYNQ of this task. My research in this area ended when I left Chalmers 
+  but I continue to explore the Zynq platform and to write down what I learn in the form of <a href="https://www.researchgate.net/publication/302300881_Getting_Started_with_OpenCL_on_the_ZYNQ"> guides for beginners </a> of Zynq and FPGAs.
+  The Zynq development/experiment board I use is the <a href=https://wiki.trenz-electronic.de/display/PD/TE0726+Resources> Trenz ZynqBerry</a>.
+  <br><br>
+  
+  <b> Streaming aggregation on an FPGA </b> <br>
+  <a href="http://www.cse.chalmers.se/~ramgee/"> Prajith</a> is doing research on acceleration of streaming computations using FPGAs and 
+  I am happy to have worked with him in exploring the capabilities of the Maxeler machine. 
+  <br> 
+  <br> 
+  
+  <b> Lightweight binary-instrumentation </b> <br>
+  During a postdoc at Indiana University I participated in work on binary-instrumentation together with Buddhika Chamith and <a href="https://www.cs.indiana.edu/~rrnewton/homepage.html"> Ryan Newton </a>.
+  <br>
+  <br>
+  
+  <b> Embedded languages and parallelism </b> <br>
+  During my Ph.D. studies <a href="http://www.cse.chalmers.se/~ms/">Mary Sheeran</a>, <a href="http://www.cse.chalmers.se/~koen/">Koen Claessen</a>, <a href="http://www.cse.chalmers.se/~josefs/">Josef Svenningsson</a> and I were exploring high level and functional approaches to program highly parallel computers such as a GPU. 
+  Currently there are GPUs available with over a thousand processing elements. Our approach was to develop an embedded
+  language in the style of Lava, using combinators to describe 
+  parallel computation structures. We call this language Obsidian. Running an Obsidian program results in a CUDA C program being generated. 
+  We have also experimented with Haskell embeddings of 
+  <a href="http://software.intel.com/en-us/articles/intel-array-building-blocks">Intel's Array Building Blocks</a>, ArBB.
+  This embedded language we call EmbArBB. <br> 
+  
+<h3>Guides and Tutorials</h3>
+<ul>
+<li> <a href=./writing/blinkledzynq.pdf> Blink a LED using the ZynqBerry</a> (2017)
+<li> <a href=https://www.researchgate.net/publication/302300881_Getting_Started_with_OpenCL_on_the_ZYNQ> Getting started guide: OpenCL on the Zynq</a> (2016)
+</ul>  
+  
+<h3>Presentation slides</h3>
+
+<ul>
+<li><b>PFP Course 2016</b><a href="./slides/PFP_LECTURE_2016.pdf"> Parallel Functional Programming </a>
+<li><b>PFP Course 2013</b><a href="./slides/lecture2.pdf">Obsidian: Internals</a>(April 2013)
+<li><b>PFP Course 2013</b><a href="./slides/lecture1.pdf">GPU Programming: Imperative and Functional Approaches</a>(April 2013)
+<li><b>FHPC 2012</b><a href="./slides/AlmostFreePresentation.pdf">Parallel Programming in Haskell Almost for Free</a> (Sep 2012)  
+<li><b>Intel 2011</b><a href="./slides/Harbb.pdf"> Haskell+ArBB presentation.</a>(2011)<br>
+<li><b><a href="./slides/shadowmapping.pdf"> Intro to basic Shadow mapping.</a> (2010)<br>
+<li><b>Lic Presentation</b><a href="./slides/licpres.pdf"> slides. </a> <br>
+<li><b><a href="http://www.cs.chalmers.se/Cs/Grundutb/Kurser/svh/index.html"> HDV </a> Course 2009</b> <a href="./slides/obsidian_090514.pdf">Obsidian: GPGPU
+    Programming in Haskell.</a>
+ (May 2009)
+<li><b>IFL 2008</b> <a href="./slides/ifl2008_obsidian.pdf">Obsidian: A Domain 
+ Specific Embedded Language for Parallel Programming of Graphics Processors.</a>
+ (Sep 2008)
+<li><b>DCC 2008</b> <a href="./slides/dcc2008_obsidian.pdf">Obsidian: GPU
+ Programming in Haskell </a> (Mar 2008)
+<li><b>Master thesis presentation</b> <a href="./slides/masterpres.pdf">An 
+ Embedded language for data-parallel programming</a> (Feb 2008)
+</ul>
+
+<h3>Experiment documentation</h3>
+<ul>
+  <li> <a href=./writing/zynqreduce.pdf> OpenCL Reduction on the Zynq </a> (2017)
+</ul>
+
+<h3>Technical reports</h3>
+<ul>
+<li> Bo Joel Svensson: <a href=./writing/ZynqBandwidth.pdf> Exploring OpenCL Memory Throughput on the Zynq </a> (2016) 
+<li> Bo Joel Svensson, Mary Sheeran, Ryan Newton: <a href="http://www.cs.indian
+a.edu/cgi-bin/techreports/TRNNN.cgi?trnum=TR712">A Language for Nested Data Parallel Design-space Exploration on GPUs</a> (2014)
+<li><b>(Thesis)</b> Bo Joel Svensson: <a href="./thesis/thesis.pdf">Embedded Languages for Data-Parallel Programming</a> (2013)
+<li><b>(Licentiate Thesis)</b> Joel Svensson:  <a href="./writing/lic.pdf">Obsidian:GPU Kernel Programming in Haskell</a>  (2011)
+  <a href="./writing/jslic.bib">BIBTEX</a>
+<li> Joel Svensson, Koen Claessen, Mary Sheeran: 
+  <a href="./writing/GPGPU_tech.pdf">GPGPU Kernel Implementation using an Embedded Language: a Status Report</a> (Jan 2010)
+
+</ul>
+
+
+<h3>Publications</h3>
+<ul>
+<li><b>(HINDAWI Journal of Robotics 2020) Benjamin Vedder, Bo Joel Svensson, Jonny Vinter, Magnus Jonsson: <a href=https://www.hindawi.com/journals/jr/2020/9345360/?utm_medium=author&utm_source=Hindawi> Automated Testing of Ultra-Wideband Positioning for Autonomous Driving </a>
+<li><b>(ICFPT 2017) Prajith Ramakrishnan Geethakumari, Vincenzo Gulisano, Bo Joel Svensson, Pedro Petersen Moura Trancoso, Philippas Tsigas and Ioannis Sourdis: <a href=http://ieeexplore.ieee.org/document/8280128/> Single Window Stream Aggregation using Reconfigurable Hardware</a>
+<li><b>(PLDI 2017) Buddhika Chamith De Alwis Kahawitage don, Luke Dalessandro, Bo Joel Svensson, Ryan R. Newton: <a href=https://dl.acm.org/citation.cfm?id=3062344&dl=ACM&coll=DL&CFID=1018008436&CFTOKEN=71615509> Instruction Punning: Lightweight Instrumentation for x86-64</a>
+<li><b>(FHPC 2016) Martin Dybdal, Martin Elsman, Bo Joel Svensson and Mary Sheeran: <a href=./writing/fhpc16-preprint.pdf> Low-level functional GPU programming for parallel algorithms </a> 
+<li><b>(CPC 2016) Martin Dybdal, Martin Elsman, Bo Joel Svensson and Mary Sheeran: Low-level functional GPU programming for parallel algorithms  
+<li><b>(PLDI 2016) Buddhika Chamith, Bo Joel Svensson, Luke Dalessandro, Ryan R. Newton: <a href=./writing/pldi16-crossmod.pdf> Living on the edge: Rapid-toggling probes with cross modification on x86</a>
+<li><b>(JFP 2016) Bo Joel Svensson, Mary Sheeran, Ryan Newton: <a href=http://journals.cambridge.org/action/displayFulltext?type=1&fid=10242178&jid=JFP&volumeId=26&issueId=-1&aid=10242156> A Language for Hierarchical Data Parallel Design-space Exploration on GPUs </a>
+<li><b>(FHPC 2015) Michael Vollmer, Bo Joel Svensson, Eric Holk, Ryan R. Newton: <a href=./writing/MetaAuto.pdf>Meta-Programming and Auto-Tuning in the Search for High Performance GPU Code</a>
+<li><b>(FHPC 2015) Bo Joel Svensson, Michael Vollmer, Eric Holk, Trevor L. McDonell, Ryan R. Newton: <a href=./writing/multidev.pdf> Converting Data-Parallelism to Task-Parallelism by Rewrites</a> 
+<li><b>(FHPC 2014) Bo Joel Svensson, Josef Svenningsson: <a href=./writing/defuncEmb.pdf>Defunctionalizing Push Arrays</a> (2014)
+<li><b>(CACM 2014)</b> Bo Joel Svensson, Mary Sheeran, Ryan Newton: <a href="http://cacm.acm.org/magazines/2014/6/175181-design-exploration-through-code-generating-dsls/fulltext">Design Exploration through Code-generating DSLs</a> (2014)
+<li><b>(ACM Queue 2014)</b> Bo Joel Svensson, Mary Sheeran, Ryan Newton: <a href="http://dl.acm.org/citation.cfm?id=2626374">Design Exploration through Code-generating DSLs</a> (2014)
+<li><b>(ICFP 2013)</b> Josef Svenningsson, Bo Joel Svensson: <a href="./writing/bb.pdf">Simple and Compositional Reification of Monadic Embedded Languages</a> (2013)
+<li><b>(FHPC 2013)</b> Josef Svenningsson, Bo Joel Svensson, Mary Sheeran: <a href="./writing/csort.pdf">Counting and Occurrence sort for GPUs using an Embedded Language</a> (2013)
+<li><b>(FHPC 2012)</b> Bo Joel Svensson, Mary Sheeran: <a href="./writing/almost_free.pdf"> Parallel Programming in Haskell Almost for Free</a> (2012)
+<li><b>(DAMP 2012)</b> Koen Claessen, Mary Sheeran, Bo Joel Svensson: <a href="./writing/expressive.pdf"> Expressive Array Constructs in an Embedded GPU Kernel Programming Language</a> (2012) <a href="./expressive.html"> (more info) </a>
+<li><b>(FASPP 2011)</b> Bo Joel Svensson, Ryan Newton:  <a href="./writing/faspp2011_haskell_arbb.pdf">Programming Future Parallel Architectures with Haskell and ArBB</a>  (2011)
+<li><b>(PAPP 2010)</b> Joel Svensson, Koen Claessen, Mary Sheeran:
+  <a href="http://www.sciencedirect.com/science?_ob=ArticleURL&_udi=B9865-506HM1Y-86&_user=10&_coverDate=05%2F31%2F2010&_rdoc=230&_fmt=high&_orig=browse&_srch=doc-info(%23toc%2359117%232010%23999989998%232084734%23FLP%23display%23Volume)&_cdi=59117&_sort=d&_docanchor=&view=c&_ct=311&_acct=C000050221&_version=1&_urlVersion=0&_userid=10&md5=e80230792f0cba7f0c994856bde90b78"> GPGPU kernel implementation and refinement using Obsidian </a> (May 2010)
+<li><b>(IFL 2008)</b> Joel Svensson, Mary Sheeran, Koen Claessen: 
+  <a href="./writing/obsidian_ifl2008.pdf">Obsidian: A Domain Specific Embedded Language for Parallel Programming of Graphics Processors</a> (Sep 2008)
+<li><b>(DCC 2008)</b> Joel Svensson, Mary Sheeran, Koen Claessen: 
+  <a href="./writing/dccpaper_obsidian.pdf">Obsidian: GPU Programming in 
+   Haskell</a> (Mar 2008)
+<!--
+<li><b>(Course handin)</b> Joel Svensson: <a href="./writing/optobsidian.pdf"> 
+  Optimising Obsidian Programs Through Derivations</a> (June 2008) 
+-->
+<!--
+<li><b>(Master thesis)</b> Joel Svensson: <a href="./writing/joelmscthesis.pdf"> 
+  An embedded language for data-parallel programming</a> (Jan 2008)
+-->
+</ul>
+<!--
+<h3>Drafts</h3>
+-->
+
+<hr>
+<h3>Related to Obsidian</h3>
+<ul>
+<li> Niklas Ulvinge: <a href="http://publications.lib.chalmers.se/records/fulltext/194157/194157.pdf"> Increasing programmability of an embedded domain specific language for GPGPU kernels using static analysis</a> (2014)
+<li> Chris Ouwehand: <a href="./writing/GPUFL.pdf">GPU Programming in Functional Languages</a> (2013)
+<li> Alex Cole, Alistair A. McEwan, Geoffrey Mainland: <a href="http://www.y-less.com/list.php?id=2"> Beauty And The Beast: Exploiting GPUs in Haskell</a> (2012) 
+</ul>
+
+<hr>
+<h3>Download Obsidian, EmbArBB and other Projects</h3>
+From Github <a href ="http://svenssonjoel.github.com"> (svenssonjoel) </a><br>
+
+<hr>
+
+<h3> Counting sort</h3>
+<a href="./csort.html"> link </a><br>
+<hr>
+<h3>Related links</h3>
+<a href="http://www.gpgpu.org"> www.gpgpu.org </a> <br>
+<a href="http://www.nvidia.com/cuda"> NVIDIA CUDA </a> <br>
+<a href="http://software.intel.com/en-us/articles/intel-array-building-blocks">Intel's Array Building Blocks</a><br> 
+<br>
+
+<h3> Other links </h3>
+<a href="http://www.github.com/svenssonjoel"> <font size="+2"> Github </font> </a>  <br>
+<a href="http://www.researchgate.net/profile/Bo_Joel_Svensson"> <font size="+2"> Researchgate </font> </a> <br>
+<a href="https://scholar.google.se/citations?user=Ja6gzfgAAAAJ&hl=en"> <font size="+2"> Google Scholar </font> </a> <br>
+<div itemscope itemtype="https://schema.org/Person"><a itemprop="sameAs" content="https://orcid.org/0000-0003-0363-1206" href="https://orcid.org/0000-0003-0363-1206" target="orcid.widget" rel="noopener noreferrer" style="vertical-align:top;"><img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon">orcid.org/0000-0003-0363-1206</a></div>
+
+
+&copy; Copyright 2020 Bo Joel Svensson
+
+</BODY>
+
+</HTML>
