@@ -6,10 +6,13 @@ The ability to parse compressed source code in lispBM is mostly just
 an experiment (for fun). I don't have any current example that
 requires this feature but I imagine that it can be useful if programs
 are to be stored on resource constrained platforms or transfered over
-very limited bandwidth channels.
+very limited bandwidth channels. Also, if some lispBM source should be
+stored within the binary of the firmware for an embedded platform, it
+makes sense that it is small and can be parsed without having to use
+potentially large buffers for decompressing and parsing. 
 
 Once the source code has been parsed into the heap, the source itself
-could potentially be deleted butone can imagine a setup where the
+could potentially be deleted but one can imagine a setup where the
 runtime system can be restarted during operation and then need to
 re-parse the source from memory. This could for example be done to
 recover from some error. In this case it makes sense that the source
