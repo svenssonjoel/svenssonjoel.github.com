@@ -455,21 +455,21 @@ add_definitions(-D_32_BIT_ -D_PRELUDE -DTINY_SYMTAB)
 
 add_custom_command(OUTPUT ../src/prelude.xxd 
                    COMMAND xxd
-           ARGS -i &lt; ../src/prelude.lisp &gt; ../src/prelude.xxd
-           DEPENDS ../src/prelude.lisp
+                   ARGS -i &lt; ../src/prelude.lisp &gt; ../src/prelude.xxd
+                   DEPENDS ../src/prelude.lisp
                   )
 
 FILE(GLOB app_sources src/*.c)
 FILE(GLOB lisp_sources ../src/*.c)
 target_sources(app PRIVATE ${app_sources}
-           PRIVATE ${lisp_sources}
-           PRIVATE ../src/prelude.xxd)
+                   PRIVATE ${lisp_sources}
+                   PRIVATE ../src/prelude.xxd)
 target_include_directories(app PRIVATE ../include
-                   PRIVATE ../src)
+                               PRIVATE ../src)
 </code></pre>
 <p>The <code>add_definitions</code> command means the generated <code>Makefile</code> should when building c source use the flags <code>-D_32_BIT_</code>, <code>-D_PRELUDE</code> and <code>-DTINY_SYMTAB</code>. This needs some polishing I see as the naming convention here is not that uniform. Also, the <code>_32_BIT_</code> flag is pretty pointless as I have now decided that I will not put any effort into making it compatible with architectures that are not 32bit. However, the remaining defines mean that the prelude library will be built into the binary and that the tiny version of the symbol table will be used. See this <a href="../lispbm_current_status/index.html">blog post</a> for more information on the symbol representation table.</p>
 <p>To build the prelude into the binary, the lispBM source code of the library is "compiled" into a C array of bytes in the file <code>prelude.xxd</code> that will be baked into the executable and later parsed when starting up the REPL. This slightly special compilation step is added in the <code>CMakeLists.txt</code> file as a custom command that will be executed as part of the make procedure.</p>
-<p>The <code>CMakeLists.txt</code> file is also told where the additional source and header files can be found from the lispBM source tree. This is done with the <code>target_include_directories</code> command.</p>
+<p>The <code>CMakeLists.txt</code> file is also told where the additional source and header files can be found from the lispBM source tree. This is done with the <code>target_include_directories</code> command for headers and the <code>target_sources</code> for source code.</p>
 <p>Next up is the <code>prj.conf</code> file that allows us to configure various aspects of the Zephyr system. This is also derived from the CDC ACM example but with some additions.</p>
 <p>For one, the <code>CONFIG_NEWLIB_LIBC</code> flag is set to <code>y</code> to build with newlib functionality. Newlib is C library (like the standard library) intended for embedded platforms and provides many of the functions one may be familiar with. I use it mainly to have access to a malloc function.</p>
 <pre><code>CONFIG_GPIO=y

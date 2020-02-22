@@ -479,17 +479,17 @@ add_definitions(-D_32_BIT_ -D_PRELUDE -DTINY_SYMTAB)
 
 add_custom_command(OUTPUT ../src/prelude.xxd 
                    COMMAND xxd
-		   ARGS -i < ../src/prelude.lisp > ../src/prelude.xxd
-		   DEPENDS ../src/prelude.lisp
+                   ARGS -i < ../src/prelude.lisp > ../src/prelude.xxd
+                   DEPENDS ../src/prelude.lisp
                   )
 
 FILE(GLOB app_sources src/*.c)
 FILE(GLOB lisp_sources ../src/*.c)
 target_sources(app PRIVATE ${app_sources}
-		   PRIVATE ${lisp_sources}
-		   PRIVATE ../src/prelude.xxd)
+                   PRIVATE ${lisp_sources}
+                   PRIVATE ../src/prelude.xxd)
 target_include_directories(app PRIVATE ../include
- 			       PRIVATE ../src)
+                               PRIVATE ../src)
 ``` 
 
 The `add_definitions` command means the generated `Makefile` should
@@ -513,7 +513,8 @@ executed as part of the make procedure.
 
 The `CMakeLists.txt` file is also told where the additional source and
 header files can be found from the lispBM source tree. This is done
-with the `target_include_directories` command. 
+with the `target_include_directories` command for headers and the
+`target_sources` for source code.
 
 
 Next up is the `prj.conf` file that allows us to configure various
