@@ -8,7 +8,7 @@ text we instead take a look at
 [Zephyr](https://www.zephyrproject.org/). I have only used Zephyr with
 the [NRF52
 Microcontroller](https://www.nordicsemi.com/Products/Low-power-short-range-wireless/nRF52840/GetStarted),
-the nrf52840 to be precise. This is a quite ppowerful microcontroller
+the nrf52840 to be precise. This is quite a powerful microcontroller
 featuring an ARM Cortex m4 at 64MHz, 1MB of flash and 256K of RAM. The nrf52840
 also comes with Bluetooth.
 
