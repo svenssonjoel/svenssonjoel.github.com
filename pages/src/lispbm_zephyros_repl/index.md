@@ -99,7 +99,7 @@ for input and output data and the rest of the state that is needed for
 ringbuffer functionality is in the struct `ring_buf`. This ringbuffer
 implementation is a part of the Zephyr OS. 
 
-Above a device is also declared. These `device` structs are how Zephyr
+Above, a device is also declared. These `device` structs are how Zephyr
 handles perpiherals (even down to a single GPIO pin seems to need one
 of these device structs declared). This device will represent the USB
 peripheral.
@@ -158,7 +158,7 @@ Now, `get_char`. This function returns an integer which is `-1` on
 failure to get a character, otherwise the result is the character
 read. In this function interrupts are postponed while interacting with
 the ringbuffer, I'm not sure this is actually required (since we are
-operating at a single byte at a time) . The function tries to read one
+operating at a single byte at a time). The function tries to read one
 byte from the input ringbuffer and if that is successful, the byte is
 returned as result.
 
@@ -204,12 +204,13 @@ of bytes into the output ringbuffer at a time instead. The
 `print_buffer` used internally in this function can hold up to at 4096
 bytes, which is more than the rinbuffers can hold at once. Because of
 this there is a loop that in each iteration adds chunks from the
-`print_buffer` to the ringbuffer (as many as it can), and then
+`print_buffer` to the ringbuffer (as many bytes as it can), and then
 triggers the interrupt that should free up new space in the
 ringbuffer.
 
 
-``` void usb_printf(char *format, ...) {
+```
+void usb_printf(char *format, ...) {
 
   va_list arg;
   va_start(arg, format);

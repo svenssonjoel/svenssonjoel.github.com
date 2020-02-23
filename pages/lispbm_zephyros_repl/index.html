@@ -172,7 +172,7 @@ struct ring_buf in_ringbuf;
 struct ring_buf out_ringbuf;
 </code></pre>
 <p>The <code>in_ring_buffer</code> and <code>out_ring_buffer</code> is the data storage arrays for input and output data and the rest of the state that is needed for ringbuffer functionality is in the struct <code>ring_buf</code>. This ringbuffer implementation is a part of the Zephyr OS.</p>
-<p>Above a device is also declared. These <code>device</code> structs are how Zephyr handles perpiherals (even down to a single GPIO pin seems to need one of these device structs declared). This device will represent the USB peripheral.</p>
+<p>Above, a device is also declared. These <code>device</code> structs are how Zephyr handles perpiherals (even down to a single GPIO pin seems to need one of these device structs declared). This device will represent the USB peripheral.</p>
 <p>The <code>interrupt_handler</code> defined below runs for as long as there are uart interrupts pending and for each pending interrupt there is a check to see if there is data to read or to send.</p>
 <p>If data is comming in it is added to the <code>in_ringbuf</code>. If more data is arriving than there is space in the buffer, those bytes are just ignored.</p>
 <p>The case where there is data to send, data is read from the out_ringbuf and sent over the uart.</p>
@@ -209,7 +209,7 @@ struct ring_buf out_ringbuf;
 }
 </code></pre>
 <p>If I remember correcly, the interrupt routine above is just a tiny tweak of code from the CDC ACM example provided with Zephyr.</p>
-<p>Now, <code>get_char</code>. This function returns an integer which is <code>-1</code> on failure to get a character, otherwise the result is the character read. In this function interrupts are postponed while interacting with the ringbuffer, I'm not sure this is actually required (since we are operating at a single byte at a time) . The function tries to read one byte from the input ringbuffer and if that is successful, the byte is returned as result.</p>
+<p>Now, <code>get_char</code>. This function returns an integer which is <code>-1</code> on failure to get a character, otherwise the result is the character read. In this function interrupts are postponed while interacting with the ringbuffer, I'm not sure this is actually required (since we are operating at a single byte at a time). The function tries to read one byte from the input ringbuffer and if that is successful, the byte is returned as result.</p>
 <pre><code>int get_char() {
 
   int n;
@@ -235,8 +235,9 @@ struct ring_buf out_ringbuf;
   }
 }
 </code></pre>
-<p>A <code>printf</code>-like function is always useful! Here it is called <code>usb_printf</code>. One idea would be to implement this using <code>put_char</code>, but it feels more efficient to implement it by writing a whole bunch of bytes into the output ringbuffer at a time instead. The <code>print_buffer</code> used internally in this function can hold up to at 4096 bytes, which is more than the rinbuffers can hold at once. Because of this there is a loop that in each iteration adds chunks from the <code>print_buffer</code> to the ringbuffer (as many as it can), and then triggers the interrupt that should free up new space in the ringbuffer.</p>
-<pre class="void"><code>
+<p>A <code>printf</code>-like function is always useful! Here it is called <code>usb_printf</code>. One idea would be to implement this using <code>put_char</code>, but it feels more efficient to implement it by writing a whole bunch of bytes into the output ringbuffer at a time instead. The <code>print_buffer</code> used internally in this function can hold up to at 4096 bytes, which is more than the rinbuffers can hold at once. Because of this there is a loop that in each iteration adds chunks from the <code>print_buffer</code> to the ringbuffer (as many bytes as it can), and then triggers the interrupt that should free up new space in the ringbuffer.</p>
+<pre><code>void usb_printf(char *format, ...) {
+
   va_list arg;
   va_start(arg, format);
   int len;
