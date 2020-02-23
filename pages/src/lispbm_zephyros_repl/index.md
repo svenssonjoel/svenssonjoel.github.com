@@ -29,15 +29,16 @@ into configurations files and make scripts.
 
 All IO will be done over USB and when hooking the nrf52 based
 development board up to a Linux computer it will appear as a CDC ACM
-device and will accessible through `/dev/ttyACMX` where X is a
+device and will be accessible through `/dev/ttyACMX` where X is a
 number. Which `ttyACM` it gets attached as can be seen by running the
-command `dmesg` after attaching the device (not that it has to run
+command `dmesg` after attaching the device (note that it has to run
 firmware that configures the USB to appear as a device when connected
 in this way). As I understand it CDC ACM stands for "Communication
-Device Class" and "Abstract Control Model". So that is how the device
-will appear as viewed from the Linux machine connecting to it, on the
-firmware end commucation will look like a UART connection and we will
-interact with that UART using interrupts. 
+Device Class" and "Abstract Control Model" but the exact implications
+of those words are a bit beyond me. So, that is how the device will
+appear as viewed from the Linux machine connecting to it, on the
+firmware side commucation will look like a UART connection and we will
+interact with that UART using interrupts.
 
 ```
 #include <device.h>
