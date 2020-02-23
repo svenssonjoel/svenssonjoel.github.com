@@ -9,8 +9,9 @@ text we instead take a look at
 the [NRF52
 Microcontroller](https://www.nordicsemi.com/Products/Low-power-short-range-wireless/nRF52840/GetStarted),
 the nrf52840 to be precise. This is quite a powerful microcontroller
-featuring an ARM Cortex m4 at 64MHz, 1MB of flash and 256K of RAM. The nrf52840
-also comes with Bluetooth.
+featuring an ARM Cortex m4 at 64MHz, 1MB of flash and 256K of RAM. The
+nrf52840 also comes with Bluetooth. Some background on what lispBM is
+can be found [here](../lispbm_current_status/index.html). 
 
 When I first tried Zephyr OS, I felt that setting it up and getting to
 the point where you can build some programs with it was quite
