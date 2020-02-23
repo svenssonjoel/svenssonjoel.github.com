@@ -26,7 +26,7 @@ The code in the listings here below, is all available within the
 ## Introduction to the Code
 
 I will start by going over the code involved and later in the text go
-into configurations files and make scripts.
+into the configuration files and make scripts.
 
 All IO will be done over USB and when hooking the nrf52 based
 development board up to a Linux computer it will appear as a CDC ACM

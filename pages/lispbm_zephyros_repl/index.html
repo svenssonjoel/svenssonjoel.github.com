@@ -139,7 +139,7 @@
 <p>When I first tried Zephyr OS, I felt that setting it up and getting to the point where you can build some programs with it was quite complicated. There is a <a href="https://youtu.be/HulT3RVHoKk">video here</a> about the steps involved in getting to a point where you can just edit your code and run make.</p>
 <p>The code in the listings here below, is all available within the <a href="www.github.com/svenssonjoel/lispBM">lispBM repository</a> on github.</p>
 <h2 id="introduction-to-the-code">Introduction to the Code</h2>
-<p>I will start by going over the code involved and later in the text go into configurations files and make scripts.</p>
+<p>I will start by going over the code involved and later in the text go into the configuration files and make scripts.</p>
 <p>All IO will be done over USB and when hooking the nrf52 based development board up to a Linux computer it will appear as a CDC ACM device and will be accessible through <code>/dev/ttyACMX</code> where X is a number. Which <code>ttyACM</code> it gets attached as can be seen by running the command <code>dmesg</code> after attaching the device (note that it has to run firmware that configures the USB to appear as a device when connected in this way). As I understand it CDC ACM stands for "Communication Device Class" and "Abstract Control Model" but the exact implications of those words are a bit beyond me. So, that is how the device will appear as viewed from the Linux machine connecting to it, on the firmware side commucation will look like a UART connection and we will interact with that UART using interrupts.</p>
 <pre><code>#include &lt;device.h&gt;
 #include &lt;drivers/uart.h&gt;
