@@ -140,6 +140,20 @@
 <p>The ESP-IDF system hides a lot of what is going on behind python scripts. I don't know how I feel about this so far. It is in a way nice that there are scripts that take care of the building and flashing procedure, but it also obscures what is going on. When trying to do something that is just a tiny bit outside the "normal flow" things can get very confusing in a setup like that. It is the same with the Zephyr OS that hides the details behind the <code>west</code> tool. Currently, I prefer the approch of ChibiOS, where things are more traditional and Makefile based.</p>
 <p>The approach taken here is to tweak the hello-world example that comes with ESP-IDF so that it creates a lispBM repl task. To do this one has to figure out how on earth ESP-IDF can be coerced to also build lispBM. While it is not a perfect fit, lispBM is added as a so-called <em>component</em>. What I am missing for it to be pretty good is a way to make the build process launch a custom build step that "compiles" the lispBM prelude using <code>xxd</code>.</p>
 <p>If you are interested in more background about lispBM look <a href="../lispbm_current_status/index.html">here</a>.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- horizontal unit -->
+
+<p><ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-6663189426712847"
+data-ad-slot="2225439322"
+data-ad-format="auto"
+data-full-width-responsive="true"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 <h2 id="input-and-output-using-the-uart-to-usb-bridge">Input and Output using the UART to USB bridge</h2>
 <p>The hello-world example uses <code>printf</code> to output text. This text can be seen if connecting to the ESP32 (which turns up as <code>/dev/ttyUSB0</code> for me) with a serial terminal, for example <code>screen /dev/ttyUSB0</code>. There is a USB-UART bridge on the development board, and currently I have not figured out where there is the configuration to select what <code>printf</code> is hooked up to but by default it seems to be whichever UART is connected to the USB-UART bridge.</p>
 <p>Since we need text input to communicate with the REPL, step one is figuring out which UART to use and how to configure it.</p>
@@ -242,6 +256,20 @@
 </code></pre>
 <p>The <code>xTaskCreate</code> function creates a thread that runs a function called <code>repl_task</code>. The <code>repl_task</code> will be shown below. It is given a string name that I have noticed is sometimes visible in error reports from the RTOS. 8192 is the depth of the stack (in words) that will be allocated for the task. The number 10, is the priority of the task, a lower value here means lower priority. The first of the <code>NULL</code>s could be a pointer to some argument that should be passed to the task function and the last of the <code>NULL</code>s is a bit of a mystery to me at this point (from the documentation it sounds as if it passes a handle to some task description structure to the created task).</p>
 <p>I have noticed that the stack size of 8192 words is perhaps a bit small. Many functions within lispBM are recursive and use a lot of stack! So it is quite easy to get the REPL to crash as it is now by writing a program that generates a large heap structure (for example <code>(iota 1000)</code>) when the repl tries to (recursively) print this heap structure to show it to the user the stack can deplete, resulting in a crash and a reboot. It would be nice to make lispBM more friendly to small stacks by rewriting these internal recursive functions in some way that is more stack efficient. i'm appending this to the todo-list.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- horizontal unit -->
+
+<p><ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-6663189426712847"
+data-ad-slot="2225439322"
+data-ad-format="auto"
+data-full-width-responsive="true"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 <h2 id="the-repl-task">The REPL task</h2>
 <p>The REPL tasks start out by configuring the UART in the way shown earlier. It then proceeds to allocate a buffer for input strings and sets up each of the lispBM subsystems.</p>
 <pre><code>static void repl_task(void *arg) {
@@ -411,6 +439,20 @@ target_compile_options(${COMPONENT_LIB} PRIVATE -D_32_BIT_ -DTINY_SYMTAB -D_PREL
 <p>And finally we can interact with the REPL over a serial link.</p>
 <pre><code>screen /dev/ttyUSB0 115200
 </code></pre>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- horizontal unit -->
+
+<p><ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-6663189426712847"
+data-ad-slot="2225439322"
+data-ad-format="auto"
+data-full-width-responsive="true"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>© Copyright 2020 Bo Joel Svensson</p>
