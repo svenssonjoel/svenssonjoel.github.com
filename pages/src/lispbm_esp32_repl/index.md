@@ -39,7 +39,7 @@ If you are interested in more background about lispBM look [here](../lispbm_curr
 
 The hello-world example uses `printf` to output text. This text can be
 seen if connecting to the ESP32 (which turns up as `/dev/ttyUSB0` for
-me) with a serial terminal, for example `screen /dev/ttyUSB0'. There
+me) with a serial terminal, for example `screen /dev/ttyUSB0`. There
 is a USB-UART bridge on the development board, and currently I have
 not figured out where there is the configuration to select what
 `printf` is hooked up to but by default it seems to be whichever UART
