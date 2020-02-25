@@ -1,0 +1,418 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Implement a LispBM REPL for the ESP32 MCU</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Example of how to implement and compile a LispBM REPL for ESP32">
+  <meta name="keywords" content="ESP32 esp32 freertos lisp mcu microcontroller embedded repl ">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+  
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  } 
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="./index.html#BLOG"> Blog </a>
+  <a href="./index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="example-implementation-of-a-repl-running-on-the-esp32-microcontroller">Example Implementation of a REPL running on the ESP32 microcontroller</h1>
+<p>I just got an ESP32 based development board, the <a href="https://docs.espressif.com/projects/esp-idf/en/latest/hw-reference/get-started-devkitc.html">ESP32 DevKitC v4</a>, that I ordered some week back. This seems to be quite a powerful platform, dual-core as I understand it and lots of MHz and memory.</p>
+<p>Espressif supplies a development toolchain setup, <a href="https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html#step-2-get-esp-idf">ESP-IDF</a> for building software for this MCU and this is what I am using here. This setup is comes with a ESP32 variant of the GNU toolchain for cross-compilation as well as FREERTOS with ESP32 additions. I've had the ESP32 only for a few days now, so this is just a first impression.</p>
+<p>The ESP-IDF system hides a lot of what is going on behind python scripts. I don't know how I feel about this so far. It is in a way nice that there are scripts that take care of the building and flashing procedure, but it also obscures what is going on. When trying to do something that is just a tiny bit outside the "normal flow" things can get very confusing in a setup like that. It is the same with the Zephyr OS that hides the details behind the <code>west</code> tool. Currently, I prefer the approch of ChibiOS, where things are more traditional and Makefile based.</p>
+<p>The approach taken here is to tweak the hello-world example that comes with ESP-IDF so that it creates a lispBM repl task. To do this one has to figure out how on earth ESP-IDF can be coerced to also build lispBM. While it is not a perfect fit, lispBM is added as a so-called <em>component</em>. What I am missing for it to be pretty good is a way to make the build process launch a custom build step that "compiles" the lispBM prelude using <code>xxd</code>.</p>
+<p>If you are interested in more background about lispBM look <a href="../lispbm_current_status/index.html">here</a>.</p>
+<h2 id="input-and-output-using-the-uart-to-usb-bridge">Input and Output using the UART to USB bridge</h2>
+<p>The hello-world example uses <code>printf</code> to output text. This text can be seen if connecting to the ESP32 (which turns up as <code>/dev/ttyUSB0</code> for me) with a serial terminal, for example <code>screen /dev/ttyUSB0'. There is a USB-UART bridge on the development board, and currently I have not figured out where there is the configuration to select what </code>printf` is hooked up to but by default it seems to be whichever UART is connected to the USB-UART bridge.</p>
+<p>Since we need text input to communicate with the REPL, step one is figuring out which UART to use and how to configure it.</p>
+<p>After a bit of trial-and-error, googling and reading of examples that come with ESP-IDF the following setup came to be and seems to work for my dev-board.</p>
+<pre><code>  const uart_config_t uart_config = {
+    .baud_rate = 115200,
+    .data_bits = UART_DATA_8_BITS,
+    .parity = UART_PARITY_DISABLE,
+    .stop_bits = UART_STOP_BITS_1,
+    .source_clk = UART_SCLK_REF_TICK,
+  };
+
+  uart_driver_install(UART_NUM_0, 1024 * 2, 0, 0, NULL, 0);
+  uart_param_config(UART_NUM_0, &amp;uart_config);
+  uart_set_pin(UART_NUM_0, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+</code></pre>
+<p>From the data-sheet it seems that the ESP32 has three UARTs that can all be configured to use any set of 4 GPIO pins. It seems that <code>UART_NUM_0</code> is configured by default to use the pins that are connected to the USB-UART bridge, so the <code>uart_set_pin</code> function is applied with arguments that tells it not to change any pin assignment here.</p>
+<p>It took some digging, but I found that the application of <code>uart_set_pin</code> shown below has the same effect as the one with <code>UART_PIN_NO_CHANGE</code> above. I take this to mean that <code>GPIO_NUM_34</code> and <code>GPIO_NUM_35</code> are the pins connected to the USB-UART bridge. In the ESP32 data-sheet, the <em>pin layout</em> section these pins are referred to as <code>GPIO5</code> and <code>GPIO18</code> on physical pins 34 and 35 on the package, which makes it a bit confusing to me as to why the code should refer to package pin number rather than that other identity as <code>GPIOX</code>. If this makes total sense to you please share your insight with me.</p>
+<pre><code>uart_set_pin(UART_NUM_0, GPIO_NUM_34, GPIO_NUM_35, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+</code></pre>
+<p>With the UART configured we can implement <code>get_char</code>, <code>put_char</code> and <code>inputline</code>.</p>
+<p>The <code>get_char</code> functions uses <code>uart_read_bytes</code> to try to read a byte from the UART. If this does deliver any character within a certain time-frame, the function returns the integer <code>-1</code> otherwise it returns the character value stored in an int.</p>
+<pre><code>int get_char() {
+  unsigned char c;
+  if (uart_read_bytes(UART_NUM_0, (unsigned char *)&amp;c, 1, portMAX_DELAY) == 1) {
+    return c;
+  } 
+  return -1;
+}
+</code></pre>
+<p>The <code>put_char</code> function takes an integer and if the value stored in that integer represents a character code it is sent over the UART using <code>uart_write_bytes</code>.</p>
+<pre><code>void put_char(int i) {
+  if (i &gt;= 0 &amp;&amp; i &lt; 256) {
+    char c = (char)i;
+    uart_write_bytes(UART_NUM_0, &amp;c, 1);
+  }
+}
+</code></pre>
+<p>The <code>get_char</code> and <code>put_char</code> functions operate on the <code>int</code> type so that, even though <code>get_char</code> can fail, they they can be hooked up end to end as <code>put_char(get_char())</code> giving a compact implementation of "echo".</p>
+<p>The <code>inputline</code> function is very similar to the same function in previous posts and explained a bit <a href="../lispbm_chibios_repl/index.html">here</a>. In essence it reads characters as long a newline is not encountered and also tries to deal with backspaces (removing characters from the buffer).</p>
+<pre><code>int inputline(char *buffer, int size) {
+  int n = 0;
+  int c;
+  for (n = 0; n &lt; size - 1; n++) {
+
+    c = get_char();
+    switch (c) {
+    case 127: /* fall through to below */
+    case &#39;\b&#39;: /* backspace character received */
+      if (n &gt; 0)
+        n--;
+      buffer[n] = 0;
+      put_char(&#39;\b&#39;); /* output backspace character */
+      n--; /* set up next iteration to deal with preceding char location */
+      break;
+    case &#39;\n&#39;: /* fall through to \r */
+    case &#39;\r&#39;:
+      buffer[n] = 0;
+      return n;
+    default:
+      if (c != -1 &amp;&amp; c &lt; 256) {
+        put_char(c);
+        buffer[n] = c;
+      } else {
+        n --;
+      }
+
+      break;
+    }
+  }
+  buffer[size - 1] = 0;
+  return 0; // Filled up buffer without reading a linebreak
+}
+</code></pre>
+<h2 id="tweak-hello-world-to-spawn-a-repl-task">Tweak hello-world to spawn a REPL task</h2>
+<p>The <code>main</code> function of this attempt to implement a lispBM REPL is just a small tweak of the hello-world example. I have left the code that outputs some info about the MCU in there simply because I think such things are really cool. Other than printing that info, the only thing that is new is that a task for the repl is created.</p>
+<pre><code>void app_main(void)
+{
+
+  printf(&quot;Hello world!\n&quot;);
+
+  /* Print chip information */
+  esp_chip_info_t chip_info;
+  esp_chip_info(&amp;chip_info);
+  printf(&quot;This is %s chip with %d CPU cores, WiFi%s%s, &quot;,
+     CONFIG_IDF_TARGET,
+     chip_info.cores,
+     (chip_info.features &amp; CHIP_FEATURE_BT) ? &quot;/BT&quot; : &quot;&quot;,
+     (chip_info.features &amp; CHIP_FEATURE_BLE) ? &quot;/BLE&quot; : &quot;&quot;);
+
+  printf(&quot;silicon revision %d, &quot;, chip_info.revision);
+
+  printf(&quot;%dMB %s flash\n&quot;, spi_flash_get_chip_size() / (1024 * 1024),
+     (chip_info.features &amp; CHIP_FEATURE_EMB_FLASH) ? &quot;embedded&quot; : &quot;external&quot;);
+
+
+  xTaskCreate(repl_task, &quot;repl_task&quot;, 8192, NULL, 10, NULL); 
+}
+
+</code></pre>
+<p>The <code>xTaskCreate</code> function creates a thread that runs a function called <code>repl_task</code>. The <code>repl_task</code> will be shown below. It is given a string name that I have noticed is sometimes visible in error reports from the RTOS. 8192 is the depth of the stack (in words) that will be allocated for the task. The number 10, is the priority of the task, a lower value here means lower priority. The first of the <code>NULL</code>s could be a pointer to some argument that should be passed to the task function and the last of the <code>NULL</code>s is a bit of a mystery to me at this point (from the documentation it sounds as if it passes a handle to some task description structure to the created task).</p>
+<p>I have noticed that the stack size of 8192 words is perhaps a bit small. Many functions within lispBM are recursive and use a lot of stack! So it is quite easy to get the REPL to crash as it is now by writing a program that generates a large heap structure (for example <code>(iota 1000)</code>) when the repl tries to (recursively) print this heap structure to show it to the user the stack can deplete, resulting in a crash and a reboot. It would be nice to make lispBM more friendly to small stacks by rewriting these internal recursive functions in some way that is more stack efficient. i'm appending this to the todo-list.</p>
+<h2 id="the-repl-task">The REPL task</h2>
+<p>The REPL tasks start out by configuring the UART in the way shown earlier. It then proceeds to allocate a buffer for input strings and sets up each of the lispBM subsystems.</p>
+<pre><code>static void repl_task(void *arg) {
+  const uart_config_t uart_config = {
+    .baud_rate = 115200,
+    .data_bits = UART_DATA_8_BITS,
+    .parity = UART_PARITY_DISABLE,
+    .stop_bits = UART_STOP_BITS_1,
+    .source_clk = UART_SCLK_REF_TICK,
+  };
+
+  uart_driver_install(UART_NUM_0, 1024 * 2, 0, 0, NULL, 0);
+  uart_param_config(UART_NUM_0, &amp;uart_config);
+  uart_set_pin(UART_NUM_0, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+
+  char *str = malloc(1024);
+  size_t len = 1024;
+  int res = 0;
+
+  heap_state_t heap_state;
+
+  res = symrepr_init();
+  if (res)
+    printf(&quot;Symrepr initialized.\n&quot;);
+  else {
+    printf(&quot;Error initializing symrepr!\n&quot;);
+  }
+  
+  unsigned int heap_size = 2048;
+  res = heap_init(heap_size);
+  if (res)
+    printf(&quot;Heap initialized. Heap size: %f MiB. Free cons cells: %d\n&quot;, heap_size_bytes() / 1024.0 / 1024.0, heap_num_free());
+  else {
+    printf(&quot;Error initializing heap!\n&quot;);
+  }
+
+  res = eval_cps_init(false); // dont grow stack 
+  if (res)
+    printf(&quot;Evaluator initialized.\n&quot;);
+  else {
+    printf(&quot;Error initializing evaluator.\n&quot;);
+  }
+
+  VALUE prelude = prelude_load();
+  eval_cps_program(prelude);
+
+  printf(&quot;Lisp REPL started!\n&quot;);
+  printf(&quot;Type :quit to exit.\n&quot;);
+  printf(&quot;     :info for statistics.\n&quot;);
+
+  
+  while (1) {
+    printf(&quot;# &quot;);
+    fflush(stdout);
+
+    ssize_t n = inputline(str,len);
+    printf(&quot;\n&quot;);
+
+    if (n &gt;= 5 &amp;&amp; strncmp(str, &quot;:info&quot;, 5) == 0) {
+      printf(&quot;############################################################\n&quot;);
+      printf(&quot;Used cons cells: %d\n&quot;, heap_size - heap_num_free());
+      printf(&quot;ENV: &quot;); simple_print(eval_cps_get_env()); printf(&quot;\n&quot;);
+      //symrepr_print();
+      //heap_perform_gc(eval_cps_get_env());
+      heap_get_state(&amp;heap_state);
+      printf(&quot;Allocated arrays: %u\n&quot;, heap_state.num_alloc_arrays);
+      printf(&quot;GC counter: %d\n&quot;, heap_state.gc_num);
+      printf(&quot;Recovered: %d\n&quot;, heap_state.gc_recovered);
+      printf(&quot;Recovered arrays: %u\n&quot;, heap_state.gc_recovered_arrays);
+      printf(&quot;Marked: %d\n&quot;, heap_state.gc_marked);
+      printf(&quot;Free cons cells: %d\n&quot;, heap_num_free());
+      printf(&quot;############################################################\n&quot;);
+    } else  if (n &gt;= 5 &amp;&amp; strncmp(str, &quot;:quit&quot;, 5) == 0) {
+      break;
+    } else {
+
+      VALUE t;
+      t = tokpar_parse(str);
+
+      t = eval_cps_program(t);
+
+      if (dec_sym(t) == symrepr_eerror()) {
+        printf(&quot;Eval error\n&quot;);
+      } else {
+        printf(&quot;&gt; &quot;); simple_print(t); printf(&quot;\n&quot;);
+      }
+    }
+  }
+
+  symrepr_del();
+  heap_del();
+}
+</code></pre>
+<p>The while loop, that potentially runs forever, starts out by printing a prompt <code>#</code> and waits for a line of input from the user. If the input line is not a command to the REPL, such as <code>:info</code> or <code>:quit</code>, the expectation is that it is a lisp expression. This string is then parsed and the result of parsing is evaluated.</p>
+<p>If the <code>:quit</code> comman is issued, heap and symbol representations are freed and the task quits. In this setup this results in the RTOS rebooting and we end up right back in the REPL, but fresh.</p>
+<h2 id="included-headers">Included headers</h2>
+<p>Just to make the source listed here complete, below are the headers included.</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &quot;sdkconfig.h&quot;
+#include &quot;freertos/FreeRTOS.h&quot;
+#include &quot;freertos/task.h&quot;
+#include &quot;esp_system.h&quot;
+#include &quot;esp_spi_flash.h&quot;
+#include &quot;driver/uart.h&quot;
+#include &quot;driver/gpio.h&quot;
+
+#define _32_BIT_
+
+#include &quot;heap.h&quot;
+#include &quot;symrepr.h&quot;
+#include &quot;extensions.h&quot;
+#include &quot;eval_cps.h&quot;
+#include &quot;print.h&quot;
+#include &quot;tokpar.h&quot;
+#include &quot;prelude.h&quot;
+</code></pre>
+<h2 id="project-directory-structure">Project directory structure</h2>
+<p>LispBM is added as a "component" called <code>lispbm</code>that has its own <code>CMakeLists.txt</code> file (shown further below) that describes what files to build into a <code>liblispbm.a</code> file that is linked with the main app code located in the <code>main</code> directory.</p>
+<pre><code>repl-esp32/
+├── build
+├── CMakeLists.txt
+├── components
+│   └── lispbm
+│       ├── CMakeLists.txt
+│       ├── component.mk
+│       └── lispbm
+├── loadable_elf_example_test.py
+├── main
+│   ├── CMakeLists.txt
+│   ├── component.mk
+│   └── hello_world_main.c
+├── Makefile
+├── README.md
+├── sdkconfig
+├── sdkconfig.ci
+└── sdkconfig.old
+</code></pre>
+<p>inside of the directory for the <code>components/lispbm</code> there is a clone of the lispBM repository. The <code>CMakeLists.txt</code> file points to the files within that clone.</p>
+<p>The entire <code>CMakeLists.txt</code> is shown below. It lists the source files and also points out where header files are located. A few compiler options are also specified that are needed when building lispBM. These specify that the small library of functions should be built into the executable, <code>-D_PRELUDE</code> and that the tiny version of the symbol table should be used, <code>-DTINY_SYMTAB</code>.</p>
+<pre><code>idf_component_register(SRCS &quot;./lispbm/src/compression.c&quot;
+  &quot;./lispbm/src/env.c&quot;
+  &quot;./lispbm/src/eval_cps.c&quot;
+  &quot;./lispbm/src/extensions.c&quot;
+  &quot;./lispbm/src/fundamental.c&quot;
+  &quot;./lispbm/src/heap.c&quot;
+  &quot;./lispbm/src/prelude.c&quot;
+  &quot;./lispbm/src/print.c&quot;
+  &quot;./lispbm/src/stack.c&quot;
+  &quot;./lispbm/src/symrepr.c&quot;
+  &quot;./lispbm/src/tokpar.c&quot;
+                       INCLUDE_DIRS ./lispbm/include)
+
+target_compile_options(${COMPONENT_LIB} PRIVATE -D_32_BIT_ -DTINY_SYMTAB -D_PRELUDE)
+
+</code></pre>
+<p>One thing I would like to add to this <code>CMakeLists.txt</code> file is a custom command that applies <code>xxd</code> to a file called <code>prelude.lisp</code> to generate a C array representing the contents of the file. Currently I create this file manually by going into the lispBM source tree and running make once manually which creates this file.</p>
+<h2 id="building-the-repl">Building the REPL</h2>
+<p>In the root directory of the source tree, the following command builds everything.</p>
+<pre><code>idf.py build
+</code></pre>
+<p>issuing this command for the first time seems to take some time as all sorts of files are pulled in. Highly mysterious, but also convenient.</p>
+<p>Then the dev-board can flashed with the binary (if build is successful).</p>
+<pre><code>idf.py -p /dev/ttyUSB0 flash
+</code></pre>
+<p>And finally we can interact with the REPL over a serial link.</p>
+<pre><code>screen /dev/ttyUSB0 115200
+</code></pre>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
