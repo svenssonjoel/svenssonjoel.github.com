@@ -124,7 +124,7 @@ to end as `put_char(get_char())` giving a compact implementation of
 The `inputline` function is very similar to the same function in
 previous posts and explained a bit
 [here](../lispbm_chibios_repl/index.html). In essence it reads
-characters as long a newline is not encountered and also tries to deal
+characters as long as a newline is not encountered and also tries to deal
 with backspaces (removing characters from the buffer).
 
 ```

@@ -179,7 +179,7 @@
 }
 </code></pre>
 <p>The <code>get_char</code> and <code>put_char</code> functions operate on the <code>int</code> type so that, even though <code>get_char</code> can fail, they they can be hooked up end to end as <code>put_char(get_char())</code> giving a compact implementation of "echo".</p>
-<p>The <code>inputline</code> function is very similar to the same function in previous posts and explained a bit <a href="../lispbm_chibios_repl/index.html">here</a>. In essence it reads characters as long a newline is not encountered and also tries to deal with backspaces (removing characters from the buffer).</p>
+<p>The <code>inputline</code> function is very similar to the same function in previous posts and explained a bit <a href="../lispbm_chibios_repl/index.html">here</a>. In essence it reads characters as long as a newline is not encountered and also tries to deal with backspaces (removing characters from the buffer).</p>
 <pre><code>int inputline(char *buffer, int size) {
   int n = 0;
   int c;
