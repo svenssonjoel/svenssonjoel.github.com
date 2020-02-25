@@ -360,7 +360,8 @@
 #include &quot;prelude.h&quot;
 </code></pre>
 <h2 id="project-directory-structure">Project directory structure</h2>
-<p>LispBM is added as a "component" called <code>lispbm</code>that has its own <code>CMakeLists.txt</code> file (shown further below) that describes what files to build into a <code>liblispbm.a</code> file that is linked with the main app code located in the <code>main</code> directory.</p>
+<p>The directory structure of this REPL example is shown below. The starting point here was the hello-world example from ESP-IDF and I don't yet know what all files are about.</p>
+<p>LispBM is added as a "component" called <code>lispbm</code> that has its own <code>CMakeLists.txt</code> file (shown further below) that describes what files to build into a <code>liblispbm.a</code> file that is linked with the main app code located in the <code>main</code> directory. The <code>components</code> directory is an addition compared to what is present in the hello-world example.</p>
 <pre><code>repl-esp32/
 ├── build
 ├── CMakeLists.txt

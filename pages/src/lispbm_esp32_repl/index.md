@@ -359,10 +359,15 @@ Just to make the source listed here complete, below are the headers included.
 
 ## Project directory structure
 
-LispBM is added as a "component" called `lispbm`that has its own
+The directory structure of this REPL example is shown below. The starting
+point here was the hello-world example from ESP-IDF and I don't yet know
+what all files are about. 
+
+LispBM is added as a "component" called `lispbm` that has its own
 `CMakeLists.txt` file (shown further below) that describes what files
 to build into a `liblispbm.a` file that is linked with the main app
-code located in the `main` directory.
+code located in the `main` directory. The `components` directory is an
+addition compared to what is present in the hello-world example.
 
 ```
 repl-esp32/
