@@ -35,18 +35,6 @@ lispBM prelude using `xxd`.
 
 If you are interested in more background about lispBM look [here](../lispbm_current_status/index.html).
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- horizontal unit -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-6663189426712847"
-     data-ad-slot="2225439322"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 ## Input and Output using the UART to USB bridge
 
 The hello-world example uses `printf` to output text. This text can be
@@ -231,19 +219,6 @@ structure to show it to the user the stack can deplete, resulting in a
 crash and a reboot. It would be nice to make lispBM more friendly to
 small stacks by rewriting these internal recursive functions in some
 way that is more stack efficient. I'm appending this to the todo-list.
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- horizontal unit -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-6663189426712847"
-     data-ad-slot="2225439322"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 
 ## The REPL task
 
