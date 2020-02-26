@@ -22,7 +22,7 @@ flashing procedure, but it also obscures what is going on. When trying
 to do something that is just a tiny bit outside the "normal flow"
 things can get very confusing in a setup like that. It is the same
 with the Zephyr OS that hides the details behind the `west`
-tool. Currently, I prefer the approch of ChibiOS, where things are
+tool. Currently, I prefer the approach of ChibiOS, where things are
 more traditional and Makefile based.
 
 The approach taken here is to tweak the hello-world example that comes
@@ -230,7 +230,7 @@ writing a program that generates a large heap structure (for example
 structure to show it to the user the stack can deplete, resulting in a
 crash and a reboot. It would be nice to make lispBM more friendly to
 small stacks by rewriting these internal recursive functions in some
-way that is more stack efficient. i'm appending this to the todo-list.
+way that is more stack efficient. I'm appending this to the todo-list.
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <!-- horizontal unit -->
@@ -350,7 +350,7 @@ line is not a command to the REPL, such as `:info` or `:quit`, the
 expectation is that it is a lisp expression. This string is then
 parsed and the result of parsing is evaluated.
 
-If the `:quit` comman is issued, heap and symbol representations are freed
+If the `:quit` command is issued, heap and symbol representations are freed
 and the task quits. In this setup this results in the RTOS rebooting and we end up
 right back in the REPL, but fresh. 
 
