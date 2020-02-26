@@ -85,11 +85,11 @@ connected to the USB-UART bridge, so the `uart_set_pin` function is applied with
 arguments that tells it not to change any pin assignment here. 
 
 
-It took some digging, but I found that the application of
+After some more digging, I found that the application of
 `uart_set_pin` shown below has the same effect as the one with
 `UART_PIN_NO_CHANGE` above. I take this to mean that `GPIO_NUM_34` and
 `GPIO_NUM_35` are the pins connected to the USB-UART bridge. In the
-ESP32 data-sheet, the *pin layout* section these pins are referred to
+ESP32 data-sheet, the *pin layout* section, these pins are referred to
 as `GPIO5` and `GPIO18` on physical pins 34 and 35 on the package,
 which makes it a bit confusing to me as to why the code should refer
 to package pin number rather than that other identity as `GPIOX`. If
@@ -102,7 +102,7 @@ uart_set_pin(UART_NUM_0, GPIO_NUM_34, GPIO_NUM_35, UART_PIN_NO_CHANGE, UART_PIN_
 With the UART configured we can implement `get_char`, `put_char` and `inputline`.
 
 The `get_char` functions uses `uart_read_bytes` to try to read a byte from the
-UART. If this does deliver any character within a certain time-frame, the function
+UART. If this does not deliver any character within a certain time-frame, the function
 returns the integer `-1` otherwise it returns the character value stored in an int.
 
 ```
