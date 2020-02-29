@@ -51,7 +51,7 @@ would apply tail-call optimizations.
 
 It seems to me that it should be possible to iterate over
 sub-trees that are linked-lists with the links in the `cdr` position
-in constant space by making the stack implicit. In the general case
+in constant space by making the stack explicit. In the general case
 the stack usage will still be proportional to the depth of the tree
 that is traversed but now with the benefit that we are more in control
 of (and know) the size of the stack. I also imagine that linked-lists
