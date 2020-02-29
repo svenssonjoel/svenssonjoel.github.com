@@ -1,0 +1,438 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Turn Recursion into Iteration using an Explicit Stack</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Some lispbm implementation functions that used to be recursive are rewritten as iteration">
+  <meta name="keywords" content="lisp recursion iteration stack lisp for microcontrollers mcu stm32 nrf52 esp32  ">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+  
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  } 
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="./index.html#BLOG"> Blog </a>
+  <a href="./index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="turn-recursion-into-iteration-using-an-explicit-stack">Turn Recursion into Iteration using an Explicit Stack</h1>
+<p>The STM32f4 MCUs I am using have 192KB of ram, which is probably quite a lot by MCU standards, and the ESP32-WROOM-32 has 520KB (wow). While this may seem like a lot of memory when it comes to MCUs, it still should not be wasted.</p>
+<p>One goal with lispBM is that it should run on a wide range of 32bit MCUs and coexist with other firmware executing on that platform. This means it is a bit important to keep memory usage of the lispBM runtime system down (it is quite hungry!). It is also important to know that the runtime system can run within an allotted amount of memory and not over time, or periodically, use up all free memory. Currently this is not the case, I have no idea exactly how much memory lispBM uses over the different phases of execution.</p>
+<p>This text is taking one step in the direction of getting more of a grip on lispBM memory usage. There are a number of functions that run recursively over lisp-heap data structures. Such recursion can be very space inefficient! For example if recursively traversing a heap structure that makes up a linked list, call stack proportional to the length of that list would be needed. For long lists and small MCUs this can quickly become a problem.</p>
+<p>Part of the problem here is that some functions need to traverse arbitrary heap structures. One example is <code>gc_mark_phase</code> which is part of the <a href="../lispbm_garbage_collector/index.html">garbage collector</a>. For each cons-cell that mark encounters, it has to process both the <code>car</code> and the <code>cdr</code> subtrees. Up until now, <code>gc_mark_phase</code> did this by recursing on the <code>car</code> and the <code>cdr</code> which is ok for small heap structures but really wasteful when stumbling into a long linked-list like structure.</p>
+<p>It is quite easy to create long linked-list structures on the heap. For example <code>(iota 1000)</code> generates the list containing 0 to 1000. When the marking routine encounters such a list it will nest 1000 recursive calls. If the mark function uses, say, 8 bytes of local variables and we ignore any other data included in a stack frame the recursion over the list would use up just about 8KB of memory. Surely there are more things than just the local variables that go into the stack frame so 8KB is probably a very low estimate but this depends on call convention.</p>
+<p>I think that it will be hard for the compiler to optimize the kind of recursion over an arbitrary heap structure such as <code>gc_mark_list</code>. It may be the case that if a function only recurses over the <code>cdr</code> (or only the <code>car</code>) and does this in a tail-call kind of way, that GCC would apply tail-call optimizations.</p>
+<p>It seems to me that it should be possible to iterate over sub-trees that are linked-lists with the links in the <code>cdr</code> position in constant space by making the stack implicit. In the general case the stack usage will still be proportional to the depth of the tree that is traversed but now with the benefit that we are more in control of (and know) the size of the stack. I also imagine that linked-lists with the next pointer in the <code>cdr</code> are a very commonly occurring thing in lisp-like programming languages.</p>
+<h2 id="iterative-marking-of-heap-structures">Iterative Marking of Heap Structures</h2>
+<p>Rewriting <code>gc_mark_phase</code> to use an explicit stack was not that hard (if I got it right). So, will use that function the introductory example.</p>
+<p>Below is the same recursive <code>gc_mark_phase</code> function that was also shown in the text about the <a href="../lispbm_garbage_collector/index.html">garbage collector</a>. It is repeated here to act as a starting point. I also noticed that at this point in time the function returns an <code>int</code> that will always be <code>1</code>. I Changed it's type <code>void</code>.</p>
+<p>The <code>gc_mark_phase</code> function takes a <code>VALUE</code> as argument. A <code>VALUE</code> can be either a pointer to a cons-cell or some more basic value such a number. If the <code>VALUE</code> passed to <code>gc_mark_phase</code> is not a pointer, then the function immediately returns. If that call <code>gc_mark_phase</code> was part of a recursion over a heap-structure, that is a recursion terminating case.</p>
+<p>If the <code>VALUE</code> is a pointer, what it points to could either be already marked or need marking. If it is already marked that is another recursion terminating case.</p>
+<p>But, if we still haven't returned it is time to mark and recurse! <code>gc_mark_phase</code> is called on both the <code>car</code> and the <code>cdr</code> field of the cons-cell pointed at.</p>
+<pre><code>void gc_mark_phase(VALUE env) {
+
+  if (!is_ptr(env)) {
+      return; // Nothing to mark here
+  }
+
+  if (get_gc_mark(ref_cell(env))) {
+    return; // Circular object on heap, or visited..
+  }
+
+  // There is at least a pointer to one cell here. Mark it and recurse over  car and cdr 
+  heap_state.gc_marked ++;
+
+  set_gc_mark(ref_cell(env));
+
+  VALUE t_ptr = type_of(env);
+
+  if (t_ptr == PTR_TYPE_BOXED_I ||
+      t_ptr == PTR_TYPE_BOXED_U ||
+      t_ptr == PTR_TYPE_BOXED_F ||
+      t_ptr == PTR_TYPE_ARRAY) {
+    return;
+  } 
+
+  gc_mark_phase(car(env));
+  gc_mark_phase(cdr(env));
+}
+</code></pre>
+<p>So, if for example the argument to <code>gc_mark_phase</code> happens to be a very long linked-list, deeply nested recursion is the outcome. It may be possible that the last call to <code>gc_mark_phase</code> will have tail-call optimization applied to it, which should mean that in the case of a linked list, this function also operates in constant space. But with this code that is up to the compiler and optimization settings and it still does not make us able to control the maximum amount of memory usage ourselves.</p>
+<p>Below is an implementation of <code>gc_mark_phase</code> that uses an explicit stack. When introducing a fixed maximum stack size the function can now fail and this is, correctly this time, reflected in its type (<code>int</code>). This is of course another benefit over the previous implementation that either would succeed, or crash in some spectacular way when the call-stack starts overwriting other data and code.</p>
+<p>This new implementation of <code>gc_mark_phase</code> starts out by creating the explicit stack. Currently this explicit stack is a block of VALUES on the call stack, but an important difference here is that this <code>gc_mark_phase</code> won't be recursive and those 1024 VALUES is what we have to work within.</p>
+<p>The argument to <code>gc_mark_phase</code> is pushed onto the stack before entering a loop that will run as long as there are <code>VALUE</code>s on the stack. Inside of the loop a <code>VALUE</code> is popped from the stack and is processed in a similar way to earlier (in the recursive <code>gc_mark_phase</code>). When reaching the point where earlier we recursed over <code>car</code> and <code>cdr</code>, these two values are instead pushed onto the stack. Pushing to the stack can fail and in that case an error is returned.</p>
+<pre><code>int gc_mark_phase(VALUE env) {
+
+  VALUE stack_storage[1024];
+  stack s;
+  stack_create(&amp;s, stack_storage, 1024);
+  
+  push_u32(&amp;s, env);
+
+  while (!stack_is_empty(&amp;s)) {
+    VALUE curr;
+    int res = 1;
+    pop_u32(&amp;s, &amp;curr);
+
+    if (!is_ptr(curr)) {
+      continue;
+    }
+    
+    // Circular object on heap, or visited..
+    if (get_gc_mark(ref_cell(curr))) {
+      continue;
+    }
+
+    // There is at least a pointer to one cell here. Mark it and add children to stack
+    heap_state.gc_marked ++;
+    
+    set_gc_mark(ref_cell(curr));
+    
+    VALUE t_ptr = type_of(curr);
+    
+    if (t_ptr == PTR_TYPE_BOXED_I ||
+        t_ptr == PTR_TYPE_BOXED_U ||
+        t_ptr == PTR_TYPE_BOXED_F ||
+        t_ptr == PTR_TYPE_ARRAY) {
+      continue;
+    }  
+    res &amp;= push_u32(&amp;s, cdr(curr));
+    res &amp;= push_u32(&amp;s, car(curr));
+
+    if (!res) return 0;
+  }
+
+  return 1;
+}
+</code></pre>
+<p>After pushing <code>car</code> and <code>cdr</code> the loop body executes again and processes the new top of the stack. Notice that here it makes a difference in what order the <code>car</code> and <code>cdr</code> are pushed onto the stack. Pushing <code>cdr</code> before <code>car</code> gives the constant memory use for linked-lists with the pointer to the next cell in the cdr (which I think will be a common case). If instead <code>car</code> was pushed before <code>cdr</code>, linked-lists with the pointer in the <code>car</code> field would be favored but these don't sound so common to me. Also, as pointed out earlier, in the general case the stack will grow proportionally to the depth of the tree that is traversed.</p>
+<h2 id="iterative-printing-of-heap-structures">Iterative Printing of Heap Structures</h2>
+<p>Printing of <code>VALUE</code>s is another function that was implemented using recursion before. Doing some changes to the functions that print lispBM heap-structures (<code>VALUE</code>s) have been on the todo-list for a long time, so while doing this transformation some other improvements were applied as well.</p>
+<p>For example, <code>(iota 3)</code> now prints like this:</p>
+<pre><code># (iota 3)
+(0 1 2 3)
+</code></pre>
+<p>earlier it would output</p>
+<pre><code># (iota 3)
+(0 (1 (2 (3 nil))))
+</code></pre>
+<p>which is also a hint at how that structure was printed recursively.</p>
+<p>The new <code>print_value</code> function that replaces <code>simple_print</code> turned out almost being a small interpreter for a tiny language for printing heap-structures. The explicit stack used does not just keep track of what is left to print but it also holds instructions that guide the way they are printed. The following set of definitions list the different instructions that can occur on the stack.</p>
+<pre><code>#define PRINT_STACK_SIZE 256 /* 1 KB */
+
+#define PRINT          1
+#define PRINT_SPACE    2
+#define START_LIST     3
+#define CONTINUE_LIST  4
+#define END_LIST       5
+</code></pre>
+<p>What these instructions do will be shown in the code walk through below.</p>
+<p>if zooming out enough and squinting appropriately the print function works the same way as the <code>gc_mark_phase</code>. It starts out by pushing the <code>VALUE</code> argument to the stack, then depending on the form of it the parts to print next are pushed. New is that, instead of marking cons-cells, the values held in the structure are of more interest as they are what is supposed to be printed. The structure of cons-cells also hold information guiding the printing but that information is more about where spaces and parentheses should go.</p>
+<p>The <code>print_value</code> is a bit long and mainly consists of a lot of just slightly different cases. Instead of showing the entire function I will just list some representative cases of each kind.</p>
+<pre><code>int print_value(char *buf,int len, char *error, int len_error, VALUE t) {
+
+  VALUE stack_storage[PRINT_STACK_SIZE];
+  
+  stack s;
+  stack_create(&amp;s, stack_storage, PRINT_STACK_SIZE);
+
+  int n = 0;
+  int offset = 0;
+  char *str_ptr;
+  int res;
+  
+  push_u32_2(&amp;s, t, PRINT);
+</code></pre>
+<p>The beginning of the function sets up the stack and initializes some state used throughout. The function operates a little bit like <code>snprintf</code> in the sense that it prints at most <code>len</code> characters into the output <code>buf</code>. It also has an error string argument that is filled in with some text in case it is not possible to print the heap-structure given.</p>
+<p>Before entering into a loop that runs while there are things on the stack, two things are pushed onto the stack. First the value to print is pushed and then above it an "Opcode" called <code>PRINT</code> is pushed. When later popping <code>PRINT</code> we know it has an additional argument on the stack, which represents what to print.</p>
+<pre><code>  while (!stack_is_empty(&amp;s) &amp;&amp; offset &lt;= len - 5) {
+    
+    VALUE curr;
+    UINT  instr;
+    pop_u32(&amp;s, &amp;instr);
+
+    switch(instr) {
+</code></pre>
+<p>The loop starts out by popping the top of the stack, which gives an instruction. Depending on what that instruction is a case is selected. Let's look at the <code>PRINT</code> case first.</p>
+<p>When entering the <code>PRINT</code> case, its argument is popped and depending on the type of that argument we proceed. If the argument is a symbol or number it is directly printed into the <code>buf</code>. If, however, the argument is a pointer to a cons-cell it signals the start of a list that should be wrapped in parentheses. This is dealt with by pushing the value back onto the stack and then pushing the instruction <code>START_LIST</code>.</p>
+<pre><code>    case PRINT:
+
+      pop_u32(&amp;s, &amp;curr);
+      
+      switch(type_of(curr)) {
+
+      case PTR_TYPE_CONS:{
+        res = 1;
+        res &amp;= push_u32(&amp;s, curr);
+        res &amp;= push_u32(&amp;s, START_LIST);
+        if (!res) {
+          n = snprintf(error, len_error, &quot;Error: Out of print stack\n&quot;);
+          return -1;
+        }
+        break;
+      }
+
+      /* ... */ 
+      
+      case VAL_TYPE_SYMBOL:
+        str_ptr = symrepr_lookup_name(dec_sym(curr));
+        if (str_ptr == NULL) {
+          
+          snprintf(error, len_error, &quot;Error: Symbol not in table %&quot;PRI_UINT&quot;&quot;, dec_sym(t));
+          return -1;
+        } 
+        n = snprintf(buf + offset, len - offset, &quot;%s&quot;, str_ptr);
+        offset += n;
+        break; //Break VAL_TYPE_SYMBOL
+        
+      case VAL_TYPE_I:
+        n = snprintf(buf + offset, len - offset, &quot;%&quot;PRI_INT&quot;&quot;, dec_i(curr));
+        offset += n;
+        break;
+        
+      case VAL_TYPE_U:
+        n = snprintf(buf + offset, len - offset, &quot;%&quot;PRI_UINT&quot;&quot;, dec_u(curr));
+        offset += n;
+        break;
+        
+      case VAL_TYPE_CHAR:
+        n = snprintf(buf + offset, len - offset, &quot;\\#%c&quot;, dec_char(curr));
+        offset += n;
+        break;
+        
+      default:
+        snprintf(error, len_error, &quot;Error: print does not recognize type of value: %&quot;PRIx32&quot;&quot;, curr);
+        return -1;
+        break;
+      } // Switch type of curr
+      break; // case PRINT
+</code></pre>
+<p>When interpreting the <code>START_LIST</code> instruction, an argument is popped from the stack and a start parenthesis is printed to the buffer. So when printing a list like this, the <code>car</code> value should be printed first and thus has to be pushed last. So before pushing the instruction to <code>PRINT</code> the car we have to deal with the <code>cdr</code>. depending on the type of <code>cdr</code> there are some options, if it is a pointer we should <code>CONTINUE_LIST</code>, if is the <code>nil</code> symbol we should <code>END_LIST</code> otherwise it is something that should be printed (Actually I think that this case is what should be the dotted pair case, if lispBM had them).</p>
+<pre><code>    case START_LIST: {
+      res = 1;
+      pop_u32(&amp;s, &amp;curr);
+      
+      n = snprintf(buf + offset, len - offset, &quot;(&quot;);
+      offset += n;
+      VALUE car_val = car(curr);
+      VALUE cdr_val = cdr(curr);
+
+      if (type_of(cdr_val) == PTR_TYPE_CONS) {
+        res &amp;= push_u32(&amp;s, cdr_val);
+        res &amp;= push_u32(&amp;s, CONTINUE_LIST);
+      } else if (type_of(cdr_val) == VAL_TYPE_SYMBOL &amp;&amp;
+                 dec_sym(cdr_val) == symrepr_nil()) {
+        res &amp;= push_u32(&amp;s, END_LIST);
+      } else {
+        res &amp;= push_u32(&amp;s, cdr_val);
+        res &amp;= push_u32(&amp;s, PRINT);
+        res &amp;= push_u32(&amp;s, PRINT_SPACE);
+      }
+      res &amp;= push_u32(&amp;s, car_val);
+      res &amp;= push_u32(&amp;s, PRINT);
+
+      if (!res) {
+        n = snprintf(error, len_error, &quot;Error: Out of print stack\n&quot;);
+        return -1;
+      }
+      
+      break;
+    }
+</code></pre>
+<p>The <code>CONTINUE_LIST</code> instruction is close to identical to <code>START_LIST</code> except that it does not print an opening parenthesis, instead it prints a space to separate the elements of the list.</p>
+<pre><code>    case CONTINUE_LIST: {
+
+      res = 1;
+      pop_u32(&amp;s, &amp;curr);
+
+      if (type_of(curr) == VAL_TYPE_SYMBOL &amp;&amp;
+          dec_sym(curr) == symrepr_nil()) {
+        break;
+      }
+           
+      VALUE car_val = car(curr);
+      VALUE cdr_val = cdr(curr);
+
+      n = snprintf(buf + offset, len - offset, &quot; &quot;);
+      offset += n;
+
+      if (type_of(cdr_val) == PTR_TYPE_CONS) {
+        res &amp;= push_u32(&amp;s, cdr_val);
+        res &amp;= push_u32(&amp;s, CONTINUE_LIST);
+      } else if (type_of(cdr_val) == VAL_TYPE_SYMBOL &amp;&amp;
+                  dec_sym(cdr_val) == symrepr_nil()) {
+        res &amp;= push_u32(&amp;s, END_LIST);
+      } else {
+        res &amp;= push_u32(&amp;s, cdr_val);
+        res &amp;= push_u32(&amp;s, PRINT);
+        res &amp;= push_u32(&amp;s, PRINT_SPACE);
+      }
+      res &amp;= push_u32(&amp;s, car_val);
+      res &amp;= push_u32(&amp;s, PRINT);
+      if (!res) {
+        n = snprintf(error, len_error, &quot;Error: Out of print stack\n&quot;);
+        return -1;
+      }
+      break;
+    }
+</code></pre>
+<p>The <code>END_LIST</code> instruction takes no argument and simply adds the closing parenthesis.</p>
+<pre><code>    case END_LIST: 
+      n = snprintf(buf + offset, len - offset, &quot;)&quot;);
+      offset += n;
+      break;
+</code></pre>
+<p>The <code>PRINT_SPACE</code> instruction is equally simple, it takes no arguments and just adds a space.</p>
+<pre><code>    case PRINT_SPACE:
+      n = snprintf(buf + offset, len - offset, &quot; &quot;);
+      offset += n;
+      break;
+</code></pre>
+<p>If none of the cases above apply, the stack is corrupted.</p>
+<pre><code>    default:
+      snprintf(error, len_error, &quot;Error: Corrupt print stack!&quot;);
+      return -1;
+    }// Switch instruction
+  }//While not empty stack
+
+
+  if (!stack_is_empty(&amp;s)) {
+    snprintf(buf + (len - 5), 4, &quot;...&quot;);
+    buf[len-1] = 0;
+    return len;
+  }
+
+  
+  return n;
+}
+</code></pre>
+<p>After leaving the while loop, there is a check to see if we exited because of being done or because of running out of buffer to write into. If we have filled up the buffer the last few bytes of it is replaced with the "..." to signal that there really was more stuff here but it didn't fit.</p>
+<h2 id="future-work">Future work</h2>
+<p>As I understand it there is a technique called pointer-reversal that can eliminate the need for an explicit stack as used in the <code>gc_mark_phase</code> function. This technique would require the use a few more bits within each cons-cell. These extra bits should encode information about whether the <code>car</code> and the <code>cdr</code> have been processed. In the case of lispBM that would mean that 2 bits would be required for this information and that does not feel impossible to tweak in there. Actually, the mark bit is already present in both the <code>car</code> and the <code>cdr</code> field, but only the one in the <code>cdr</code> is used. This leaves almost no excuse not to try it, I must learn more about this pointer-reversal technique before attempting it though.</p>
+<p>The techniques used here makes the maximum memory usage of two functions (<code>gc_mark_phase</code> and <code>print_value</code>) controllable and explicit. Later, I would like to take this further on a per module (or subsystem) level and over time box in the total maximum memory use. It would be nice if all the sizes of buffers and stacks, that can be fixed at compile time, could be set in some configuration file as part of a REPL or runtime system implementation.</p>
+<p>It is possible to create a heap-structure that when you print it the <code>print_value</code> function gets stuck in a loop (until it exhausts its output buffer or stack space and exits). It is not entirely "natural" to write code in a form so that it generates these heap-structures with loops, but it is possible if experimenting with <code>lambda</code>, <code>let</code> and <code>define</code> to get a closure which in it's closure-bound environment holds itself. Printing such a structure does not crash the system (anymore) but it also doesn't really provide any useful output. Some change is needed to the way closures are printed to rule this out. I guess that any circular or looping heap-structure would have this effect and addressing it in a general fashion would be nice.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
