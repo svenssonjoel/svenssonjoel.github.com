@@ -62,7 +62,7 @@ in lisp-like programming languages.
 ## Iterative Marking of Heap Structures
 
 Rewriting `gc_mark_phase` to use an explicit stack was not that hard
-(if I got it right). So, will use that function the introductory example. 
+(if I got it right). So, will use that function as the introductory example. 
 
 Below is the same recursive `gc_mark_phase` function that was also
 shown in the text about the [garbage
