@@ -249,12 +249,12 @@ What these instructions do will be shown in the code walk-through below.
 
 if zooming out enough and squinting appropriately the print function
 works the same way as the `gc_mark_phase`. It starts out by pushing
-the `VALUE` argument to the stack, then depending on the form of it
-the parts to print next are pushed.  New is that, instead of marking
-cons-cells, the values held in the structure are of more interest as
-they are what is supposed to be printed. The structure of cons-cells
-also hold information guiding the printing but that information is
-more about where spaces and parentheses should go.
+the `VALUE` argument to the stack, then depending on the form of this
+value the parts to print next are pushed.  New is that, instead of
+marking cons-cells, the values held in the structure are of more
+interest as they are what is supposed to be printed. The structure of
+cons-cells also hold information guiding the printing but that
+information is more about where spaces and parentheses should go.
 
 The `print_value` is a bit long and mainly consists of a lot of just
 slightly different cases. Instead of showing the entire function I will

@@ -246,7 +246,7 @@
 #define END_LIST       5
 </code></pre>
 <p>What these instructions do will be shown in the code walk-through below.</p>
-<p>if zooming out enough and squinting appropriately the print function works the same way as the <code>gc_mark_phase</code>. It starts out by pushing the <code>VALUE</code> argument to the stack, then depending on the form of it the parts to print next are pushed. New is that, instead of marking cons-cells, the values held in the structure are of more interest as they are what is supposed to be printed. The structure of cons-cells also hold information guiding the printing but that information is more about where spaces and parentheses should go.</p>
+<p>if zooming out enough and squinting appropriately the print function works the same way as the <code>gc_mark_phase</code>. It starts out by pushing the <code>VALUE</code> argument to the stack, then depending on the form of this value the parts to print next are pushed. New is that, instead of marking cons-cells, the values held in the structure are of more interest as they are what is supposed to be printed. The structure of cons-cells also hold information guiding the printing but that information is more about where spaces and parentheses should go.</p>
 <p>The <code>print_value</code> is a bit long and mainly consists of a lot of just slightly different cases. Instead of showing the entire function I will just list some representative cases of each kind.</p>
 <pre><code>int print_value(char *buf,int len, char *error, int len_error, VALUE t) {
 
