@@ -245,7 +245,7 @@ instructions that can occur on the stack.
 #define CONTINUE_LIST  4
 #define END_LIST       5
 ```
-What these instructions do will be shown in the code walk through below. 
+What these instructions do will be shown in the code walk-through below. 
 
 if zooming out enough and squinting appropriately the print function
 works the same way as the `gc_mark_phase`. It starts out by pushing
