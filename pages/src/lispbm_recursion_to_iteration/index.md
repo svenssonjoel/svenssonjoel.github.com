@@ -378,6 +378,11 @@ pointer we should `CONTINUE_LIST`, if is the `nil` symbol we should
 I think that this case is what should be the dotted pair case, if
 lispBM had them). 
 
+*EDIT 2020-03-05* bug-fix. Added `res &= push_u32(&s, END_LIST);`
+to the cases in `START_LIST` and `CONTINUE_LIST` where the value in the
+`cdr` position is neither a pointer to a cons-cell or a `nil`. This fix
+adds a closing parentheses to things like `(cons 1 2)`. 
+
 
 ``` 
     case START_LIST: {
@@ -396,6 +401,7 @@ lispBM had them).
                  dec_sym(cdr_val) == symrepr_nil()) {
         res &= push_u32(&s, END_LIST);
       } else {
+      	res &= push_u32(&s, END_LIST);
         res &= push_u32(&s, cdr_val);
         res &= push_u32(&s, PRINT);
         res &= push_u32(&s, PRINT_SPACE);
@@ -440,6 +446,7 @@ the list.
                   dec_sym(cdr_val) == symrepr_nil()) {
         res &= push_u32(&s, END_LIST);
       } else {
+      	res &= push_u32(&s, END_LIST);
         res &= push_u32(&s, cdr_val);
         res &= push_u32(&s, PRINT);
         res &= push_u32(&s, PRINT_SPACE);

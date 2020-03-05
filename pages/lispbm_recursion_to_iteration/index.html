@@ -327,6 +327,7 @@
       break; // case PRINT
 </code></pre>
 <p>When interpreting the <code>START_LIST</code> instruction, an argument is popped from the stack and a start parenthesis is printed to the buffer. So when printing a list like this, the <code>car</code> value should be printed first and thus has to be pushed last. So before pushing the instruction to <code>PRINT</code> the car we have to deal with the <code>cdr</code>. depending on the type of <code>cdr</code> there are some options, if it is a pointer we should <code>CONTINUE_LIST</code>, if is the <code>nil</code> symbol we should <code>END_LIST</code> otherwise it is something that should be printed (Actually I think that this case is what should be the dotted pair case, if lispBM had them).</p>
+<p><em>EDIT 2020-03-05</em> bug-fix. Added <code>res &amp;= push_u32(&amp;s, END_LIST);</code> to the cases in <code>START_LIST</code> and <code>CONTINUE_LIST</code> where the value in the <code>cdr</code> position is neither a pointer to a cons-cell or a <code>nil</code>. This fix adds a closing parentheses to things like <code>(cons 1 2)</code>.</p>
 <pre><code>    case START_LIST: {
       res = 1;
       pop_u32(&amp;s, &amp;curr);
@@ -343,6 +344,7 @@
                  dec_sym(cdr_val) == symrepr_nil()) {
         res &amp;= push_u32(&amp;s, END_LIST);
       } else {
+        res &amp;= push_u32(&amp;s, END_LIST);
         res &amp;= push_u32(&amp;s, cdr_val);
         res &amp;= push_u32(&amp;s, PRINT);
         res &amp;= push_u32(&amp;s, PRINT_SPACE);
@@ -382,6 +384,7 @@
                   dec_sym(cdr_val) == symrepr_nil()) {
         res &amp;= push_u32(&amp;s, END_LIST);
       } else {
+        res &amp;= push_u32(&amp;s, END_LIST);
         res &amp;= push_u32(&amp;s, cdr_val);
         res &amp;= push_u32(&amp;s, PRINT);
         res &amp;= push_u32(&amp;s, PRINT_SPACE);
