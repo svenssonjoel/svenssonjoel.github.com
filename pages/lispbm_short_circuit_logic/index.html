@@ -1,0 +1,304 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Adding Short Circuit Capable Boolean Operators</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="An attempt at adding Short Circuit Capable Boolean Operators to LispBM">
+  <meta name="keywords" content="lisp microcontroller MCU microcontrollers stm32 stm32f4 nrf52 esp32 xilinx zync">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+  
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  } 
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="./index.html#BLOG"> Blog </a>
+  <a href="./index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="adding-short-circuit-capable-boolean-operators">Adding Short Circuit Capable Boolean Operators</h1>
+<p>I recently added the boolean operators <code>and</code>, <code>or</code> and <code>not</code> to lispBM. When evaluating <code>(and a b)</code> it is desirable that if <code>a</code> evaluates to <em>false</em> (<code>nil</code> in lispBM), <code>b</code> is not evaluated at all. Likewise for <code>(or a b)</code> we don't want <code>b</code> to be evaluated if <code>a</code> turns out being <em>true</em> (<code>t</code> in lispBM).</p>
+<p>Function application in lispBM has the property that all of the arguments are evaluated beforehand and then the function is applied. So this new wish when it comes to these boolean operations does not fit that well into the patterns already established.</p>
+<p>Since many other functions can take an arbitrary number of arguments, I thought it would be nice if also <code>and</code> and <code>or</code> works when given zero or more arguments. So that is another feature on the wish list.</p>
+<p>Below is an example of applying and to zero or more arguments.</p>
+<pre><code># (and) 
+t
+# (and &#39;t)
+t
+# (and &#39;t &#39;t)
+t
+# (and &#39;t &#39;t &#39;nil)
+nil
+</code></pre>
+<p>And the property of not evaluating further arguments if not needed can be illustrated like this.</p>
+<pre><code># (and &#39;t &#39;nil (print &quot;hello&quot;))
+nil
+</code></pre>
+<p>Notice that <code>hello</code> is not printed.</p>
+<h2 id="adding-symbols-for-the-boolean-operators">Adding Symbols for the Boolean Operators</h2>
+<p>The first step in adding more built in fundamental operations to lispBM is to add new symbols that can be used to identify the.</p>
+<p>The symbols for the boolean operators are given IDs within the range of <em>special</em> symbols. Below the changes to <code>symrepr.h</code> are listed.</p>
+<pre><code>#define SYM_AND                 0x110FFFF
+#define SYM_OR                  0x111FFFF
+#define SYM_NOT                 0x112FFFF
+
+static inline UINT symrepr_and(void)         { return SYM_AND; }
+static inline UINT symrepr_or(void)          { return SYM_OR; }
+</code></pre>
+<p>And the following is added to the <code>add_default_symbols</code> function in <code>symrepr.c</code> to associate a textual name with each of the symbols.</p>
+<pre><code>  res = res &amp;&amp; symrepr_addspecial(&quot;and&quot;, SYM_AND);
+  res = res &amp;&amp; symrepr_addspecial(&quot;or&quot;, SYM_OR);
+  res = res &amp;&amp; symrepr_addspecial(&quot;not&quot;, SYM_NOT);
+
+</code></pre>
+<p>The not operator is implemented just as all other fundamental operations as a case in <code>fundamental.c</code>. It takes one argument and if that argument is <code>nil</code> it returns <code>t</code> otherwise it returns <code>nil</code>. Actually all of these boolean operations are implemented to treat <code>nil</code> as false and anything else as true. So <code>(not 5)</code> evaluates to <code>nil</code> and <code>(and 2 3)</code> evaluates to <code>t</code>.</p>
+<p>The <code>and</code> and <code>or</code> operators will need some special attention to be able to get the short-circuiting behavior.</p>
+<h2 id="adding-short-circuit-boolean-operators-to-the-evaluator">Adding Short Circuit Boolean Operators to the Evaluator</h2>
+<p>So to add short-circuiting boolean operators, what came to mind for me was to add new and and specific <em>continuations</em> for evaluating the arguments in a way suitable for short-circuiting. The new argument evaluating continuations come in two shapes, that either continues to evaluate arguments as long as they come out true (<code>and</code>) and one shape that evaluates while they come out false (<code>or</code>). So two new continuation IDs are added to the list for, <code>AND</code> and <code>OR</code>.</p>
+<pre><code>#define DONE              1
+#define SET_GLOBAL_ENV    2
+#define BIND_TO_KEY_REST  3
+#define IF                4
+#define PROGN_REST        5
+#define APPLICATION       6
+#define APPLICATION_ARGS  7
+#define AND               8
+#define OR                9
+</code></pre>
+<p>In the entry point function for evaluation, the <code>run_eval</code>function, the case that deals with function application is left unchanged. Currently this case looks as follows:</p>
+<pre><code>    FATAL_ON_FAIL(done,
+            push_u32_4(&amp;ctx-&gt;K,
+                   ctx-&gt;curr_env,
+                   enc_u(0),
+                   cdr(ctx-&gt;curr_exp),
+                   enc_u(APPLICATION_ARGS)));
+
+      ctx-&gt;curr_exp = head; // evaluate the function
+      continue;
+</code></pre>
+<p>It sets the <code>curr_exp</code> up to evaluate the function. For example, in the case of a <code>lambda</code> this means that the next thing to do for the evaluator is to turn the <code>lambda</code>into a closure. But before that a continuation is pushed that describes what to do with the arguments, this is the <code>APPLICATION_ARGS</code> continuation.</p>
+<p>I chose to leave this code unchanged and instead differentiate between short-circuitable operators and non, inside of the <code>APPLICATION_ARGS</code> function.</p>
+<p>Inside of the <code>apply_continuation</code> function and the <code>APPLICATION_ARGS</code> case there, we check if the function (with is now evaluated or at least looked up), is one of the short-circuitable function <code>and</code> or <code>or</code>. If that is a case a new continuation is created to deal with the arguments, in the case of an <code>and</code> operator the <code>AND</code> continuation is pushed onto the stack and the first argument is set up to be evaluated next. Likewise in the <code>or</code> case, the <code>OR</code> continuation is pushed and the next thing to evaluate is the first element.</p>
+<pre><code>/* Deal with short-circuiting operators */
+    if (type_of(arg) == VAL_TYPE_SYMBOL &amp;&amp;
+    dec_sym(arg) == symrepr_and()) {
+      if (type_of(rest) == VAL_TYPE_SYMBOL &amp;&amp;
+      rest == NIL) {
+    *app_cont = true;
+    return enc_sym(symrepr_true());
+      } else {
+    FATAL_ON_FAIL(*done, push_u32_3(&amp;ctx-&gt;K, env, cdr(rest), enc_u(AND)));
+    ctx-&gt;curr_exp = car(rest);
+    ctx-&gt;curr_env = env;
+    return NONSENSE;
+      }
+    }
+
+    if (type_of(arg) == VAL_TYPE_SYMBOL &amp;&amp;
+    dec_sym(arg) == symrepr_or()) {
+      if (type_of(rest) == VAL_TYPE_SYMBOL &amp;&amp;
+      rest == NIL) {
+    *app_cont = true;
+    return enc_sym(symrepr_nil());
+      } else {
+    FATAL_ON_FAIL(*done, push_u32_3(&amp;ctx-&gt;K, env, cdr(rest), enc_u(OR)));
+    ctx-&gt;curr_exp = car(rest);
+    ctx-&gt;curr_env = env;
+    return NONSENSE;
+      }
+    }
+</code></pre>
+<p>The above code means that if we are processing the arguments to a short-circuitable operator we will jump over and continue along the <code>AND</code> or <code>OR</code> continuations instead.</p>
+<p>In the case of <code>AND</code>, arguments should be evaluated as long as they result in something considered <em>true</em>.</p>
+<pre><code>  case AND: {
+    VALUE env;
+    VALUE rest;
+    pop_u32_2(&amp;ctx-&gt;K, &amp;rest, &amp;env);
+    if (type_of(arg) == VAL_TYPE_SYMBOL &amp;&amp;
+       dec_sym(arg) == symrepr_nil()) {
+      *app_cont = true;
+      return enc_sym(symrepr_nil());
+    }
+    if (type_of(rest) == VAL_TYPE_SYMBOL &amp;&amp;
+       rest == NIL) {
+      *app_cont = true;
+      return enc_sym(symrepr_true());
+    } else {
+      FATAL_ON_FAIL(*done, push_u32_3(&amp;ctx-&gt;K, env, cdr(rest), enc_u(AND)));
+      ctx-&gt;curr_exp = car(rest);
+      ctx-&gt;curr_env = env;
+      return NONSENSE;
+    }
+  }
+</code></pre>
+<p>For the <code>OR</code>case, we evaluate arguments as long as they result in false. The first argument to result in <em>true</em> terminates the continued evaluation of arguments and we can treat the result as true. If we run out of arguments without encountering true, the result is false.</p>
+<pre><code>  case OR: {
+    VALUE env;
+    VALUE rest;
+    pop_u32_2(&amp;ctx-&gt;K, &amp;rest, &amp;env);
+    if (type_of(arg) != VAL_TYPE_SYMBOL ||
+       dec_sym(arg) != symrepr_nil()) {
+      *app_cont = true;
+      return enc_sym(symrepr_true());
+    }
+    if (type_of(rest) == VAL_TYPE_SYMBOL &amp;&amp;
+       rest == NIL) {
+      *app_cont = true;
+      return enc_sym(symrepr_nil());
+    } else {
+      FATAL_ON_FAIL(*done, push_u32_3(&amp;ctx-&gt;K, env, cdr(rest), enc_u(OR)));
+      ctx-&gt;curr_exp = car(rest);
+      ctx-&gt;curr_env = env;
+      return NONSENSE;
+    }
+  }
+</code></pre>
+<p>And that's it, the next section holds an example that would be awkward to write without access to <code>or</code>.</p>
+<h2 id="sumtree-example">Sumtree Example</h2>
+<p>It is nice to finally be able to write some slightly more substantial lispBM programs such as <code>sumtree</code> below. I have noticed that as soon as wiring a slightly more <em>involved</em> program, new bug surface. Which is a lot of fun. One of the main reason for tormenting oneself with trying to implement this is that it is an never ending source problems to solve and that they are all right on the boundary of what I can handle when it comes to difficulty and complexity.</p>
+<p>The sumtree function sums up the values located at the leaves of a tree. A leaf should hold some valid lispBM number type. The sum is computed by recursing on the <code>car</code> and `cdr, reaching a number terminates the recursion and returns the number upwards in the call hierarchy to added to the running sum.</p>
+<p>Oh, I think that perhaps I should really call <code>is-number</code>, <code>numberp</code> or <code>number-p</code>. We'll see, it should be part of the default library (the prelude) later.</p>
+<pre><code>(define is-number
+  (lambda (x)
+    (or (= (type-of x) type-i28)
+        (= (type-of x) type-u28)
+        (= (type-of x) type-float)
+        (= (type-of x) type-i32)
+        (= (type-of x) type-u32))
+    ))
+
+(define sumtree
+  (lambda (x)
+    (if (is-number x)
+        x
+      (if (= x &#39;nil)
+          0
+        (let ((a (sumtree (car x)))
+              (b (sumtree (cdr x))))
+          (+ a b)
+          )))))
+</code></pre>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
