@@ -135,10 +135,10 @@
 <!-- BODY IS INTENTIONALY LEFT OPEN --> 
 
 <h1 id="adding-short-circuit-capable-boolean-operators">Adding Short Circuit Capable Boolean Operators</h1>
-<p>I recently added the boolean operators <code>and</code>, <code>or</code> and <code>not</code> to lispBM. When evaluating <code>(and a b)</code> it is desirable that if <code>a</code> evaluates to <em>false</em> (<code>nil</code> in lispBM), <code>b</code> is not evaluated at all. Likewise for <code>(or a b)</code> we don't want <code>b</code> to be evaluated if <code>a</code> turns out being <em>true</em> (<code>t</code> in lispBM).</p>
+<p>I recently added the boolean operators <code>and</code>, <code>or</code> and <code>not</code> to <a href="../lispbm_current_status/index.html">lispBM</a>. When evaluating <code>(and a b)</code> it is desirable that if <code>a</code> evaluates to <em>false</em> (<code>nil</code> in lispBM), <code>b</code> is not evaluated at all. Likewise for <code>(or a b)</code> we don't want <code>b</code> to be evaluated if <code>a</code> turns out being <em>true</em> (<code>t</code> in lispBM).</p>
 <p>Function application in lispBM has the property that all of the arguments are evaluated beforehand and then the function is applied. So this new wish when it comes to these boolean operations does not fit that well into the patterns already established.</p>
 <p>Since many other functions can take an arbitrary number of arguments, I thought it would be nice if also <code>and</code> and <code>or</code> works when given zero or more arguments. So that is another feature on the wish list.</p>
-<p>Below is an example of applying and to zero or more arguments.</p>
+<p>Below is an example of applying <code>and</code> to zero or more arguments.</p>
 <pre><code># (and) 
 t
 # (and &#39;t)
@@ -154,8 +154,8 @@ nil
 </code></pre>
 <p>Notice that <code>hello</code> is not printed.</p>
 <h2 id="adding-symbols-for-the-boolean-operators">Adding Symbols for the Boolean Operators</h2>
-<p>The first step in adding more built in fundamental operations to lispBM is to add new symbols that can be used to identify the.</p>
-<p>The symbols for the boolean operators are given IDs within the range of <em>special</em> symbols. Below the changes to <code>symrepr.h</code> are listed.</p>
+<p>The first step in adding more built in fundamental operations to lispBM is to add new symbols that can be used to identify them.</p>
+<p>The symbols for the boolean operators are given IDs within the range of <em>special</em> symbols. The <a href="../lispbm_current_status/index.html">Another Lisp for Microcontrollers</a> test holds a bit more information on this range of symbol IDs. Below the changes to <code>symrepr.h</code> are listed.</p>
 <pre><code>#define SYM_AND                 0x110FFFF
 #define SYM_OR                  0x111FFFF
 #define SYM_NOT                 0x112FFFF

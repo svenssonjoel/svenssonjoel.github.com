@@ -3,10 +3,11 @@
 # Adding Short Circuit Capable Boolean Operators
 
 I recently added the boolean operators `and`, `or` and `not` to
-lispBM. When evaluating `(and a b)` it is desirable that if `a`
-evaluates to *false* (`nil` in lispBM), `b` is not evaluated at all.
-Likewise for `(or a b)` we don't want `b` to be evaluated if `a` turns
-out being *true* (`t` in lispBM).
+[lispBM](../lispbm_current_status/index.html). When
+evaluating `(and a b)` it is desirable that if `a` evaluates to
+*false* (`nil` in lispBM), `b` is not evaluated at all.  Likewise for
+`(or a b)` we don't want `b` to be evaluated if `a` turns out being
+*true* (`t` in lispBM).
 
 Function application in lispBM has the property that all of the
 arguments are evaluated beforehand and then the function is
@@ -17,7 +18,7 @@ Since many other functions can take an arbitrary number of arguments,
 I thought it would be nice if also `and` and `or` works when given zero
 or more arguments. So that is another feature on the wish list.
 
-Below is an example of applying and to zero or more arguments.
+Below is an example of applying `and` to zero or more arguments.
 
 ```
 # (and) 
@@ -42,10 +43,13 @@ Notice that `hello` is not printed.
 ## Adding Symbols for the Boolean Operators
 
 The first step in adding more built in fundamental operations to lispBM
-is to add new symbols that can be used to identify the. 
+is to add new symbols that can be used to identify them. 
 
 The symbols for the boolean operators are given IDs within the range
-of *special* symbols. Below the changes to `symrepr.h` are listed.
+of *special* symbols. The [Another Lisp for
+Microcontrollers](../lispbm_current_status/index.html) test holds a
+bit more information on this range of symbol IDs. Below the changes to
+`symrepr.h` are listed.
 
 ```
 #define SYM_AND                 0x110FFFF
