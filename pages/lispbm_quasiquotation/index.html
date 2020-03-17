@@ -1,0 +1,360 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Implementation of Quasiquotation in LispBM</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="A first go at adding quasiquotation to lispBM ">
+  <meta name="keywords" content="lisp quasiquotation quotation mcu microcontrollers interprerter stm32 nrf52 esp32  ">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+  
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  } 
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="./index.html#BLOG"> Blog </a>
+  <a href="./index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="quasiquotation-in-lispbm">Quasiquotation in lispBM</h1>
+<p>One feature that has been missing from lispBM is quasiquotation. The quasiquotation concept is very confusing to me and seemed too tricky to attempt. But, recently I decided to have a go at it and try to adapt the algorithm that is shown in <a href="https://www.brics.dk/NS/99/1/BRICS-NS-99-1.pdf#page=6">Bawden's paper Quasiquotation in Lisp</a> to lispBM.</p>
+<p>Bawden's paper show an implementation quasiquotation for a lisp dialect implemented in scheme code. Lisp/scheme is of course very suitable for writing such meta programs but figuring out how they work is a real headache to me. The implementation of quasiquotation as shown there uses quasiquotation in the implementation language! I stared at this code in the appendix of the paper for a very long time before trying to translate it to C code to include in lispBM. I am far from certain that my implementation is a correct translation of the algorithm, but it does seem to work (for the cases I have tried). As usual I really appreciate feedback, so if you find bugs or maybe even just have information that would clarify my understanding of this I would be very happy to hear it.</p>
+<h2 id="quasiquotation-as-i-understand-it">Quasiquotation (as I understand it)</h2>
+<p>The lisp quasiquotation features are, as I understand them, there to make it easier to write programs that generate programs. The syntax related to quasiquotation consist of the <code>`</code> (back-quote), <code>,</code> (unquote) and <code>,@</code> (splice).</p>
+<p>The <code>`</code> alone, has a result similar to <code>'</code> such that:</p>
+<pre><code># `apa
+apa
+
+# &#39;apa
+apa
+
+# &#39;(+ 1 2)
+(+ 1 2)
+
+# `(+ 1 2)
+(+ 1 2)
+</code></pre>
+<p>It is when <code>`</code> is used together with <code>,</code> that it gets more interesting. The <code>,</code> can be used within an expression that is quoted using <code>`</code> to indicate that the expression <em>tagged</em> with the <code>,</code> should be evaluated.</p>
+<pre><code># `(+ 1 ,(+ 1 1))
+(+ 1 2)
+</code></pre>
+<p>The <code>,@</code> tag, is similar to the <code>,</code> except that the expression that follows the <code>,@</code> should evaluate to a list and the items of that list are <em>spliced</em> into the result. The example below illustrates this use of <code>,@</code> by splicing the result of a call to the library function <code>iota</code> into the argument list in an application of the function <code>list</code>.</p>
+<pre><code># `(list 1 2 3 ,@(iota 10) 3 2 1)
+(list 1 2 3 0 1 2 3 4 5 6 7 8 9 10 3 2 1)
+</code></pre>
+<p>The operators <code>`</code> (back-quote), <code>,</code> (unquote) and <code>,@</code> (splice) are shorthand notation for certain usages of other list creating and manipulating functions as well as the quote <code>'</code> operator. So, occurrences of these quasiquotation related operators can be expanded into programs based on <code>list</code>, <code>cons</code>, <code>append</code> and <code>'</code> for example. In other words, the addition of these operations is just for convenience and makes writing programs that generate programs easier. Another benefit is that a program that generates a program now looks very similar to the program it generates, there are just some extra ticks/tags here and there. <code>(+ 1 2)</code> is a program that adds up <code>1</code> and <code>2</code>, <code>`(+ 1 2)</code> is a program that generates a program that adds up <code>1</code> and <code>2</code>.</p>
+<p>To see what something like <code>`(+ 1 2)</code> is expanded into it can be preceded with a <code>'</code>.</p>
+<pre><code># &#39;`(+ 1 2)
+(append (list +) (append (list 1) (append (list 2) (quote nil))))
+</code></pre>
+<h2 id="implementation">Implementation</h2>
+<p>The algorithm for expanding quasiquotations as it is expressed in Bawden's paper operates on an s-expression where sub-expressions are tagged to with back-quote, unquote and splice tags. The Algorithm operates in a top down fashion which means that, in the case of nested quasiquotation, further back-quotes can be found when traversing the s-expression. The expansion algorithm is assumed to be applied to a back-quote tagged s-expression where the top-level tag has been removed.</p>
+<p>For the purpose of lispBM, I want to expand quasiquotation as part of the parsing process and in a bottom-up way. Doing it bottom-up should mean that no back-quotes will ever be found when performing the expansion as the outermost back-quote is always eliminated first in the expansion process, so the case that recursively deals with back-quotes can be dropped from this bottom-up approach.</p>
+<p>To add quasiquotation, really only the tokenizer and parser needs to be extended a bit. But since I chose to use symbols to tag unquote and splice expressions, two additional <em>special</em> symbols (called <code>comma</code> and <code>commaat</code>) are added in <code>symrepr.c</code> and <code>symrepr.h</code>. These symbols will also be removed from the expressions as part of the quasiquotation expansion routine and if any occurrence of them are still in the code once it reaches the evaluator, then that is an indication of a programmer error (the quasiquotation operators was likely nested in some incorrect way).</p>
+<p>Note that there is no need for a back-quote symbol to exist at all, we will see why when looking at how the parser deals with the case of encountering a back-quote token.</p>
+<p>The example below shows what happens if there are left-over unquotes not dealt with by the expander.</p>
+<pre><code># (+ ,1 ,2)
+eval_error
+# &#39;(+ ,1 ,2)
+(+ (comma 1) (comma 2))
+</code></pre>
+<h3 id="changes-to-tokenizer-and-parser">Changes to tokenizer and parser</h3>
+<p>See <a href="../lispbm_parsing_expressions/index.html">parsing expressions</a> for more details about the tokenizer and parser.</p>
+<p>Three new token identifiers are added.</p>
+<pre><code>#define TOKBACKQUOTE    11
+#define TOKCOMMA        12
+#define TOKCOMMAAT      13
+</code></pre>
+<p>Then, three token-recognizing functions are added as well. These peek into the character stream and if the token they look for is found, the number of characters consumed by that token is returned.</p>
+<pre><code>int tok_backquote(tokenizer_char_stream str) {
+  if (peek(str,0) == &#39;`&#39;) {
+    drop(str, 1);
+    return 1;
+  }
+  return 0;
+}
+
+int tok_commaat(tokenizer_char_stream str) {
+  if (peek(str,0) == &#39;,&#39; &amp;&amp;
+      peek(str,1) == &#39;@&#39;) {
+    drop(str,2);
+    return 2;
+  }
+  return 0;
+} 
+
+int tok_comma(tokenizer_char_stream str) {
+  if (peek(str,0) == &#39;,&#39;) {
+    drop(str, 1);
+    return 1;
+  }
+  return 0;
+}
+</code></pre>
+<p>In the <code>next_token</code> function, checks are added for each of the tokenizer function defined above. Note that <code>tok_commaat</code> is tried before <code>tok_comma</code>. Since the splice syntax shares a prefix with the unquote syntax, but is longer, it is important to try it first to not falsely return a unquote token.</p>
+<pre><code>token next_token(tokenizer_char_stream str) {
+
+  token t;
+
+  ...
+
+  if ((n = tok_backquote(str))) {
+    t.type = TOKBACKQUOTE;
+    return t;
+  }
+
+  if ((n = tok_commaat(str))) {
+    t.type= TOKCOMMAAT;
+    return t;
+  }
+  
+  if ((n = tok_comma(str))) {
+    t.type = TOKCOMMA;
+    return t;
+  }
+
+  ...
+
+  t.type = TOKENIZER_ERROR;
+  return t;
+}
+
+</code></pre>
+<p>Three cases are added to the parser in order to deal with the new possible tokens. The cases for <code>TOKCOMMAAT</code> and <code>TOKCOMMA</code> tags the following s-expression with the appropriate symbol.</p>
+<p>In the back-quote case, the bottom-up part of quasiquotation expanding is implemented. Here the expression following the back-quote is parsed recursively, the result of that is then passed through the function <code>qq_expand</code>. The <code>qq_expand</code> function is shown in the next section.</p>
+<p>This becomes bottom-up expansion of quasiquotation through interplay with the recursive-descent parser. The recursive calls to <code>parse_sexp</code> will trickle all the way down to the leaves. Then when reaching the bottom and the return values start bubbling up the expansion be applied.</p>
+<pre><code>VALUE parse_sexp(token tok, tokenizer_char_stream str) {
+
+  VALUE v;
+  token t;
+
+  switch (tok.type) {
+    ...
+  case TOKBACKQUOTE: {
+    t = next_token(str);
+    VALUE quoted = parse_sexp(t, str);
+    if (type_of(quoted) == VAL_TYPE_SYMBOL &amp;&amp;
+    dec_sym(quoted) == symrepr_rerror()) return quoted;
+    VALUE expanded = qq_expand(quoted);
+    if (type_of(expanded) == VAL_TYPE_SYMBOL &amp;&amp;
+    symrepr_is_error(dec_sym(expanded))) return expanded;
+    return expanded;
+  }
+  case TOKCOMMAAT: {
+    t = next_token(str);
+    VALUE splice = parse_sexp(t, str);
+    if (type_of(splice) == VAL_TYPE_SYMBOL &amp;&amp;
+    dec_sym(splice) == symrepr_rerror()) return splice;
+    return cons(enc_sym(symrepr_commaat()), cons (splice, enc_sym(symrepr_nil())));
+  }
+  case TOKCOMMA: {
+    t = next_token(str);
+    VALUE unquoted = parse_sexp(t, str);
+    if (type_of(unquoted) == VAL_TYPE_SYMBOL &amp;&amp;
+    dec_sym(unquoted) == symrepr_rerror()) return unquoted;
+    return cons(enc_sym(symrepr_comma()), cons (unquoted, enc_sym(symrepr_nil()))); 
+  }
+  }
+  return enc_sym(symrepr_rerror());
+}
+
+</code></pre>
+<h3 id="expansion-of-quasiquotatations">Expansion of quasiquotatations</h3>
+<p>The functions <code>qq_expand</code> and <code>qq_expand_list</code> below are mostly just translations of Bawden's lisp functions with the same name. One difference is that I have removed the cases that deal with back-quote as no back-quotes will appear when doing this bottom-up traversal.</p>
+<p>In the parser, <code>qq_expand</code> is applied to an s-expression in the case that deals with the back-quote token. So the <code>VALUE</code> passed to <code>qq_expand</code> represents a quoted expression.</p>
+<p>In the case where the expression is a pair (a cons-cell) <code>qq_expand_list</code> is called on the <code>car</code> and <code>qq_expand</code> on the <code>cdr</code>. The results of these calls are then appended together. The <code>append</code> function used here does not actually append lists but rather it generates the code that appends those lists.</p>
+<pre><code>VALUE append(VALUE front, VALUE back) {
+  return cons (enc_sym(symrepr_append()),
+           cons(front,
+            cons(back, enc_sym(symrepr_nil()))));
+}
+</code></pre>
+<p>Expressions that are tagged with unquote are just untagged and returned. Expression that are neither made from cons-cells or tagged with unquote gets quoted (these are for example, numbers or symbols).</p>
+<pre><code>VALUE qq_expand(VALUE qquoted) {
+
+  VALUE res = enc_sym(symrepr_nil()); 
+  VALUE car_val;
+  VALUE cdr_val; 
+  
+  switch (type_of(qquoted)) {
+  case PTR_TYPE_CONS:
+    car_val = car(qquoted);
+    cdr_val = cdr(qquoted);
+    if (type_of(car_val) == VAL_TYPE_SYMBOL &amp;&amp;
+        dec_sym(car_val) == symrepr_comma()) {
+      res = car(cdr_val);
+    } else if (type_of(car_val) == VAL_TYPE_SYMBOL &amp;&amp;
+               dec_sym(car_val) == symrepr_commaat()) {
+      res = enc_sym(symrepr_rerror()); 
+    } else {
+      VALUE expand_car = qq_expand_list(car_val);
+      VALUE expand_cdr = qq_expand(cdr_val);
+      res = append(expand_car, expand_cdr);
+    }
+    break;
+  default:
+    res = cons(enc_sym(symrepr_quote()), cons(qquoted, enc_sym(symrepr_nil())));
+    break;
+  }
+  return res;
+}
+</code></pre>
+<p>The <code>qq_expand_list</code> is called on items within a list (<code>car</code> positions of cons-cells) and is very similar to <code>qq_expand</code> except that it always returns a list. This function also expands splices, as these are only allowed within lists (if I understand Bawden's algorithm correctly). The cases (except for the one that splices) are all identical to <code>qq_expand</code> except that the results are put in lists. In the case for the splice tag the splice expression is untagged and returned (these splice expressions should evaluate to lists so the types still match).</p>
+<pre><code>VALUE qq_expand_list(VALUE l) {
+  VALUE res = enc_sym(symrepr_nil());
+  VALUE car_val;
+  VALUE cdr_val;
+
+  switch (type_of(l)) {
+  case PTR_TYPE_CONS:
+    car_val = car(l);
+    cdr_val = cdr(l);
+    if (type_of(car_val) == VAL_TYPE_SYMBOL &amp;&amp;
+        dec_sym(car_val) == symrepr_comma()) {
+      res = cons(enc_sym(symrepr_list()),
+                 cons(car(cdr_val), res));
+    } else if (type_of(car_val) == VAL_TYPE_SYMBOL &amp;&amp;
+               dec_sym(car_val) == symrepr_commaat()) {
+      res = car(cdr_val);
+    } else {
+      VALUE expand_car = qq_expand_list(car_val);
+      VALUE expand_cdr = qq_expand(cdr_val);
+      res = cons(enc_sym(symrepr_list()),
+                 cons(append(expand_car, expand_cdr), enc_sym(symrepr_nil())));
+    }
+    break;
+  default:
+    res = cons(enc_sym(symrepr_list()),
+               cons(l, enc_sym(symrepr_nil())));              
+  }
+  return res;
+}
+</code></pre>
+<h2 id="future-work">Future work</h2>
+<p>Before adding quasiquotation, expression parsing didn't generate much garbage at all (garbage in the sense of temporary heap objects that really should be garbage collected). So, thus far I didn't think very much about how to add some interplay between garbage collection and parsing. I just thought that if there is not enough heap to parse the program, you cannot run the program anyway so why bother. Now, however, the quasiquotation expansion process generates garbage that probably should be dealt with somehow as it could mean that parsing a program that really does fit in memory will fail to parse because heap becomes full.</p>
+<p>More testing is needed. I am not an old lisp guru and really don't know much about how tricky you can get with quasiquotation, so it is a bit hard for me to know if this implementation works as it should! As time goes by and I try more things, bugs will be taken care of as they appear (as long as they aren't total show-stoppers).</p>
+<p>Macros is another interesting thing to look into. I have a feeling that with quasiquotation, the main part of that is done but what could be added is some lambda-like form that is applied without evaluating the arguments. Need to look into this a bit more before attempting anything.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
