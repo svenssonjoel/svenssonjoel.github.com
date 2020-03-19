@@ -92,7 +92,7 @@ preceded with a `'`.
 
 The algorithm for expanding quasiquotations as it is expressed in
 Bawden's paper operates on an s-expression where sub-expressions are
-tagged to with back-quote, unquote and splice tags. The Algorithm
+tagged with back-quote, unquote and splice tags. The Algorithm
 operates in a top down fashion which means that, in the case of nested
 quasiquotation, further back-quotes can be found when traversing the
 s-expression. The expansion algorithm is assumed to be applied to a
@@ -265,7 +265,7 @@ VALUE parse_sexp(token tok, tokenizer_char_stream str) {
 ### Expansion of quasiquotatations
 
 The functions `qq_expand` and `qq_expand_list` below are mostly just
-translations of Bawden's lisp functions with the same name. One
+translations of Bawden's lisp functions with the same names. One
 difference is that I have removed the cases that deal with back-quote
 as no back-quotes will appear when doing this bottom-up traversal.
 
@@ -328,7 +328,7 @@ of cons-cells) and is very similar to `qq_expand` except that it
 always returns a list. This function also expands splices, as these
 are only allowed within lists (if I understand Bawden's algorithm
 correctly). The cases (except for the one that splices) are all
-identical to `qq_expand` except that the results are put in lists. In
+identical to `qq_expand` except that their results are put in lists. In
 the case for the splice tag the splice expression is untagged and
 returned (these splice expressions should evaluate to lists so the
 types still match). 
@@ -375,8 +375,8 @@ parsing. I just thought that if there is not enough heap to parse the
 program, you cannot run the program anyway so why bother. Now,
 however, the quasiquotation expansion process generates garbage that
 probably should be dealt with somehow as it could mean that parsing a
-program that really does fit in memory will fail to parse because heap
-becomes full.
+program that really does fit in memory will fail to parse because the
+heap becomes full.
 
 More testing is needed. I am not an old lisp guru and really don't
 know much about how tricky you can get with quasiquotation, so it is a

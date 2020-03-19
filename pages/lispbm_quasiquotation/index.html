@@ -166,7 +166,7 @@ apa
 (append (list +) (append (list 1) (append (list 2) (quote nil))))
 </code></pre>
 <h2 id="implementation">Implementation</h2>
-<p>The algorithm for expanding quasiquotations as it is expressed in Bawden's paper operates on an s-expression where sub-expressions are tagged to with back-quote, unquote and splice tags. The Algorithm operates in a top down fashion which means that, in the case of nested quasiquotation, further back-quotes can be found when traversing the s-expression. The expansion algorithm is assumed to be applied to a back-quote tagged s-expression where the top-level tag has been removed.</p>
+<p>The algorithm for expanding quasiquotations as it is expressed in Bawden's paper operates on an s-expression where sub-expressions are tagged with back-quote, unquote and splice tags. The Algorithm operates in a top down fashion which means that, in the case of nested quasiquotation, further back-quotes can be found when traversing the s-expression. The expansion algorithm is assumed to be applied to a back-quote tagged s-expression where the top-level tag has been removed.</p>
 <p>For the purpose of lispBM, I want to expand quasiquotation as part of the parsing process and in a bottom-up way. Doing it bottom-up should mean that no back-quotes will ever be found when performing the expansion as the outermost back-quote is always eliminated first in the expansion process, so the case that recursively deals with back-quotes can be dropped from this bottom-up approach.</p>
 <p>To add quasiquotation, really only the tokenizer and parser needs to be extended a bit. But since I chose to use symbols to tag unquote and splice expressions, two additional <em>special</em> symbols (called <code>comma</code> and <code>commaat</code>) are added in <code>symrepr.c</code> and <code>symrepr.h</code>. These symbols will also be removed from the expressions as part of the quasiquotation expansion routine and if any occurrence of them are still in the code once it reaches the evaluator, then that is an indication of a programmer error (the quasiquotation operators was likely nested in some incorrect way).</p>
 <p>Note that there is no need for a back-quote symbol to exist at all, we will see why when looking at how the parser deals with the case of encountering a back-quote token.</p>
@@ -278,7 +278,7 @@ int tok_comma(tokenizer_char_stream str) {
 
 </code></pre>
 <h3 id="expansion-of-quasiquotatations">Expansion of quasiquotatations</h3>
-<p>The functions <code>qq_expand</code> and <code>qq_expand_list</code> below are mostly just translations of Bawden's lisp functions with the same name. One difference is that I have removed the cases that deal with back-quote as no back-quotes will appear when doing this bottom-up traversal.</p>
+<p>The functions <code>qq_expand</code> and <code>qq_expand_list</code> below are mostly just translations of Bawden's lisp functions with the same names. One difference is that I have removed the cases that deal with back-quote as no back-quotes will appear when doing this bottom-up traversal.</p>
 <p>In the parser, <code>qq_expand</code> is applied to an s-expression in the case that deals with the back-quote token. So the <code>VALUE</code> passed to <code>qq_expand</code> represents a quoted expression.</p>
 <p>In the case where the expression is a pair (a cons-cell) <code>qq_expand_list</code> is called on the <code>car</code> and <code>qq_expand</code> on the <code>cdr</code>. The results of these calls are then appended together. The <code>append</code> function used here does not actually append lists but rather it generates the code that appends those lists.</p>
 <pre><code>VALUE append(VALUE front, VALUE back) {
@@ -317,7 +317,7 @@ int tok_comma(tokenizer_char_stream str) {
   return res;
 }
 </code></pre>
-<p>The <code>qq_expand_list</code> is called on items within a list (<code>car</code> positions of cons-cells) and is very similar to <code>qq_expand</code> except that it always returns a list. This function also expands splices, as these are only allowed within lists (if I understand Bawden's algorithm correctly). The cases (except for the one that splices) are all identical to <code>qq_expand</code> except that the results are put in lists. In the case for the splice tag the splice expression is untagged and returned (these splice expressions should evaluate to lists so the types still match).</p>
+<p>The <code>qq_expand_list</code> is called on items within a list (<code>car</code> positions of cons-cells) and is very similar to <code>qq_expand</code> except that it always returns a list. This function also expands splices, as these are only allowed within lists (if I understand Bawden's algorithm correctly). The cases (except for the one that splices) are all identical to <code>qq_expand</code> except that their results are put in lists. In the case for the splice tag the splice expression is untagged and returned (these splice expressions should evaluate to lists so the types still match).</p>
 <pre><code>VALUE qq_expand_list(VALUE l) {
   VALUE res = enc_sym(symrepr_nil());
   VALUE car_val;
@@ -349,7 +349,7 @@ int tok_comma(tokenizer_char_stream str) {
 }
 </code></pre>
 <h2 id="future-work">Future work</h2>
-<p>Before adding quasiquotation, expression parsing didn't generate much garbage at all (garbage in the sense of temporary heap objects that really should be garbage collected). So, thus far I didn't think very much about how to add some interplay between garbage collection and parsing. I just thought that if there is not enough heap to parse the program, you cannot run the program anyway so why bother. Now, however, the quasiquotation expansion process generates garbage that probably should be dealt with somehow as it could mean that parsing a program that really does fit in memory will fail to parse because heap becomes full.</p>
+<p>Before adding quasiquotation, expression parsing didn't generate much garbage at all (garbage in the sense of temporary heap objects that really should be garbage collected). So, thus far I didn't think very much about how to add some interplay between garbage collection and parsing. I just thought that if there is not enough heap to parse the program, you cannot run the program anyway so why bother. Now, however, the quasiquotation expansion process generates garbage that probably should be dealt with somehow as it could mean that parsing a program that really does fit in memory will fail to parse because the heap becomes full.</p>
 <p>More testing is needed. I am not an old lisp guru and really don't know much about how tricky you can get with quasiquotation, so it is a bit hard for me to know if this implementation works as it should! As time goes by and I try more things, bugs will be taken care of as they appear (as long as they aren't total show-stoppers).</p>
 <p>Macros is another interesting thing to look into. I have a feeling that with quasiquotation, the main part of that is done but what could be added is some lambda-like form that is applied without evaluating the arguments. Need to look into this a bit more before attempting anything.</p>
 <hr />
