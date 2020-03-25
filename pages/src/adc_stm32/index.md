@@ -7,10 +7,10 @@ I have been working on a PCB for sound generation for a while, the
 result of this work is shown in the picture below.
 
 I am a beginner when it comes to electronics and definitely totally
-clueless when it comes to audio electronics, so if this board will
-ever make a noise at all is left to be seen. But it does show signs of
-life! The MCU can be flashed, the LEDs can be blinked and the position
-of the 4 knobs on the front can be read using the ADC.
+clueless when it comes to audio electronics. So, if this board will
+ever make a noise at all is left to be seen. It does, however, show
+signs of life! The MCU can be flashed, the LEDs can be blinked and the
+position of the 4 knobs on the front can be read using the ADC.
 
 If you are interested in more of the story behind this PCB there
 are a few videos about it on
