@@ -17,9 +17,10 @@ regularly though (of course not for all of them). The one book that I
 know I've read from cover to cover, not just once but several times,
 is the Black Art of 3D Game Programming book by André LaMothe.
 
-Some of the books are purely of collectors interest. All the books on
+Some of the books are purely of collector's interest. All the books on
 programming of the X Window System for example are just a piece of
-history that is fun to have in the shelf. 
+history that is fun to have in the shelf. I would love to have a
+complete set of these of the same edition. 
 
 
 
