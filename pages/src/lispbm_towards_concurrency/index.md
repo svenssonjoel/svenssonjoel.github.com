@@ -61,7 +61,7 @@ One instance              |  Two instances
 The earlier [text](../lispbm_evaluation_function/index.html) on the
 evaluator hints that there is a datatype called `eval_context_t` that
 holds most information about the currently running program. This
-`eval_context_t` datatype is extended a little bit here. As before the
+`eval_context_t` datatype is extended a little bit here. Just as before, the
 context hold a program, a currently executing expression and a current
 environment as well as the continuation stack. Thus, each task has its
 own private continuation stack while the heap is shared between all
@@ -91,7 +91,7 @@ values. The `timestamp` and the `sleep_us` that are used to know when
 it is time to wake up a sleeping task. The `id` is an identification
 number for the task. The `eval_context_t` now also have a `prev` and
 `next` pointer to allow forming a doubly linked list. The list
-structure of contexts will be used to implement a queue of tasks
+structure of contexts, will be used to implement a queue of tasks
 later.
 
 Apart from these task/process management fields, the `done` and
@@ -117,7 +117,7 @@ context. More details about this later.
 
 The `ctx_running` pointer points to the currently executing context.
 
-Context that terminate, either because of an error or because of
+Contexts that terminate, either because of an error or because of
 running all the way through their programs, are moved to the
 `ctx_done` queue.
 
@@ -197,7 +197,7 @@ context to see if there is a context that should be dequeued at this
 time. If there is no context to run at this time, either a default
 sleep period or the smallest `sleep_us` found when traversing the
 queue, whichever is smaller, is provided to the caller. This means
-that the is a maximum sleep period that is returned by the dequeue
+that there is a maximum sleep period that is returned by the dequeue
 operation. 
 
 ```
@@ -254,10 +254,11 @@ eval_context_t *dequeue_ctx(uint32_t *us) {
 }
 ```
 
-A context can only reach completion when it is the running context, `ctx_running`. The
-`finish_ctx` function puts the `ctx_running`on the `ctx_done` list and calls the `ctx_done_callback`.
-The currently running context is set to NULL. This function is called from `advance_ctx` that
-is explained below.
+A context can only reach completion when it is the currently running
+context, `ctx_running`. The `finish_ctx` function puts the
+`ctx_running` on the `ctx_done` list and calls the `ctx_done_callback`.
+The currently running context is set to NULL. This function is called
+from `advance_ctx` that is explained below.
 
 
 ```
@@ -695,6 +696,15 @@ runnable context.
 `gc_mark_phase` can fail and if one does, there RTS should be
 reset. There is no need to try to continue executing after such a
 failure as the heap will most likely be corrupt.
+
+9. What about events from the outside, such as a button press or data
+arriving over some communication channel? These things are sometimes
+handled using an interrupt. Some way of dealing with these "external"
+events are needed. There may be more suitable abstractions for these
+kinds of interruptions to apply to this system. Streams/queues of
+events? where the underlying enqueueing of events is performed by the
+RTS.
+
 
 
 ## Notes 

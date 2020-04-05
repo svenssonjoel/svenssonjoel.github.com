@@ -178,7 +178,7 @@
 </tbody>
 </table>
 <h2 id="evaluation-contexts-and-task-queues">Evaluation Contexts and Task Queues</h2>
-<p>The earlier <a href="../lispbm_evaluation_function/index.html">text</a> on the evaluator hints that there is a datatype called <code>eval_context_t</code> that holds most information about the currently running program. This <code>eval_context_t</code> datatype is extended a little bit here. As before the context hold a program, a currently executing expression and a current environment as well as the continuation stack. Thus, each task has its own private continuation stack while the heap is shared between all tasks.</p>
+<p>The earlier <a href="../lispbm_evaluation_function/index.html">text</a> on the evaluator hints that there is a datatype called <code>eval_context_t</code> that holds most information about the currently running program. This <code>eval_context_t</code> datatype is extended a little bit here. Just as before, the context hold a program, a currently executing expression and a current environment as well as the continuation stack. Thus, each task has its own private continuation stack while the heap is shared between all tasks.</p>
 <pre><code>typedef struct eval_context_s{
   VALUE program;
   VALUE curr_exp;
@@ -196,7 +196,7 @@
   struct eval_context_s *next;
 } eval_context_t;
 </code></pre>
-<p>Now, <code>eval_context_t</code> also contains a block of <em>Process control</em> values. The <code>timestamp</code> and the <code>sleep_us</code> that are used to know when it is time to wake up a sleeping task. The <code>id</code> is an identification number for the task. The <code>eval_context_t</code> now also have a <code>prev</code> and <code>next</code> pointer to allow forming a doubly linked list. The list structure of contexts will be used to implement a queue of tasks later.</p>
+<p>Now, <code>eval_context_t</code> also contains a block of <em>Process control</em> values. The <code>timestamp</code> and the <code>sleep_us</code> that are used to know when it is time to wake up a sleeping task. The <code>id</code> is an identification number for the task. The <code>eval_context_t</code> now also have a <code>prev</code> and <code>next</code> pointer to allow forming a doubly linked list. The list structure of contexts, will be used to implement a queue of tasks later.</p>
 <p>Apart from these task/process management fields, the <code>done</code> and <code>app_cont</code> flags have moved into the context. This is because it is necessary to maintain this information on a per task basis now. Before, the RTS only ever dealt with one task at a time and those flags could be globals.</p>
 <pre><code>static eval_context_t *ctx_queue = NULL;
 static eval_context_t *ctx_queue_last = NULL;
@@ -205,7 +205,7 @@ static eval_context_t *ctx_running = NULL;
 </code></pre>
 <p>There is a <code>ctx_queue</code> that contains contexts that wait for their turn to be run. A pointer to the first element and last element of this queue is maintained so that new tasks can be easily added to the end of the queue. If no context is currently running, the <code>ctx_queue</code> is scanned from the front in a search for a context with a timestamp and sleep time that indicates it should be set as the running context. More details about this later.</p>
 <p>The <code>ctx_running</code> pointer points to the currently executing context.</p>
-<p>Context that terminate, either because of an error or because of running all the way through their programs, are moved to the <code>ctx_done</code> queue.</p>
+<p>Contexts that terminate, either because of an error or because of running all the way through their programs, are moved to the <code>ctx_done</code> queue.</p>
 <h2 id="callbacks-for-interfacing-with-a-host-os">Callbacks for Interfacing with a Host OS</h2>
 <p>The example program above, that sleeps and prints hello, was run on x86 32-bit and made use of PThreads to decouple the "user interface" part of the REPL from the lispBM RTS. The evaluation function now runs continuously in its own thread. Now lispBM also needs to get access to functions for generating timestamps and for sleeping. All of this should happen in a way that is portable over (I hope) ChibiOS, ZephyrOS, FreeRTOS and X86 + PThreads. There are a number of callback functions that should be set for each specific implementation for, sleeping and timestamp generation.</p>
 <p>There is also a callback function that optionally can be set called the <code>ctx_done_callback</code>. This function is executed each time a task completes. The example REPL uses this callback to present the result of a computation to the user.</p>
@@ -244,7 +244,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
   }
 }
 </code></pre>
-<p>The <code>dequeue_ctx</code> function, performs a search from the front of the <code>ctx_queue</code> and uses the <code>timestamp</code> and <code>sleep_us</code> fields of the context to see if there is a context that should be dequeued at this time. If there is no context to run at this time, either a default sleep period or the smallest <code>sleep_us</code> found when traversing the queue, whichever is smaller, is provided to the caller. This means that the is a maximum sleep period that is returned by the dequeue operation.</p>
+<p>The <code>dequeue_ctx</code> function, performs a search from the front of the <code>ctx_queue</code> and uses the <code>timestamp</code> and <code>sleep_us</code> fields of the context to see if there is a context that should be dequeued at this time. If there is no context to run at this time, either a default sleep period or the smallest <code>sleep_us</code> found when traversing the queue, whichever is smaller, is provided to the caller. This means that there is a maximum sleep period that is returned by the dequeue operation.</p>
 <pre><code>eval_context_t *dequeue_ctx(uint32_t *us) {
   uint32_t min_us = DEFAULT_SLEEP_US;
 
@@ -297,7 +297,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
   return NULL;
 }
 </code></pre>
-<p>A context can only reach completion when it is the running context, <code>ctx_running</code>. The <code>finish_ctx</code> function puts the <code>ctx_running</code>on the <code>ctx_done</code> list and calls the <code>ctx_done_callback</code>. The currently running context is set to NULL. This function is called from <code>advance_ctx</code> that is explained below.</p>
+<p>A context can only reach completion when it is the currently running context, <code>ctx_running</code>. The <code>finish_ctx</code> function puts the <code>ctx_running</code> on the <code>ctx_done</code> list and calls the <code>ctx_done_callback</code>. The currently running context is set to NULL. This function is called from <code>advance_ctx</code> that is explained below.</p>
 <pre><code>void finish_ctx(void) {
   if (ctx_done == NULL) {
     ctx_running-&gt;prev = NULL;
@@ -581,6 +581,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
 <li><p>There are no priorities, preemptions or periodic task switches. So a task that is running forever and does not <code>yield</code> can starve everything else out. This is definitely not suitable for anything timing critical.</p></li>
 <li><p>Be opportunistic and run the GC in case there is currently no runnable context.</p></li>
 <li><p>The <code>gc</code> function should perform error checking! Each call to <code>gc_mark_phase</code> can fail and if one does, there RTS should be reset. There is no need to try to continue executing after such a failure as the heap will most likely be corrupt.</p></li>
+<li><p>What about events from the outside, such as a button press or data arriving over some communication channel? These things are sometimes handled using an interrupt. Some way of dealing with these "external" events are needed. There may be more suitable abstractions for these kinds of interruptions to apply to this system. Streams/queues of events? where the underlying enqueueing of events is performed by the RTS.</p></li>
 </ol>
 <h2 id="notes">Notes</h2>
 <ol>
