@@ -1,0 +1,596 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Concurrent Tasks</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="An attempt to run multiple concurrent lispbm tasks">
+  <meta name="keywords" content="Concurrent tasks context evaluation lisp microcontrollers stm32 nrf52 esp32  ">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+  
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="./index.html#BLOG"> Blog </a>
+  <a href="./index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="concurrent-tasks">Concurrent Tasks</h1>
+<p>I am currently trying to make it possible to run concurrent "tasks" on the lispBM evaluator. This text is a description of the state, at this point in time, of that experiment. There are many changes to the code that goes into this, therefore the code goes on a separate branch called "concurrency" in the <a href="https://github.com/svenssonjoel/lispBM/tree/concurrent">GitHub repo</a>.</p>
+<p>The "concurrent" branch contains a working example REPL, called <code>repl-cps</code> but the collection of tests have not been updated to run on the, let's call it, concurrent runtime system. So all tests will currently fail. The repl example runs on x86 32bit and uses pthreads to continuously run the evaluator in parallel with the reader part of the repl.</p>
+<p>This experiment is about concurrency, not parallelism, so the idea is to time-share the evaluator between several <em>contexts</em>. To realize this the biggest changes are all in the <code>eval_cps.c</code> file which contain the evaluator.</p>
+<p>Constructive feedback is as usual extremely appreciated. Thanks!</p>
+<h2 id="example-program">Example Program</h2>
+<p>Let's start with an example that illustrate what is currently implemented. The program below runs forever and starts off with yielding for <code>500000</code> usec (0.5 seconds), then prints out a message and a counter value.</p>
+<pre><code>(let ((f (lambda (x)
+           (progn
+             (yield 500000)
+             (print &quot;hello &quot; x \#newline)
+             (f (+ x 1))))))
+  (f 0))
+</code></pre>
+<p>The lispBM program above is conceptually similar to the C program below.</p>
+<pre><code>while (true) {
+  usleep(500000);
+  printf(&quot;hello %d\n&quot;, x++);
+}
+</code></pre>
+<p>The screenshots below show what is output to the screen with one or two instances of this example program running. In the <code>Two instances</code> case, the second instance was started when the first one had reached a count of about 229.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">One instance</th>
+<th style="text-align: center;">Two instances</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/one_instance.png" alt="Task periodically printing hello" /></td>
+<td style="text-align: center;"><img src="./media/two_instances.png" alt="Two concurrent tasks periodically printing hello" /></td>
+</tr>
+</tbody>
+</table>
+<h2 id="evaluation-contexts-and-task-queues">Evaluation Contexts and Task Queues</h2>
+<p>The earlier <a href="../lispbm_evaluation_function/index.html">text</a> on the evaluator hints that there is a datatype called <code>eval_context_t</code> that holds most information about the currently running program. This <code>eval_context_t</code> datatype is extended a little bit here. As before the context hold a program, a currently executing expression and a current environment as well as the continuation stack. Thus, each task has its own private continuation stack while the heap is shared between all tasks.</p>
+<pre><code>typedef struct eval_context_s{
+  VALUE program;
+  VALUE curr_exp;
+  VALUE curr_env;
+  VALUE r;
+  bool  done;
+  bool  app_cont;
+  stack K;
+  /* Process control */ 
+  uint32_t timestamp;
+  uint32_t sleep_us;
+  CID id;
+  /* List structure */ 
+  struct eval_context_s *prev;
+  struct eval_context_s *next;
+} eval_context_t;
+</code></pre>
+<p>Now, <code>eval_context_t</code> also contains a block of <em>Process control</em> values. The <code>timestamp</code> and the <code>sleep_us</code> that are used to know when it is time to wake up a sleeping task. The <code>id</code> is an identification number for the task. The <code>eval_context_t</code> now also have a <code>prev</code> and <code>next</code> pointer to allow forming a doubly linked list. The list structure of contexts will be used to implement a queue of tasks later.</p>
+<p>Apart from these task/process management fields, the <code>done</code> and <code>app_cont</code> flags have moved into the context. This is because it is necessary to maintain this information on a per task basis now. Before, the RTS only ever dealt with one task at a time and those flags could be globals.</p>
+<pre><code>static eval_context_t *ctx_queue = NULL;
+static eval_context_t *ctx_queue_last = NULL;
+static eval_context_t *ctx_done = NULL;
+static eval_context_t *ctx_running = NULL;
+</code></pre>
+<p>There is a <code>ctx_queue</code> that contains contexts that wait for their turn to be run. A pointer to the first element and last element of this queue is maintained so that new tasks can be easily added to the end of the queue. If no context is currently running, the <code>ctx_queue</code> is scanned from the front in a search for a context with a timestamp and sleep time that indicates it should be set as the running context. More details about this later.</p>
+<p>The <code>ctx_running</code> pointer points to the currently executing context.</p>
+<p>Context that terminate, either because of an error or because of running all the way through their programs, are moved to the <code>ctx_done</code> queue.</p>
+<h2 id="callbacks-for-interfacing-with-a-host-os">Callbacks for Interfacing with a Host OS</h2>
+<p>The example program above, that sleeps and prints hello, was run on x86 32-bit and made use of PThreads to decouple the "user interface" part of the REPL from the lispBM RTS. The evaluation function now runs continuously in its own thread. Now lispBM also needs to get access to functions for generating timestamps and for sleeping. All of this should happen in a way that is portable over (I hope) ChibiOS, ZephyrOS, FreeRTOS and X86 + PThreads. There are a number of callback functions that should be set for each specific implementation for, sleeping and timestamp generation.</p>
+<p>There is also a callback function that optionally can be set called the <code>ctx_done_callback</code>. This function is executed each time a task completes. The example REPL uses this callback to present the result of a computation to the user.</p>
+<p><img src="./media/iota_1000.png" alt="Done callback reporting result of computation" /></p>
+<pre><code>static void (*usleep_callback)(uint32_t) = NULL;
+static uint32_t (*timestamp_us_callback)(void) = NULL;
+static void (*ctx_done_callback)(eval_context_t *) = NULL;
+
+void eval_cps_set_usleep_callback(void (*fptr)(uint32_t)) {
+  usleep_callback = fptr;
+}
+
+void eval_cps_set_timestamp_us_callback(uint32_t (*fptr)(void)) {
+  timestamp_us_callback = fptr;
+}
+
+void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
+  ctx_done_callback = fptr;
+}
+</code></pre>
+<h2 id="enqueueing-dequeueing-and-context-creation-functions">Enqueueing, Dequeueing and Context Creation Functions</h2>
+<p>The enqueueing and dequeueing functions, together, implement the scheduling strategy. The <code>enqueue_ctx</code> function places a context at the end of the <code>ctx_queue</code> queue and the <code>dequeue_ctx</code> function searches for a context to run from the front of the <code>ctx_queue</code>. This should mean that contexts that have been in the queue the longest have priority over recently enqueued ones.</p>
+<p>The <code>enqueue_ctx</code> function just adds a context to the <code>ctx_queue</code>. So if the queue is empty, <code>ctx_queue</code> and <code>ctx_queue_last</code> will point to the newly added context. Otherwise, the new context is added after <code>ctx_queue_last</code> and <code>ctx_queue_last</code> is updated.</p>
+<pre><code>void enqueue_ctx(eval_context_t *ctx) {
+
+  if (ctx_queue_last == NULL) {
+    ctx-&gt;prev = NULL;
+    ctx-&gt;next = NULL;
+    ctx_queue = ctx;
+    ctx_queue_last = ctx;
+  } else {
+    ctx-&gt;prev = ctx_queue_last;
+    ctx-&gt;next = NULL;
+    ctx_queue_last-&gt;next = ctx;
+    ctx_queue_last = ctx;
+  }
+}
+</code></pre>
+<p>The <code>dequeue_ctx</code> function, performs a search from the front of the <code>ctx_queue</code> and uses the <code>timestamp</code> and <code>sleep_us</code> fields of the context to see if there is a context that should be dequeued at this time. If there is no context to run at this time, either a default sleep period or the smallest <code>sleep_us</code> found when traversing the queue, whichever is smaller, is provided to the caller. This means that the is a maximum sleep period that is returned by the dequeue operation.</p>
+<pre><code>eval_context_t *dequeue_ctx(uint32_t *us) {
+  uint32_t min_us = DEFAULT_SLEEP_US;
+
+  uint32_t t_now;
+  if (timestamp_us_callback) {
+    t_now = timestamp_us_callback();
+  } else {
+    t_now = 0;
+  }
+
+  eval_context_t *curr = ctx_queue;
+
+  while (curr != NULL) {
+    uint32_t t_diff;
+    if ( curr-&gt;timestamp &gt; t_now) {
+      /* There was an overflow on the counter */
+      t_diff = (0xFFFFFFFF - curr-&gt;timestamp) + t_now;
+    } else {
+      t_diff = t_now - curr-&gt;timestamp;
+    }
+
+    if (t_diff &gt;= curr-&gt;sleep_us) {
+      eval_context_t *result = curr;
+      if (curr == ctx_queue_last) {
+        if (curr-&gt;prev) {
+          ctx_queue_last = curr-&gt;prev;
+          ctx_queue_last-&gt;next = NULL;
+        } else {
+          ctx_queue = NULL;
+          ctx_queue_last = NULL;
+        }
+      } else if (curr-&gt;prev == NULL) {
+        ctx_queue = curr-&gt;next;
+        if (ctx_queue) {
+          ctx_queue-&gt;prev = NULL;
+        }
+      } else {
+        curr-&gt;prev-&gt;next = curr-&gt;next;
+        if (curr-&gt;next) {
+          curr-&gt;next-&gt;prev = curr-&gt;prev;
+        }
+      }
+      return result;
+    }
+    if (min_us &gt; t_diff) min_us = t_diff;
+    curr = curr-&gt;next;
+  }
+
+  *us = min_us;
+  return NULL;
+}
+</code></pre>
+<p>A context can only reach completion when it is the running context, <code>ctx_running</code>. The <code>finish_ctx</code> function puts the <code>ctx_running</code>on the <code>ctx_done</code> list and calls the <code>ctx_done_callback</code>. The currently running context is set to NULL. This function is called from <code>advance_ctx</code> that is explained below.</p>
+<pre><code>void finish_ctx(void) {
+  if (ctx_done == NULL) {
+    ctx_running-&gt;prev = NULL;
+    ctx_running-&gt;next = NULL;
+    ctx_done = ctx_running;
+  } else {
+    ctx_running-&gt;prev = NULL;
+    ctx_running-&gt;next = ctx_done;
+    if (ctx_running-&gt;next) {
+      ctx_running-&gt;next-&gt;prev = ctx_running;
+    }
+    ctx_done = ctx_running;
+  }
+
+  if (ctx_done_callback) {
+    ctx_done_callback(ctx_done);
+  }
+  ctx_running = NULL;
+}
+</code></pre>
+<p>The <code>remove_done_ctx</code> removes a context with id <code>cid</code> from the <code>ctx_done</code> list. The idea is that this should be used in the implementation of some kind of <code>wait</code> functionality later, the details of that needs to be worked out.</p>
+<pre><code>void remove_done_ctx(uint32_t cid) {
+
+  eval_context_t * curr = ctx_done;
+
+  while(curr) {
+    if (curr-&gt;id == cid) {
+      if (curr-&gt;prev) {
+        curr-&gt;prev-&gt;next = curr-&gt;next;
+      }
+      if (curr-&gt;next) {
+        curr-&gt;next-&gt;prev = curr-&gt;prev;
+      }
+
+      stack_free(&amp;curr-&gt;K);
+      free(curr);
+      break;
+    }
+    curr = curr-&gt;next;
+  }
+}
+</code></pre>
+<p>A new context is created and enqueued on the <code>ctx_queue</code> using the <code>create_ctx</code> function. This function takes a program, a stack size and a flag indicating if the stack should be reallocated when full, as arguments. Here, a context is allocated, a stack allocated, and then the context is enqueued. This function also assigned context ids, which are currently just increasing numbers with no recycling schema.</p>
+<pre><code>CID create_ctx(VALUE program, uint32_t stack_size, bool grow_stack) {
+
+  if (next_ctx_id == 0) return 0; // overflow of CIDs
+
+  if (type_of(program) != PTR_TYPE_CONS) return 0;
+
+  eval_context_t *ctx = NULL;
+  ctx = malloc(sizeof(eval_context_t));
+  ctx-&gt;program = cdr(program);
+  ctx-&gt;curr_exp = car(program);
+  ctx-&gt;curr_env = NIL;
+  ctx-&gt;done = false;
+  ctx-&gt;app_cont = false;
+  ctx-&gt;timestamp = 0;
+  ctx-&gt;sleep_us = 0;
+  ctx-&gt;id = next_ctx_id++;
+  if (!stack_allocate(&amp;ctx-&gt;K, stack_size, grow_stack)) {
+    free(ctx);
+    return 0;
+  }
+  if (!push_u32(&amp;ctx-&gt;K, enc_u(DONE))) {
+    free(ctx);
+    stack_free(&amp;ctx-&gt;K);
+    return 0;
+  }
+
+  enqueue_ctx(ctx);
+
+  return ctx-&gt;id;
+}
+</code></pre>
+<p>Lastly a small helper function that is called from the REPL to easily add a new context to the queue.</p>
+<pre><code>CID eval_cps_program(VALUE lisp) {
+  return create_ctx(lisp, 256, false);
+}
+</code></pre>
+<h2 id="scheduling-and-the-evaluator-thread-function">Scheduling and the Evaluator Thread Function</h2>
+<p>Earlier,<code>eval_cps.c</code> contained a static function (local to that file) called <code>run_eval</code>. Now evaluation should run continuously in a separate thread, but how to create that thread differs depending on platform. Therefore the new variant of <code>run_eval</code>, called <code>eval_cps_run_eval</code> is an extern function that should be wrapped in a thread.</p>
+<p>The new <code>eval_cps_run_eval</code> function contains an infinite loop, <code>while (eval_running)</code>, that in each iteration checks if there is a currently running context. If there is no currently running context, it attempts to dequeue one. Dequeueing either provides a context or a sleep period that can be used to go to sleep for a while before trying to dequeue again.</p>
+<p>When a context is running, the <code>eval_cps_run_eval</code> function behaves the same way as the the old <a href="../lispbm_evaluation_function/index.html"><code>run_eval</code></a> did.</p>
+<pre><code>void eval_cps_run_eval(void){
+
+  bool perform_gc = false;
+  uint32_t non_gc = 0;
+
+  while (eval_running) {
+
+    if (!ctx_running) {
+      uint32_t us;
+      ctx_running = dequeue_ctx(&amp;us);
+      if (!ctx_running) {
+        if (usleep_callback) {
+          usleep_callback(us);
+        }
+        continue;
+      }
+    }
+
+    ...
+
+</code></pre>
+<h2 id="yielding">Yielding</h2>
+<p>Yielding is the only way that a context (that is not done executing) can be removed from being the currently running context. That is, there is no preemption currently. There is a symbol <code>yield</code> that can be used like a function application in a lispBM program. It takes one argument which is a sleep time. When <code>yield</code> is evaluated the function <code>yield_ctx</code> is executed.</p>
+<p><code>yield_ctx</code> updates the timestamp and sleep time of the context and adds it to the queue. The intermediate result maintained in the context is set to <code>t</code> for true as this is the value of <code>yield</code>.</p>
+<p>The last thing <code>yield_ctx</code> does is set the <code>ctx_running</code> to <code>NULL</code> which means that the next iteration of the evaluator can try to schedule another context or go to sleep for a while.</p>
+<pre><code>void yield_ctx(uint32_t sleep_us) {
+  if (timestamp_us_callback) {
+    ctx_running-&gt;timestamp = timestamp_us_callback();
+    ctx_running-&gt;sleep_us = sleep_us;
+  } else {
+    ctx_running-&gt;timestamp = 0;
+    ctx_running-&gt;sleep_us = 0;
+  }
+  ctx_running-&gt;r = enc_sym(symrepr_true());
+  ctx_running-&gt;app_cont = true;
+  enqueue_ctx(ctx_running);
+  ctx_running = NULL;
+}
+</code></pre>
+<p>Handling of the <code>yield</code> application is very similar to how <a href=".pages/lispbm_fundamentals_and_extensions/index.html">fundamental operations</a> are applied. In the <code>apply_continuation</code> function and the <code>APPLICATION</code> case, there is a check to see if what is being applied is the <code>yield</code> function. in that case the <code>yield_ctx</code> function is applied.</p>
+<pre><code>  ...
+
+  if (dec_sym(fun) == symrepr_yield()) {
+    if (type_of(fun_args[1]) == VAL_TYPE_I) {
+      INT ts = dec_i(fun_args[1]);
+      stack_drop(&amp;ctx-&gt;K, dec_u(count)+1);
+      yield_ctx(ts);
+    } else {
+      error_ctx(ctx, enc_sym(symrepr_eerror()));
+    }
+    return;
+  }
+
+  ...
+</code></pre>
+<h2 id="advancing-program-execution-and-finishing-tasks">Advancing Program Execution and Finishing Tasks</h2>
+<p>A program is a list of expressions to be evaluated one after the other. The context keeps track of which expression is the currently executing one and also what expressions are left to evaluate within the program. When evaluation of one expression within a program is done, the next expression should be set as the current one. This operation is performed by the <code>advance_ctx</code> function.</p>
+<p>If there are no further expressions to evaluate as part of the program, the <code>finish_ctx</code> function is run and the context is moved to the done list.</p>
+<pre><code>void advance_ctx() {
+
+  if (type_of(ctx_running-&gt;program) == PTR_TYPE_CONS) {
+    push_u32(&amp;ctx_running-&gt;K, enc_u(DONE));
+    ctx_running-&gt;curr_exp = car(ctx_running-&gt;program);
+    ctx_running-&gt;program = cdr(ctx_running-&gt;program);
+    ctx_running-&gt;r = NIL;
+    ctx_running-&gt;app_cont = false;
+
+  } else {
+    ctx_running-&gt;done = true;
+    finish_ctx();
+  }
+}
+</code></pre>
+<p>The evaluator knows that it is done with an expression when a <code>DONE</code> continuation is encountered on the continuation stack. In this case the <code>advance_ctx</code> function is called.</p>
+<pre><code>void apply_continuation(eval_context_t *ctx, bool *perform_gc){
+
+  VALUE k;
+  pop_u32(&amp;ctx-&gt;K, &amp;k);
+
+  VALUE arg = ctx-&gt;r;
+
+  ctx-&gt;app_cont = false;
+
+  switch(dec_u(k)) {
+  case DONE:
+    advance_ctx(ctx);
+    return;
+  ...
+  
+</code></pre>
+<h2 id="garbage-collection">Garbage Collection</h2>
+<p>A small change is needed in how garbage collection is performed. Now that there are multiple contexts in flight, it is important to remember that all of them need to be considered when marking.</p>
+<p>The <code>gc</code> function below loops over all contexts that are runnable (the <code>ctx_queue</code>) and performs a marking phase on each of their environments, expressions, programs and so on. The currently running context is treated the same way.</p>
+<p>The contexts that are on the done list do not need to be kept on the heap. Only the result they computed can be needed in the future. Therefore only the result of contexts on the done list are given a marking run.</p>
+<pre><code>int gc(VALUE env,
+       eval_context_t *runnable,
+       eval_context_t *done,
+       eval_context_t *running) {
+  
+  gc_state_inc();
+  gc_mark_freelist();
+  gc_mark_phase(env);
+
+  eval_context_t *curr = runnable;
+  while (curr) {
+    gc_mark_phase(curr-&gt;curr_env);
+    gc_mark_phase(curr-&gt;curr_exp);
+    gc_mark_phase(curr-&gt;program);
+    gc_mark_phase(curr-&gt;r);
+    gc_mark_aux(curr-&gt;K.data, curr-&gt;K.sp);
+    curr = curr-&gt;next;
+  }
+
+  curr = done;
+  while (curr) {
+    gc_mark_phase(curr-&gt;r);
+    curr = curr-&gt;next;
+  }
+
+  gc_mark_phase(running-&gt;curr_env);
+  gc_mark_phase(running-&gt;curr_exp);
+  gc_mark_phase(running-&gt;program);
+  gc_mark_phase(running-&gt;r);
+  gc_mark_aux(running-&gt;K.data, running-&gt;K.sp);
+  
+
+#ifdef VISUALIZE_HEAP
+  heap_vis_gen_image();
+#endif
+
+  return gc_sweep_phase();
+}
+</code></pre>
+<h2 id="the-repl">The REPL</h2>
+<p>The REPL example makes use of PThreads and runs the <code>eval_cps_run_eval</code> function in a separate thread. A small wrapper is needed around that function to make it compatible with the type that PThreads assumes for a thread function.</p>
+<pre><code>void *eval_thd_wrapper(void *v) {
+
+  eval_cps_run_eval();
+  
+  return NULL;
+}
+</code></pre>
+<p>The callbacks that are used in the REPL implementation are shown below. The <code>done_callback</code> outputs some information every time a context ends up on the done list.</p>
+<pre><code>void done_callback(eval_context_t *ctx) {
+
+  char output[1024];
+  char error[1024];
+
+  CID cid = ctx-&gt;id;
+  VALUE t = ctx-&gt;r;
+  
+  int print_ret = print_value(output, 1024, error, 1024, t);
+
+  if (print_ret &gt;= 0) {
+    printf(&quot;&lt;&lt; Context %d finished with value %s &gt;&gt;\n# &quot;, cid, output);
+  } else {
+    printf(&quot;&lt;&lt; Context %d finished with value %s &gt;&gt;\n# &quot;, cid, error);
+  }
+  fflush(stdout);
+}
+</code></pre>
+<p>The <code>timestamp_callback</code> uses <code>gettimeofday</code> to generate a timestamp in number of microseconds.</p>
+<pre><code>uint32_t timestamp_callback() {
+  struct timeval tv;
+  gettimeofday(&amp;tv,NULL);
+  return (uint32_t)(tv.tv_sec * 1000000 + tv.tv_usec);
+}
+</code></pre>
+<p>The <code>sleep_callback</code> uses <code>nanosleep</code> to put the calling thread to sleep for a while.</p>
+<pre><code>void sleep_callback(uint32_t us) {
+  struct timespec s;
+  struct timespec r;
+  s.tv_sec = 0;
+  s.tv_nsec = (long)us * 1000;
+  nanosleep(&amp;s, &amp;r);
+}
+</code></pre>
+<p>Then the callbacks are registered with the evaluator.</p>
+<pre><code>  eval_cps_set_ctx_done_callback(done_callback);
+  eval_cps_set_timestamp_us_callback(timestamp_callback);
+  eval_cps_set_usleep_callback(sleep_callback);
+</code></pre>
+<p>And just for completeness, how to start the PThread is shown below.</p>
+<pre><code> /* Start evaluator thread */
+  if (pthread_create(&amp;lispbm_thd, NULL, eval_thd_wrapper, NULL)) {
+    printf(&quot;Error creating evaluation thread\n&quot;);
+    return 1;
+  }
+</code></pre>
+<p>For a more complete picture of how the REPL is put together see <a href="https://github.com/svenssonjoel/lispBM/blob/concurrent/repl-cps/repl.c">the code</a>.</p>
+<h2 id="future-work">Future work</h2>
+<ol>
+<li><p>More testing! The heaviest load I've started is 8 instances of the example program that sleeps and prints hello. More and more diverse test programs are needed.</p></li>
+<li><p>Add <code>wait</code> functionality. Calling <code>(wait cid)</code> should cause the task that called <code>wait</code> to stop until the task with context-id <code>cid</code> finishes. The result of <code>(wait cid)</code> should be the result computed by the task with context-id <code>cid</code>. Finished contexts are stored on a list called <code>ctx_done</code>, so one way to implement wait is wake up a waiting task periodically and perform a search over the <code>ctx_done</code> list. If the <code>cid</code> is not present in the list then the waiting task can go back to sleep for a while.</p></li>
+<li><p>Some way to create tasks "programmatically". Currently a new task is created for each expression entered using the repl. I don't have any idea of how the details of this will work out, but imagine that there should be some kind of <code>spawn</code> or <code>fork</code> function.</p></li>
+<li><p>Some way to communicate values between running tasks would be nice. Maybe a queue structure that those tasks who want to communicate both know about. All tasks run in the same heap, so it is just a matter of making both tasks aware of the existence of the queue.</p></li>
+<li><p>Testing on top of ChibiOS, ZephyrOS and FreeRTOS.</p></li>
+<li><p>There are no priorities, preemptions or periodic task switches. So a task that is running forever and does not <code>yield</code> can starve everything else out. This is definitely not suitable for anything timing critical.</p></li>
+<li><p>Be opportunistic and run the GC in case there is currently no runnable context.</p></li>
+<li><p>The <code>gc</code> function should perform error checking! Each call to <code>gc_mark_phase</code> can fail and if one does, there RTS should be reset. There is no need to try to continue executing after such a failure as the heap will most likely be corrupt.</p></li>
+</ol>
+<h2 id="notes">Notes</h2>
+<ol>
+<li>If all memory is depleted, there is no way for the RTS to recover. This means that the heap is not dimensioned appropriately for the job at hand and there is no use in trying to to recover. The system recognizes this kind of failure by there being two consecutive runs of the garbage collectors with no useful work being performed in between.</li>
+</ol>
+<h2 id="thanks">Thanks</h2>
+<p>Thank you for reading. If you have insights I seem to have missed, please let me know! I would be very grateful.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
