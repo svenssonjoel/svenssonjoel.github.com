@@ -314,15 +314,22 @@ void remove_done_ctx(uint32_t cid) {
 --- 
 **EDIT 2020-04-09** 
 
-`remove_done_ctx` is flawed for the case when
-the context to remove is the first in the `ctx_done` list.  I hope the
-following is a fix.
+`remove_done_ctx` is flawed for the case when the context to remove is
+the first in the `ctx_done` list.  I hope the following is a
+fix. Here, special cases are added for an empty list of done contexts
+as well as a case for a list of length one. Code got a bit bulky now,
+in general `eval_cps.c` is in need of some refactoring. 
+
 
 ```
+bool eval_cps_remove_done_ctx(CID cid, VALUE *v) {
+
+  if (!ctx_done) return false;
+
   eval_context_t * curr = ctx_done->next;
-
+  
   if (ctx_done->id == cid) {
-
+    *v = ctx_done->r;
     stack_free(&ctx_done->K);
     free(ctx_done);
     ctx_done = curr;
@@ -340,7 +347,7 @@ following is a fix.
       if (curr->next) {
 	curr->next->prev = curr->prev;
       }
-
+      *v = curr->r;
       stack_free(&curr->K);
       free(curr);
       return true;
@@ -349,6 +356,7 @@ following is a fix.
   }
   return false;
 }
+
 ```
 
 ---

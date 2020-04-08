@@ -342,11 +342,15 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
 </code></pre>
 <hr />
 <p><strong>EDIT 2020-04-09</strong></p>
-<p><code>remove_done_ctx</code> is flawed for the case when the context to remove is the first in the <code>ctx_done</code> list. I hope the following is a fix.</p>
-<pre><code>  eval_context_t * curr = ctx_done-&gt;next;
+<p><code>remove_done_ctx</code> is flawed for the case when the context to remove is the first in the <code>ctx_done</code> list. I hope the following is a fix. Here, special cases are added for an empty list of done contexts as well as a case for a list of length one. Code got a bit bulky now, in general <code>eval_cps.c</code> is in need of some refactoring.</p>
+<pre><code>bool eval_cps_remove_done_ctx(CID cid, VALUE *v) {
 
+  if (!ctx_done) return false;
+
+  eval_context_t * curr = ctx_done-&gt;next;
+  
   if (ctx_done-&gt;id == cid) {
-
+    *v = ctx_done-&gt;r;
     stack_free(&amp;ctx_done-&gt;K);
     free(ctx_done);
     ctx_done = curr;
@@ -364,7 +368,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
       if (curr-&gt;next) {
     curr-&gt;next-&gt;prev = curr-&gt;prev;
       }
-
+      *v = curr-&gt;r;
       stack_free(&amp;curr-&gt;K);
       free(curr);
       return true;
@@ -373,6 +377,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
   }
   return false;
 }
+
 </code></pre>
 <hr />
 <p>A new context is created and enqueued on the <code>ctx_queue</code> using the <code>create_ctx</code> function. This function takes a program, a stack size and a flag indicating if the stack should be reallocated when full, as arguments. Here, a context is allocated, a stack allocated, and then the context is enqueued. This function also assigned context ids, which are currently just increasing numbers with no recycling schema.</p>
