@@ -240,6 +240,16 @@ complete set of these of the same edition.
 
 
 
+## Really nerdy books
+
+| Title                                                    | Author                                     | Notes                    |
+| ---                                                      | ---                                        | ---                      |
+| Star Trek 2 - The wrath of Khan                          | Jack B. Sowards & Harve Bennet             | The Movie Script Library |
+| Star Trek Encyclopedia - A Reference Guide to the Future | Michael Okuda, Denise Okuda & Debbie Mirek |                          |
+| The Making of Star Trek First Contact                    | Lou Anders                                 |                          |
+
+
+
 
 
 
