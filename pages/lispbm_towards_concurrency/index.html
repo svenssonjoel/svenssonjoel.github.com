@@ -340,6 +340,41 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
   }
 }
 </code></pre>
+<hr />
+<p><strong>EDIT 2020-04-09</strong></p>
+<p><code>remove_done_ctx</code> is flawed for the case when the context to remove is the first in the <code>ctx_done</code> list. I hope the following is a fix.</p>
+<pre><code>  eval_context_t * curr = ctx_done-&gt;next;
+
+  if (ctx_done-&gt;id == cid) {
+
+    stack_free(&amp;ctx_done-&gt;K);
+    free(ctx_done);
+    ctx_done = curr;
+    if (ctx_done) {
+      ctx_done-&gt;prev = NULL;
+    }
+    return true;
+  }
+
+  while(curr) {
+    if (curr-&gt;id == cid) {
+      if (curr-&gt;prev) {
+    curr-&gt;prev-&gt;next = curr-&gt;next;
+      }
+      if (curr-&gt;next) {
+    curr-&gt;next-&gt;prev = curr-&gt;prev;
+      }
+
+      stack_free(&amp;curr-&gt;K);
+      free(curr);
+      return true;
+    }
+    curr = curr-&gt;next;
+  }
+  return false;
+}
+</code></pre>
+<hr />
 <p>A new context is created and enqueued on the <code>ctx_queue</code> using the <code>create_ctx</code> function. This function takes a program, a stack size and a flag indicating if the stack should be reallocated when full, as arguments. Here, a context is allocated, a stack allocated, and then the context is enqueued. This function also assigned context ids, which are currently just increasing numbers with no recycling schema.</p>
 <pre><code>CID create_ctx(VALUE program, uint32_t stack_size, bool grow_stack) {
 

@@ -311,6 +311,49 @@ void remove_done_ctx(uint32_t cid) {
 }
 ```
 
+--- 
+**EDIT 2020-04-09** 
+
+`remove_done_ctx` is flawed for the case when
+the context to remove is the first in the `ctx_done` list.  I hope the
+following is a fix.
+
+```
+  eval_context_t * curr = ctx_done->next;
+
+  if (ctx_done->id == cid) {
+
+    stack_free(&ctx_done->K);
+    free(ctx_done);
+    ctx_done = curr;
+    if (ctx_done) {
+      ctx_done->prev = NULL;
+    }
+    return true;
+  }
+
+  while(curr) {
+    if (curr->id == cid) {
+      if (curr->prev) {
+	curr->prev->next = curr->next;
+      }
+      if (curr->next) {
+	curr->next->prev = curr->prev;
+      }
+
+      stack_free(&curr->K);
+      free(curr);
+      return true;
+    }
+    curr = curr->next;
+  }
+  return false;
+}
+```
+
+---
+
+
 
 A new context is created and enqueued on the `ctx_queue` using the
 `create_ctx` function.  This function takes a program, a stack size
