@@ -1,0 +1,318 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Concurrent Tasks - Part 2 - Spawn an</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Implementation of spawn and wait for lispBM task">
+  <meta name="keywords" content="Concurrent tasks context evaluation lisp microcontrollers stm32 nrf52 esp32 ">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+  
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="./index.html#BLOG"> Blog </a>
+  <a href="./index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="concurrent-tasks---part-2">Concurrent Tasks - Part 2</h1>
+<p>In a previous <a href="../lispbm_towards_concurrency/index.html">post</a> I started to experiment with time-sharing of the lispBM evaluator between multiple tasks. Since then a few bugs have been found (there are probably more to fix as time goes by). The bugs I find, and their attempts at a fix, are added into the text alongside the original buggy code.</p>
+<p>Since last time, a <code>spawn</code> and a <code>wait</code> operation has been added. The <code>spawn</code> operation allows a program to start up sub-tasks that will run concurrently to each other and the "spawner". <code>spawn</code> takes an arbitrary number of arguments and each argument should be a lispBM program (which is a list of expressions). Each of the arguments to <code>spawn</code> is started in a fresh context. <code>spawn</code> itself, returns a list of context IDs and does not wait for the sub-tasks to finish. If a task should wait for a sub-task to finish it should use the operation <code>wait</code> which takes a single context ID as argument. <code>wait</code> makes the task sleep until the sub-task with the ID given as argument finishes execution, <code>wait</code> then returns the result of that given sub-task.</p>
+<h2 id="small-example-programs">Small Example Programs</h2>
+<p>The first example program spawns 3 new tasks that each will run a program that performs a little arithmetic.</p>
+<pre><code>(spawn ((+ 1 2 3))
+       ((+ 4 5 6))
+       ((+ 7 8 9)))
+</code></pre>
+<p>When entered into the REPL it produces the following result.</p>
+<pre><code># (spawn ((+ 1 2 3)) ((+ 4 5 6)) ((+ 7 8 9)))
+started ctx: 2
+# &lt;&lt; Context 2 finished with value (5 4 3) &gt;&gt;
+# &lt;&lt; Context 3 finished with value 6 &gt;&gt;
+# &lt;&lt; Context 4 finished with value 15 &gt;&gt;
+# &lt;&lt; Context 5 finished with value 24 &gt;&gt;
+# 
+</code></pre>
+<p>The task that performs the spawning gets context id 2 and we can see that this task finishes with the result <code>(5 4 3)</code>, these are the context ids for the three sub-tasks. Then the sub-tasks finish with results <code>6</code>, <code>15</code> and <code>24</code>.</p>
+<p>Another fun thing to try, but hard to show that it works in text, is to spawn tasks that go to sleep for a while.</p>
+<pre><code>(spawn ((yield 500000))
+       ((yield 1000000))
+       ((yield 2000000)))
+</code></pre>
+<p>This programs starts one task that sleeps for half a second, another that sleeps for one second and a third that sleeps for 2 seconds. The result of running this in the REPL is as follows.</p>
+<pre><code># (spawn ((yield 500000)) ((yield 1000000)) ((yield 2000000)))
+started ctx: 6
+# &lt;&lt; Context 6 finished with value (9 8 7) &gt;&gt;
+# &lt;&lt; Context 7 finished with value t &gt;&gt;
+# &lt;&lt; Context 8 finished with value t &gt;&gt;
+# &lt;&lt; Context 9 finished with value t &gt;&gt;
+# 
+</code></pre>
+<p>Of course, the interesting aspect of this program is the timing. The sub-tasks should finish half a second, one second and two seconds after being started. <a href="https://youtu.be/-hYnFBsvCS0">This video</a> shows a what running this program looks like.</p>
+<p>The last example then, here the parent task spawns a sub-task that performs a bit of arithmetic. The parent waits for the sub-task to finish.</p>
+<pre><code>(let ((cids (spawn ((+ 1 2 3)))))
+  (wait (car cids)))
+</code></pre>
+<p>Typed into the REPL, results in this:</p>
+<pre><code># (let ((cids (spawn ((+ 1 2 3))))) (wait (car cids)))
+started ctx: 6
+# &lt;&lt; Context 7 finished with value 6 &gt;&gt;
+# &lt;&lt; Context 6 finished with value 6 &gt;&gt;
+# 
+</code></pre>
+<p>Contexts 6 and 7 both finish with value 6. The <code>wait</code> operation results in the value computed by the task with the context id that it is waiting for.</p>
+<h2 id="implementation">Implementation</h2>
+<p>The <code>spawn</code> operation is added as a special form while the <code>wait</code> operation is treated similarly to a fundamental operation. Special forms and fundamental operations are both a kind of built-in function in lispBM but they differ a bit. A fundamental operation is treated as a regular function application and thus its arguments will be evaluated before the application. When adding a special form I am much more free in how to deal with its evaluation and treatment of arguments. So, both are "built-in" only difference is how deeply so ;)</p>
+<h3 id="spawn">Spawn</h3>
+<p>The <code>spawn</code> special form is evaluated in <code>eval_cps_run_eval</code> by creating a continuation called <code>SPAWN_ALL</code>. The <code>SPAWN_ALL</code> continuation expect a pointer to a list of programs to spawn on the continuation stack as well as the environment in which to launch these tasks.</p>
+<p>The current context intermediate result is set to an empty list that is then used to accumulate the context ids as the <code>SPAWN_ALL</code> continuation is spawning tasks.</p>
+<pre><code>// Special form: SPAWN
+    if (sym_id == symrepr_spawn()) {
+      VALUE prgs = cdr(ctx-&gt;curr_exp);
+      VALUE env = ctx-&gt;curr_env;
+
+      if (type_of(prgs) == VAL_TYPE_SYMBOL &amp;&amp; prgs == NIL) {
+        ctx-&gt;r = NIL;
+        ctx-&gt;app_cont = true;
+        continue;
+      }
+      
+      VALUE cid_list = NIL;
+      FOF(push_u32_3(&amp;ctx-&gt;K, env, prgs, enc_u(SPAWN_ALL)));
+      ctx-&gt;r = cid_list; 
+      ctx-&gt;app_cont = true;
+      continue;
+    }
+</code></pre>
+<p>The <code>SPAWN</code> and <code>SPAWN_ALL</code> setup are very similar to how <code>PROGN</code> and <code>PROGN_REST</code> are implemented, but an important difference here is that in <code>PROGN</code> only the result of the last expression to evaluate is kept.</p>
+<p>In <code>apply_continuation</code> a case is added for <code>SPAWN_ALL</code>.</p>
+<pre><code>  case SPAWN_ALL: {
+    VALUE rest;
+    VALUE env;
+    pop_u32_2(&amp;ctx-&gt;K, &amp;rest, &amp;env);
+    if (type_of(rest) == VAL_TYPE_SYMBOL &amp;&amp; rest == NIL) {
+      ctx-&gt;app_cont = true;
+      return;
+    }
+
+    VALUE cid_val = enc_i(next_ctx_id);
+    VALUE cid_list = cons(cid_val, ctx-&gt;r);
+    if (type_of(cid_list) == VAL_TYPE_SYMBOL) {
+      FATAL_ON_FAIL(ctx-&gt;done, push_u32_3(&amp;ctx-&gt;K, env, rest, enc_u(SPAWN_ALL)));
+      *perform_gc = true;
+      ctx-&gt;app_cont = true;
+      return;
+    }
+    // TODO: error checking
+    CID cid = create_ctx(car(rest),
+             env,
+             EVAL_CPS_DEFAULT_STACK_SIZE,
+             EVAL_CPS_DEFAULT_STACK_GROW_POLICY);
+    (void) cid;
+    FATAL_ON_FAIL(ctx-&gt;done, push_u32_3(&amp;ctx-&gt;K, env, cdr(rest), enc_u(SPAWN_ALL)));
+    ctx-&gt;r = cid_list;
+    ctx-&gt;app_cont = true;
+    return;
+  }
+</code></pre>
+<p><code>SPAWN_ALL</code>, simply put, takes the head from the list of programs and calls <code>create_ctx</code> for that program. It then pushes a new instance of the <code>SPAWN_ALL</code> continuation onto the continuation stack. While it is doing this it is accumulating generated context ids</p>
+<p>Now, implementing <code>SPAWN_ALL</code> was actually quite tricky. There is a subtle detail in the interplay of evaluation and garbage collection that causes a bit of extra work here. And it comes from the construction of the list of context ids.</p>
+<p>So the reason for appending a new context id onto the list <strong>before</strong> actually creating the context is that, if you swapped the order, it could happen that:</p>
+<ol>
+<li>Creation of context was successful and returned cid N</li>
+<li>appending N to the result list fails because heap is full.</li>
+</ol>
+<p>In that scenario a context will have been started but there is no way to retrieve its context id to add to the result list. So structuring the code in this way will allow the evaluator to take a break in the middle of <code>SPAWN_ALL</code> and run the GC, then to resume where it left of.</p>
+<p>There are still some corner cases to work out here. I will write about those as they appear.</p>
+<h3 id="wait">Wait</h3>
+<p>The <code>wait</code> operation is not a special form, so it has no case of its own in <code>eval_cps_run_eval</code>, it is instead handled, similarly to <code>yield</code>, within the <code>APPLICATION</code> continuation case in <code>apply_continuation</code>.</p>
+<pre><code>  if (dec_sym(fun) == symrepr_wait()) {
+    if (type_of(fun_args[1]) == VAL_TYPE_I) {
+      CID cid = dec_i(fun_args[1]); 
+      stack_drop(&amp;ctx-&gt;K, dec_u(count)+1);
+      FOF(push_u32_2(&amp;ctx-&gt;K, enc_u(cid), enc_u(WAIT)));
+      ctx-&gt;r = enc_sym(symrepr_true());
+      ctx-&gt;app_cont = true;
+      yield_ctx(50000);
+    } else {
+      ERROR
+      error_ctx(enc_sym(symrepr_eerror()));
+    }
+    return;
+  }
+</code></pre>
+<p><code>wait</code> expects a single integer argument that holds a context id. It then creates a continuation called <code>WAIT</code> that expects the context id to wait for on the continuation stack. The result of the current context is set to <code>true</code> and then the current context yields for 0.5 seconds (hard coded so far). When this context eventually wakes up again, it will be set up to apply its continuation (since <code>app_cont</code> was set to <code>true</code>), and control will jump to the <code>apply_continuation</code> function and case <code>WAIT</code>.</p>
+<pre><code> case WAIT: {
+
+    VALUE cid_val; 
+    pop_u32(&amp;ctx-&gt;K, &amp;cid_val);
+    CID cid = dec_u(cid_val);
+
+    VALUE r;
+
+    if (eval_cps_remove_done_ctx(cid, &amp;r)) {
+      ctx-&gt;r = r;
+      ctx-&gt;app_cont = true;
+    } else {
+      FOF(push_u32_2(&amp;ctx-&gt;K, enc_u(cid), enc_u(WAIT)));
+      ctx-&gt;r = enc_sym(symrepr_true());
+      ctx-&gt;app_cont = true;
+      yield_ctx(50000);
+    }
+    return;
+  }
+</code></pre>
+<p>The <code>WAIT</code> continuation pops the context id to wait for from the stack, then calls <code>eval_cps_remove_done_ctx</code> to scan through the list of finished contexts. If this is successful the result stored in that waiting context is returned. Otherwise a second sound of <code>WAIT</code> continuation is set up.</p>
+<h2 id="some-thoughts-on-the-current-implementation">Some Thoughts on the Current Implementation</h2>
+<p>All of this is very experimental and hacky. If it turns out to be a fun approach in the end, this code will need a big cleanup.</p>
+<p>One aspect that I am currently unsure of is if <code>spawn</code> should instead require the arguments to be quoted? If we chose to change it so that <code>spawn</code> expects quoted programs, then <code>spawn</code> does not need to be a special form anymore and could be treated in a similar way to <code>wait</code>. I think it may feel more lispy that the arguments to <code>spawn</code> are quoted. We'll see how it ends up!</p>
+<h2 id="future-work">Future Work</h2>
+<p>in <a href="../lispbm_towards_concurrency/index.html">the earlier text</a> I outlined some future work. The current text addresses points 2 and 3 from this list, so I mark those as <strong>(DONE)</strong>. Now, I am quite sure problems with the current implementation will pop up and tweaks will be needed, so maybe it is more like "done" than <strong>(DONE)</strong>.</p>
+<ol>
+<li><p>More testing! The heaviest load I've started is 8 instances of the example program that sleeps and prints hello. More and more diverse test programs are needed.</p></li>
+<li><p><strong>(DONE)</strong> Add <code>wait</code> functionality. Calling <code>(wait cid)</code> should cause the task that called <code>wait</code> to stop until the task with context-id <code>cid</code> finishes. The result of <code>(wait cid)</code> should be the result computed by the task with context-id <code>cid</code>. Finished contexts are stored on a list called <code>ctx_done</code>, so one way to implement wait is wake up a waiting task periodically and perform a search over the <code>ctx_done</code> list. If the <code>cid</code> is not present in the list then the waiting task can go back to sleep for a while.</p></li>
+<li><p><strong>(DONE)</strong> Some way to create tasks "programmatically". Currently a new task is created for each expression entered using the repl. I don't have any idea of how the details of this will work out, but imagine that there should be some kind of <code>spawn</code> or <code>fork</code> function.</p></li>
+<li><p>Some way to communicate values between running tasks would be nice. Maybe a queue structure that those tasks who want to communicate both know about. All tasks run in the same heap, so it is just a matter of making both tasks aware of the existence of the queue.</p></li>
+<li><p>Testing on top of ChibiOS, ZephyrOS and FreeRTOS.</p></li>
+<li><p>There are no priorities, preemptions or periodic task switches. So a task that is running forever and does not <code>yield</code> can starve everything else out. This is definitely not suitable for anything timing critical.</p></li>
+<li><p>Be opportunistic and run the GC in case there is currently no runnable context.</p></li>
+<li><p>The <code>gc</code> function should perform error checking! Each call to <code>gc_mark_phase</code> can fail and if one does, there RTS should be reset. There is no need to try to continue executing after such a failure as the heap will most likely be corrupt.</p></li>
+<li><p>What about events from the outside, such as a button press or data arriving over some communication channel? These things are sometimes handled using an interrupt. Some way of dealing with these "external" events are needed. There may be more suitable abstractions for these kinds of interruptions to apply to this system. Streams/queues of events? where the underlying enqueueing of events is performed by the RTS.</p></li>
+</ol>
+<p>Point 9 on this list has become a little bit clearer in my mind. I do not want interrupts! Instead I will let the some underlying "driver" code take care of such things. Such a "driver" for a button for example would just append button-events onto an event queue. The lispBM program would then need to periodically check this queue for events and act upon them.</p>
+<p>I am also not sure about preemption and priorities. We'll see about those. But I do think there should be periodic context switches and some time quanta assigned to each task when it gets moved to the running state.</p>
+<h2 id="in-closing">In Closing</h2>
+<p>Thanks for reading! As usual all helpful insights are much appreciated.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
