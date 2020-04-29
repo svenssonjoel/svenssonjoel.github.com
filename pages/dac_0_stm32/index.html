@@ -1,0 +1,240 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Setup for DAC usage with ChibiOS and STM32</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="DAC setup part 0 ">
+  <meta name="keywords" content="DAC STM32F4 STM32 ChibiOS SYNTH SOUND">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+  
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="./index.html#BLOG"> Blog </a>
+  <a href="./index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="setup-the-dac-on-stm32-with-chibios">Setup the DAC on STM32 with ChibiOS</h1>
+<p>This is a follow-up on on the previous text about <a href="../adc_stm32/index.html">reading the ADCs</a> for the <a href="http://www.github.com/svenssonjoel/SYNTH">sound-generating PCB</a>.</p>
+<p>Some good news since the earlier text, is that the device actually seems to be able to produce some noise! So far I have only tried the DACs that are internal to the STM32F4 and not the external 8Bit DAC that is added mostly as an experiment. If you are interesting in the background story behind this PCB and all my doubts during the design process, take a look at this playlist on <a href="https://www.youtube.com/playlist?list=PLtf_3TaqZoDMNIfHCWMzmyu7kqccrfyPw">YouTube</a>.</p>
+<p>So far I have only made very initial experimentation with the DAC on the STM32F4 and will write more about this in the future as I try to have them generate more interesting sounds. But for this text, it will all be about how to set up ChibiOS for DAC output on the STM32F4.</p>
+<h2 id="some-about-the-hardware">Some about the hardware</h2>
+<p>The code I present in this text is not specific to my "custom" audio experiment PCB but should be applicable to any STM32F4 board (for example the Discovery or Nucleo).</p>
+<p>There are two DAC channels on the STM32F4 and these are associated with the <code>GPIO A</code> pins 4 and 5. That is <code>PA4</code> and <code>PA5</code>. This means we can output two independent analog signals. I am interested in using both of these DAC channels, so that is what this text covers.</p>
+<p>Another important bit of information is that the internal DACs are 12Bit which essentially means that they translate a value between 0 and 4095 to a voltage between 0 and VDDA (3V for example).</p>
+<h2 id="configuring-chibios-for-dac-usage">Configuring ChibiOS for DAC usage</h2>
+<p>Just like with the ADC there are some "switches" to activate in <code>mcuconf.h</code> to configure the DAC system.</p>
+<pre><code>/*
+ * DAC driver system settings.
+ */
+#define STM32_DAC_DUAL_MODE                 FALSE
+#define STM32_DAC_USE_DAC1_CH1              TRUE
+#define STM32_DAC_USE_DAC1_CH2              TRUE
+#define STM32_DAC_DAC1_CH1_IRQ_PRIORITY     10
+#define STM32_DAC_DAC1_CH2_IRQ_PRIORITY     10
+#define STM32_DAC_DAC1_CH1_DMA_PRIORITY     2
+#define STM32_DAC_DAC1_CH2_DMA_PRIORITY     2
+#define STM32_DAC_DAC1_CH1_DMA_STREAM       STM32_DMA_STREAM_ID(1, 5)
+#define STM32_DAC_DAC1_CH2_DMA_STREAM       STM32_DMA_STREAM_ID(1, 6)
+</code></pre>
+<p>Since I am interested in using both channels I set <code>STM32_DAC_USE_DAC1_CH1</code> and <code>STM32_DAC_USE_DAC1_CH2</code> to <code>TRUE</code>.</p>
+<p>In <code>halconf.h</code> there is also a switch to turn the DAC system on.</p>
+<pre><code>/**
+ * @brief   Enables the DAC subsystem.
+ */
+#if !defined(HAL_USE_DAC) || defined(__DOXYGEN__)
+#define HAL_USE_DAC                         TRUE
+#endif
+</code></pre>
+<p>With these settings ChibiOS will provide us with driver "handles" for the two DAC channels called <code>DACD1</code> and <code>DACD2</code>.</p>
+<p>ChibiOS will now build with DAC support and we can get working on the application end of things.</p>
+<h2 id="the-code">The code</h2>
+<p>I put the code concerning the DACs into files named <code>dac.c</code> and <code>dac.h</code>. The header file <code>dac.h</code>, just contains a few definitions and some function prototypes.</p>
+<pre><code>#include &quot;hal.h&quot;
+#include &quot;hal_pal.h&quot;
+
+#define DAC_GPIO GPIOA
+#define DAC1_PIN 4
+#define DAC2_PIN 5
+
+#define DAC1 1
+#define DAC2 2
+
+extern void dac_init(void);
+extern void dac_write(int dac, int16_t val);
+</code></pre>
+<p>The defines are just there to hide those otherwise magical constants behind some new names that kind of makes more sense. I call the two DAC channels <code>DAC1</code> and <code>DAC2</code> and we can also see that the GPIOs that are of interest here are <code>PA4</code> and <code>PA5</code>.</p>
+<p>The <code>dac.c</code> file implements the two functions <code>dac_init</code> and <code>dac_write</code>. As part of initializing the DAC subsystem a <code>DACConfig</code> object is needed.</p>
+<pre><code>static const DACConfig dac_config = {
+  .init         = 2047u, 
+  .datamode     = DAC_DHRM_12BIT_RIGHT,
+  .cr           = 0
+};
+
+</code></pre>
+<p>This sets up an initial value for the data register in the DAC. The next field <code>datamode</code> that is set to <code>DAC_DHRM_12BIT_RIGHT</code>, my feeling is that we are here specifying that the will be 12Bits and the unused bits in a full 32bit register will be to the left and the first 12 bits from the right are what is being used. The <code>cr</code> field probably allow us to set the DAC Control register to anything we like. There seems to be a lot of special functions we can have the DAC perform by setting up the <code>cr</code> in different ways. Take a look at the <a href="https://www.st.com/resource/en/reference_manual/dm00031020-stm32f405-415-stm32f407-417-stm32f427-437-and-stm32f429-439-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf">reference manual</a>.</p>
+<p>Now this <code>DACConfig</code> object can be used in the implementation of <code>dac_init</code>. First, this function sets the GPIO pins associated with the DAC channels to <code>PAL_MODE_INPUT_ANALOG</code>. That it is called "INPUT" is odd but just some odd naming we need to accept.</p>
+<pre><code>void dac_init(void) {
+
+  palSetPadMode(DAC_GPIO, DAC1_PIN, PAL_MODE_INPUT_ANALOG);
+  palSetPadMode(DAC_GPIO, DAC2_PIN, PAL_MODE_INPUT_ANALOG);
+
+  dacStart(&amp;DACD1, &amp;dac_config);
+  dacStart(&amp;DACD2, &amp;dac_config);
+}
+</code></pre>
+<p>Then the both DAC channels are started and this is where that <code>DACConfig</code>is used. Here those two "handles" that ChibiOS provides <code>DACD1</code> and <code>DACD2</code> are referenced.</p>
+<p>Finally then! A <code>dac_write</code> function that lets us output a value to either channel 1 or 2 by giving <code>DAC1</code> or <code>DAC2</code> as argument. The second argument is the value to output on the chosen DAC.</p>
+<pre><code>void dac_write(int dac, int16_t val) {
+  switch(dac){
+  case DAC1:
+    dacPutChannelX(&amp;DACD1, 0, val);
+    break;
+  case DAC2:
+    dacPutChannelX(&amp;DACD2, 0, val);
+    break;
+  default:
+    break;
+  }  
+}
+</code></pre>
+<p>All unknown values for <code>dac</code> are just silently ignored.</p>
+<h2 id="concluding-remarks">Concluding remarks</h2>
+<p>So! I was actually quite surprised that the custom PCB worked at all. Happy turn of events. The first test of it just used the above code to initialize the DACs and then I set up a GPT (general purpose timer) that periodically fired off a callback function. This callback function outputs values on the DACs that it gets from a sine wave table. That part of the code is, however, quite unpolished and I want to do something more of that before writing about it.</p>
+<p>The next text in this series on "audio" stuff, will then most likely be about outputting waves of some kind on the DACS, using GPTs and look-up tables perhaps. We'll see.</p>
+<p>Oh! and of course, I need to see if the external 8Bit DAC experiment works as well!</p>
+<p>Thanks for reading, and as always all constructive feedback is much appreciated!</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
