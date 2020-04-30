@@ -1,0 +1,342 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Memory allocation for boxed values and arrays</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Memory allocation">
+  <meta name="keywords" content="lisp microcontrollers memory management allocation arrays boxed values">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111281599-1');
+</script>
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+  
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="./index.html#BLOG"> Blog </a>
+  <a href="./index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="memory-management">Memory management</h1>
+<p><a href="http://www.github.com/svenssonjoel/lispbm">LispBM</a> is meant to be run on resource constrained platforms like the STM32, NRF52, ESP32 or similar. The dev-boards I have been running lispBM on so far range between 192 and and 520KB of RAM memory (It would be nice to also try something with a 64KB memory). Currently I don't really know at all how much memory a running instance of lispBM is occupying at all and this is something I want to get a better idea of.</p>
+<p>There are a number of things that use <code>malloc</code>ed areas of memory currently. Examples are continuation stacks, symbol table, arrays and strings.</p>
+<p>So, currently I am working on a module for memory management within a predefined range of memory addresses without using malloc. If this ends up working, a next step is to try to move, heap, stacks and symbol table to this managed area of memory and then to use it's allocation features to dynamically allocate (up to a predefined limit) the memory needed for arrays and such. I hope this helps somewhat in narrowing down how much memory is being used.</p>
+<p>As usual, all hints and tips are much appreciated.</p>
+<h2 id="implementation-idea">Implementation idea</h2>
+<p>My first idea was to look at some Operating Systems books and see if they described any details of how <code>malloc</code> is implemented. This did not reveal to much information that I thought was applicable to this case so I went for something that felt simple instead.</p>
+<p>The approach taken depends on having an area of memory for a bitmap that contains memory usage information and another area of memory for data. For each 4 bytes within the data area there are 2 bits in the bitmap for storage information. This means that If a data-storage area of 8KB is desired, an extra 512Bytes of data are required for the bitmap.</p>
+<p>The 2 bit patterns in the bitmap have the following meanings:</p>
+<pre><code>00 - Free or used word of memory 
+01 - End of a range of allocated words
+10 - Start of a range of allocated words 
+11 - Starting and endpoint of a range of allocated words (1 allocated word)
+</code></pre>
+<p>These are defined as follows in the source code:</p>
+<pre><code>/* Status bit patterns */
+#define FREE_OR_USED  0  //00b
+#define END           1  //01b
+#define START         2  //10b
+#define START_END     3  //11b
+</code></pre>
+<p>The state needed for the memory subsystem is defined as follows.</p>
+<pre><code>uint32_t *bitmap = NULL;
+uint32_t *memory = NULL;
+uint32_t memory_size;  // in 4 byte words
+uint32_t bitmap_size;  // in 4 byte words
+unsigned int memory_base_address = 0;
+</code></pre>
+<p>The state variables are initialized using <code>memory_init</code> defined in <code>memory.c</code>.</p>
+<pre><code>int memory_init(unsigned char *data, uint32_t data_size,
+                unsigned char *bits, uint32_t bits_size) {
+
+  if (data == NULL || bits == NULL) return 0;
+
+  if (((unsigned int)data % 4 != 0) || data_size != 16 * bits_size || data_size % 4 != 0 ||
+      ((unsigned int)bits % 4 != 0) || bits_size &lt; 1 || bits_size % 4 != 0) {
+    // data is not 4 byte aligned
+    // size is too small
+    // or size is not a multiple of 4
+    return 0;
+  }
+
+  bitmap = (uint32_t *) bits;
+  bitmap_size = bits_size / 4;
+
+  for (uint32_t i = 0; i &lt; bitmap_size; i ++) {
+    bitmap[i] = 0;
+  }
+
+  memory = (uint32_t *) data;
+  memory_base_address = (unsigned int)data;
+
+  return 1;
+}
+</code></pre>
+<p><code>memory_init</code> starts out by checking that the pointers passed in for the start of the data-storage area and bitmap are aligned to a multiple of 4 bytes and that their size is a multiple of 4 bytes. Those restrictions make it a lot easier to write the rest of the code. A 4 byte bitmap contains information about 16 x 4 byte data-words (that is 64 bytes). There is also a check that the size of the bitmap is not 0 and that data-storage is 16 times the size of the bitmap (in bytes).</p>
+<p>Next, the state is set and the bitmap memory is cleared.</p>
+<p>To convert from an address within the data-storage area and an index into the bitmap and the other way around, two functions are defined.<br />
+To convert an address to a bitmap index the <code>memory_base_address</code> is subtracted from the address and the result of that is divided by 4 (using a shift instruction - shift left by 2). This results in an index to a pair of bits in the bitmap and to access the specific bits they are located at position <code>bitmap_ix * 2</code> and <code>bitmap_ix * 2 + 1</code>.</p>
+<pre><code>static inline unsigned int address_to_bitmap_ix(uint32_t *ptr) {
+  return ((unsigned int)ptr - memory_base_address) &gt;&gt; 2;
+}
+
+static inline uint32_t *bitmap_ix_to_address(unsigned int ix) {
+  return (uint32_t*)(memory_base_address + (ix &lt;&lt; 2));
+}
+</code></pre>
+<p>Conversion in the other direction is then done by multiplying the bitmap index by 2 and adding the <code>memory_base_address</code>.</p>
+<p>There are two functions for checking and setting the status of a word in the bitmap. The function that looks up the status is called <code>status</code> and the setter is called <code>set_status</code>. The <code>status</code> function takes an index to a bit-pair in the bitmap and returns the status code those bits represent. Likewise, <code>set_status</code> takes a bitmap index and a status code to set at that index. Given the requirements on alignment on the bitmap and the data-storage area these functions end up being quite small.</p>
+<pre><code>static inline unsigned int status(unsigned int i) {
+
+  unsigned int ix = i &lt;&lt; 1;          // * 2
+  unsigned int word_ix = ix &gt;&gt; 5;    // / 32
+  unsigned int bit_ix  = ix &amp; 0x1F;  // % 32
+
+  uint32_t mask = 3 &lt;&lt; bit_ix;       // 000110..0
+  return (bitmap[word_ix] &amp; mask) &gt;&gt; bit_ix;
+}
+
+static inline void set_status(unsigned int i, uint32_t status) {
+  unsigned int ix = i &lt;&lt; 1;          // * 2
+  unsigned int word_ix = ix &gt;&gt; 5;    // / 32
+  unsigned int bit_ix  = ix &amp; 0x1F;  // % 32
+
+  uint32_t clr_mask = ~(3 &lt;&lt; bit_ix);
+  uint32_t mask = status &lt;&lt; bit_ix;
+  bitmap[word_ix] &amp;= clr_mask;
+  bitmap[word_ix] |= mask;
+}
+</code></pre>
+<p>Given an index into the bitmap the actual bit-position of the first bit in that bit-pair is obtained by multiplying the index by 2. Then to figure out which 32Bit word that bit-pair sits in, the bit-position is divided by 32. How far into that 32Bit word that the bit-pair is located can be found as the remainder of a division by 32. Here, all these operations are expressed using bitwise logic.</p>
+<p>After computing which 32bit word of the bitmap is of interest, a mask is applied to obtain only the bits of interest.</p>
+<p>The function for allocating memory in the data-area is called <code>memory_allocate</code> and takes a single parameter indicating the number of 4 byte words. This function is a state machine performing a search over the bitmap.</p>
+<pre><code>/* States */
+#define INIT                 0
+#define FREE_LENGTH_CHECK    1
+#define SKIP                 2
+#define ALLOC_DONE           0xF00DF00D
+#define ALLOC_FAILED         0xDEADBEAF
+</code></pre>
+<p>The <code>memory_allocate</code> function loops over the bitmap checking the status at each index as it moves along. In case a <code>FREE_OR_USED</code> is found, the current state of the search is checked. If in the <code>INIT</code> state the <code>FREE_OR_USED</code> word is actually free and a potential starting index candidate is set. The state is changed to <code>FREE_LENGTH_CHECK</code> and the loop continues.</p>
+<p>When in the <code>FREE_LENGTH_CHECK</code> state, a <code>FREE_OR_USED</code> status also indicates that the current word is free and the variable keeping track of the current length is incremented. If the length is as long as the requested number of words the search is done.</p>
+<p>The rest of the state transitions are easier. If <code>START</code> is found state goes to <code>SKIP</code> and an <code>END</code> transitions to state <code>INIT</code> for example. Really there should be some checks here for unexpected states when discovering any given status to be a bit more robust against a corrupt bitmap.</p>
+<pre><code>uint32_t *memory_allocate(uint32_t num_words) {
+
+  uint32_t start_ix = 0;
+  uint32_t end_ix = 0;
+  uint32_t free_length = 0;
+  unsigned int state = INIT;
+
+  for (unsigned int i = 0; i &lt; (bitmap_size &lt;&lt; 4); i ++) {
+    if (state == ALLOC_DONE) break;
+
+    switch(status(i)) {
+    case FREE_OR_USED:
+      switch (state) {
+      case INIT:
+        start_ix = i;
+        if (num_words == 1) {
+          end_ix = i;
+          state = ALLOC_DONE;
+        } else {
+          state = FREE_LENGTH_CHECK;
+          free_length = 1;
+        }
+        break;
+      case FREE_LENGTH_CHECK:
+        free_length ++;
+        if (free_length == num_words) {
+          end_ix = i;
+          state = ALLOC_DONE;
+        } else {
+          state = FREE_LENGTH_CHECK;
+        }
+        break;
+      case SKIP:
+        break;
+      }
+      break;
+    case END:
+      state = INIT;
+      break;
+    case START:
+      state = SKIP;
+      break;
+    case START_END:
+      state = INIT;
+      break;
+    default:
+      return NULL;
+      break;
+    }
+  }
+
+  if (state == ALLOC_DONE) {
+    if (start_ix == end_ix) {
+      set_status(start_ix, START_END);
+    } else {
+      set_status(start_ix, START);
+      set_status(end_ix, END);
+    }
+    return bitmap_ix_to_address(start_ix);
+  }
+  return NULL;
+}
+</code></pre>
+<p>To free an allocated chunk of memory, the address of the chunk is turned into a bitmap index. The status at this index should be either <code>START</code> or <code>START_END</code> depending on if it is a multi-word chunk or just a single word. The <code>START_END</code> case is the easier one, in this case the <code>START_END</code> status is just overwritten with <code>FREE_OR_USED</code>. The case for the status <code>START</code> needs to scan forwards in the bitmap until the next status of <code>END</code> is found. Then both the <code>START</code> and the <code>END</code> is overwritten with <code>FREE_OR_USED</code>.</p>
+<pre><code>int memory_free(uint32_t *ptr) {
+  unsigned int ix = address_to_bitmap_ix(ptr);
+  switch(status(ix)) {
+  case START:
+    set_status(ix, FREE_OR_USED);
+    for (unsigned int i = ix; i &lt; (bitmap_size &lt;&lt; 4); i ++) {
+      if (status(i) == END) {
+    set_status(i, FREE_OR_USED);
+    return 1;
+      }
+    }
+    return 0;
+  case START_END:
+    set_status(ix, FREE_OR_USED);
+    return 1;
+  }
+
+  return 0;
+}
+</code></pre>
+<h2 id="future-work">Future work</h2>
+<p>Currently, figuring out memory usage is what is on the table. Future work involves trying to place the symbol table and all continuation stacks on a memory area managed by <code>memory_allocate</code> (or something similar if this turns out to be a dead-end). While doing the rewrite of the symbol table code that is needed for this, it would also be nice to try to place constant symbols on flash memory rather than ram.</p>
+<p>Having a granularity of 4 bytes as the smallest allocatable memory area size means that there will be some waste when space for strings are allocated. For now this waste is fine by me ;)</p>
+<p>This needs more testing. It also needs more checking for errors or corrupted state of the bitmap. These corrupt states would be discoverable as for example a <code>START</code> status encountered while looking for an <code>END</code> status in the <code>memory_free</code> function.</p>
+<p>Thanks for reading! If you have constructive tips for improvements I would love to hear them.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
