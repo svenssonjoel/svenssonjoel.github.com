@@ -29,15 +29,19 @@ As usual, all hints and tips are much appreciated.
 
 My first idea was to look at some Operating Systems books and see if
 they described any details of how `malloc` is implemented. This did
-not reveal to much information that I thought was applicable to this
-case so I went for something that felt simple instead. 
+not reveal very much information that I thought was applicable to this
+case, so I went for something that felt simple instead. 
 
 The approach taken depends on having an area of memory for a bitmap
 that contains memory usage information and another area of memory for
 data.  For each 4 bytes within the data area there are 2 bits in the
 bitmap for storage information. This means that If a data-storage area
-of 8KB is desired, an extra 512Bytes of data are required for
-the bitmap. 
+of 8KB is desired, an extra 512Bytes of data are required for the bitmap. 
+
+---
+	8KB / 4B per Word = 2KWords 
+	2K  / 4Bitpatterns per Byte = 512B
+---
 
 The 2 bit patterns in the bitmap have the following meanings: 
 ```
