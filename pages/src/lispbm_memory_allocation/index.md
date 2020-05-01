@@ -7,7 +7,7 @@ on resource constrained platforms like the STM32, NRF52, ESP32 or
 similar. The dev-boards I have been running lispBM on so far range
 between 192 and and 520KB of RAM memory (It would be nice to also try
 something with a 64KB memory). Currently I don't really know at all how
-much memory a running instance of lispBM is occupying at all and this
+much memory a running instance of lispBM is occupying, and this
 is something I want to get a better idea of.
 
 There are a number of things that use `malloc`ed areas of memory
