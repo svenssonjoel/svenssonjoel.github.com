@@ -39,13 +39,13 @@ implementation later.
 | Register | Description/Purpose |
 |:---------|:--------------------:|
 |cont      | Hold information on what to do after evaluation of a leaf node expression |
-|env       | Local environments are held here, evaluation of the bindings in a `let` expression end up here |
+|env       | Local environments are held here. Evaluated bindings in a `let` expression end up here |
 |unev      | Is a storage location for unevaluated expressions to evaluate "later" |
 |prg       | Contains the rest of the program. A lispBM program is a sequence (list) of expressions |
 |exp       | The expression under consideration right now |
 |argl      | Arguments in an application are accumulated here|
 |val       | Results end up in this register|
-|fun       | evaluated function expression end up in the fun register in preparation to be applied to the contents of argl|
+|fun       | Evaluated function expression end up in the fun register in preparation to be applied to the contents of argl|
 
 
 In the implementation, the registers of the machine are represented by
