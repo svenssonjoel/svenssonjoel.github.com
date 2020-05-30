@@ -754,6 +754,7 @@ static inline void cont_setup_no_arg_apply(eval_state *es) {
 }
 </code></pre>
 <p><code>cont_setup_no_arg_apply</code> moves val to fun, so now fun contains the evaluated function-object. This is what is needed in preparation for going to dispatcher again and this time in <code>EVAL_APPLY_DISPATCH</code> mode that depending on the contents of the fun register picks the how to branch off next.</p>
+<h3 id="function-application-the-general-case">Function application the general case</h3>
 <p>In general a function application (one with arguments) will be directed to the <code>eval_application</code> function.</p>
 <pre><code>static inline void eval_application(eval_state *es) {
   rm_state.unev = cdr(rm_state.exp);
@@ -848,7 +849,7 @@ static inline void eval_last_arg(eval_state *es) {
   *es = EVAL_APPLY_DISPATCH;
 }
 </code></pre>
-<h3 id="the-function-application-dispatched">The function application dispatched</h3>
+<h3 id="the-function-application-dispatcher">The function application dispatcher</h3>
 <p>Below is the implementation of the application dispatcher. It recognises four different kinds of application, where one is a bit of a special case. This is the case for the eval function. This <code>eval_eval</code> case implements the eval function that can be called to evaluate for example quoted expressions.</p>
 <p>Anyway, this is just a dispatcher, it checks what kind of function is in the fun register and branches depending.</p>
 <p>static inline void eval_apply_dispatch(eval_state *es) { if (is_symbol_eval(rm_state.fun)) eval_eval(es); else if (is_fundamental(rm_state.fun)) eval_apply_fundamental(es); else if (is_closure(rm_state.fun)) eval_apply_closure(es); else if (is_extension(rm_state.fun)) eval_apply_extension(es); else { rm_state.cont = enc_u(CONT_DONE); *es = EVAL_CONTINUATION; } }</p>

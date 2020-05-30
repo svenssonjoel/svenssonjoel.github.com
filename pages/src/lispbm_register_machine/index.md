@@ -922,6 +922,7 @@ going to dispatcher again and this time in `EVAL_APPLY_DISPATCH` mode
 that depending on the contents of the fun register picks the how to
 branch off next. 
 
+### Function application the general case
 
 In general a function application (one with arguments) will be
 directed to the `eval_application` function.
@@ -1052,7 +1053,7 @@ static inline void cont_accumulate_last_arg(eval_state *es) {
   *es = EVAL_APPLY_DISPATCH;
 }
 ```
-### The function application dispatched
+### The function application dispatcher
 
 Below is the implementation of the application dispatcher.  It
 recognises four different kinds of application, where one is a bit of
