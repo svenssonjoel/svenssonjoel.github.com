@@ -383,7 +383,7 @@ that depend on each other.
 ## Evaluation of self-evaluating expressions
 
 Some expressions evaluate to them self. Examples of such expressions
-are, a value such as 42 or a string like "hello world". when these are
+are, a value such as 42 or a string like "hello world". When these are
 encountered, the exp register is copied to the val register and the `ec_eval` state
 is set to `EVAL_CONTINUATION`. 
 

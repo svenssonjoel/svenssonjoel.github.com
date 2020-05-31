@@ -423,7 +423,7 @@ static inline bool is_symbol_merror(VALUE exp) {
 </code></pre>
 <p>So, <code>ec_eval</code> really delegates all the work to a collection of functions depending on the state. The sections below will go through these function in groups of "eval" and "cont" functions that depend on each other.</p>
 <h2 id="evaluation-of-self-evaluating-expressions">Evaluation of self-evaluating expressions</h2>
-<p>Some expressions evaluate to them self. Examples of such expressions are, a value such as 42 or a string like "hello world". when these are encountered, the exp register is copied to the val register and the <code>ec_eval</code> state is set to <code>EVAL_CONTINUATION</code>.</p>
+<p>Some expressions evaluate to them self. Examples of such expressions are, a value such as 42 or a string like "hello world". When these are encountered, the exp register is copied to the val register and the <code>ec_eval</code> state is set to <code>EVAL_CONTINUATION</code>.</p>
 <pre><code>static inline void eval_self_evaluating(eval_state *es) {
   rm_state.val = rm_state.exp;
   *es = EVAL_CONTINUATION;
