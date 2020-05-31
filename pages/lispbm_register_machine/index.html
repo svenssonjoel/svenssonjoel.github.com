@@ -587,8 +587,7 @@ static inline void cont_branch(eval_state *es) {
 </code></pre>
 <h2 id="evaluation-of-let-expressions">Evaluation of let expressions</h2>
 <p>The implementation of evaluation of let expressions gets a bit complicated as let should allow for the definition of mutually recursive functions. This means that a closure defined that is bound early in the sequence of variable binding may, in its enclosed environment, need to have a binding for a variable that is not yet set or evaluated. To get around this a kind of ghost-bindings are created for all of the variables to be bound in the let expression, before evaluating any of the "right hand sides". This gets a bit further complicated by the fact that the binding associations are created using cons-cells and the usual checks and potential run of the garbage collector are needed.</p>
-<pre><code>
-static inline void eval_let(eval_state *es) {
+<pre><code>static inline void eval_let(eval_state *es) {
   rm_state.unev = car(cdr(cdr(rm_state.exp)));
   push_u32_2(&amp;rm_state.S, rm_state.cont, rm_state.unev);
 
@@ -852,7 +851,17 @@ static inline void eval_last_arg(eval_state *es) {
 <h3 id="the-function-application-dispatcher">The function application dispatcher</h3>
 <p>Below is the implementation of the application dispatcher. It recognises four different kinds of application, where one is a bit of a special case. This is the case for the eval function. This <code>eval_eval</code> case implements the eval function that can be called to evaluate for example quoted expressions.</p>
 <p>Anyway, this is just a dispatcher, it checks what kind of function is in the fun register and branches depending.</p>
-<p>static inline void eval_apply_dispatch(eval_state *es) { if (is_symbol_eval(rm_state.fun)) eval_eval(es); else if (is_fundamental(rm_state.fun)) eval_apply_fundamental(es); else if (is_closure(rm_state.fun)) eval_apply_closure(es); else if (is_extension(rm_state.fun)) eval_apply_extension(es); else { rm_state.cont = enc_u(CONT_DONE); *es = EVAL_CONTINUATION; } }</p>
+<pre><code>static inline void eval_apply_dispatch(eval_state *es) {
+  if (is_symbol_eval(rm_state.fun)) eval_eval(es);
+  else if (is_fundamental(rm_state.fun)) eval_apply_fundamental(es);
+  else if (is_closure(rm_state.fun)) eval_apply_closure(es);
+  else if (is_extension(rm_state.fun)) eval_apply_extension(es);
+  else {
+    rm_state.cont = enc_u(CONT_DONE);
+    *es = EVAL_CONTINUATION;
+  }
+}
+</code></pre>
 <h3 id="application-of-a-closure">Application of a closure</h3>
 <p>Puh! Application of functions is quite brushy but now we should have everything set up in the fun and argl registers to apply the function.</p>
 <p>If the function application dispatcher notices that the function in the fun register is a closure, we will end up in the <code>eval_apply_closure</code> function.</p>

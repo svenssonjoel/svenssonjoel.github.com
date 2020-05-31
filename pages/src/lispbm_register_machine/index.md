@@ -678,8 +678,8 @@ complicated by the fact that the binding associations are created
 using cons-cells and the usual checks and potential run of the garbage
 collector are needed. 
 
-```
 
+```
 static inline void eval_let(eval_state *es) {
   rm_state.unev = car(cdr(cdr(rm_state.exp)));
   push_u32_2(&rm_state.S, rm_state.cont, rm_state.unev);
@@ -1053,6 +1053,7 @@ static inline void cont_accumulate_last_arg(eval_state *es) {
   *es = EVAL_APPLY_DISPATCH;
 }
 ```
+
 ### The function application dispatcher
 
 Below is the implementation of the application dispatcher.  It
@@ -1064,6 +1065,7 @@ evaluate for example quoted expressions.
 Anyway, this is just a dispatcher, it checks what kind of function is in the
 fun register and branches depending. 
 
+```
 static inline void eval_apply_dispatch(eval_state *es) {
   if (is_symbol_eval(rm_state.fun)) eval_eval(es);
   else if (is_fundamental(rm_state.fun)) eval_apply_fundamental(es);
@@ -1074,6 +1076,7 @@ static inline void eval_apply_dispatch(eval_state *es) {
     *es = EVAL_CONTINUATION;
   }
 }
+```
 
 ### Application of a closure
 
