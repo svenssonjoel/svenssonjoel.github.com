@@ -132,7 +132,7 @@ exp_kind kind_of(VALUE exp) {
   case PTR_TYPE_ARRAY:
     return EXP_SELF_EVALUATING;
   case PTR_TYPE_CONS: {
-    VALUE head = car(rm_state.exp);
+    VALUE head = car(exp);
     if (type_of(head) == VAL_TYPE_SYMBOL) {
       UINT sym_id = dec_sym(head);
 
