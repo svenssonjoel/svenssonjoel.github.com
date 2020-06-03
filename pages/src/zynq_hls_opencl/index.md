@@ -571,7 +571,7 @@ the address mentioned for the s\_axi\_control. In this case this address
 is 0x43C00000. It is on this address and onwards that the control
 registers for the vadd hardware unit is mapped into the address space.
 
-![image](./media/vivado_address_editor_all_info.jpg)
+![image](./media/vivado_2019_step30_include_segments.png)
 
 # Part 3: Xilinx SDK
 
