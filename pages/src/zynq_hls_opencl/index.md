@@ -565,7 +565,7 @@ lets review some important details from the address editor.
 
 ## Important details from the Address Editor
 
-Before going into the part of the guide that takes place in the SDK we
+Before going into the part of the guide that looks at Vitis, we
 want to point out some details from the Address Editor. Make a note of
 the address mentioned for the s\_axi\_control. In this case this address
 is 0x43C00000. It is on this address and onwards that the control
@@ -573,14 +573,85 @@ registers for the vadd hardware unit is mapped into the address space.
 
 ![image](./media/vivado_2019_step30_include_segments.png)
 
-# Part 3: Xilinx SDK
+# Part 3: Vitis
 
-When the Xilinx SDK has launched (after launching it from the File menu
-in Vivado) we are presented with a view like the left part of
-figure [38](#fig:sdk1). Here we just click the “File” menu and “New”
-“Application Project”. In the right part of figure [38](#fig:sdk1) we
-name our application project “HelloOpenCL” and click next and select
-“hello world” then “Finish” .
+When Vitis has started (after launching it from the Tools menu in
+Vivado) we are presented with a welcome screen. Select "Create
+Application Project".
+
+![Vitis welcome screen](./media/vitis_welcome.png)
+
+This brings up a "New application project" dialog where we name out
+project. I named mine "HelloOpenCL".
+
+Clicking next brings up a dialog where we can chose between a platform
+from repository or a new platform from hardware (XSA). We want to create a
+new platform hardware. 
+
+New Application Project | Create new platform
+|:---:|:---:|
+![Vitis new application](./media/vitis_new_application_project.png) | ![Vitis new platform](./media/vitis_create_new_platform.png)
+
+Click the + in the "Create a new platform from hardware (XSA)" tab and locate the
+`design_1_wrapper.xsa` in the Vivado project directory. Then click next. 
+
+Configure software platform | Select a template
+|:---:|:---:|
+![Vitis configure software platform](./media/vitis_configure_software_platform.png) | ![Vitis template selection](./media/vitis_template_hello_world.png)
+
+apa | bepa 
+|:---:|:---:|
+![Vitis application project settings](./media/vitis_application_project_settings.png) | ![Vitis board support package](./media/vitis_board_support_package.png)
+![Vitis board support package settings](./media/vitis_board_support_package_settings.png) | ![Vitis board support package settings standalone](./media/vitis_board_support_package_settings_standalone.png)
+
+![Vitis generate linker script](./media/vitis_generate_linker_script.png)
+
+![Vitis hello world code](./media/vitis_hello_world_code.png)
+
+The hello world template provided in vitis has a bug (it seems). It tries
+to include a file called "xil_printf.h" which does not seem to exist and rather
+one should include "xil_io.h". Now I also tweaked the hello world program
+to output "hello world" repeatedly in a loop, just for fun.
+
+Including "xil_printf.h" used to be the way to go earlier. So it may
+be that this particular template just has not been updated. I will
+look into this a bit more later. If you happen to know some details
+about this just send me an email. I would much appreciate it. 
+
+```
+#include <stdio.h>
+#include "platform.h"
+//#include "xil_printf.h"
+#include "xil_io.h"
+
+int main()
+{
+    init_platform();
+
+    while (1) {
+        print("Hello World\n\r");
+    }
+
+    cleanup_platform();
+    return 0;
+}
+```
+Build the software using CTRL+B.
+
+To start a debug session of the software right click debug in the
+"Assistant" to the left in the GUI, select debug and launch on
+hardware.
+
+I use the `screen` command as a serial terminal and connect to the development
+board using the command `screen /dev/ttyUSB0 115200`. The picture below
+shows the output when debuging the program on hardware.
+
+![Vitis output from hello loop](./media/vitis_output_from_hello_loop.png)
+
+## Example code that starts the vadd kernel
+
+
+![Vitis vadd success](./media/vitis_vadd_success.png)
 
 ![Left: SDK just started. Right: new application
 project.](./media/SDK_1.jpg)
@@ -611,58 +682,55 @@ Now it is time to write the C code that talks to the vadd unit. Edit the
 “helloworld.c” file in the “HelloOpenCL” project as listed in
 figure [\[fig:CCODE\]](#fig:CCODE).
 
-    #include <stdlib.h>
-    #include "platform.h"
-    
-    #include "xil_mmu.h"
-    #include "xil_cache.h"
-    #include "xil_cache_l.h"
-    
-    void print(char *str);
-    
-    volatile char *control = (volatile char*)0x43C00000;
-    
-    volatile int *wg_x   = (volatile int*)0x43C00010;
-    volatile int *wg_y   = (volatile int*)0x43C00018;
-    volatile int *wg_z   = (volatile int*)0x43C00020;
-    volatile int *o_x    = (volatile int*)0x43C00028;
-    volatile int *o_y    = (volatile int*)0x43C00030;
-    volatile int *o_z    = (volatile int*)0x43C00038;
-    
-    volatile int *a_addr = (volatile int*)0x43C00040;
-    volatile int *b_addr = (volatile int*)0x43C00048;
-    volatile int *c_addr = (volatile int*)0x43C00050;
-    
-    
-    #define WG_SIZE_X 128
-    #define WG_SIZE_Y 1
-    #define WG_SIZE_Z 1
-    
-    int main()
-    {
-        init_platform();
-        /* more initialization */
-        Xil_SetTlbAttributes(0x43c00000,0x10c06);  /* non cacheable */
-    
-        int *a;
-        int *b;
-        int *c;
-        int i;
-        int ok = 1;
-    
-        a = (int*)malloc(WG_SIZE_X *sizeof(int));
-        b = (int*)malloc(WG_SIZE_X *sizeof(int));
-        c = (int*)malloc(WG_SIZE_X *sizeof(int));
-    
-        print("Generating input data: \n\r");
-        for (i = 0; i < WG_SIZE_X; i ++) {
-            a[i] = 1;
-            b[i] = 2;
-            c[i] = 0;
-        }
-        Xil_DCacheFlush();
-
 ``` 
+#include <stdlib.h>
+#include "platform.h"
+   
+#include "xil_mmu.h"
+#include "xil_cache.h"
+#include "xil_cache_l.h"
+    
+volatile char *control = (volatile char*)0x43C00000;
+    
+volatile int *wg_x   = (volatile int*)0x43C00010;
+volatile int *wg_y   = (volatile int*)0x43C00018;
+volatile int *wg_z   = (volatile int*)0x43C00020;
+volatile int *o_x    = (volatile int*)0x43C00028;
+volatile int *o_y    = (volatile int*)0x43C00030;
+volatile int *o_z    = (volatile int*)0x43C00038;
+    
+volatile int *a_addr = (volatile int*)0x43C00040;
+volatile int *b_addr = (volatile int*)0x43C00048;
+volatile int *c_addr = (volatile int*)0x43C00050;
+    
+    
+#define WG_SIZE_X 128
+#define WG_SIZE_Y 1
+#define WG_SIZE_Z 1
+    
+int main()
+{
+    init_platform();
+    /* more initialization */
+    Xil_SetTlbAttributes(0x43c00000,0x10c06);  /* non cacheable */
+    
+    int *a;
+    int *b;
+    int *c;
+    int i;
+    int ok = 1;
+    
+    a = (int*)malloc(WG_SIZE_X *sizeof(int));
+    b = (int*)malloc(WG_SIZE_X *sizeof(int));
+    c = (int*)malloc(WG_SIZE_X *sizeof(int));
+    
+    print("Generating input data: \n\r");
+    for (i = 0; i < WG_SIZE_X; i ++) {
+        a[i] = 1;
+        b[i] = 2;
+        c[i] = 0;
+    }
+    Xil_DCacheFlush();
 
     *a_addr = (unsigned int)a;
     *b_addr = (unsigned int)b;
@@ -747,22 +815,21 @@ explanation.
 The code starts out by including some headers. This is just shown here
 for completeness.
 
-    #include <stdlib.h>
-    #include "platform.h"
+```
+#include <stdlib.h>
+#include "platform.h"
     
-    #include "xil_mmu.h"
-    #include "xil_cache.h"
-    #include "xil_cache_l.h"
-    
-    void print(char *str);
-
+#include "xil_mmu.h"
+#include "xil_cache.h"
+#include "xil_cache_l.h"
+```    
+ 
 The code below, declares names for the programming registers. The base
 address was for this was found in section [3.3](#sec:addresseditor) and
 the offsets to each specific register is found in
 section [2.4](#sec:programminginterface).
 
 ``` 
-
 volatile char *control = (volatile char*)0x43C00000;
 
 volatile int *wg_x   = (volatile int*)0x43C00010;
