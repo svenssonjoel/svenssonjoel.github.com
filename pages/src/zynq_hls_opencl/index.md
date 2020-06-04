@@ -13,7 +13,7 @@ Zynq platform. We wrote it because we struggled immensely to get
 anywhere with this and once that we did get something to work, we felt
 that it was worth sharing (there must be someone else, somewhere out
 there going through the same struggle). I think that I can safely
-assume that yes, someone else was struggling in the same way because I
+say that yes, someone else was struggling in the same way because I
 have never before been contacted so much by people with questions
 about anything else I've ever been part of writing. 
 
@@ -159,9 +159,7 @@ started by the command `vivado_hls` in the same console.
 
 
 Now project configuration is done and we can hit finish and enter into
-the development environment. This should look like the left part of
-figure [8](#fig:hls8to9).
-
+the development environment. 
 
 
 ## Writing a simple OpenCL kernel
@@ -208,8 +206,7 @@ step makes our vadd hardware unit available for use in Vivado. Click the
 
 ![image](./media/hls_icons_export.jpg)
 
-The choices we make in the “Export RTL” dialog are shown in
-figure [10](#fig:hls12). We choose “IP Catalog” and VHDL as the desired
+In the “Export RTL” dialog we choose “IP Catalog” and VHDL as the desired
 language. One can also provide identification details using
 “Configuration” button but we leave these settings unchanged.
 
@@ -479,7 +476,7 @@ Click the "Run Connection Automation" link and make the following selections:
 ![image](./media/vivado_2019_step27_run_automation.png)
 
 At this point the diagram view should look similar to
-figure [30](#fig:vivadoRouted). Notice how two AXI interconnects have
+the picture below. Notice how two AXI interconnects have
 been automatically added to the design and connects to the processing
 system and to the vadd unit. One of these interfaces connect to the
 control port on the vadd unit and is used to program the vadd unit

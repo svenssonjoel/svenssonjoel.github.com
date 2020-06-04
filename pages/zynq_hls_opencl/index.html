@@ -167,7 +167,7 @@
 </tbody>
 </table>
 <h1 id="preface-to-version-20200">Preface to version 2020.0</h1>
-<p>Back in 2015 or 2016 me and a colleague at the time wrote the first version of this guide on how to "get started" with OpenCL HLS on the Zynq platform. We wrote it because we struggled immensely to get anywhere with this and once that we did get something to work, we felt that it was worth sharing (there must be someone else, somewhere out there going through the same struggle). I think that I can safely assume that yes, someone else was struggling in the same way because I have never before been contacted so much by people with questions about anything else I've ever been part of writing.</p>
+<p>Back in 2015 or 2016 me and a colleague at the time wrote the first version of this guide on how to "get started" with OpenCL HLS on the Zynq platform. We wrote it because we struggled immensely to get anywhere with this and once that we did get something to work, we felt that it was worth sharing (there must be someone else, somewhere out there going through the same struggle). I think that I can safely say that yes, someone else was struggling in the same way because I have never before been contacted so much by people with questions about anything else I've ever been part of writing.</p>
 <p>Years have passed since the writing of this and I have been doing other things for a while. Haven't really touched FPGAs or the Zynq very much at all in quite a while. So, I want to see how relevant this document still is and also see if I can update or improve it in some way. Step one in this process is to try to go through it myself using contemporary versions of the tooling.</p>
 <p>The Zynq-board that I use is still the Trenz Zynqberry equipped with a Zynq 7010. Board-files for these boards can be found in the reference designs that Trenz provides on their website, look <a href="https://wiki.trenz-electronic.de/display/PD/TE0726+Reference+Designs">here</a> for info and <a href="https://shop.trenz-electronic.de/Download/?path=Trenz_Electronic/Modules_and_Module_Carriers/special/TE0726/Reference_Design/2019.2/test_board">here</a> for actual reference designs. The board files can be found in a subdirectory.</p>
 <p>An older version of this guide can be found on <a href="https://www.researchgate.net/publication/302300881_Getting_Started_with_OpenCL_on_the_ZYNQ">researchgate</a>. I have no idea how much has changed. That will become clear while going through the steps and writing this updated document.</p>
@@ -249,7 +249,7 @@
 </tbody>
 </table></li>
 </ul>
-<p>Now project configuration is done and we can hit finish and enter into the development environment. This should look like the left part of figure <a href="#fig:hls8to9">8</a>.</p>
+<p>Now project configuration is done and we can hit finish and enter into the development environment.</p>
 <h2 id="writing-a-simple-opencl-kernel">Writing a simple OpenCL kernel</h2>
 <p>The example kernel used in this guide is very simple and is outlined in total below. Add a new source file to the project. Right click “source” in the <span><em>Explorer</em></span> under “vadd_OpenCL” and select “New file”. Name the file “vadd.cl”. The file extension is important “.cl”.</p>
 <table>
@@ -283,7 +283,7 @@ vadd( __global int *a, __global int *b, __global int *c) {
 <p><img src="./media/hls_step11_post_synthesis_report.jpg" alt="image" /></p>
 <p>Now export the generated hardware description into the IP catalog. This step makes our vadd hardware unit available for use in Vivado. Click the “Export RTL” button in the toolbar.</p>
 <p><img src="./media/hls_icons_export.jpg" alt="image" /></p>
-<p>The choices we make in the “Export RTL” dialog are shown in figure <a href="#fig:hls12">10</a>. We choose “IP Catalog” and VHDL as the desired language. One can also provide identification details using “Configuration” button but we leave these settings unchanged.</p>
+<p>In the “Export RTL” dialog we choose “IP Catalog” and VHDL as the desired language. One can also provide identification details using “Configuration” button but we leave these settings unchanged.</p>
 <table>
 <thead>
 <tr class="header">
@@ -493,7 +493,7 @@ vadd( __global int *a, __global int *b, __global int *c) {
 <p>Most important here is to note that this change makes the “Run Connection Automation” link to appear at the top of the block diagram view. Actually, This time the link has been there a while. This is because the AXI master interface was already activated and could have been auto-connected. I think it is better to wait until now, when the slave interface is also activated before running the automation though.</p>
 <p>Click the "Run Connection Automation" link and make the following selections:</p>
 <p><img src="./media/vivado_2019_step27_run_automation.png" alt="image" /></p>
-<p>At this point the diagram view should look similar to figure <a href="#fig:vivadoRouted">30</a>. Notice how two AXI interconnects have been automatically added to the design and connects to the processing system and to the vadd unit. One of these interfaces connect to the control port on the vadd unit and is used to program the vadd unit control registers. The other interface is used by the vadd unit for memory accesses.</p>
+<p>At this point the diagram view should look similar to the picture below. Notice how two AXI interconnects have been automatically added to the design and connects to the processing system and to the vadd unit. One of these interfaces connect to the control port on the vadd unit and is used to program the vadd unit control registers. The other interface is used by the vadd unit for memory accesses.</p>
 <p><img src="./media/vivado_2019_step28_block_diagram_after_automation.png" alt="Block diagram view after configuration of the processing system." /></p>
 <p>At this stage the design is mostly complete. We do, however, need to go into the “Address editor” and perform some small tweaks. Within the Address editor some address ranges are listed as excluded, we need to set these as included.</p>
 <table>
