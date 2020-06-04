@@ -595,16 +595,36 @@ New Application Project | Create new platform
 Click the + in the "Create a new platform from hardware (XSA)" tab and locate the
 `design_1_wrapper.xsa` in the Vivado project directory. Then click next. 
 
+Next up is a dialog where you can "configure the software platform"
+the default settings are fine. A standalone project (bare-meta) in the
+C-language. So just click next on that.
+
+When the template selection dialog pops up we select "hello world" and click finish. 
+
 Configure software platform | Select a template
 |:---:|:---:|
 ![Vitis configure software platform](./media/vitis_configure_software_platform.png) | ![Vitis template selection](./media/vitis_template_hello_world.png)
 
-apa | bepa 
+The application project settings that now are visible also look good
+per default as does the contents in the Board support package.  It
+used to be that some changes had to be applied in the board support
+package so that IO was directed at the correct uart for the board. But
+this seems to have been fixed in the newer files from Trenz. Remember
+that many of these steps are little bit specific to the board you use!
+so always double check these things.
+
+Application project settings | Board support package
 |:---:|:---:|
 ![Vitis application project settings](./media/vitis_application_project_settings.png) | ![Vitis board support package](./media/vitis_board_support_package.png)
 ![Vitis board support package settings](./media/vitis_board_support_package_settings.png) | ![Vitis board support package settings standalone](./media/vitis_board_support_package_settings_standalone.png)
 
+Next go to the Xilinx menu and generate a linker script. I generate one for 32MB of Heap and 1KB of stack. That is enough for this program. 
+
 ![Vitis generate linker script](./media/vitis_generate_linker_script.png)
+
+Before going into the code that runs vadd, we can experiment a little
+with the hello world code from the template. You find the source in the "Explorer" to the left in the GUI
+under "HelloOpenCL" and under the src directory. 
 
 ![Vitis hello world code](./media/vitis_hello_world_code.png)
 
@@ -650,42 +670,15 @@ shows the output when debuging the program on hardware.
 
 ## Example code that starts the vadd kernel
 
-
-![Vitis vadd success](./media/vitis_vadd_success.png)
-
-![Left: SDK just started. Right: new application
-project.](./media/SDK_1.jpg)
-
-![Left: SDK just started. Right: new application
-project.](./media/sdk_new_prj.jpg)
-
-Now we need to perform one key piece of configuration to the Board
-Support Package, the “system.mss” file of the “HelloOpenCL\_bsp”. The
-configuration we need to change is the stdin/stdout under “Overview”,
-“Standalone”. Both stdin and stdout should be pointed to
-“ps7\_uart\_1” and not to uart\_0 as per default.
-
-![Board support package configuration.](./media/sdk_new_hello.jpg)
-
-![Board support package configuration.](./media/sdk_modify_bsp.jpg)
-
-Next we go into the Xilinx tools menu and clicks “Generate linker
-script”. Here we want to make the heap larger. Find the “Heap Size”
-box and enter for example 33554432 (for 32mb). The default setting of
-1KB will not be enough for what we are going to do.
-
-![BSP Uart settings and the linker script](./media/sdk_uart1.jpg)
-
-![BSP Uart settings and the linker script](./media/sdk_linker_script.jpg)
-
 Now it is time to write the C code that talks to the vadd unit. Edit the
-“helloworld.c” file in the “HelloOpenCL” project as listed in
-figure [\[fig:CCODE\]](#fig:CCODE).
+“helloworld.c” file in the “HelloOpenCL” project and replace the contents with
+the code below.
 
 ``` 
 #include <stdlib.h>
 #include "platform.h"
-   
+
+#include "xil_io.h"
 #include "xil_mmu.h"
 #include "xil_cache.h"
 #include "xil_cache_l.h"
@@ -781,36 +774,20 @@ int main()
     return 0;
 }
 ```
+Now build (ctrl + b) and start up a debug session just like in the example with the
+hello world loop. 
 
-After writing the code we can right click on the “HelloOpenCL” project
-in the “Project Explorer” and choose “Debug as” and “Debug
-Configuration”. In the debug configuration select “Reset entire
-system” and “Program FPGA” then “Apply”.
+The output I capture on my screen sessions looks like this. Which seems to indicate a success.
 
-![Debug configuration and screen interaction with the
-ZynqBerry.](./media/sdk_debug_configure.jpg)
+![Vitis vadd success](./media/vitis_vadd_success.png)
 
-![Debug configuration and screen interaction with the
-ZynqBerry.](./media/sdk_edit_helloworld.jpg)
-
-Now to start the application in Debug mode right click on “HelloOpenCL”
-select “Debug as” and “Launch on hardware”. The ZynqBerry should now be
-connected and its LEDs will be on while the device is being programmed.
-The SDK will automatically enter into Debug mode and you can press
-“Resume” (F8) button to run. In order to see any output from the
-device you need to have a terminal link to it. On linux using the screen
-command works well: <span>`screen /dev/ttyUSB1`</span>. This part of the
-procedure is shown in figure [46](#fig:sdk5).
-
-![Debug the software and screen interaction.](./media/sdk_debug.jpg)
-
-![Debug the software and screen interaction.](./media/screen_output.jpg)
 
 ##  C Code Walkthrough
 
-The code for interfacing with the generated hardware is given in full in
-figure [\[fig:CCODE\]](#fig:CCODE) but is here given a step by step
-explanation.
+This section goes through the C code step by step and offers some thoughts
+for each block. In this revised document I am, for now, leaving this unchanged but
+will go through it soon and see if there are things that can be better explained.
+I am just refreshing this knowledge myself, so I am far from expert in this area.
 
 The code starts out by including some headers. This is just shown here
 for completeness.
@@ -818,16 +795,17 @@ for completeness.
 ```
 #include <stdlib.h>
 #include "platform.h"
-    
+
+#include "xil_io.h"
 #include "xil_mmu.h"
 #include "xil_cache.h"
 #include "xil_cache_l.h"
 ```    
  
 The code below, declares names for the programming registers. The base
-address was for this was found in section [3.3](#sec:addresseditor) and
-the offsets to each specific register is found in
-section [2.4](#sec:programminginterface).
+address was for this was found in address edition in Vivado and the
+offsets to each specific register is found in the VHDL code generated
+from Vivado HLS. 
 
 ``` 
 volatile char *control = (volatile char*)0x43C00000;
@@ -969,9 +947,14 @@ And we are done.
 
 # Conclusion
 
-We hope that following this guide has allowed you to run OpenCL on a
-Zynq device. Please send us feedback or questions.
+Phew! I am actually quite surpriced that this worked at all. It is
+quite a spaghetti like process to go through that interfaces 3
+different GUIs and lots of steps in each! It would be nice to learn
+some more about how to script all these steps using TCL.
 
-1.  http://www.trenz-electronic.de/products/fpga-boards/trenz-electronic/te0726-zynq.html
+I hope this guide helps you in taking your first steps on the Zynq 
+using OpenCL. If you have constructive feedback on improvements on this
+information, please let me know.
 
-2.  http://www.trenz-electronic.de/download/d0/Trenz\_Electronic/d1/TE0726/d2/Reference%20Designs/d3//d4/test\_board.html
+Thanks for reading and have a great day!
+
