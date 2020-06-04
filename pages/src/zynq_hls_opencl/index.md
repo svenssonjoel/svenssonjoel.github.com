@@ -2,7 +2,7 @@
 | Guide version          |        2020.0      |
 | :--------------------- | :----------------: |
 | Last edited            |      June 3 - 2020 |
-| Board compatibility    |                    |
+| Board compatibility    |       TE0736-03             |
 | Tested Vivado versions | 2019.2.1           |
 
 # Preface to version 2020.0
