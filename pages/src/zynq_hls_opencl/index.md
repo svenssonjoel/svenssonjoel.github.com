@@ -12,7 +12,7 @@ version of this guide on how to "get started" with OpenCL HLS on the
 Zynq platform. We wrote it because we struggled immensely to get
 anywhere with this and once that we did get something to work, we felt
 that it was worth sharing (there must be someone else, somewhere out
-there going throug the same struggle). I think that I can safely
+there going through the same struggle). I think that I can safely
 assume that yes, someone else was struggling in the same way because I
 have never before been contacted so much by people with questions
 about anything else I've ever been part of writing. 
@@ -24,7 +24,7 @@ document still is and also see if I can update or improve it in some
 way. Step one in this process is to try to go through it myself using
 contemporary versions of the tooling.
 
-The Zynq-board that I use is still the Trenz Zynqberry equiped with a
+The Zynq-board that I use is still the Trenz Zynqberry equipped with a
 Zynq 7010.  Board-files for these boards can be found in the reference
 designs that Trenz provides on their website, look
 [here](https://wiki.trenz-electronic.de/display/PD/TE0726+Reference+Designs)
@@ -72,7 +72,7 @@ downloaded
 (if you are using the ZynqBerry). The interesting files are located in
 the subdirectory named `board_files` within the reference design
 archive.  The subdirectories within `board_files` should be copied to
-a directory in your Vivado instalation. I installed Vivado under a
+a directory in your Vivado installation. I installed Vivado under a
 directory called `opt` within my home directory. So, in my case I copy
 the contents of `board_files` to directory:
 
@@ -147,7 +147,7 @@ started by the command `vivado_hls` in the same console.
       - Speed grade: -1
     
     These steps are of course very specific to the particular FPGA
-    that your development board is equiped with. Looking up the actual
+    that your development board is equipped with. Looking up the actual
     values for your situation can most likely be done in the
     datasheets associated with your board. But if you have a the very
     same ZynqBerry as I do, the choice to pick is `xc7z010clg225-1`
@@ -326,7 +326,7 @@ Create project | Project wizard step 1
 ![Vivado project creation wizard.](./media/vivado_step1_create_prj.jpg) | ![Vivado project creation wizard.](./media/vivado_step2_wizard1.jpg)
 
 The GUI that starts up for project creation had some cosmetic changes
-since last time I used Vivado but when it comes fucntionality it seems
+since last time I used Vivado but when it comes functionality it seems
 the same. 
 
 Choose a name and location for the project, in this case “ZynqOpenCL”
@@ -554,7 +554,7 @@ followed by export hardware.
 
 ![Export hardware and launch the SDK](./media/vivado_step40_export_hardware.jpg)
 
-Here things start to look quite different compaired to back in the old
+Here things start to look quite different compared to back in the old
 days! I cannot find any Launch SDK. There is this thing called "Launch
 Vitis" under the TOOLS menu. I think this may be the replacement!
 Clicking Launch Vitis starts something called the Vitis IDE (which is
@@ -664,7 +664,7 @@ hardware.
 
 I use the `screen` command as a serial terminal and connect to the development
 board using the command `screen /dev/ttyUSB0 115200`. The picture below
-shows the output when debuging the program on hardware.
+shows the output when debugging the program on hardware.
 
 ![Vitis output from hello loop](./media/vitis_output_from_hello_loop.png)
 
@@ -947,7 +947,7 @@ And we are done.
 
 # Conclusion
 
-Phew! I am actually quite surpriced that this worked at all. It is
+Phew! I am actually quite surprised that this worked at all. It is
 quite a spaghetti like process to go through that interfaces 3
 different GUIs and lots of steps in each! It would be nice to learn
 some more about how to script all these steps using TCL.
