@@ -36,7 +36,7 @@ subdirectory.
 An older version of this guide can be found on
 [researchgate](https://www.researchgate.net/publication/302300881_Getting_Started_with_OpenCL_on_the_ZYNQ). I
 have no idea how much has changed. That will become clear while going
-through the steps on this. 
+through the steps and writing this updated document. 
 
 Thanks for reading! I hope this document will be easy to follow and
 will help someone get started with FPGA programming. Thank you! 
