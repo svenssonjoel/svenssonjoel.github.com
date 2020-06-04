@@ -11,11 +11,11 @@ Back in 2015 or 2016 me and a colleague at the time wrote the first
 version of this guide on how to "get started" with OpenCL HLS on the
 Zynq platform. We wrote it because we struggled immensely to get
 anywhere with this and once that we did get something to work, we felt
-that it was worth sharing (there must be someone else, somewhere out
-there going through the same struggle). I think that I can safely
-say that yes, someone else was struggling in the same way because I
-have never before been contacted so much by people with questions
-about anything else I've ever been part of writing. 
+that it was worth sharing. There must be someone else, somewhere out
+there going through the same struggle with this. I think that I can
+safely say that yes, someone else was struggling in the same way
+because I have never before been contacted so many times by people
+with questions about anything else I've ever been part of writing.
 
 Years have passed since the writing of this and I have been doing
 other things for a while. Haven't really touched FPGAs or the Zynq
