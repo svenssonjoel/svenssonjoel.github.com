@@ -364,6 +364,49 @@ VALUE qq_expand_list(VALUE l) {
   return res;
 }
 ```
+---
+**Bugfix June 10 2020**
+
+`qq_expand_list` above is flawed in the `default` case that generates the code
+that generates a list. It is rather supposed to be a quoted list. But aren't these
+the same thing. I need to look at this in more detail in some point. 
+
+```
+VALUE qq_expand_list(VALUE l) {
+  VALUE res = enc_sym(symrepr_nil());
+  VALUE car_val;
+  VALUE cdr_val;
+
+  switch (type_of(l)) {
+  case PTR_TYPE_CONS:
+    car_val = car(l);
+    cdr_val = cdr(l);
+    if (type_of(car_val) == VAL_TYPE_SYMBOL &&
+        dec_sym(car_val) == symrepr_comma()) {
+      res = cons(enc_sym(symrepr_list()),
+                 cons(car(cdr_val), res));
+    } else if (type_of(car_val) == VAL_TYPE_SYMBOL &&
+               dec_sym(car_val) == symrepr_commaat()) {
+      res = car(cdr_val);
+    } else {
+      VALUE expand_car = qq_expand_list(car_val);
+      VALUE expand_cdr = qq_expand(cdr_val);
+      res = cons(enc_sym(symrepr_list()),
+                 cons(append(expand_car, expand_cdr), enc_sym(symrepr_nil())));
+    }
+    break;
+  default: {
+    VALUE a_list = cons(l, enc_sym(symrepr_nil()));
+    res =
+      cons(enc_sym(symrepr_quote()), cons (a_list, enc_sym(symrepr_nil())));
+  }
+  }
+  return res;
+}
+``` 
+
+---
+
 
 ## Future work
 

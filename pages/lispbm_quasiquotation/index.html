@@ -358,6 +358,42 @@ int tok_comma(tokenizer_char_stream str) {
   return res;
 }
 </code></pre>
+<hr />
+<p><strong>Bugfix June 10 2020</strong></p>
+<p><code>qq_expand_list</code> above is flawed in the <code>default</code> case that generates the code that generates a list. It is rather supposed to be a quoted list. But aren't these the same thing. I need to look at this in more detail in some point.</p>
+<pre><code>VALUE qq_expand_list(VALUE l) {
+  VALUE res = enc_sym(symrepr_nil());
+  VALUE car_val;
+  VALUE cdr_val;
+
+  switch (type_of(l)) {
+  case PTR_TYPE_CONS:
+    car_val = car(l);
+    cdr_val = cdr(l);
+    if (type_of(car_val) == VAL_TYPE_SYMBOL &amp;&amp;
+        dec_sym(car_val) == symrepr_comma()) {
+      res = cons(enc_sym(symrepr_list()),
+                 cons(car(cdr_val), res));
+    } else if (type_of(car_val) == VAL_TYPE_SYMBOL &amp;&amp;
+               dec_sym(car_val) == symrepr_commaat()) {
+      res = car(cdr_val);
+    } else {
+      VALUE expand_car = qq_expand_list(car_val);
+      VALUE expand_cdr = qq_expand(cdr_val);
+      res = cons(enc_sym(symrepr_list()),
+                 cons(append(expand_car, expand_cdr), enc_sym(symrepr_nil())));
+    }
+    break;
+  default: {
+    VALUE a_list = cons(l, enc_sym(symrepr_nil()));
+    res =
+      cons(enc_sym(symrepr_quote()), cons (a_list, enc_sym(symrepr_nil())));
+  }
+  }
+  return res;
+}
+</code></pre>
+<hr />
 <h2 id="future-work">Future work</h2>
 <p>Before adding quasiquotation, expression parsing didn't generate much garbage at all (garbage in the sense of temporary heap objects that really should be garbage collected). So, thus far I didn't think very much about how to add some interplay between garbage collection and parsing. I just thought that if there is not enough heap to parse the program, you cannot run the program anyway so why bother. Now, however, the quasiquotation expansion process generates garbage that probably should be dealt with somehow as it could mean that parsing a program that really does fit in memory will fail to parse because the heap becomes full.</p>
 <p>More testing is needed. I am not an old lisp guru and really don't know much about how tricky you can get with quasiquotation, so it is a bit hard for me to know if this implementation works as it should! As time goes by and I try more things, bugs will be taken care of as they appear (as long as they aren't total show-stoppers).</p>
