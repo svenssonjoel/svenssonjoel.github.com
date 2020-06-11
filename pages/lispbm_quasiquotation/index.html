@@ -360,7 +360,7 @@ int tok_comma(tokenizer_char_stream str) {
 </code></pre>
 <hr />
 <p><strong>Bugfix June 10 2020</strong></p>
-<p><code>qq_expand_list</code> above is flawed in the <code>default</code> case that generates the code that generates a list. It is rather supposed to be a quoted list. But aren't these the same thing. I need to look at this in more detail in some point.</p>
+<p><code>qq_expand_list</code> above is flawed in the <code>default</code> case that generates the code that generates a list. It is rather supposed to be a quoted list.</p>
 <pre><code>VALUE qq_expand_list(VALUE l) {
   VALUE res = enc_sym(symrepr_nil());
   VALUE car_val;

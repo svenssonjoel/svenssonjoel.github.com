@@ -368,8 +368,7 @@ VALUE qq_expand_list(VALUE l) {
 **Bugfix June 10 2020**
 
 `qq_expand_list` above is flawed in the `default` case that generates the code
-that generates a list. It is rather supposed to be a quoted list. But aren't these
-the same thing. I need to look at this in more detail in some point. 
+that generates a list. It is rather supposed to be a quoted list. 
 
 ```
 VALUE qq_expand_list(VALUE l) {
