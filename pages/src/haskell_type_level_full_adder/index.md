@@ -61,7 +61,7 @@ type instance Xor (Zero, Zero) = Zero
 
 A full-adder can be constructed by combining two so-called half
 adders.  So the `HalfAdder` function implements this operation. To
-make sense, it should be applied to a tuple of bits (are there any of
+make sense, it should be applied to a tuple of bits (are there any ways of
 enforcing this nicely?) and it computes the sum of these bits and also
 computes a carry value. `Xor a` is the sum part and `And a` is the
 carry part.
@@ -80,12 +80,14 @@ stackoverflow](https://stackoverflow.com/questions/50494228/type-family-as-argum
 provided a way through this obstacle though.
 
 A full adder takes three bits as input, call them a, b and carry-in,
-and outputs two bits called sum and carry-out.  This way many full
+and outputs two bits called sum and carry-out.  This way, many full
 adders can connected together to form multi-bit adders, so called
-ripple carry adders. For the full adder, two half adders and an or
+ripple carry adders. For the full adder, two half adders and a single or
 gate is needed.
 
-I started out something like this. There needs to be half adder somewhere in there to compute the sum of `a` and `b`. 
+I started out with something like this. There needs to be half adder
+somewhere in there to compute the sum of `a` and `b`.
+
 ``` 
 type family FullAdder a
 type instance FullAdder ((a,b),c) = ... (HalfAdder (a, b)) ... 
@@ -137,8 +139,8 @@ type instance App TokOr a = Or a
 ```
 
 The code above implements application of tags and the tags needed for
-the half adder and the or gate. The two type instances are a kind of evaluator for
-the tags. 
+the half adder and the or gate. The two type instances are a kind of
+evaluator for the tags.
 
 Now the `AppFST` combinator can be restated like this:
 

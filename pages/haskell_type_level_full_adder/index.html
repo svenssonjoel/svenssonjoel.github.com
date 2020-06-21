@@ -169,13 +169,13 @@ type instance Xor (One,  Zero) = One
 type instance Xor (One,   One) = Zero
 type instance Xor (Zero, Zero) = Zero
 </code></pre>
-<p>A full-adder can be constructed by combining two so-called half adders. So the <code>HalfAdder</code> function implements this operation. To make sense, it should be applied to a tuple of bits (are there any of enforcing this nicely?) and it computes the sum of these bits and also computes a carry value. <code>Xor a</code> is the sum part and <code>And a</code> is the carry part.</p>
+<p>A full-adder can be constructed by combining two so-called half adders. So the <code>HalfAdder</code> function implements this operation. To make sense, it should be applied to a tuple of bits (are there any ways of enforcing this nicely?) and it computes the sum of these bits and also computes a carry value. <code>Xor a</code> is the sum part and <code>And a</code> is the carry part.</p>
 <pre><code>type family HalfAdder a
 type instance HalfAdder a = (Xor a, And a)
 </code></pre>
 <p>So that part fell into place without to much trouble. So the next step is to combine two half adders and a bit of extra logic to form the full adder. Here I got very stuck. And the thing causing trouble is that you cannot partially apply the type family based type level functions (as I understand it) or pass them around unapplied. This <a href="https://stackoverflow.com/questions/50494228/type-family-as-argument-to-type-synonym">answer on stackoverflow</a> provided a way through this obstacle though.</p>
-<p>A full adder takes three bits as input, call them a, b and carry-in, and outputs two bits called sum and carry-out. This way many full adders can connected together to form multi-bit adders, so called ripple carry adders. For the full adder, two half adders and an or gate is needed.</p>
-<p>I started out something like this. There needs to be half adder somewhere in there to compute the sum of <code>a</code> and <code>b</code>.</p>
+<p>A full adder takes three bits as input, call them a, b and carry-in, and outputs two bits called sum and carry-out. This way, many full adders can connected together to form multi-bit adders, so called ripple carry adders. For the full adder, two half adders and a single or gate is needed.</p>
+<p>I started out with something like this. There needs to be half adder somewhere in there to compute the sum of <code>a</code> and <code>b</code>.</p>
 <pre><code>type family FullAdder a
 type instance FullAdder ((a,b),c) = ... (HalfAdder (a, b)) ... 
 </code></pre>
