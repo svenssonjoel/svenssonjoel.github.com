@@ -565,6 +565,35 @@ static inline bool is_symbol_merror(VALUE exp) {
   eval_sequence(es);
 }
 </code></pre>
+<hr />
+<p><strong>Edited 2020-05-23 (BugFix)</strong></p>
+<p>When evaluating a sequence of expressions (such as a progn construct), the original environment also has to be stored on the heap and restored before before evaluation of each of the expressions in the sequence.</p>
+<p>So, the entry-point for evaluation of <code>progn</code> now pushes the environment before going into <code>eval_sequence</code>.</p>
+<pre><code>static inline void eval_progn(eval_state *es) {
+  push_u32_2(&amp;rm_state.S, rm_state.cont, rm_state.env);
+  rm_state.unev = cdr(rm_state.exp);
+  eval_sequence(es);
+}
+</code></pre>
+<p><code>eval_sequence</code> pops the environment then takes one of two branches depending if there is only one expression left in the sequence or more. It is important to treat the last expression in the sequence in a special way to allow <code>progn</code> to be used to construct a tail-recursive function.</p>
+<p>If there are more than one expression in the sequence, the environment is pushed on the stack again for safekeeping. While if it is the last expression nothing should be pushed onto the stack at all.</p>
+<pre><code>static inline void eval_sequence(eval_state *es) {
+
+  rm_state.exp = car(rm_state.unev);
+  pop_u32(&amp;rm_state.S, &amp;rm_state.env);
+  VALUE tmp = cdr(rm_state.unev);
+  if (type_of(tmp) == VAL_TYPE_SYMBOL &amp;&amp;
+      dec_sym(tmp) == symrepr_nil()) {
+    pop_u32(&amp;rm_state.S, &amp;rm_state.cont);
+    *es = EVAL_DISPATCH;
+    return;
+  }
+  push_u32_2(&amp;rm_state.S, rm_state.env, rm_state.unev);
+  rm_state.cont = enc_u(CONT_SEQUENCE);
+  *es = EVAL_DISPATCH;
+}
+</code></pre>
+<p>Storing and restoing the environment before and after each expression in the sequence is important if the expression itself modifies the environment. This would have an effect on the following expressions that would no longer be evaluated in the intended environment which may cause incorrect results or errors.</p>
 <h2 id="evaluation-of-conditionals">Evaluation of conditionals</h2>
 <p>Conditionals are handled by another evaluator-continuation pair. The evaluator sets up for evaluation of the branching condition and the continuation then either sets up the then or the else branch for evaluation.</p>
 <pre><code>static inline void eval_if(eval_state *es) {

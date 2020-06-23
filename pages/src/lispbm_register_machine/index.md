@@ -638,6 +638,60 @@ static inline void cont_sequence(eval_state *es) {
 }
 ```
 
+----
+**Edited 2020-05-23 (BugFix)**
+
+When evaluating a sequence of expressions (such as a progn construct),
+the original environment also has to be stored on the heap and restored before
+before evaluation of each of the expressions in the sequence.
+
+So, the entry-point for evaluation of `progn` now pushes the
+environment before going into `eval_sequence`.
+
+
+```
+static inline void eval_progn(eval_state *es) {
+  push_u32_2(&rm_state.S, rm_state.cont, rm_state.env);
+  rm_state.unev = cdr(rm_state.exp);
+  eval_sequence(es);
+}
+```
+
+`eval_sequence` pops the environment then takes one of two branches
+depending if there is only one expression left in the sequence or
+more. It is important to treat the last expression in the sequence in
+a special way to allow `progn` to be used to construct a
+tail-recursive function.
+
+If there are more than one expression in the sequence, the environment
+is pushed on the stack again for safekeeping. While if it is the last
+expression nothing should be pushed onto the stack at all.
+
+```
+static inline void eval_sequence(eval_state *es) {
+
+  rm_state.exp = car(rm_state.unev);
+  pop_u32(&rm_state.S, &rm_state.env);
+  VALUE tmp = cdr(rm_state.unev);
+  if (type_of(tmp) == VAL_TYPE_SYMBOL &&
+      dec_sym(tmp) == symrepr_nil()) {
+    pop_u32(&rm_state.S, &rm_state.cont);
+    *es = EVAL_DISPATCH;
+    return;
+  }
+  push_u32_2(&rm_state.S, rm_state.env, rm_state.unev);
+  rm_state.cont = enc_u(CONT_SEQUENCE);
+  *es = EVAL_DISPATCH;
+}
+``` 
+
+Storing and restoing the environment before and after each expression
+in the sequence is important if the expression itself modifies the
+environment. This would have an effect on the following expressions
+that would no longer be evaluated in the intended environment which
+may cause incorrect results or errors.
+
+
 ## Evaluation of conditionals
 
 Conditionals are handled by another evaluator-continuation pair. The evaluator
