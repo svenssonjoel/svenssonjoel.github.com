@@ -32,8 +32,9 @@ shows how to compile a lisp into a list of instructions, this is in
 the final chapter (5.5) of the book.
 
 So for this attempt at writing a bytecode compiler for lispBM, lispBM
-is used as the implementation language as well. The compiler is very strongly influenced
-by the presentation in Chapter 5.5 of SICP, but there are differences. 
+is used as the implementation language as well. The compiler is very
+strongly influenced by the presentation in Chapter 5.5 of SICP, but
+there are differences.
 
 This is work in progress and while the end goal is to compile to an
 array of bytes, as a fist step the compiler just creates a list of
@@ -46,7 +47,7 @@ machine for evaluation of the bytecode. This is future work that I
 will write about as soon as it takes shape.
 
 This lispBM compiler is the largest program written in lispBM so
-far. It has been really helpful to try and write a larger programs, so
+far. It has been really helpful to try and write a larger program, so
 many bugs are found along the way! 
 
 ## Helpful predicates
