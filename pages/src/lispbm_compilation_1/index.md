@@ -53,8 +53,10 @@ writing about this as the pieces are finished.
 
 This lispBM compiler is the largest program written in lispBM so
 far. It has been really helpful to try and write a larger program, so
-many bugs have been found along the way! As usual I much appreciate all
-constructive feedback and thanks for reading!
+many bugs have been found along the way!
+
+As usual I much appreciate all constructive feedback and thanks a lot
+for reading!
 
 
 ## Compiler main function
@@ -77,6 +79,9 @@ list of registers written to and the third element is a list of
 instructions. Each instruction is a list of op-code and arguments. 
 
 
+Below is an example that shows what the output is when compiling the
+simple program `(+ 1 2)`. 
+
 ```
 # (compile-instr-list '(+ 1 2) 'val 'next)
 
@@ -90,6 +95,21 @@ instructions. Each instruction is a list of op-code and arguments.
      (callf)))
 ```
 
+It does not depend on values in any registers and it updates the
+`proc`, `argl` and `val` registers. A list of all registers and their intended
+usage will be shown later in the text. 
+
+The compiler takes an expression as input together with a target
+register and a specified linkage. The linkage is most importance when
+compiler is called recursively to generate different sub-parts of the
+instruction list. The linkage describes how the compiled instruction
+list should end. Returning from a function application will be special
+for example, but there will be more info about this in the following
+sections.
+
+The compiler looks at the passed in expression and dispatches to an
+appropriate function that generates an instruction list for that case. Each of
+these case specific functions may call `compile-instr-list` on subexpressions. 
 
 ```                                         
 (define compile-instr-list
@@ -117,6 +137,12 @@ instructions. Each instruction is a list of op-code and arguments.
 ## Library of helper functions
 
 ### Predicates
+
+The `compile-instr-list` function makes use of a number of
+predicates to decide which branch to take. The implementation of these
+are mostly very similar to each other. They take an expression as argument
+and check if it is of some particular shape, such as it being a symbol or that it is
+a list and the first element is a `lambda`. 
 
 ```
 (define is-symbol
@@ -148,7 +174,13 @@ instructions. Each instruction is a list of op-code and arguments.
 
 (define is-last-element
   (lambda (exp) (and (is-list exp) (is-nil (cdr exp)))))
+``` 
 
+Some expressions evaluate to themself, such as a number or an array. These
+will be compiler into immediate values in the resulting instruction list.
+The following functions are used to identify `self-evaluating` expressions.
+
+```
 (define is-number
   (lambda (exp)
     (let ((typ (type-of exp)))
@@ -169,6 +201,16 @@ instructions. Each instruction is a list of op-code and arguments.
 ```
 ### Labels
 
+The generated code will contain jumps and when at some later producing
+the actual byte code, these will be jumps to absolute addresses. When
+generating the instruction list, however, there will be labels with a unique
+number at the place for each jump target. A later pass will calculate what the "address"
+into the byte code each label is at and replace jumps to label with jumps to address. 
+
+
+A label counter keeps track of the next label identifier to generate
+and a function called `mk-label` is called to generate a fresh label.
+
 ```
 (define label-counter 0)
 
@@ -184,7 +226,14 @@ instructions. Each instruction is a list of op-code and arguments.
     (list 'label name (incr-label))))
 ```
 
+A label is a list containing the symbol `label` as first element, the
+next element is a string (mostly for easier understanding of a
+generated instruction list) and the third element is the label value.
+
+
 ### Instructions and registers 
+
+There compiler generates code for a machine with 5 registers.
 
 ```
 (define all-regs '(env
@@ -192,7 +241,18 @@ instructions. Each instruction is a list of op-code and arguments.
                    val
                    argl
                    cont))
+```
 
+- **env** holds a pointer to the currently in use local environment.
+- **proc** holds a procedure description. Used in function applications.
+- **val** results go here.
+- **argl** argument list. The actual arguments are stored on the heap, this register just holds a pointer.
+- **cont** holds jump address to use when returning from a function application. 
+
+
+Below is a list of instructions and their sizes in bytes (with their arguments).
+
+```
 ;; OpCode to size in bytes (including arguments)
 (define instr-size
   '((jmpcnt  1)
@@ -205,7 +265,7 @@ instructions. Each instruction is a list of op-code and arguments.
     (push    2)
     (pop     2)
     (bpf     5) ;; 5 bytes is overkill
-    (exenv   9)
+    (exenv   5)
     (cons    3)
     (consimm 6)
     (cdr     3)
@@ -213,14 +273,40 @@ instructions. Each instruction is a list of op-code and arguments.
     (caddr   3)
     (callf   1)
     (label   0)))
-
-
 ```
 
+This is something that will most likely change a bit but for now and
+for simplicity this is what I am working with. Using a full byte for
+an op-code is a waste is there are only roughly 17 of
+them. Instructions that right now take a register as argument may
+layer be replicated for each possible register that is can use,
+turning fewer general instructions into more and specialized but
+smaller in size.
 
+A machine that can execute these instructions will also have a program
+counter `pc` register.
+
+The `jmpcnt` instruction can then be thought of as performing the operation: 
+```
+pc <- cont
+```
+
+As a more involved example, `exenv <symbol>` performs the following operations:
+```
+env <- (cons (cons <symbol> (car argl)) env)
+argl <- cdr argl
+``` 
 
 
 ### Sequences of instructions
+
+```
+(define mk-instr-seq
+  (lambda (needs mods stms)
+    (list needs mods stms)))
+```
+
+
 
 ```
 (define mem
@@ -312,10 +398,6 @@ instructions. Each instruction is a list of op-code and arguments.
                (sum-bytes (cdr x) (+ (lookup (car (car x)) instr-size) acc))))))
       (sum-bytes (car (cdr (cdr s))) 0))))
 
-
-(define mk-instr-seq
-  (lambda (needs mods stms)
-    (list needs mods stms)))
 
 ```
 
