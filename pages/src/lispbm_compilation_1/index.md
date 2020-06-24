@@ -46,16 +46,15 @@ This is work in progress and while the end goal is to compile to an
 array of bytes, as a fist step the compiler just creates a list of
 instructions in a way similar to how SICP does it. The instructions
 are at a lower level compared to the description in SICP, as I see it,
-and more directly amenable to bytecode translation.
-
-Actually generating the bytecode is not done yet and neither is any
-machine for evaluation of the bytecode. This is future work that I
-will write about as soon as it takes shape.
+and more directly amenable to bytecode translation. To translate the
+list of instructions into an array of bytes is future work as is
+implementing some machine to evaluate the bytecode. I will keep
+writing about this as the pieces are finished. 
 
 This lispBM compiler is the largest program written in lispBM so
 far. It has been really helpful to try and write a larger program, so
 many bugs have been found along the way! As usual I much appreciate all
-cosntructive feedback and thanks for reading!
+constructive feedback and thanks for reading!
 
 
 ## Compiler main function
@@ -212,7 +211,6 @@ instructions. Each instruction is a list of op-code and arguments.
     (cdr     3)
     (cadr    3)
     (caddr   3)
-    (car     2)
     (callf   1)
     (label   0)))
 
@@ -232,8 +230,6 @@ instructions. Each instruction is a list of op-code and arguments.
       (if (= x (car xs))
           't
         (mem x (cdr xs))))))
-
-
 
 (define list-union
    (lambda (s1 s2)
