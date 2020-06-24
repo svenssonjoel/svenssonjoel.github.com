@@ -3,26 +3,30 @@
 # Towards a bytecode compiler for lispBM
 
 ## Table of contents
- - [Introduction](#introduction)
- - [Helpful predicates](#helpful-predicates)
- - [Labels](#labels)
- - [Instructions and registers](#instructions-and-registers) 
- - [Sequences of instructions](#sequences-of-instructions)
- - [Compiler main function](#compiler-main-function)  
- - [Compilation of self-evaluating expressions](#compilation-of-self-evaluating-expressions)
- - [Compilation of symbols](#compilation-of-symbols)
- - [Compilation of quoted expressions](#compilation-of-quoted-expressions)
- - [Compilation of definitions](#compilation-of-definitions)
- - [Compilation of lambda expressions](#compilation-of-lambda-expressions)
- - [Compilation of the progn constuct](#compilation-of-the-progn-constuct)
- - [Compilation of let expressions](#compilation-of-let-expressions)
- - [Compilation of function application expressions](#compilation-of-function-application-expressions)
- - [Odds and ends](#odds-and-ends) 
- - [Remaining problems](#remaining-problems)
+- [Introduction](#introduction)
+- [Compiler main function](#compiler-main-function)
+- [Library of helper functions](#library-of-helper-functions)
+  - [Helpful predicates](#helpful-predicates)
+  - [Labels](#labels)
+  - [Instructions and registers](#instructions-and-registers) 
+  - [Sequences of instructions](#sequences-of-instructions)
+  - [Preserving registers](#preserving-registers)
+  - [Connecting instruction sequences](#connecting-instruction-sequences)
+- [Compilers](#compilers)
+  - [Compilation of self-evaluating expressions](#compilation-of-self-evaluating-expressions)
+  - [Compilation of symbols](#compilation-of-symbols)
+  - [Compilation of quoted expressions](#compilation-of-quoted-expressions)
+  - [Compilation of definitions](#compilation-of-definitions)
+  - [Compilation of lambda expressions](#compilation-of-lambda-expressions)
+  - [Compilation of the progn constuct](#compilation-of-the-progn-constuct)
+  - [Compilation of let expressions](#compilation-of-let-expressions)
+  - [Compilation of function application expressions](#compilation-of-function-application-expressions)
+- [Odds and ends](#odds-and-ends) 
+- [Remaining problems](#remaining-problems)
  
 ## Introduction
 
-There has always been a plan to at some point attempt to compile
+There has always been a plan to,at some point, attempt to compile
 lispBM programs to some kind of bytecode. I started on an attempt a
 while ago, then written in C and it was annoying. It feels like it
 should be much more pleasant to write a compiler in a language that
@@ -50,10 +54,70 @@ will write about as soon as it takes shape.
 
 This lispBM compiler is the largest program written in lispBM so
 far. It has been really helpful to try and write a larger program, so
-many bugs are found along the way! As usual I much appreciate all
+many bugs have been found along the way! As usual I much appreciate all
 cosntructive feedback and thanks for reading!
 
-## Helpful predicates
+
+## Compiler main function
+
+This part of the code is very similar to [SICP chapter
+5.5.1](https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-35.html#%_sec_5.5.1)
+except that lispBM does not have the `cond` form. So here the main
+branching structure of the compiler is implemented as nested `if`
+conditionals. Compared to SICP, there is a `let` form branch here
+that, I think, is not present in SICP as they are converted into
+lambdas. There are also differences when it comes to sequences of
+expressions. In lispBM only the `progn` form allows sequencing of
+expressions. The real differences compared to SICP are inside of the
+individual compiler cases that will be shown further below. 
+
+
+The compiler creates a list containing three elements. The first
+element is a list of registers read within the code, the second is a
+list of registers written to and the third element is a list of
+instructions. Each instruction is a list of op-code and arguments. 
+
+
+```
+# (compile-instr-list '(+ 1 2) 'val 'next)
+
+> (nil (proc argl val)
+    ((movimm proc +)
+     (movimm argl nil)
+     (movimm val 2)
+     (cons argl val)
+     (movimm val 1)
+     (cons argl val)
+     (callf)))
+```
+
+
+```                                         
+(define compile-instr-list
+  (lambda (exp target linkage)
+    (if (is-self-evaluating exp)
+        (compile-self-evaluating exp target linkage)
+      (if (is-quoted exp)
+          (compile-quoted exp target linkage)
+        (if (is-symbol exp)
+            (compile-symbol exp target linkage)
+          (if (is-def exp)
+              (compile-def exp target linkage)
+            (if (is-lambda exp)
+                (compile-lambda exp target linkage)
+              (if (is-progn exp)
+                  (compile-progn (cdr exp) target linkage)
+                (if (is-let exp)
+                    (compile-let exp target linkage)
+                  (if (is-list exp)
+                      (compile-application exp target linkage)
+                    (print "Not recognized")))))))))))
+```
+
+
+## Library of helper functions
+
+### Predicates
 
 ```
 (define is-symbol
@@ -104,7 +168,7 @@ cosntructive feedback and thanks for reading!
     (or (is-number exp)
         (is-array  exp))))
 ```
-## Labels
+### Labels
 
 ```
 (define label-counter 0)
@@ -121,7 +185,7 @@ cosntructive feedback and thanks for reading!
     (list 'label name (incr-label))))
 ```
 
-## Instructions and registers 
+### Instructions and registers 
 
 ```
 (define all-regs '(env
@@ -158,7 +222,7 @@ cosntructive feedback and thanks for reading!
 
 
 
-## Sequences of instructions
+### Sequences of instructions
 
 ```
 (define mem
@@ -234,25 +298,6 @@ cosntructive feedback and thanks for reading!
                   (append (statements s) (statements b)))))
   
 
-(define preserving
-  (lambda (regs s1 s2)
-    (if (is-nil regs)
-        (append-instr-seqs (list s1 s2))
-      (let ((first-reg (car regs)))
-        (if (and (needs-reg s2 first-reg)
-                 (modifies-reg s1 first-reg))
-            (preserving (cdr regs)
-                        (mk-instr-seq
-                         (list-union (list first-reg)
-                                     (regs-needed s1))
-                         (list-diff (regs-modified s1)
-                                    (list first-reg))
-                         (append `((push ,first-reg))
-                                 (append (statements s1) `((pop ,first-reg)))))
-                        s2)
-
-          (preserving (cdr regs) s1 s2))))))
-
 (define parallel-instr-seqs
   (lambda (s1 s2)
     (mk-instr-seq
@@ -276,6 +321,34 @@ cosntructive feedback and thanks for reading!
   (lambda (needs mods stms)
     (list needs mods stms)))
 
+```
+
+### Preserving registers
+
+```
+(define preserving
+  (lambda (regs s1 s2)
+    (if (is-nil regs)
+        (append-instr-seqs (list s1 s2))
+      (let ((first-reg (car regs)))
+        (if (and (needs-reg s2 first-reg)
+                 (modifies-reg s1 first-reg))
+            (preserving (cdr regs)
+                        (mk-instr-seq
+                         (list-union (list first-reg)
+                                     (regs-needed s1))
+                         (list-diff (regs-modified s1)
+                                    (list first-reg))
+                         (append `((push ,first-reg))
+                                 (append (statements s1) `((pop ,first-reg)))))
+                        s2)
+
+          (preserving (cdr regs) s1 s2))))))
+```
+
+### Connecting instruction sequences
+
+```
 (define empty-instr-seq (mk-instr-seq '() '() '()))
 
 (define compile-linkage
@@ -295,31 +368,10 @@ cosntructive feedback and thanks for reading!
 
 ```
 
-## Compiler main function 
 
-```                                         
-(define compile-instr-list
-  (lambda (exp target linkage)
-    (if (is-self-evaluating exp)
-        (compile-self-evaluating exp target linkage)
-      (if (is-quoted exp)
-          (compile-quoted exp target linkage)
-        (if (is-symbol exp)
-            (compile-symbol exp target linkage)
-          (if (is-def exp)
-              (compile-def exp target linkage)
-            (if (is-lambda exp)
-                (compile-lambda exp target linkage)
-              (if (is-progn exp)
-                  (compile-progn (cdr exp) target linkage)
-                (if (is-let exp)
-                    (compile-let exp target linkage)
-                  (if (is-list exp)
-                      (compile-application exp target linkage)
-                    (print "Not recognized")))))))))))
-```
+## Compilers 
 
-## Compilation of self-evaluating expressions
+### Compilation of self-evaluating expressions
 
 ```
 (define compile-self-evaluating
@@ -331,7 +383,7 @@ cosntructive feedback and thanks for reading!
 ```
 
 
-## Compilation of symbols
+### Compilation of symbols
 
 ```
 ;; Add a symbol to the compiler-symbols list
@@ -353,7 +405,7 @@ cosntructive feedback and thanks for reading!
                                       `((lookup ,target ,exp)))))))
 ```				      
 
-## Compilation of quoted expressions
+### Compilation of quoted expressions
 
 ```
 (define compile-quoted
@@ -404,7 +456,7 @@ cosntructive feedback and thanks for reading!
 ```
 
 
-## Compilation of definitions
+### Compilation of definitions
 
 ```
 (define compile-def
@@ -419,7 +471,7 @@ cosntructive feedback and thanks for reading!
                                                                 (movimm ,target ,var))))))))
 ```
 
-## Compilation of lambda expressions
+### Compilation of lambda expressions
 
 ```
 (define compile-lambda
@@ -455,7 +507,7 @@ cosntructive feedback and thanks for reading!
 
 ```
 
-## Compilation of the progn constuct
+### Compilation of the progn constuct
 
 ```
 (define compile-progn
@@ -468,7 +520,7 @@ cosntructive feedback and thanks for reading!
 ```
 
 
-## Compilation of let expressions
+### Compilation of let expressions
 
 ```
 (define compile-let
@@ -487,73 +539,75 @@ cosntructive feedback and thanks for reading!
                                            `((extenv ,var val)))))))
 ```
 
-## Compilation of function application expressions
+### Compilation of function application expressions
 
 ```
 (define compile-application
   (lambda (exp target linkage)
     (let ((proc-code
-           (if (is-fundamental (car exp))
-               (mk-instr-seq '() '(proc)
-                             `((movimm proc ,(car exp))))
-             (compile-instr-list (car exp) 'proc 'next)))
-          (operand-codes (map (lambda (o) (compile-instr-list o 'val 'next)) (cdr exp))))
+	   (if (is-fundamental (car exp))
+	       (mk-instr-seq '() '(proc)
+			     `((movimm proc ,(car exp))))
+	     (compile-instr-list (car exp) 'proc 'next)))
+	  (operand-codes (map (lambda (o) (compile-instr-list o 'val 'next)) (cdr exp))))
       (preserving '(env cont)
-                  proc-code
-                  (preserving '(proc cont)
-                              (construct-arglist operand-codes)
-                              (if (is-fundamental (car exp))
-                                  (compile-fundamental-proc-call target linkage)
-                                (if (is-lambda (car exp))
-                                    (compile-lambda-proc-call target linkage)
-                                  (compile-proc-call target linkage))))))))
+      		  proc-code
+      		  (preserving '(proc cont)
+      			      (construct-arglist operand-codes)
+			      (if (is-fundamental (car exp))
+				  (compile-fundamental-proc-call target linkage)
+				(if (is-lambda (car exp))
+				    (compile-lambda-proc-call target linkage)
+				  (compile-proc-call target linkage))))))))
+
+(define add-fst-argument
+  (lambda (arg-code)
+    (append-two-instr-seqs
+     arg-code
+     (mk-instr-seq '(val) '(argl)
+		   '((movimm argl ())
+		     (cons argl val))))))
+	  
 
 (define construct-arglist
   (lambda (codes)
     (let ((operand-codes (reverse codes)))
       (if (is-nil operand-codes)
-          (mk-instr-seq '() '(argl)
-                        '(movimm argl ()))
-        (let ((get-last-arg
-               (append-two-instr-seqs (car operand-codes)
-                                      (mk-instr-seq '(val) '(argl)
-                                                    '((cons argl val))))))
-          (append-two-instr-seqs
-           (mk-instr-seq '() '(argl)
-                         '((movimm argl nil)))
-           (if (is-nil (cdr operand-codes))
-               get-last-arg
-             (preserving '(env)
-                         get-last-arg
-                         (get-rest-args (cdr operand-codes))))))))))
+	  (mk-instr-seq '() '(argl)
+			'((movimm argl ())))
+	(if (is-nil (cdr operand-codes))
+	    (add-fst-argument (car operand-codes))
+	  (preserving '(env)
+		      (add-fst-argument (car operand-codes))
+		      (get-rest-args (cdr operand-codes))))))))
 
 (define get-rest-args
   (lambda (operand-codes)
     (let ((code-for-next-arg
-           (preserving '(argl)
-                       (car operand-codes)
-                       (mk-instr-seq '(val argl) '(argl)
-                                     '((cons argl val))))))
+	   (preserving '(argl)
+		       (car operand-codes)
+		       (mk-instr-seq '(val argl) '(argl)
+				     '((cons argl val))))))
       (if (is-nil (cdr operand-codes))
-          code-for-next-arg
-        (preserving '(env)
-                    code-for-next-arg
-                    (get-rest-args (cdr operand-codes)))))))
+	  code-for-next-arg
+	(preserving '(env)
+		    code-for-next-arg
+		    (get-rest-args (cdr operand-codes)))))))
 
 
 (define compile-fundamental-proc-call
   (lambda (target linkage)
       (end-with-linkage linkage
-                        (mk-instr-seq '(proc argl)
-                                      (list target)
-                                      '((callf))))))
+			(mk-instr-seq '(proc argl)
+				      (list target)
+				      '((callf))))))
 
 (define compile-lambda-proc-call
   (lambda (target linkage)
     (let ((after-call       (mk-label "after-call"))
-          (compiled-linkage (if (= linkage 'next)
-                                after-call
-                              linkage)))
+	  (compiled-linkage (if (= linkage 'next)
+				after-call
+			      linkage)))
       (append-two-instr-seqs
        (compile-proc-appl target compiled-linkage)
        after-call))))
@@ -563,53 +617,50 @@ cosntructive feedback and thanks for reading!
 (define compile-proc-call
   (lambda (target linkage)
     (let ((fund-branch      (mk-label "fund-branch"))
-          (compiled-branch  (mk-label "comp-branch"))
-          (after-call       (mk-label "after-call"))
-          (compiled-linkage (if (= linkage 'next)
-                                after-call
-                              linkage)))
+	  (compiled-branch  (mk-label "comp-branch"))
+	  (after-call       (mk-label "after-call"))
+	  (compiled-linkage (if (= linkage 'next)
+				after-call
+			      linkage)))
       (append-instr-seqs
        (list (mk-instr-seq '(proc) '()
-                             `((bpf ,fund-branch)))
-             (parallel-instr-seqs
-              (append-two-instr-seqs
-               compiled-branch
-               (compile-proc-appl target compiled-linkage))
-              (append-two-instr-seqs
-               fund-branch
-               (end-with-linkage linkage
-                                 (mk-instr-seq '(proc argl)
-                                               (list target)
-                                               '((callf))))))
-             after-call)))))
+			     `((bpf ,fund-branch)))
+	     (parallel-instr-seqs
+	      (append-two-instr-seqs
+	       compiled-branch
+	       (compile-proc-appl target compiled-linkage))
+	      (append-two-instr-seqs
+	       fund-branch
+	       (end-with-linkage linkage
+				 (mk-instr-seq '(proc argl)
+					       (list target)
+					       '((callf))))))
+	     after-call)))))
 
 (define compile-proc-appl
   (lambda (target linkage)
     (if (and (= target 'val) (not (= linkage 'return)))
-        (mk-instr-seq '(proc) all-regs
-                      `((movimm cont ,linkage)
-                        (cadr val proc)
-                        (jmp val)))
+	(mk-instr-seq '(proc) all-regs
+		      `((movimm cont ,linkage)
+			(cadr val proc)
+			(jmp val)))
       (if (and (not (= target 'val))
-               (not (= linkage 'return)))
-          (let ((proc-return (mk-label "proc-return")))
-            (mk-instr-seq '(proc) all-regs
-                          `((movimm cont ,proc-return)
-                            (cadr val proc)
-                            (jmp val)
-                            ,proc-return
-                            (mov ,target val)
-                            (jmpimm ,linkage))))
-        (if (and (= target 'val)
-                 (= linkage 'return))
-            (mk-instr-seq '(proc continue) all-regs
-                          '((cadr val proc)
-                            (jmp val)))
-          'compile-error)))))
-
+	       (not (= linkage 'return)))
+	  (let ((proc-return (mk-label "proc-return")))
+	    (mk-instr-seq '(proc) all-regs
+			  `((movimm cont ,proc-return)
+			    (cadr val proc)
+			    (jmp val)
+			    ,proc-return
+			    (mov ,target val)
+			    (jmpimm ,linkage))))
+	(if (and (= target 'val)
+		 (= linkage 'return))
+	    (mk-instr-seq '(proc continue) all-regs
+			  '((cadr val proc)
+			    (jmp val)))
+	  'compile-error)))))
 ```
-
-
 
 ## Odds and ends 
 ```
