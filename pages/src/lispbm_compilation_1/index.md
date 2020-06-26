@@ -284,7 +284,7 @@ turning fewer general instructions into more and specialized but
 smaller in size.
 
 A machine that can execute these instructions will also have a program
-counter `pc` register.
+counter, `pc`, register.
 
 The `jmpcnt` instruction can then be thought of as performing the operation: 
 ```
