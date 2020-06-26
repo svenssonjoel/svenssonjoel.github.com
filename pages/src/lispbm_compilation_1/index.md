@@ -579,7 +579,7 @@ argl <- cdr argl
         (append-instr-seqs
          (map (lambda (p)
                 (mk-instr-seq '(argl) '(env)
-                              `((exenv ,p argl env))))
+                              `((exenv ,p))))
               formals)))
        (compile-instr-list (car (cdr (cdr exp))) 'val 'return)))))
 
