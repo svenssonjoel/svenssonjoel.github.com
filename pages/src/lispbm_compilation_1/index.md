@@ -21,6 +21,7 @@
   - [Compilation of the progn form](#compilation-of-the-progn-form)
   - [Compilation of let expressions](#compilation-of-let-expressions)
   - [Compilation of function application expressions](#compilation-of-function-application-expressions)
+- [Examples of compilation output](#examples-of-compilation-output)
 - [Conclusion and the problem with symbols](#conclusion-and-the-problem-with-symbols)  
  
 ## Introduction
@@ -926,6 +927,82 @@ The other cases are slight modifications to this flow.
 	  'compile-error)))))
 ```
 
+## Examples of compilation output
+
+
+First example is an application of a fundamental operation. This
+generates code that sets up the argument list in `argl` and then
+issues `callf` that will execute the fundamental operation stored in
+the `proc` register.
+
+
+```
+# (compile-instr-list '(+ 1 2) 'val 'next)
+
+> (nil (proc argl val)
+       ((movimm proc +)
+        (movimm val 2)
+        (movimm argl nil)
+        (cons argl val)
+        (movimm val 1)
+        (cons argl val)
+        (callf)))
+```
+
+The next example is an application of a lambda, tis results in code
+that creates a procedure object in the `proc` register and a lambda
+function body.  After setting up the procedure object, control is
+transfered to the label that is directly after the function
+body. Here, the arguments are added to the `argl` list, `cont` is set
+to a label to return to after the function application and a jump to
+the function body is performed.
+
+```
+# (compile-instr-list '((lambda (x y) y) 10 20) 'val 'next)
+
+> ((env) (env proc val argl cont)
+         ((movimm proc nil)
+          (cons proc env)
+          (consimm proc (label "entry" 1))
+          (consimm proc proc)
+          (jmpimm (label "after-lambda" 2))
+          (label "entry" 1)
+          (caddr env proc)
+          (exenvargl x)
+          (exenvargl y)
+          (lookup val y)
+          (jmpcnt)
+          (label "after-lambda" 2)
+          (movimm val 20)
+          (movimm argl nil)
+          (cons argl val)
+          (movimm val 10)
+          (cons argl val)
+          (movimm cont (label "after-call" 3))
+          (cadr val proc)
+          (jmpval)
+          (label "after-call" 3)))
+```
+
+
+The last example is the result of compiling a quoted expression.  This
+results in code that recreates the quoted expression on the heap and
+points to this structure from the `val` register.  Here `argl` is used
+as a temporary register while building the data structure.
+
+```
+# (compile-instr-list ''(+ 1 2) 'val 'next)
+
+> (nil (argl val)
+       ((movimm val nil)
+        (movimm argl 2)
+        (cons val argl)
+        (movimm argl 1)
+        (cons val argl)
+        (movimm argl +)
+        (cons val argl)))
+```
+
 ## Conclusion and the problem with symbols
 
 Since the goal is to be able to generate code that can be saved to disk and then
@@ -970,7 +1047,12 @@ and stored into the code. This should rule out that problem with
 renaming where a name ends up overwritten since the replacement will
 be into values of a completely different type. 
 
-Thanks for reading! As usual I would be very thankful for helpful feedback.
+This is by far the largest program written in lispBM so far and of
+course many bugs have been found while writing it. I'm sure there are
+more bugs lurking. 
+
+Thanks for reading! As usual I would be very thankful for helpful
+feedback.
 
 **Todos** 
 - The `mk-instr-seq` could be rewritten to derive the sets of used and modified registers

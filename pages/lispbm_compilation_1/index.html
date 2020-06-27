@@ -169,6 +169,7 @@
 <li><a href="#compilation-of-let-expressions">Compilation of let expressions</a></li>
 <li><a href="#compilation-of-function-application-expressions">Compilation of function application expressions</a></li>
 </ul></li>
+<li><a href="#examples-of-compilation-output">Examples of compilation output</a></li>
 <li><a href="#conclusion-and-the-problem-with-symbols">Conclusion and the problem with symbols</a></li>
 </ul>
 <h2 id="introduction">Introduction</h2>
@@ -756,6 +757,57 @@ argl &lt;- cdr argl
                 (jmpval)))
       &#39;compile-error)))))
 </code></pre>
+<h2 id="examples-of-compilation-output">Examples of compilation output</h2>
+<p>First example is an application of a fundamental operation. This generates code that sets up the argument list in <code>argl</code> and then issues <code>callf</code> that will execute the fundamental operation stored in the <code>proc</code> register.</p>
+<pre><code># (compile-instr-list &#39;(+ 1 2) &#39;val &#39;next)
+
+&gt; (nil (proc argl val)
+       ((movimm proc +)
+        (movimm val 2)
+        (movimm argl nil)
+        (cons argl val)
+        (movimm val 1)
+        (cons argl val)
+        (callf)))
+</code></pre>
+<p>The next example is an application of a lambda, tis results in code that creates a procedure object in the <code>proc</code> register and a lambda function body. After setting up the procedure object, control is transfered to the label that is directly after the function body. Here, the arguments are added to the <code>argl</code> list, <code>cont</code> is set to a label to return to after the function application and a jump to the function body is performed.</p>
+<pre><code># (compile-instr-list &#39;((lambda (x y) y) 10 20) &#39;val &#39;next)
+
+&gt; ((env) (env proc val argl cont)
+         ((movimm proc nil)
+          (cons proc env)
+          (consimm proc (label &quot;entry&quot; 1))
+          (consimm proc proc)
+          (jmpimm (label &quot;after-lambda&quot; 2))
+          (label &quot;entry&quot; 1)
+          (caddr env proc)
+          (exenvargl x)
+          (exenvargl y)
+          (lookup val y)
+          (jmpcnt)
+          (label &quot;after-lambda&quot; 2)
+          (movimm val 20)
+          (movimm argl nil)
+          (cons argl val)
+          (movimm val 10)
+          (cons argl val)
+          (movimm cont (label &quot;after-call&quot; 3))
+          (cadr val proc)
+          (jmpval)
+          (label &quot;after-call&quot; 3)))
+</code></pre>
+<p>The last example is the result of compiling a quoted expression. This results in code that recreates the quoted expression on the heap and points to this structure from the <code>val</code> register. Here <code>argl</code> is used as a temporary register while building the data structure.</p>
+<pre><code># (compile-instr-list &#39;&#39;(+ 1 2) &#39;val &#39;next)
+
+&gt; (nil (argl val)
+       ((movimm val nil)
+        (movimm argl 2)
+        (cons val argl)
+        (movimm argl 1)
+        (cons val argl)
+        (movimm argl +)
+        (cons val argl)))
+</code></pre>
 <h2 id="conclusion-and-the-problem-with-symbols">Conclusion and the problem with symbols</h2>
 <p>Since the goal is to be able to generate code that can be saved to disk and then later loaded into a fresh RTS, a problem with symbols presents itself.</p>
 <p>Say I load the lisp source containing the code <code>(define apa 10)</code> into lispBM, then a mapping is created between the text string "apa" and a symbol identifier in the symbol table. The actual heap representation does not contain these symbol-strings, rather just a value that via the symbol table is mapped to a name. So the internal representation of `(define apa 10) could be something like ([431431] [342432] 10) where the [] illustrates that these are numbers of a different type to the number 10.</p>
@@ -763,6 +815,7 @@ argl &lt;- cdr argl
 <p>So some way to store the symbol mapping into the generated code must be designed. A first thought here is to store a symbol renumbering mapping in the code. This mapping would contain string names of symbols and the value it has in the code. Then when loading the code the symbols will be registered with the RTS and the values provided from the RTS for the symbol should be substituted into the code. This has a problem though. If the there are two symbols in the code "apa" and "bepa" with ID 42 and 43, lets say when loading this into the RTS the renumbering for apa is 43 so we replace all 42 with 43 in the code. Then "bepa" is given renumbering 768, so we replace all 43s with 768s in the code. Now there are no apas in the code, only bepas...</p>
 <p>I currently plan to give symbols in the code IDs pulled from a completely different type compared to symbol ids. I call this type symbol-indirection</p>
 <p>So the compiler should be augmented with functions that find symbols used (that are not special always present symbols at unique ids, such as <code>+</code>, <code>define</code> and so on) and renames it using a symbol-indirection value. A mapping of "name" to symbol-indirection-value will be created and stored into the code. This should rule out that problem with renaming where a name ends up overwritten since the replacement will be into values of a completely different type.</p>
+<p>This is by far the largest program written in lispBM so far and of course many bugs have been found while writing it. I'm sure there are more bugs lurking.</p>
 <p>Thanks for reading! As usual I would be very thankful for helpful feedback.</p>
 <p><strong>Todos</strong></p>
 <ul>
