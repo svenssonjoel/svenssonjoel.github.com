@@ -322,7 +322,7 @@
     (callf        1)
     (label        0)))
 </code></pre>
-<p>This is something that will most likely change a bit but for now and for simplicity this is what I am working with. Using a full byte for an op-code is a waste is there are only roughly 17 of them. Instructions that right now take a register as argument may layer be replicated for each possible register that is can use, turning fewer general instructions into more and specialized but smaller in size.</p>
+<p>This is something that will most likely change a bit but for now and for simplicity this is what I am working with. Using a full byte for an op-code is a waste as there are only roughly 17 of them. Instructions that right now take a register as argument may later be replicated for each possible register that is can use, turning fewer general instructions into more and specialized but smaller in size.</p>
 <p>A machine that can execute these instructions will also have a program counter, <code>pc</code>, register.</p>
 <p>The <code>jmpcnt</code> instruction can then be thought of as performing the operation:</p>
 <pre><code>pc &lt;- cont

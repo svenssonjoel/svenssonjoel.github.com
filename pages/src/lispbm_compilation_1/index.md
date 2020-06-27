@@ -278,9 +278,9 @@ Below is a list of instructions and their sizes in bytes (with their arguments).
 
 This is something that will most likely change a bit but for now and
 for simplicity this is what I am working with. Using a full byte for
-an op-code is a waste is there are only roughly 17 of
+an op-code is a waste as there are only roughly 17 of
 them. Instructions that right now take a register as argument may
-layer be replicated for each possible register that is can use,
+later be replicated for each possible register that is can use,
 turning fewer general instructions into more and specialized but
 smaller in size.
 
