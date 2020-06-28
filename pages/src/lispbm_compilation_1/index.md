@@ -1017,12 +1017,13 @@ of `(define apa 10) could be something like ([431431] [342432] 10)
 where the [] illustrates that these are numbers of a different type to
 the number 10.
 
-The code generated from the compiler as it is not, will only contain
-the numerical symbol values. This means that if compiled code is
-loaded into a fresh RTS, no binding between the numerical symbol
-identifier and the string "apa" will exist.  This will be a problem if
-the compiled code is supposed to return a symbol and that symbol
-should be presented to the user. There would be no way to do that!
+The code generated from the compiler, as it is currently implemented,
+will only contain the numerical symbol values. This means that if
+compiled code is loaded into a fresh RTS, no binding between the
+numerical symbol identifier and the string "apa" will exist.  This
+will be a problem if the compiled code is supposed to return a symbol
+and that symbol should be presented to the user. There would be no way
+to do that!
 
 So some way to store the symbol mapping into the generated code must
 be designed. A first thought here is to store a symbol renumbering
