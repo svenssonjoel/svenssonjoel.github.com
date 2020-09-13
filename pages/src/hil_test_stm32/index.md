@@ -21,12 +21,16 @@ sequence of opcodes given as the first.
 I don't know if there is much value to be able to programatically
 generate cortex-m machine code sequences in memory. JIT compilation
 comes to mind and that is fun and all, but how applicable and useful
-that is on machines that in general are quite restricted on resources
+that is on machines that, in general, are quite restricted on resources
 is something to experiment with later on. 
 
-This is the first time I am attempting to genereate machine-code in
-memory and I am quite insecure about getting the opcode encodings
-right, so testing will be important. 
+This is the first time I am attempting to genereate machine-code
+opcodes and I am quite insecure about getting the opcode encodings
+right, so testing will be important. The encoding functions are based
+on the information found in [ARMv7-M Architecture Reference
+Manual](https://developer.arm.com/documentation/ddi0403/ed/) as well
+as [The definitive guide..](https://www.goodreads.com/book/show/17070271-the-definitive-guide-to-arm-cortex-m3-and-cortex-m4-processors)
+by Joseph Yiu.
 
 In general, it would be cool to be able to automate testing against
 hardware.  Manually flashing the board, connecting a debugger and
