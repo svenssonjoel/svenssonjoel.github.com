@@ -1,4 +1,4 @@
-# Automated hardware in the loop testing with STM3F4-Discovery, OpenOCD and Expect
+# Automated hardware in the loop testing with STM32F4-Discovery, OpenOCD and Expect
 
 [Cortex M. McGee](http://www.github.com/svenssonjoel/cortex_m_mcgee)
 is a collection of c functions for generation of 16 and 32bit thumb
