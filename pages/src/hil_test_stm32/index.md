@@ -26,10 +26,13 @@ is something to experiment with later on.
 
 This is the first time I am attempting to genereate machine-code in
 memory and I am quite insecure about getting the opcode encodings
-right. So testing will be important. 
+right, so testing will be important. 
 
-In general, it would be cool to be able to automate testing against hardware.
-This is quite tedious if you have do it manually.
+In general, it would be cool to be able to automate testing against
+hardware.  Manually flashing the board, connecting a debugger and
+stepping through instructions is a bit tedious and time
+consuming. Doing this manually is fun and educational the first few
+times though, but quite quickly becomes booring.
 
 When it comes to the testing in this specific case of machine-code
 generation, testing against the hardware is maybe not that crucial. It
