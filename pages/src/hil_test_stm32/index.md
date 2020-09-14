@@ -1,8 +1,8 @@
 # Automated hardware in the loop testing with STM32F4-Discovery, OpenOCD and Expect
 
 [Cortex M. McGee](http://www.github.com/svenssonjoel/cortex_m_mcgee)
-is a collection of c functions for generation of 16 and 32bit thumb
-instructions. The goal is to provide a c function for each of the
+is a collection of C functions for generation of 16 and 32bit thumb
+instructions. The goal is to provide a C function for each of the
 thumb1 and thumb2 opcodes. As an example there is a function called
 `m0_add_imm8` that adds a 8bit immediate value to a register. 
 
@@ -481,9 +481,34 @@ generated expect script (with .expect appended to it).  The test
 system also assumes that the binary file is also has filename
 `testname` (but with .bin appended to it). 
 
-`test_step` issues a step command into the expect file to instruct OpenOCD to step an instructions. 
-`test_assert_reg` inserts a command into the expect file that inspects a register and compares it's value 
-to the argument called `value`. 
+`test_step` issues a step command into the expect file to instruct
+OpenOCD to step an instructions.  `test_assert_reg` inserts a command
+into the expect file that inspects a register and compares it's value
+to the argument called `value`. The implementation of these two
+functions are is shown below.
+
+
+```
+void test_step(void) {
+  fprintf(out, "send -- \"step\\n\"\n");
+  fprintf(out, "expect -re \"> ?$\"\n");
+}
+  
+void test_assert_reg(char *reg, uint32_t value) {
+  fprintf(out, "send -- \"reg %s\\n\"\n", reg);
+  fprintf(out,
+	  "expect {\n"
+	  "    \"%s*0x%08x*\\n\" {\n"
+	  "        puts \"%s set successfully\\n\"\n"
+	  "    }\n"
+	  "    \"%s*0x*\\n\" {\n"
+	  "        puts \"Error setting %s\\n\"\n"
+	  "        exit 1\n"
+	  "    }\n"
+	  "}\n", reg, value, reg, reg, reg);
+  fprintf(out, "expect -re \"> ?$\"\n");
+}
+```
 
 Given these tools we can augment the code from earlier that generated
 the binary file we have been using.

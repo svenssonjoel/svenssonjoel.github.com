@@ -145,7 +145,7 @@
 <!-- BODY IS INTENTIONALY LEFT OPEN --> 
 
 <h1 id="automated-hardware-in-the-loop-testing-with-stm32f4-discovery-openocd-and-expect">Automated hardware in the loop testing with STM32F4-Discovery, OpenOCD and Expect</h1>
-<p><a href="http://www.github.com/svenssonjoel/cortex_m_mcgee">Cortex M. McGee</a> is a collection of c functions for generation of 16 and 32bit thumb instructions. The goal is to provide a c function for each of the thumb1 and thumb2 opcodes. As an example there is a function called <code>m0_add_imm8</code> that adds a 8bit immediate value to a register.</p>
+<p><a href="http://www.github.com/svenssonjoel/cortex_m_mcgee">Cortex M. McGee</a> is a collection of C functions for generation of 16 and 32bit thumb instructions. The goal is to provide a C function for each of the thumb1 and thumb2 opcodes. As an example there is a function called <code>m0_add_imm8</code> that adds a 8bit immediate value to a register.</p>
 <pre><code>thumb_opcode_t m0_add_imm8(reg_t rdn, uint8_t imm8) {...}
 </code></pre>
 <p>Sequences of opcodes are created using a function call <code>emit_opcode</code>:</p>
@@ -454,7 +454,27 @@ extern int test_expect_init(const char *testname);
 extern void test_expect_shutdown(void);
 </code></pre>
 <p><code>test_expect_init</code> expects a test-name which will correspond to the generated expect script (with .expect appended to it). The test system also assumes that the binary file is also has filename <code>testname</code> (but with .bin appended to it).</p>
-<p><code>test_step</code> issues a step command into the expect file to instruct OpenOCD to step an instructions. <code>test_assert_reg</code> inserts a command into the expect file that inspects a register and compares it's value to the argument called <code>value</code>.</p>
+<p><code>test_step</code> issues a step command into the expect file to instruct OpenOCD to step an instructions. <code>test_assert_reg</code> inserts a command into the expect file that inspects a register and compares it's value to the argument called <code>value</code>. The implementation of these two functions are is shown below.</p>
+<pre><code>void test_step(void) {
+  fprintf(out, &quot;send -- \&quot;step\\n\&quot;\n&quot;);
+  fprintf(out, &quot;expect -re \&quot;&gt; ?$\&quot;\n&quot;);
+}
+  
+void test_assert_reg(char *reg, uint32_t value) {
+  fprintf(out, &quot;send -- \&quot;reg %s\\n\&quot;\n&quot;, reg);
+  fprintf(out,
+      &quot;expect {\n&quot;
+      &quot;    \&quot;%s*0x%08x*\\n\&quot; {\n&quot;
+      &quot;        puts \&quot;%s set successfully\\n\&quot;\n&quot;
+      &quot;    }\n&quot;
+      &quot;    \&quot;%s*0x*\\n\&quot; {\n&quot;
+      &quot;        puts \&quot;Error setting %s\\n\&quot;\n&quot;
+      &quot;        exit 1\n&quot;
+      &quot;    }\n&quot;
+      &quot;}\n&quot;, reg, value, reg, reg, reg);
+  fprintf(out, &quot;expect -re \&quot;&gt; ?$\&quot;\n&quot;);
+}
+</code></pre>
 <p>Given these tools we can augment the code from earlier that generated the binary file we have been using.</p>
 <pre><code>uint16_t instrs[4];
 instr_seq_t seq;
