@@ -754,8 +754,8 @@ Info : dropped 'telnet' connection
 
 There are a lot of instructions in the ARM Thumb1 and Thumb2
 instruction sets. Well not a lot compared to X86, but still a lot if
-manual interaction is needed for every test. Still, this automation
-still leaves a lot of repetitive work if everything is to be tested. 
+manual interaction is needed for every test. This automation
+still leaves a lot of repetitive work if every single opcode is to be tested. 
 Will look for further automation as I progress. 
 
 I hope you enjoyed reading and do not hesitate to contact me with questions 
