@@ -117,7 +117,7 @@ Disassembly of section .data:
 ``` 
 
 The reason all that extra "magic" (all those parameters) is needed is
-because the `example0.bin" file is not a proper elf file, it just a
+because the `example0.bin` file is not a proper elf file, it just a
 bunch of opcodes thrown into a binary file. For elf files Objdump can
 figure out some of the things by itself from the elf header. Objdump
 also states that it has disassembled the "data" section, but this is
