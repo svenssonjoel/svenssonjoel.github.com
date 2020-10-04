@@ -410,7 +410,7 @@ executes commands against the IoT module and performs resets on it. I
 am currently trying to figure out how this NB-IoT module works, so I
 thought that it would be nice to start on a GUI rather than keep doing
 textual interactions over miniterm. One thing to add to the GUI would
-be buttons for various kinds of AT commands that are a paint to type
+be buttons for various kinds of AT commands that are a pain to type
 out manually.
 
 
