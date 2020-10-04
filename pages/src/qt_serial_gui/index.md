@@ -399,7 +399,7 @@ quickly bringing up a previously entered command.
 ![](media/serial_1.png)
 
 The picture below shows the setup that is connected to the serial port
-in when the screenshot above was taken. The involved components are an
+when the screenshot above was taken. The involved components are an
 STM32F4-Discovery, and a Dragino NB-IoT Bee module on a arduino
 shield.
 
