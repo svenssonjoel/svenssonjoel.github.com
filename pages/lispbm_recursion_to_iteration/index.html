@@ -149,6 +149,11 @@
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
 
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
 <!-- BODY IS INTENTIONALY LEFT OPEN --> 
 
 <h1 id="turn-recursion-into-iteration-using-an-explicit-stack">Turn Recursion into Iteration using an Explicit Stack</h1>
@@ -452,6 +457,7 @@
 <p>It is possible to create a heap-structure that when you print it the <code>print_value</code> function gets stuck in a loop (until it exhausts its output buffer or stack space and exits). It is not entirely "natural" to write code in a form so that it generates these heap-structures with loops, but it is possible if experimenting with <code>lambda</code>, <code>let</code> and <code>define</code> to get a closure which in it's closure-bound environment holds itself. Printing such a structure does not crash the system (anymore) but it also doesn't really provide any useful output. Some change is needed to the way closures are printed to rule this out. I guess that any circular or looping heap-structure would have this effect and addressing it in a general fashion would be nice.</p>
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com. Thank you!</p>
 <p>© Copyright 2020 Bo Joel Svensson</p>
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
