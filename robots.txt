@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://svenssonjoel.github.io/sitemap.xml
