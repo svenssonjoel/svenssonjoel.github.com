@@ -2,11 +2,12 @@
 
 # Audio input using Qt and QAudioInput 
 
-When working on the earlier [blog post](../qt_serial_datacollection/index.html)  
-on serial communication with automatic data collection and plotting, I
-thought that maybe it would be nice to try to plot some audio
-waveforms as well.  Now, to do that we need an audio source and I went
-for using a *QAudioInput* for that.
+When working on the earlier [blog
+post](../qt_serial_datacollection/index.html) on serial communication
+with automatic data collection and plotting, I thought that maybe it
+would be nice to try to plot some audio waveforms as well.  Now, to do
+that we need an audio source and I went for using a *QAudioInput* for
+that.
 
 So, the plan for this post is to set up the following:
 - selection of audio input device. 
