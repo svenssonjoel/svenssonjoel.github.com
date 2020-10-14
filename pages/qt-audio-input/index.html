@@ -309,7 +309,7 @@
 <span id="cb9-14"><a href="#cb9-14"></a></span>
 <span id="cb9-15"><a href="#cb9-15"></a>    ui-&gt;plot-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</span>
 <span id="cb9-16"><a href="#cb9-16"></a>    ui-&gt;plot-&gt;graph()-&gt;setName(<span class="st">&quot;Audio In&quot;</span>);</span></code></pre></div>
-<p>One difference is that the <code>yAxis</code> range is set to `(-1.0,1.0) and that the data-set is now called "Audio In".</p>
+<p>One difference is that the <code>yAxis</code> range is set to (-1.0, 1.0) and that the data-set is now called "Audio In".</p>
 <p>The storage for the waveform is then initialized. There will be 96000 indices and samples as we will have a 2 seconds sliding windows at 48KHz sampling rate.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1"></a>    <span class="cf">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; <span class="dv">96000</span>; i ++) {</span>
 <span id="cb10-2"><a href="#cb10-2"></a>        mIndices.append((<span class="dt">double</span>)i);</span>
@@ -374,7 +374,7 @@
 <div class="sourceCode" id="cb16"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb16-1"><a href="#cb16-1"></a>    mAudioIn = <span class="kw">new</span> <span class="ex">QAudioInput</span>(dev,format);</span>
 <span id="cb16-2"><a href="#cb16-2"></a>    mAudioIn-&gt;setVolume(<span class="fl">0.1</span>);</span>
 <span id="cb16-3"><a href="#cb16-3"></a>    mAudioIn-&gt;setNotifyInterval(<span class="dv">100</span>);</span></code></pre></div>
-<p>Here we make use of the sample format specified earlier. The volume of the device is initially set to a low value. Volume is a value between 0 and 1. A notification interval is set to 100ms and this means that a notify signal will sound every 100ms.</p>
+<p>Here we make use of the sample format specified earlier. The volume of the device is initially set to a low value. Volume is a value between 0 and 1. A notification interval is set to 100ms and this means that a notify signal will be triggered every 100ms.</p>
 <p>There are two signals from the audio device that we will connect.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb17-1"><a href="#cb17-1"></a>    <span class="fu">connect</span>(mAudioIn, &amp;<span class="ex">QAudioInput::</span>notify,</span>
 <span id="cb17-2"><a href="#cb17-2"></a>            <span class="kw">this</span>, &amp;MainWindow::processAudioIn);</span>
@@ -408,7 +408,7 @@
 <span id="cb19-20"><a href="#cb19-20"></a></span>
 <span id="cb19-21"><a href="#cb19-21"></a>    samplesUpdated();</span>
 <span id="cb19-22"><a href="#cb19-22"></a>}</span></code></pre></div>
-<p>We now want to read out all data from the <em>QBuffer</em> and populate the <code>mSamples</code> vector with values. The data read from the <em>QBuffer</em> are raw bytes, but we have specified 16 bit samples so to create one value for <code>mSamples</code> two values from the <em>QBuffer</em> will be used. these are combined into one 16 bit value and then converting into a double between 0 and 1.</p>
+<p>We now want to read out all data from the <em>QBuffer</em> and populate the <code>mSamples</code> vector with values. The data read from the <em>QBuffer</em> are raw bytes, but we have specified 16 bit samples so to create one value for <code>mSamples</code> two values from the <em>QBuffer</em> will be used. these are combined into one 16 bit value and then converted into a double between 0 and 1.</p>
 <p>When that is done the <em>QBuffer</em> is cleared.</p>
 <p>The calls to <code>seek(0)</code> rewinds the "position"-marker associated with the <em>QBuffer</em>. The position-marker is the place at where reading or writing to the buffer takes place.</p>
 <p>Control is then passed over to the <code>samplesUpdated</code> function that handles the sliding window of samples used to display the waveform.</p>
@@ -421,7 +421,7 @@
 <span id="cb20-7"><a href="#cb20-7"></a>    ui-&gt;plot-&gt;xAxis-&gt;rescale();</span>
 <span id="cb20-8"><a href="#cb20-8"></a>    ui-&gt;plot-&gt;replot();</span>
 <span id="cb20-9"><a href="#cb20-9"></a>}</span></code></pre></div>
-<p>If there are more than 96000 samples in <code>mSamples</code> enough samples are removed from the beginning of the vector so that there are only 96000 left. Older data is towards the front of this vector.</p>
+<p>If there are more than 96000 samples in <code>mSamples</code> enough samples are removed from the beginning of the vector so that there are only 96000 left. Older data is towards the front of this vector. The <code>mid</code> method on <em>QVector</em> takes two arguments, a starting index and a final index. The elements of the <em>QVector</em> that are outside of this range (from start to end) is removed. Using -1 as the end index means "to the end". So we are asking to to keep all elements from index <code>n - 96000</code> to the end of the <em>QVector</em>.</p>
 <p>The samples are then handed over to <em>QCustomPlot</em> for display.</p>
 <p>Now there are only two things left to mention and that is the volume slider and the state change slot. These are not very tricky.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb21-1"><a href="#cb21-1"></a><span class="dt">void</span> MainWindow::stateChangeAudioIn(QAudio::State s)</span>

@@ -259,7 +259,7 @@ to how it was done in the earlier [text](../qt_serial_datacollection/index.html)
     ui->plot->graph()->setPen(QPen(Qt::black));
     ui->plot->graph()->setName("Audio In");
 ```
-One difference is that the `yAxis` range is set to `(-1.0,1.0) and that 
+One difference is that the `yAxis` range is set to (-1.0, 1.0) and that 
 the data-set is now called "Audio In". 
 
 
@@ -364,7 +364,7 @@ Then we can set up a new input device.
 Here we make use of the sample format specified earlier. The volume of
 the device is initially set to a low value. Volume is a value between
 0 and 1. A notification interval is set to 100ms and this means that 
-a notify signal will sound every 100ms. 
+a notify signal will be triggered every 100ms. 
 
 
 There are two signals from the audio device that we will connect. 
@@ -420,7 +420,7 @@ We now want to read out all data from the *QBuffer* and populate
 the `mSamples` vector with values. The data read from the *QBuffer* 
 are raw bytes, but we have specified 16 bit samples so 
 to create one value for `mSamples` two values from the *QBuffer* will 
-be used. these are combined into one 16 bit value and then converting 
+be used. these are combined into one 16 bit value and then converted
 into a double between 0 and 1.
 
 When that is done the *QBuffer* is cleared. 
@@ -443,9 +443,15 @@ void MainWindow::samplesUpdated()
     ui->plot->replot();
 }
 ```
-If there are more than 96000 samples in `mSamples` enough samples 
-are removed from the beginning of the vector so that there are 
-only 96000 left. Older data is towards the front of this vector. 
+
+If there are more than 96000 samples in `mSamples` enough samples are
+removed from the beginning of the vector so that there are only 96000
+left. Older data is towards the front of this vector. The `mid` method
+on *QVector* takes two arguments, a starting index and a final
+index. The elements of the *QVector* that are outside of this range
+(from start to end) is removed. Using -1 as the end index means "to
+the end". So we are asking to to keep all elements from index `n -
+96000` to the end of the *QVector*.
 
 The samples are then handed over to *QCustomPlot* for display. 
 
