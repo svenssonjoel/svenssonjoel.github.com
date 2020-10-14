@@ -79,6 +79,9 @@
     <loc>https://svenssonjoel.github.io/pages/lispbm_current_status/index.html</loc>
   </url>
   <url>
+    <loc>https://svenssonjoel.github.io/pages/qt-audio-input/index.html</loc>
+  </url>
+  <url>
     <loc>https://svenssonjoel.github.io/pages/qt_serial_datacollection/index.html</loc>
   </url>
   <url>
@@ -100,9 +103,6 @@
     <loc>https://svenssonjoel.github.io/writing/blinkledzynq.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
-  </url>
-  <url>
     <loc>https://svenssonjoel.github.io/slides/lecture2.pdf</loc>
   </url>
   <url>
@@ -118,10 +118,13 @@
     <loc>https://svenssonjoel.github.io/slides/shadowmapping.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/licpres.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/ifl2008_obsidian.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/slides/licpres.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/masterpres.pdf</loc>
@@ -175,10 +178,10 @@
     <loc>https://svenssonjoel.github.io/writing/almost_free.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/expressive.pdf</loc>
+    <loc>https://svenssonjoel.github.io/expressive.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/expressive.html</loc>
+    <loc>https://svenssonjoel.github.io/writing/expressive.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/faspp2011_haskell_arbb.pdf</loc>
@@ -190,10 +193,10 @@
     <loc>https://svenssonjoel.github.io/writing/dccpaper_obsidian.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/GPUFL.pdf</loc>
+    <loc>https://svenssonjoel.github.io/csort.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/csort.html</loc>
+    <loc>https://svenssonjoel.github.io/writing/GPUFL.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/pages/lispbm_compilation_1/</loc>
