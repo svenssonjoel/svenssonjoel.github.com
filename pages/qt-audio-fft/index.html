@@ -317,7 +317,7 @@
 <span id="cb11-3"><a href="#cb11-3"></a>             i ++) {</span>
 <span id="cb11-4"><a href="#cb11-4"></a>        fftVec.append(abs(mFftOut[i]));</span>
 <span id="cb11-5"><a href="#cb11-5"></a>    }</span></code></pre></div>
-<p>Here, the starting and end point of the audible range is multiplied with, in this case, 2. this is again because the response for frequency i will be at index 2i.</p>
+<p>Here, the starting and end point of the audible range is multiplied with, in this case, 2. this is again because the response for frequency i will be at index 2i. Notice that for the values added to the <em>QVector</em> for plotting we are only interested in the magnitude of the response, not if it is positive or negative. This is why there is an application of <code>abs</code> to the values of <code>mFftOut</code>.</p>
 <p>Then <em>QCustomPlot</em> takes over and makes the plot appear.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb12-1"><a href="#cb12-1"></a>    ui-&gt;plot2-&gt;graph(<span class="dv">0</span>)-&gt;setData(mFftIndices.mid(<span class="dv">0</span>,fftVec.length()),fftVec);</span>
 <span id="cb12-2"><a href="#cb12-2"></a>    ui-&gt;plot2-&gt;replot();</span></code></pre></div>

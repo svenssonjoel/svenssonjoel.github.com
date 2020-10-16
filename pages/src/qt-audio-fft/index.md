@@ -305,7 +305,10 @@ to pass it on to *QCustomPlot* for display.
     }
 ```
 Here, the starting and end point of the audible range is multiplied with, in this case, 2.
-this is again because the response for frequency i will be at index 2i. 
+this is again because the response for frequency i will be at index 2i. Notice that 
+for the values added to the *QVector* for plotting we are only interested in the magnitude 
+of the response, not if it is positive or negative. This is why there is an application of
+`abs` to the values of `mFftOut`.
 
 Then *QCustomPlot* takes over and makes the plot appear.
 
