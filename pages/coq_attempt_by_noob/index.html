@@ -1,0 +1,478 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>A complete noob's first attempt at Coq</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Documenting my experience as a complete noob who is tying to understand what Coq is about.">
+  <meta name="keywords" content="Coq proof functional programming Haskell">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'UA-111281599-1');
+  </script>
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages/coq_attempt_by_noob/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="a-complete-noobs-first-attempt-at-coq">A complete noob's first attempt at Coq</h1>
+<p>It seems to me that formal methods will become extremely important from now on. I am thinking about autonomous vehicles, industrial automation and so on. In areas where machines interact with human beings there should be a requirement that the machine is proven safe and correct. This forecast is also very sad, because I know absolutely nothing about formal methods or proving properties about hardware or software.</p>
+<p>I am now going to try to understand one of these proof systems and the one chosen is the <a href="https://coq.inria.fr/">Coq Proof Assistant</a>. I will share my questions and what I believe to be insights here in the hope that it might help another beginner, who doesn't see the point, in some way. I really do hope to catch the point of this eventually! if any expert stumbles over this text about my first steps into proving stuff please send me hints, tips and feedback!</p>
+<p>As a complete noob, I have perceived a barrier to getting access to this area. There are lots of videos and tutorials, but they all seem to assume that you already know a lot either about functional programming or about logic or both. The tutorials and videos then go directly into proving things about these functional programs, but how do you use it? If you prove a property about some core part of an operating system for example, what you also want to have is an implementation of that part (expressed in some efficient language). Ideally the implementation of this operating system component should be generated somehow from the specification used in Coq in a trustworthy way, right?</p>
+<p>Below are two questions I have about all of this at a high level. At some time in the future I hope to have some understanding of the answers for these.</p>
+<ul>
+<li>Coq has a purely functional language that requires all functions to be total. This functional language has no support for file IO or any other kind of IO (as I understand it today), how does one write any real practical application in Coq?</li>
+<li>What does it mean when someone claims to have implemented, say, a compiler and proven it correct using Coq or any other proof assistant?</li>
+</ul>
+<p>At the lower level, when it comes to actually working with Coq, there is a lot to learn of course. So surely there will be more questions throughout the text.</p>
+<p>To get an introduction I looked at the first lecture of <a href="https://www.youtube.com/playlist?list=PLGCr8P_YncjUT7gXUVJWSoefQ40gTOz89">this video series</a> and it was very good. You get a feeling for a bit of the syntax and basics. The syntax is quite busy by the way. My preferred way of learning about things is "learning by doing" so after watching the first of the lectures I switched to trying some defining and proving of my own with the help of the <a href="https://coq.inria.fr/refman/index.html">Coq reference manual</a>.</p>
+<p>Now, the rest of this text will be about my first attempt at some programming and proving in Coq. I went for Booleans and a few operations on booleans (and, or, not) and hoped to show for example some De Morgan identities.</p>
+<p>In CoqIde I type the following to define Booleans.</p>
+<pre><code>Inductive boolean : Type := 
+  | true : boolean
+  | false : boolean.
+</code></pre>
+<p>You can type this directly into a <code>*scratch*</code> buffer in CoqIde. Now pressing <strong>CTRL + DOWN-ARROW</strong> will highlight the definition of boolean in green color and the window down to the right says "boolean is defined". The window down to the right also says 4 other things are defined but I have no idea what these mean so far.</p>
+<p>Anyway, as I understand it we have defined a type for booleans now. So the next step should be to write an operation on booleans.</p>
+<pre><code>Definition or ( x y : boolean) : boolean := 
+  match x with
+  | true =&gt; true
+  | false =&gt; y
+  end.
+</code></pre>
+<p>The code above defines the <code>or</code> function that takes two arguments <code>x</code> and <code>y</code> that are booleans and returns a boolean. The body is implemented using pattern matching on <code>x</code>, the first argument.</p>
+<p>Expressions involving <code>or</code> can now be evaluated.</p>
+<pre><code>Eval compute in (or false true).
+</code></pre>
+<p>Pressing <strong>CTRL + DOWN-ARROW</strong> now should output the result <code>true</code> in the lower right message window.</p>
+<p>The expression below should evaluate to <code>false</code>.</p>
+<pre><code>Eval compute in (or false false).
+</code></pre>
+<p>Proofs in Coq take the form of sequences of tactic applications and trying to write some proofs was pretty fun. But here is where I get really insecure. I was kind of expecting to show things like <code>or a b -&gt; or b a</code> but implication is not a relation on the booleans used. So then almost all theorems I could think of had to be phrased as equalities.</p>
+<pre><code>Theorem boolean_or_false : forall a : boolean, or a false = a.
+</code></pre>
+<p>If we press <strong>CTRL + DOWN-ARROW</strong> so that the <code>Theorem</code> is passed to Coq, it will turn green and the top right window in CoqIde shows the following.</p>
+<pre><code>1 subgoal
+______________________________________(1/1)
+forall a : boolean, or a false = a
+</code></pre>
+<p>Saying that we have 1 thing to prove. The thing to prove is the statement below the line that for all booleans, <code>a</code>, <code>or a false = a</code>.</p>
+<p>As I recall from my courses in logic, to prove a <code>forall</code> one should assume an arbitrary element of the set that the forall ranges over. This is how I understand what happens in the first step of this proof. I may be wrong though.</p>
+<pre><code>Theorem boolean_or_false : forall a : boolean, or a false = a.
+Proof. 
+intros a. 
+</code></pre>
+<p>When <strong>CTRL + DOWN-ARROW</strong> over the line with intros, the following appears in the, I don't know what to call it, proof window.</p>
+<pre><code>1 subgoal
+a : boolean
+______________________________________(1/1)
+or a false = a
+</code></pre>
+<p>An <code>a</code> appeared over the line. The things above the line are the assumptions.</p>
+<p><code>or a false = a</code> seems easy enough so I try apply the <code>simpl</code> tactic. This doesn't do anything in this case though. <code>simpl</code> as I understand it will try to simplify expressions and maybe the cause it cannot do anything is the totally arbitrary <code>a</code> that is part of the equality?</p>
+<p>So, another thing to try is the <code>case</code> tactic that takes a variable as argument. The goal will then be split/duplicated into separate goals for each possible value of that variable.</p>
+<pre><code>Theorem boolean_or_false : forall a : boolean, or a false = a.
+Proof. 
+intros a.
+case a.
+</code></pre>
+<p>And stepping over that shows the following result in the proof window.</p>
+<pre><code>2 subgoals
+a : boolean
+______________________________________(1/2)
+or true false = true
+______________________________________(2/2)
+or false false = false
+</code></pre>
+<p>Now there are two goals to prove, <code>or true false = true</code> and <code>or false false = false</code> And at this stage it is fine to apply the <code>simpl</code> tactic.</p>
+<pre><code>Theorem boolean_or_false : forall a : boolean, or a false = a.
+Proof. 
+intros a.
+case a.
+simpl.
+</code></pre>
+<p>Resulting in this:</p>
+<pre><code>2 subgoals
+a : boolean
+______________________________________(1/2)
+true = true
+______________________________________(2/2)
+or false false = false
+</code></pre>
+<p>The first goal is now pretty obviously a true statement and applying <code>reflexivity</code> closes that branch (goal).</p>
+<pre><code>Theorem boolean_or_false : forall a : boolean, or a false = a.
+Proof. 
+intros a.
+case a.
+simpl.
+reflexivity.
+</code></pre>
+<p>Resulting in:</p>
+<pre><code>1 subgoal
+a : boolean
+______________________________________(1/1)
+or false false = false
+</code></pre>
+<p>So it seems there is only one goal left and just as with the earlier <code>or true false = true</code> this one can be closed with <code>simpl</code> followed by <code>reflexivity</code>. Even just saying <code>reflexivity</code> is fine in both these cases. so the complete proof would look like this:</p>
+<pre><code>Theorem boolean_or_false : forall a : boolean, or a false = a.
+Proof. 
+intros a.
+case a.
+reflexivity.
+reflexivity.
+Qed.
+</code></pre>
+<p>The next theorem I attempted was that <code>or a true = true</code>.</p>
+<pre><code>Theorem boolean_or_true : forall a : boolean, or a true = true.
+</code></pre>
+<p>Will not show that proof, it is very similar to the earlier one.</p>
+<p>The next one is a bit interesting though as it is the first example where I could make use of earlier theorems in the proof of a new one. The theorem is that <code>or</code> is commutative.</p>
+<pre><code>Theorem boolean_or_comm : forall a b : boolean , or a b = or b a.
+Proof.
+</code></pre>
+<p>Starting off as usual.</p>
+<pre><code>1 subgoal
+______________________________________(1/1)
+forall a0 b : boolean, or a0 b = or b a0
+</code></pre>
+<p>Introducing variables <code>a</code> and <code>b</code>.</p>
+<pre><code>Theorem boolean_or_comm : forall a b : boolean , or a b = or b a.
+Proof.
+intros a b.
+</code></pre>
+<p>Adds <code>a</code> and <code>b</code> to the assumptions.</p>
+<pre><code>1 subgoal
+a, b : boolean
+______________________________________(1/1)
+or a b = or b a
+</code></pre>
+<p>Then I split into cases by the <code>b</code> variable.</p>
+<pre><code>Theorem boolean_or_comm : forall a b : boolean , or a b = or b a.
+Proof.
+intros a b.
+case b.
+</code></pre>
+<p>Now the proof window reads:</p>
+<pre><code>2 subgoals
+a, b : boolean
+______________________________________(1/2)
+or a true = or true a
+______________________________________(2/2)
+or a false = or false a
+</code></pre>
+<p>Applying <code>simpl</code> at this point turns subgoal 1 into something that looks exactly like something we have already proved.</p>
+<pre><code>Theorem boolean_or_comm : forall a b : boolean , or a b = or b a.
+Proof.
+intros a b.
+case b.
+simpl.
+</code></pre>
+<p>And the proof window shows:</p>
+<pre><code>2 subgoals
+a, b : boolean
+______________________________________(1/2)
+or a true = true
+______________________________________(2/2)
+or a false = or false a
+</code></pre>
+<p>Subgoal (1/2) looks exactly like the <code>boolean_or_true</code> theorem. So let's apply it.</p>
+<pre><code>Theorem boolean_or_comm : forall a b : boolean , or a b = or b a.
+Proof.
+intros a b.
+case b.
+simpl.
+apply boolean_or_true.
+</code></pre>
+<p>And that closes that subgoal.</p>
+<pre><code>1 subgoal
+a, b : boolean
+______________________________________(1/1)
+or a false = or false a
+</code></pre>
+<p>If we now run <code>simpl</code> the only subgoal that is left will look very much the <code>boolean_or_false</code> theorem.</p>
+<pre><code>Theorem boolean_or_comm : forall a b : boolean , or a b = or b a.
+Proof.
+intros a b.
+case b.
+simpl.
+apply boolean_or_true.
+simpl.
+</code></pre>
+<p>The goal left to prove now is the <code>boolean_or_false</code> theorem.</p>
+<pre><code>1 subgoal
+a, b : boolean
+______________________________________(1/1)
+or a false = a
+</code></pre>
+<p>So let's apply this theorem.</p>
+<pre><code>Theorem boolean_or_comm : forall a b : boolean , or a b = or b a.
+Proof.
+intros a b.
+case b.
+simpl.
+apply boolean_or_true.
+simpl.
+apply boolean_or_false.
+Qed.
+</code></pre>
+<p>And now that commutativity is proven, I guess. Am I right?</p>
+<p>There is something going on here which feels very odd to me. I will try to illustrate this by showing some alternative paths applied in the <code>boolean_or_comm</code> theorem. Let's step all the way back to where we did <code>case b</code> to split into cases followed by <code>simpl</code>.</p>
+<pre><code>Theorem boolean_or_comm : forall a b : boolean , or a b = or b a.
+Proof.
+intros a b.
+case b.
+simpl.
+</code></pre>
+<p>At that point there are two subgoals to prove and the first is <code>or a true = true</code></p>
+<pre><code>2 subgoals
+a, b : boolean
+______________________________________(1/2)
+or a true = true
+______________________________________(2/2)
+or a false = or false a
+</code></pre>
+<p>Why was the right hand side of the equality evaluated? Why not the LHS?</p>
+<p>If we would have done <code>case a</code> followed by <code>simpl</code> instead something different would have happened.</p>
+<pre><code>Theorem boolean_or_comm : forall a b : boolean , or a b = or b a.
+Proof.
+intros a b.
+case a.
+simpl.
+</code></pre>
+<p>If we look at the goals now, the LHS of the equality in subgoal 1 has been evaluated.</p>
+<pre><code>2 subgoals
+a, b : boolean
+______________________________________(1/2)
+true = or b true
+______________________________________(2/2)
+or false b = or b false
+</code></pre>
+<p>Why is that?</p>
+<p>Anyway. This was a lot of fun so far and I continued by implementing <code>and</code> and <code>not</code>.</p>
+<pre><code>Definition and ( x y : boolean) : boolean := 
+  match x with
+    | true =&gt; y
+    | false =&gt; false
+  end.
+</code></pre>
+<pre><code>Definition not (x : boolean) : boolean := 
+  match x with 
+    | true =&gt; false
+    | false =&gt; true
+  end.
+</code></pre>
+<p>The following theorems about <code>and</code> and <code>not</code> can be showed to hold in ways very similar to the examples above (If even those are valid proofs?).</p>
+<pre><code>Theorem boolean_and_false : forall a : boolean, and a false = false.
+Theorem boolean_and_true : forall a : boolean, and a true = a.
+Theorem boolean_and_comm : forall a b : boolean, and a b = and b a.
+Theorem boolean_not_true : not true = false.
+Theorem boolean_not_false : not false = true.
+Theorem boolean_not_not : forall a : boolean, not (not a) = a.
+Theorem boolean_a_and_not_a : forall a : boolean, and a (not a) = false.
+Theorem boolean_a_or_not_a : forall a : boolean, or a (not a) = true.
+</code></pre>
+<p>In the end I did get to those De Morgan identities:</p>
+<pre><code>Theorem boolean_demorgan_0 : forall a b : boolean, and (not a) (not b) = not (or a b).
+Proof.
+intros a b. 
+case a.
+simpl.
+reflexivity.
+simpl.
+case b.
+reflexivity.
+reflexivity.
+Qed.
+</code></pre>
+<p>And also tried one of them by using the <code>auto</code> tactic.</p>
+<pre><code>Theorem boolean_demorgan_1 : forall a b : boolean, or (not a) (not b) = not (and a b).
+Proof.
+intros a b.
+case a.
+auto.
+auto.
+Qed.
+</code></pre>
+<p>The <code>auto</code> seems a bit magical currently. Sometimes you can apply this and it you will be done with that subgoal. I don't really understand why the above proof could not be automated before the application of the <code>case</code> tactic though.</p>
+<p>One last thing! And this thing may be a partial answer to one of my initial questions about how to do real things with Coq. There is a way to extract Haskell code.</p>
+<pre><code>Extraction Language Haskell.
+Extraction &quot;./a.hs&quot; and or not.
+</code></pre>
+<p>Adding the lines above to my experiment file and running them generates a <code>a.hs</code> file with the following contents.</p>
+<pre><code>module A where
+
+import qualified Prelude
+
+data Boolean =
+   True
+ | False
+
+or :: Boolean -&gt; Boolean -&gt; Boolean
+or x y =
+  case x of {
+   True -&gt; True;
+   False -&gt; y}
+
+and :: Boolean -&gt; Boolean -&gt; Boolean
+and x y =
+  case x of {
+   True -&gt; y;
+   False -&gt; False}
+
+not :: Boolean -&gt; Boolean
+not x =
+  case x of {
+   True -&gt; False;
+   False -&gt; True}
+</code></pre>
+<p>That does look like something that one can work with. Pretty far from something you would run on a microcontroller or something like that though.</p>
+<p>Thanks for reading this far. If you have tips, hints or answers, please send them to me. If all of this is complete nonsense and I have clearly missed all the points, please let me know that as well (preferably together with some constructive pointers).</p>
+<p>Have a nice day!</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>

@@ -16,6 +16,9 @@
     <loc>https://svenssonjoel.github.io/privacy_policy.html</loc>
   </url>
   <url>
+    <loc>https://svenssonjoel.github.io/pages/stm32-7-segment-display/index.html</loc>
+  </url>
+  <url>
     <loc>https://svenssonjoel.github.io/pages/dac_0_stm32/index.html</loc>
   </url>
   <url>
@@ -79,16 +82,16 @@
     <loc>https://svenssonjoel.github.io/pages/lispbm_current_status/index.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/pages/qt-audio-input/index.html</loc>
-  </url>
-  <url>
     <loc>https://svenssonjoel.github.io/pages/qt-audio-fft/index.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/pages/qt_serial_gui/index.html</loc>
+    <loc>https://svenssonjoel.github.io/pages/qt-audio-input/index.html</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/pages/qt_serial_datacollection/index.html</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/pages/qt_serial_gui/index.html</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/pages/qt_game_loadimage/index.html</loc>
@@ -109,13 +112,16 @@
     <loc>https://svenssonjoel.github.io/slides/lecture2.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/lecture1.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/AlmostFreePresentation.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/lecture1.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/Harbb.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/shadowmapping.pdf</loc>
@@ -124,37 +130,31 @@
     <loc>https://svenssonjoel.github.io/slides/ifl2008_obsidian.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/obsidian_090514.pdf</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/slides/Harbb.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/dcc2008_obsidian.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/zynqreduce.pdf</loc>
   </url>
   <url>
+    <loc>https://svenssonjoel.github.io/slides/masterpres.pdf</loc>
+  </url>
+  <url>
     <loc>https://svenssonjoel.github.io/writing/ZynqBandwidth.pdf</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/slides/dcc2008_obsidian.pdf</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/slides/licpres.pdf</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/writing/jslic.bib</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/thesis/thesis.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/lic.pdf</loc>
+    <loc>https://svenssonjoel.github.io/writing/jslic.bib</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/fhpc16-preprint.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/licpres.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/GPGPU_tech.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/writing/fhpc16-preprint.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/pldi16-crossmod.pdf</loc>
@@ -163,16 +163,22 @@
     <loc>https://svenssonjoel.github.io/writing/MetaAuto.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/masterpres.pdf</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/writing/multidev.pdf</loc>
+    <loc>https://svenssonjoel.github.io/writing/lic.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/defuncEmb.pdf</loc>
   </url>
   <url>
+    <loc>https://svenssonjoel.github.io/writing/multidev.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/writing/bb.pdf</loc>
+  </url>
+  <url>
     <loc>https://svenssonjoel.github.io/writing/almost_free.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/writing/csort.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/expressive.pdf</loc>
@@ -181,19 +187,16 @@
     <loc>https://svenssonjoel.github.io/expressive.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/bb.pdf</loc>
-  </url>
-  <url>
     <loc>https://svenssonjoel.github.io/writing/faspp2011_haskell_arbb.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/dccpaper_obsidian.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/obsidian_ifl2008.pdf</loc>
+    <loc>https://svenssonjoel.github.io/csort.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/csort.html</loc>
+    <loc>https://svenssonjoel.github.io/writing/obsidian_ifl2008.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/GPUFL.pdf</loc>
@@ -202,6 +205,6 @@
     <loc>https://svenssonjoel.github.io/pages/lispbm_compilation_1/</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/csort.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/obsidian_090514.pdf</loc>
   </url>
 </urlset>
