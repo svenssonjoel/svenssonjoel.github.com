@@ -6,7 +6,7 @@ HTML = $(patsubst %.md,%.html,$(MD))
 DIR   = $(notdir $(CURDIR))
 TITLE = A complete noob's first attempt at Coq
 DESCRIPTION = Documenting my experience as a complete noob who is tying to understand what Coq is about.
-KEYWORDS =  Coq proof functional programming Haskell
+KEYWORDS = Coq proof functional programming Haskell
 YEAR  = 2020
 LINK  = https://svenssonjoel.github.io/pages/$(DIR)/index.html
 
