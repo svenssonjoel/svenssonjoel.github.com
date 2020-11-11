@@ -112,16 +112,16 @@
     <loc>https://svenssonjoel.github.io/writing/blinkledzynq.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/lecture2.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/lecture2.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/lecture1.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/AlmostFreePresentation.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/lecture1.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/Harbb.pdf</loc>
@@ -139,13 +139,13 @@
     <loc>https://svenssonjoel.github.io/slides/obsidian_090514.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/masterpres.pdf</loc>
-  </url>
-  <url>
     <loc>https://svenssonjoel.github.io/slides/dcc2008_obsidian.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/zynqreduce.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/slides/masterpres.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/ZynqBandwidth.pdf</loc>
@@ -160,22 +160,22 @@
     <loc>https://svenssonjoel.github.io/thesis/thesis.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/GPGPU_tech.pdf</loc>
-  </url>
-  <url>
     <loc>https://svenssonjoel.github.io/writing/fhpc16-preprint.pdf</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/writing/pldi16-crossmod.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/MetaAuto.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/defuncEmb.pdf</loc>
+    <loc>https://svenssonjoel.github.io/writing/GPGPU_tech.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/writing/pldi16-crossmod.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/multidev.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/writing/defuncEmb.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/bb.pdf</loc>
@@ -187,10 +187,10 @@
     <loc>https://svenssonjoel.github.io/writing/almost_free.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/expressive.pdf</loc>
+    <loc>https://svenssonjoel.github.io/expressive.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/expressive.html</loc>
+    <loc>https://svenssonjoel.github.io/writing/expressive.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/faspp2011_haskell_arbb.pdf</loc>
