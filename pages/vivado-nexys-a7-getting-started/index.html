@@ -1,0 +1,448 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Getting started with the Nexys A7-100t and Vivado</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Walkthrough of the steps from project creation to programming a hardware design onto the FPGA ">
+  <meta name="keywords" content="tutorial FPGA programming nexys A7 getting started with Vivado">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'UA-111281599-1');
+  </script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ9CPG3ZWG"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'G-DQ9CPG3ZWG');
+  </script>
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages/vivado-nexys-a7-getting-started/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="getting-started-with-the-nexys-a7-and-vivado">Getting started with the Nexys A7 and Vivado</h1>
+<p>FPGAs seem like lots of fun but the initial investment in time and energy to get up and running with one is so very high. I recently had a little bit of time (and motivation) to learn a little about how to get up and running with Vivado and VHDL on an FPGA (I have some previous experience from some years ago with Vivado and HLS, this is slightly similar). When having gone through some kind of hurdle, I feel it is nice to try to make it a bit easier for the next person by writing about the experience.</p>
+<p>The FPGA used here is the Artix 7 on a Nexys A7-100t board from Digilent. I know there are probably already lots of "how-to" manuals for this but this one will be from my perspective as somewhat of an FPGA noob! I hope that leads to a somewhat different point of view.</p>
+<h2 id="disclaimer">Disclaimer</h2>
+<p>All content provided in this document is for informational purposes only. The authors makes no guarantees as to the accuracy or completeness of any information within this document.</p>
+<p>The authors will not be liable for any errors or omissions in this information nor for the availability of this information. The authors will not be liable for any losses, injuries, or damages from the display or use of this information.</p>
+<h2 id="installing-the-board-files">Installing the board files</h2>
+<p>There is a little bit of setup needed to get started. This comes in the form of "board files" containing parameters for a particular type of FPGA development board. Digilent provides <a href="https://github.com/Digilent/vivado-boards/archive/master.zip?_ga=2.219089753.1722140106.1606219307-803595090.1598879855">board files</a> in a github repository.</p>
+<p>Locate the directory where you installed Vivado and check for this subdirectory <code>&lt;Vivado_dir&gt;/&lt;version&gt;/data/boards/board_files</code>. If you already have a <code>nexys-a7-100t</code> sub folder located there, you do not need to do anything. But if not you should grab the board files from Digilent github, unzip the archive and locate <code>nexys-a7-100t</code> directory. This directory will be under a subdirectory called <code>new/board_files</code>.</p>
+<p><strong>Task:</strong> Copy the <code>nexys-a7-100t</code> directory into your vivado installation <code>board_files</code> directory.</p>
+<h2 id="starting-vivado-and-creating-a-project">Starting Vivado and creating a project</h2>
+<p>Start up Vivado. If you use command line, it would be something like this:</p>
+<pre><code>&gt; source ~/opt/Xilinx/Vivado/2019.2/settings64.sh
+&gt; vivado &amp;
+</code></pre>
+<p>and if you do not, then just double click your Vivado icon on the desktop.</p>
+<p>After a while (everything takes a while, quite a while, when using Vivado) you will be greeted by the following screen:</p>
+<p><img src="./media/vivado-screen-1.png" alt="Vivado quick start" /></p>
+<p><strong>Task:</strong> Click on <em>Create Project</em>. You find this in the <em>Quick Start</em> area. This starts up the <em>Create a New Vivado Project</em> wizard. the first thing it does is show a little wizard welcome screen. Just click next here.</p>
+<p><strong>Task:</strong> Make up a name for the project and pick a location for the project related files. Check the <em>Create project subdirectory</em> checkbox. Click next to move on to the next setting. I called my project "Blinky" as that is where I hope this will be going.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Wizard welcoming screen</th>
+<th style="text-align: center;">Project name and location</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-screen-2.png" alt="Wizard welcome screen" /></td>
+<td style="text-align: center;"><img src="./media/vivado-screen-3.png" alt="Project name and location" /></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Task:</strong> Next up select <em>Project Type</em>. The type to use here is <em>RTL Project</em> and also click the <em>Do not specify sources at this time</em> checkbox. Then click next.</p>
+<p>The next step is to select the FPGA board to use as target. Locate the two tabs <em>Parts</em> and <em>Boards</em> and switch to tab <em>Boards</em>. You can narrow the list of selections down a bit by typing "nexys a7" into the search field.</p>
+<p><strong>Task:</strong> Select the <code>Nexys A7-100T</code> board from the list and click next.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Project type</th>
+<th style="text-align: center;">Select the FPGA board</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-screen-4.png" alt="Project Type" /></td>
+<td style="text-align: center;"><img src="./media/vivado-screen-5.png" alt="Default Part" /></td>
+</tr>
+</tbody>
+</table>
+<p>Project configuration is now completed and you will see a summary of your settings.</p>
+<p><img src=".media/vivado-screen-6.png" alt="Summary of settings" /></p>
+<p><strong>Task:</strong> Click on <em>Finish</em>.</p>
+<h2 id="the-vivado-gui">The Vivado GUI</h2>
+<p>After a brief pause (brief by Vivado standards) the GUI starts up and you will be looking at something similar to this.</p>
+<p><img src="./media/vivado-screen-7.png" alt="The Vivado GUI" /></p>
+<p>The GUI is divided into two main areas, a left <em>Flow Navigator</em> and a right side that changes quite a bit depending on what is currently going on. Right now the right hand side of the GUI is showing the <em>Project Manager</em></p>
+<p>The first thing we are going to need to do is create some VHDL source.</p>
+<p><strong>TASK:</strong> In the <em>Project Manager</em> locate the <em>Sources</em> pane and right click within it. This brings up a list of choices, click on <em>Add Sources</em>. We are going to add a <em>design source</em> so check the <em>Add or create design sources</em> option and click next.</p>
+<p><strong>Task:</strong> Click on the <em>Create File</em> button and provide a name for the file. I call mine <code>blinky</code> click ok in the <em>Create File</em> dialog and then click <em>Finish</em> in the <em>Add Sources</em> window. After clicking <em>Finish</em> a <em>Define Module</em> dialog appears. This dialog lets you specify interface for the module if you wish, but I am going to do that by typing the VHDL manually. So just click Ok in this dialog.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Add Sources</th>
+<th style="text-align: center;">Add or Create Design Sources</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-screen-8.png" alt="Add Sources" /></td>
+<td style="text-align: center;"><img src="./media/vivado-screen-9.png" alt="Default Part" /></td>
+</tr>
+</tbody>
+</table>
+<p>Now there should be a file called <code>blinky.vhd</code> listed under <em>Sources</em> in the <em>Project Manager</em>. Double click on this to open up an editor for the file.</p>
+<p>I have cleaned out most of the comments from the file, but the contents will be roughly the following.</p>
+<pre><code>library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+--use IEEE.NUMERIC_STD.ALL;
+
+entity blinky is
+--  Port ( );
+end blinky;
+
+architecture Behavioral of blinky is
+
+begin
+
+
+end Behavioral;
+</code></pre>
+<p>So, you get a skeleton of a module. In the next section I will try to fill that with some code. Keep in mind that I am a bit of a beginner at VHDL (feedback much appreciated).</p>
+<h2 id="the-vhdl-code">The VHDL code</h2>
+<p>Let's start with the entity declaration.</p>
+<pre><code>entity blinky is
+--  Port ( );
+end blinky;
+</code></pre>
+<p>We are going to need a clock input signal and at least one output signal to drive an LED with. So add these to the Port list.</p>
+<pre><code>entity blinky is
+    Port ( 
+        clk : in std_logic;
+        led : out std_logic
+         );
+end blinky;
+</code></pre>
+<p>For the architecture (implementation of the entity) with my limited experience, I have a feeling it would work with a state machine that either is in a <em>Led is on</em> or <em>Led is off</em> state and that it remains in these states for some number of clock ticks. So, we need a way to maintain state and a way to count ticks. For the counter I will use an <em>unsigned</em>, so using <code>IEEE.NUMERIC_STD</code> will be needed.</p>
+<pre><code>architecture Behavioral of blinky is
+    type state is (LED_On, LED_Off);
+    signal s: state;
+    signal counter : unsigned(24 downto 0); 
+begin
+
+
+end Behavioral;
+</code></pre>
+<p>So, now there are two states <em>LED_On</em> and <em>LED_Off</em> the <code>s</code> signal can be set to one of these states and a counter that can count all the way up to some high number above 33 million. Don't know yet for how long the LED must be in on and off state (number of ticks) for it to visibly blink.</p>
+<p>What we want to implement now is hardware that sets the <code>led</code> signal to one when in the <em>On</em> State and zero when in <em>Off</em>, we also want to increment a counter each clock tick and check if the counter goes over some large number. When the counter goes above the large number we reset it to zero and also switch state.</p>
+<pre><code>architecture Behavioral of blinky is
+    type state is (LED_On, LED_Off);
+    signal s: state;
+    signal counter : unsigned(24 downto 0);
+begin
+
+    blinker: process (clk) 
+    begin 
+        if rising_edge(clk) then 
+            case (s) is 
+                when LED_On =&gt; 
+                    led &lt;= &#39;1&#39;;
+                when LED_Off =&gt; 
+                    led &lt;= &#39;0&#39;;
+            end case;
+            
+            if (counter &gt;= 30000000 and s = LED_On) then 
+                counter &lt;= &#39;0&#39; &amp; X&quot;000000&quot;;
+                s &lt;= LED_off;
+            elsif (counter &gt;= 30000000 and s = LED_Off) then 
+                counter &lt;= &#39;0&#39; &amp; X&quot;000000&quot;; 
+                s &lt;= LED_on; 
+            else 
+                counter &lt;= counter + 1;
+            end if; 
+        end if;
+    end process;
+
+end Behavioral;
+</code></pre>
+<p>This code is a bit odd, for example it does not start from any known state when it comes to <code>s</code> or <code>counter</code>. What could be added is a reset signal<br />
+and some logic associated with the reset that sets <code>s</code> to for example the <em>Off</em> state and sets <code>counter</code> to 0. My feeling is that it wont matter much in this case, as no matter what <code>s</code> and <code>counter</code> is initially it will sort itself out in a moment. This is of course no assumption you can make in general!</p>
+<p>Here is the complete VHDL code listing that will be used:</p>
+<pre><code>library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity blinky is
+    Port ( 
+        clk : in std_logic;
+        led : out std_logic
+         );
+end blinky;
+
+architecture Behavioral of blinky is
+    type state is (LED_On, LED_Off);
+    signal s: state;
+    signal counter : unsigned(24 downto 0);
+begin
+
+    blinker: process (clk) 
+    begin 
+        if rising_edge(clk) then 
+            case (s) is 
+                when LED_On =&gt; 
+                    led &lt;= &#39;1&#39;;
+                when LED_Off =&gt; 
+                    led &lt;= &#39;0&#39;;
+            end case;
+            
+            if (counter &gt;= 30000000 and s = LED_On) then 
+                counter &lt;= &#39;0&#39; &amp; X&quot;000000&quot;;
+                s &lt;= LED_off;
+            elsif (counter &gt;= 30000000 and s = LED_Off) then 
+                counter &lt;= &#39;0&#39; &amp; X&quot;000000&quot;; 
+                s &lt;= LED_on; 
+            else 
+                counter &lt;= counter + 1;
+            end if; 
+        end if;
+    end process;
+
+end Behavioral;
+</code></pre>
+<h2 id="setting-some-constraints">Setting some constraints</h2>
+<p>We have VHDL code with signals <code>clk</code> and <code>led</code> but nothing that tells vivado how those signals relate to clock generation or IO on the FPGA. To fix this we must create a <em>constraints file</em> that makes these connections from VHDL concepts to corresponding functionality on the FPGA.</p>
+<p><strong>Task:</strong> In the <em>Sources</em> pane of the <em>Project Manager</em> right click and select <em>Add Sources</em>. Check the <em>Add or create constraints</em> radio-button. and click next. Now click the <em>Create File</em> button and a dialog pops up that asks you to provide a name for a file of type <code>.XDC</code>. I just call the file <code>constraints</code> and click ok. Then click <em>Finish</em> in the <em>Add or Create Constraints</em> dialog.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Add Sources</th>
+<th style="text-align: center;">Add or Create Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-screen-10.png" alt="Add Sources" /></td>
+<td style="text-align: center;"><img src="./media/vivado-screen-11.png" alt="Default Part" /></td>
+</tr>
+</tbody>
+</table>
+<p>If we go back to the <em>Sources</em> pane of the <em>Project Manager</em> there should now be a file listed under <em>Constraints</em>. Double click on this to open the file in the editor. It should be empty.</p>
+<p>Copy the following into the <code>constraints.xdc</code> file.</p>
+<pre><code>create_clock -period 10.000 -name clk -waveform {0.000 5.000} [get_ports clk]
+set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { clk }];
+
+
+set_property -dict { PACKAGE_PIN H17    IOSTANDARD LVCMOS33 } [get_ports { led }];
+</code></pre>
+<p>The first line sets a timing constraints that tells the system we want the design to run at 100MHz (period 10ns). You can also tweak the clocks duty cycle and phase by adjusting the <em>waveform</em> parameters.</p>
+<p>The next line states that something called <em>package pin</em> <code>E3</code> should be connected to the VHDL signal <code>clk</code>. The package pins and their meaning can be found in the <a href="https://reference.digilentinc.com/reference/programmable-logic/nexys-a7/reference-manual">reference manual</a> provided by the board manufacturer. In this case E3 is associated with clocking resources.</p>
+<p>Lastly the <code>led</code> signal is connected to <code>H17</code> which is a pin on the FPGA connected to an LED on the board. The LED is located at the bottom right of the board, right above a switch.</p>
+<p><strong>Task:</strong> add the constraints to the <code>constraints.xdc</code> file and save it using <strong>CTRL + s</strong>.</p>
+<p>*<em>Note:</em> There is a master <a href="https://github.com/Digilent/digilent-xdc/blob/master/Nexys-A7-100T-Master.xdc">constraints file</a> that Digilent provides for the board. You can download it and then tweak it as needed depending on your design.</p>
+<h2 id="synthesis-implementation-and-programming-the-fpga">Synthesis, Implementation and Programming the FPGA</h2>
+<p>Now we have reached the point where it is time to start the journey of turning the VHDL together with the constraints into hardware. This is where the <em>Flow Navigator</em> on the left hand side of the GUI comes in.</p>
+<p>We are going to perform the three bottom steps of this flow, <em>Synthesis</em>, <em>Implementation</em> and <em>Program and debug</em>.</p>
+<p><strong>Task:</strong> Click on <em>Run Synthesis</em> under <em>Synthesis</em> in the <em>Flow Navigator</em>. This brings up a <em>Launch Runs</em> dialog where you can configure some parameters related to system resources to use for the synthesis task (if you have a separate computer with more power, I guess you can use that as a kind of build-server). The defaults are fine, so I click <em>Ok</em>.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Launch Runs</th>
+<th style="text-align: center;">Synthesis Completed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-screen-12.png" alt="Launch Runs" /></td>
+<td style="text-align: center;"><img src="./media/vivado-screen-13.png" alt="Synthesis Completed" /></td>
+</tr>
+</tbody>
+</table>
+<p>Go make a cup of coffee while Vivado is crunching numbers.</p>
+<p><strong>Task:</strong> After a moment the <em>Synthesis Completed</em> dialog will appear. The <em>Run Implementation</em> selection is already checked. Keep it so and click on <em>Ok</em> to start the <em>Implementation</em> part of the <em>Flow</em>. Another <em>Launch Runs</em> dialog appears, this time it is about configuring the <em>Implementation</em> step. Just click <em>Ok</em>.</p>
+<p>Vivado will be busy for a while again but it is too soon for another cup of coffee.</p>
+<p>Then the <em>Implementation Completed</em> dialog appears!</p>
+<p><strong>TASK:</strong> in the <em>Implementation Completed</em> dialog click on <em>Generate Bitstream</em> and click <em>Ok</em>. There will, yet again, be a <em>Launch Runs</em> dialog where just clicking <em>Ok</em> is fine.</p>
+<p>After a moment a <em>Bitstream Generation Completed</em> dialog appears. Select *Open Implemented Design" and Just click <em>ok</em>.</p>
+<p>This opens up some interesting visualizations of your design that you can explore.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Graphical illustration of hardware</th>
+<th style="text-align: center;">Zoomed in</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-screen-14.png" alt="visualization 1" /></td>
+<td style="text-align: center;"><img src="./media/vivado-screen-15.png" alt="Synthesis Completed" /></td>
+</tr>
+</tbody>
+</table>
+<p>Anyway! We have reached the point where we have a bitstream that we can program onto the FPGA.</p>
+<p><em>Make sure your Nexys A7-100T is connected to your computer and turned on at this point</em></p>
+<p><strong>TASK:</strong> At the bottom of the <em>Flow Navigator</em> there is the <em>Program and debug</em> operation. Under <em>Program and debug</em> you can find <em>Open Hardware manager</em> that can be "unfolded". Unfold this and click on <em>Open Target</em> and select <em>Auto Connect</em>. Now the <em>Program Device</em> option should be activated. Click on <em>Program Device</em> and select your device. Not a <em>Program Device</em> Dialog appears and you can click <em>Program</em>.</p>
+<p>If nothing went wrong along the way, the LED at the bottom right of your board should immediately start blinking when the programming of the FPGA completes. This <a href="https://youtu.be/HCwPLk496Sw">Blinky Video on YouTube</a> shows what it is supposed to look like.</p>
+<p>Also seems like the number of clock-ticks picked for the delay was quite ok.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I hope to be learning a bit more about VHDL over time and will write down my findings as I go along.</p>
+<p>Please share your experience with trying to follow the steps outlined in this text.</p>
+<p>Thank you for reading and I hope that you have a good day.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
