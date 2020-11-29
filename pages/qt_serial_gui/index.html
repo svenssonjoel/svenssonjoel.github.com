@@ -179,249 +179,249 @@
 <h2 id="now-the-code">Now, The Code</h2>
 <p>There is not a lot of code involved in this, which is good since it is a pretty basic program. So, all of it is implemented within <em>mainwindow.h</em> and <em>mainwindow.cpp</em>.</p>
 <p>The <em>mainwindow.h</em> file includes the following in addition to the <em>QMainWindow</em>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb1-1" title="1"><span class="pp">#include </span><span class="im">&lt;QSerialPort&gt;</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="pp">#include </span><span class="im">&lt;QSerialPortInfo&gt;</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="pp">#include </span><span class="im">&lt;QTimer&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#include </span><span class="im">&lt;QSerialPort&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="pp">#include </span><span class="im">&lt;QSerialPortInfo&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="pp">#include </span><span class="im">&lt;QTimer&gt;</span></span></code></pre></div>
 <p><em>QSerialPort</em> to establish a connection to a port and read and write over that port. <em>QSerialPortInfo</em> is used to query the system for available serial ports which provides their name and location (in the Linux filesystem hierarchy). <em>QTimer</em> will be used to set up a periodic timer that updates the list of serial ports. Serial ports pop into existence when devices are plugged in.</p>
 <p>The MainWindow class holds a bit of state in its member variables shown below. These consist of the <em>QSerialPort</em> we are going to use, the list of serial ports (<em>QSerialPortInfo</em> objects) and our timer.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb2-1" title="1"><span class="ex">QSerialPort</span> *mSerial;</a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="ex">QList</span>&lt;<span class="ex">QSerialPortInfo</span>&gt; mSerialPorts;</a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="ex">QTimer</span> *mSerialScanTimer;</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">QSerialPort</span> *mSerial;</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ex">QList</span>&lt;<span class="ex">QSerialPortInfo</span>&gt; mSerialPorts;</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="ex">QTimer</span> *mSerialScanTimer;</span></code></pre></div>
 <p>Those members above will be initialized in the constructor shown later in this text.</p>
 <p>There are also a bunch of slots and one member function declared in this class.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">private</span> <span class="ex">slots</span>:</a>
-<a class="sourceLine" id="cb3-2" title="2">    <span class="dt">void</span> on_connectPushButton_clicked();</a>
-<a class="sourceLine" id="cb3-3" title="3"></a>
-<a class="sourceLine" id="cb3-4" title="4">    <span class="dt">void</span> on_sendPushButton_clicked();</a>
-<a class="sourceLine" id="cb3-5" title="5">    <span class="dt">void</span> serialReadyRead();</a>
-<a class="sourceLine" id="cb3-6" title="6"></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="kw">private</span>: </a>
-<a class="sourceLine" id="cb3-8" title="8">    <span class="dt">void</span> updateSerialPorts();</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">private</span> <span class="ex">slots</span>:</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    <span class="dt">void</span> on_connectPushButton_clicked();</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    <span class="dt">void</span> on_sendPushButton_clicked();</span>
+<span id="cb3-5"><a href="#cb3-5"></a>    <span class="dt">void</span> serialReadyRead();</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="kw">private</span>: </span>
+<span id="cb3-8"><a href="#cb3-8"></a>    <span class="dt">void</span> updateSerialPorts();</span></code></pre></div>
 <p>The implementation of all of these will be shown later in the text.</p>
 <p>Below you find <em>mainwindow.h</em> in its entirety:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb4-1" title="1">ifndef MAINWINDOW_H</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="pp">#define M</span>AINWINDOW_H</a>
-<a class="sourceLine" id="cb4-3" title="3"></a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="pp">#include </span><span class="im">&lt;QMainWindow&gt;</span></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="pp">#include </span><span class="im">&lt;QSerialPort&gt;</span></a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="pp">#include </span><span class="im">&lt;QSerialPortInfo&gt;</span></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="pp">#include </span><span class="im">&lt;QTimer&gt;</span></a>
-<a class="sourceLine" id="cb4-8" title="8"></a>
-<a class="sourceLine" id="cb4-9" title="9">QT_BEGIN_NAMESPACE</a>
-<a class="sourceLine" id="cb4-10" title="10"><span class="kw">namespace</span> Ui { <span class="kw">class</span> MainWindow; }</a>
-<a class="sourceLine" id="cb4-11" title="11">QT_END_NAMESPACE</a>
-<a class="sourceLine" id="cb4-12" title="12"></a>
-<a class="sourceLine" id="cb4-13" title="13"><span class="kw">class</span> MainWindow : <span class="kw">public</span> <span class="ex">QMainWindow</span></a>
-<a class="sourceLine" id="cb4-14" title="14">{</a>
-<a class="sourceLine" id="cb4-15" title="15">    <span class="ex">Q_OBJECT</span></a>
-<a class="sourceLine" id="cb4-16" title="16"></a>
-<a class="sourceLine" id="cb4-17" title="17"><span class="kw">public</span>:</a>
-<a class="sourceLine" id="cb4-18" title="18">    MainWindow(<span class="ex">QWidget</span> *parent = <span class="kw">nullptr</span>);</a>
-<a class="sourceLine" id="cb4-19" title="19">    ~MainWindow();</a>
-<a class="sourceLine" id="cb4-20" title="20"></a>
-<a class="sourceLine" id="cb4-21" title="21"><span class="kw">private</span> <span class="ex">slots</span>:</a>
-<a class="sourceLine" id="cb4-22" title="22">    <span class="dt">void</span> on_connectPushButton_clicked();</a>
-<a class="sourceLine" id="cb4-23" title="23"></a>
-<a class="sourceLine" id="cb4-24" title="24">    <span class="dt">void</span> on_sendPushButton_clicked();</a>
-<a class="sourceLine" id="cb4-25" title="25">    <span class="dt">void</span> serialReadyRead();</a>
-<a class="sourceLine" id="cb4-26" title="26"></a>
-<a class="sourceLine" id="cb4-27" title="27"><span class="kw">private</span>:</a>
-<a class="sourceLine" id="cb4-28" title="28">    Ui::MainWindow *ui;</a>
-<a class="sourceLine" id="cb4-29" title="29"></a>
-<a class="sourceLine" id="cb4-30" title="30">    <span class="ex">QSerialPort</span> *mSerial;</a>
-<a class="sourceLine" id="cb4-31" title="31">    <span class="ex">QList</span>&lt;<span class="ex">QSerialPortInfo</span>&gt; mSerialPorts;</a>
-<a class="sourceLine" id="cb4-32" title="32">    <span class="ex">QTimer</span> *mSerialScanTimer;</a>
-<a class="sourceLine" id="cb4-33" title="33"></a>
-<a class="sourceLine" id="cb4-34" title="34">    <span class="dt">void</span> updateSerialPorts();</a>
-<a class="sourceLine" id="cb4-35" title="35">};</a>
-<a class="sourceLine" id="cb4-36" title="36"><span class="pp">#endif </span><span class="co">// MAINWINDOW_H</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1"></a>ifndef MAINWINDOW_H</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="pp">#define MAINWINDOW_H</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="pp">#include </span><span class="im">&lt;QMainWindow&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="pp">#include </span><span class="im">&lt;QSerialPort&gt;</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="pp">#include </span><span class="im">&lt;QSerialPortInfo&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="pp">#include </span><span class="im">&lt;QTimer&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a>QT_BEGIN_NAMESPACE</span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="kw">namespace</span> Ui { <span class="kw">class</span> MainWindow; }</span>
+<span id="cb4-11"><a href="#cb4-11"></a>QT_END_NAMESPACE</span>
+<span id="cb4-12"><a href="#cb4-12"></a></span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="kw">class</span> MainWindow : <span class="kw">public</span> <span class="ex">QMainWindow</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>{</span>
+<span id="cb4-15"><a href="#cb4-15"></a>    <span class="ex">Q_OBJECT</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a></span>
+<span id="cb4-17"><a href="#cb4-17"></a><span class="kw">public</span>:</span>
+<span id="cb4-18"><a href="#cb4-18"></a>    MainWindow(<span class="ex">QWidget</span> *parent = <span class="kw">nullptr</span>);</span>
+<span id="cb4-19"><a href="#cb4-19"></a>    ~MainWindow();</span>
+<span id="cb4-20"><a href="#cb4-20"></a></span>
+<span id="cb4-21"><a href="#cb4-21"></a><span class="kw">private</span> <span class="ex">slots</span>:</span>
+<span id="cb4-22"><a href="#cb4-22"></a>    <span class="dt">void</span> on_connectPushButton_clicked();</span>
+<span id="cb4-23"><a href="#cb4-23"></a></span>
+<span id="cb4-24"><a href="#cb4-24"></a>    <span class="dt">void</span> on_sendPushButton_clicked();</span>
+<span id="cb4-25"><a href="#cb4-25"></a>    <span class="dt">void</span> serialReadyRead();</span>
+<span id="cb4-26"><a href="#cb4-26"></a></span>
+<span id="cb4-27"><a href="#cb4-27"></a><span class="kw">private</span>:</span>
+<span id="cb4-28"><a href="#cb4-28"></a>    Ui::MainWindow *ui;</span>
+<span id="cb4-29"><a href="#cb4-29"></a></span>
+<span id="cb4-30"><a href="#cb4-30"></a>    <span class="ex">QSerialPort</span> *mSerial;</span>
+<span id="cb4-31"><a href="#cb4-31"></a>    <span class="ex">QList</span>&lt;<span class="ex">QSerialPortInfo</span>&gt; mSerialPorts;</span>
+<span id="cb4-32"><a href="#cb4-32"></a>    <span class="ex">QTimer</span> *mSerialScanTimer;</span>
+<span id="cb4-33"><a href="#cb4-33"></a></span>
+<span id="cb4-34"><a href="#cb4-34"></a>    <span class="dt">void</span> updateSerialPorts();</span>
+<span id="cb4-35"><a href="#cb4-35"></a>};</span>
+<span id="cb4-36"><a href="#cb4-36"></a><span class="pp">#endif </span><span class="co">// MAINWINDOW_H</span></span></code></pre></div>
 <p>Now, let us jump over the <em>mainwindow.cpp</em> file and go through that code. Starting with the constructor for the MainWindow object.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb5-1" title="1">MainWindow::MainWindow(<span class="ex">QWidget</span> *parent)</a>
-<a class="sourceLine" id="cb5-2" title="2">    : <span class="ex">QMainWindow</span>(parent)</a>
-<a class="sourceLine" id="cb5-3" title="3">    , ui(<span class="kw">new</span> Ui::MainWindow)</a>
-<a class="sourceLine" id="cb5-4" title="4">{</a>
-<a class="sourceLine" id="cb5-5" title="5">    ui-&gt;setupUi(<span class="kw">this</span>);</a>
-<a class="sourceLine" id="cb5-6" title="6">    <span class="kw">this</span>-&gt;setWindowTitle(<span class="st">&quot;Serial&quot;</span>);</a>
-<a class="sourceLine" id="cb5-7" title="7"></a>
-<a class="sourceLine" id="cb5-8" title="8">    mSerial = <span class="kw">new</span> <span class="ex">QSerialPort</span>(<span class="kw">this</span>);</a>
-<a class="sourceLine" id="cb5-9" title="9">    updateSerialPorts();</a>
-<a class="sourceLine" id="cb5-10" title="10"></a>
-<a class="sourceLine" id="cb5-11" title="11">    mSerialScanTimer = <span class="kw">new</span> <span class="ex">QTimer</span>(<span class="kw">this</span>);</a>
-<a class="sourceLine" id="cb5-12" title="12">    mSerialScanTimer-&gt;setInterval(<span class="dv">5000</span>);</a>
-<a class="sourceLine" id="cb5-13" title="13">    mSerialScanTimer-&gt;start();</a>
-<a class="sourceLine" id="cb5-14" title="14"></a>
-<a class="sourceLine" id="cb5-15" title="15">    <span class="fu">connect</span>(mSerialScanTimer, &amp;<span class="ex">QTimer::</span>timeout,</a>
-<a class="sourceLine" id="cb5-16" title="16">            <span class="kw">this</span>, &amp;MainWindow::updateSerialPorts);</a>
-<a class="sourceLine" id="cb5-17" title="17"></a>
-<a class="sourceLine" id="cb5-18" title="18">    <span class="fu">connect</span>(ui-&gt;inputLineEdit, &amp;<span class="ex">QLineEdit::</span>returnPressed,</a>
-<a class="sourceLine" id="cb5-19" title="19">            <span class="kw">this</span>, &amp;MainWindow::on_sendPushButton_clicked);</a>
-<a class="sourceLine" id="cb5-20" title="20"></a>
-<a class="sourceLine" id="cb5-21" title="21">    <span class="fu">connect</span>(mSerial, &amp;<span class="ex">QSerialPort::</span>readyRead,</a>
-<a class="sourceLine" id="cb5-22" title="22">            <span class="kw">this</span>, &amp;MainWindow::serialReadyRead);</a>
-<a class="sourceLine" id="cb5-23" title="23"></a>
-<a class="sourceLine" id="cb5-24" title="24">}</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1"></a>MainWindow::MainWindow(<span class="ex">QWidget</span> *parent)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    : <span class="ex">QMainWindow</span>(parent)</span>
+<span id="cb5-3"><a href="#cb5-3"></a>    , ui(<span class="kw">new</span> Ui::MainWindow)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>{</span>
+<span id="cb5-5"><a href="#cb5-5"></a>    ui-&gt;setupUi(<span class="kw">this</span>);</span>
+<span id="cb5-6"><a href="#cb5-6"></a>    <span class="kw">this</span>-&gt;setWindowTitle(<span class="st">&quot;Serial&quot;</span>);</span>
+<span id="cb5-7"><a href="#cb5-7"></a></span>
+<span id="cb5-8"><a href="#cb5-8"></a>    mSerial = <span class="kw">new</span> <span class="ex">QSerialPort</span>(<span class="kw">this</span>);</span>
+<span id="cb5-9"><a href="#cb5-9"></a>    updateSerialPorts();</span>
+<span id="cb5-10"><a href="#cb5-10"></a></span>
+<span id="cb5-11"><a href="#cb5-11"></a>    mSerialScanTimer = <span class="kw">new</span> <span class="ex">QTimer</span>(<span class="kw">this</span>);</span>
+<span id="cb5-12"><a href="#cb5-12"></a>    mSerialScanTimer-&gt;setInterval(<span class="dv">5000</span>);</span>
+<span id="cb5-13"><a href="#cb5-13"></a>    mSerialScanTimer-&gt;start();</span>
+<span id="cb5-14"><a href="#cb5-14"></a></span>
+<span id="cb5-15"><a href="#cb5-15"></a>    <span class="fu">connect</span>(mSerialScanTimer, &amp;<span class="ex">QTimer::</span>timeout,</span>
+<span id="cb5-16"><a href="#cb5-16"></a>            <span class="kw">this</span>, &amp;MainWindow::updateSerialPorts);</span>
+<span id="cb5-17"><a href="#cb5-17"></a></span>
+<span id="cb5-18"><a href="#cb5-18"></a>    <span class="fu">connect</span>(ui-&gt;inputLineEdit, &amp;<span class="ex">QLineEdit::</span>returnPressed,</span>
+<span id="cb5-19"><a href="#cb5-19"></a>            <span class="kw">this</span>, &amp;MainWindow::on_sendPushButton_clicked);</span>
+<span id="cb5-20"><a href="#cb5-20"></a></span>
+<span id="cb5-21"><a href="#cb5-21"></a>    <span class="fu">connect</span>(mSerial, &amp;<span class="ex">QSerialPort::</span>readyRead,</span>
+<span id="cb5-22"><a href="#cb5-22"></a>            <span class="kw">this</span>, &amp;MainWindow::serialReadyRead);</span>
+<span id="cb5-23"><a href="#cb5-23"></a></span>
+<span id="cb5-24"><a href="#cb5-24"></a>}</span></code></pre></div>
 <p>In the constructor a QSerialPort object is created and, <em>mSerial</em> is initialized. Then a function is called that updates the list of serial ports for the combo box. Nothing very fancy so, will show the contents of <code>updateSerialPorts</code> in a moment.</p>
 <p>The timer is initialized and set to a 5 seconds interval.</p>
 <p>Lastly, a bunch of connections are set up. The first of these connects the <code>updateSerialPorts</code> function to the timeout signal. It doesn't matter that <code>updateSerialPorts</code> isn't declared as a slot, it seems. The readyRead signal is also connected to a slot that will take care of reading the available data. To get the return key to act the same way as the send button, the <code>returnPressed</code> signal of the line edit widget is connected to the same slot as the send button.</p>
 <p>That was the constructor. There is destructor as well but it is unchanged from the template provided when creating the project.</p>
 <p>The <code>updateSerialPorts</code> function updates the list of serial ports by asking for the <em>availablePorts</em>. The combo box is cleared to then be refilled with the list of ports. The <em>addItem</em> method in the <em>QComboBox</em> takes two arguments, the first is a string and the second is a QVariant. In this case what we provide for second argument is another string, so this is fine as a <em>QVariant</em> it seems. However, when we access the data field of the combo box, we must convert it from a <em>QVariant</em> to a string before use.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb6-1" title="1"><span class="dt">void</span> MainWindow::updateSerialPorts()</a>
-<a class="sourceLine" id="cb6-2" title="2">{</a>
-<a class="sourceLine" id="cb6-3" title="3">    mSerialPorts = <span class="ex">QSerialPortInfo::</span>availablePorts();</a>
-<a class="sourceLine" id="cb6-4" title="4"></a>
-<a class="sourceLine" id="cb6-5" title="5">    ui-&gt;serialComboBox-&gt;clear();</a>
-<a class="sourceLine" id="cb6-6" title="6">    <span class="cf">for</span> (<span class="ex">QSerialPortInfo</span> port : mSerialPorts) {</a>
-<a class="sourceLine" id="cb6-7" title="7">        ui-&gt;serialComboBox-&gt;addItem(port.portName(), port.systemLocation());</a>
-<a class="sourceLine" id="cb6-8" title="8">    }</a>
-<a class="sourceLine" id="cb6-9" title="9">}</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">void</span> MainWindow::updateSerialPorts()</span>
+<span id="cb6-2"><a href="#cb6-2"></a>{</span>
+<span id="cb6-3"><a href="#cb6-3"></a>    mSerialPorts = <span class="ex">QSerialPortInfo::</span>availablePorts();</span>
+<span id="cb6-4"><a href="#cb6-4"></a></span>
+<span id="cb6-5"><a href="#cb6-5"></a>    ui-&gt;serialComboBox-&gt;clear();</span>
+<span id="cb6-6"><a href="#cb6-6"></a>    <span class="cf">for</span> (<span class="ex">QSerialPortInfo</span> port : mSerialPorts) {</span>
+<span id="cb6-7"><a href="#cb6-7"></a>        ui-&gt;serialComboBox-&gt;addItem(port.portName(), port.systemLocation());</span>
+<span id="cb6-8"><a href="#cb6-8"></a>    }</span>
+<span id="cb6-9"><a href="#cb6-9"></a>}</span></code></pre></div>
 <p>The combo box contents is accessed when the connect button is pressed. The selected item of the combo box is then read out. We only need to read out the data field from the combo box. The data is not actually displayed in the combo box, only the name is. When we added items to the combo box we put the name of the port as the first (or text) argument to <code>addItem</code> which is what is displayed in the list. The data from the combo box iten is converted from <em>QVariant</em> to string using <code>toString()</code>.</p>
 <p>If the program is already connected to a serial port when the user clicks connect, the connection is closed.</p>
 <p>Now we are ready to set up the serial connection parameters and open the connection.</p>
 <p>Now one idea could be to add more GUI elements where the user can fill in the parameters. If that had been the case, we could load the information from those GUI elements at this time and use them to set up the connection.</p>
 <p>The whole contents of this method is wrapped in calls that disable the connection to grey it out while the computer is working on setting up a connection. This will make it harder to accidently queue up several of these connect events.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb7-1" title="1"><span class="dt">void</span> MainWindow::on_connectPushButton_clicked()</a>
-<a class="sourceLine" id="cb7-2" title="2">{</a>
-<a class="sourceLine" id="cb7-3" title="3">    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">false</span>);</a>
-<a class="sourceLine" id="cb7-4" title="4">    <span class="ex">QString</span> serialLoc  =  ui-&gt;serialComboBox-&gt;currentData().toString();</a>
-<a class="sourceLine" id="cb7-5" title="5"></a>
-<a class="sourceLine" id="cb7-6" title="6">    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</a>
-<a class="sourceLine" id="cb7-7" title="7">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial already connected, disconnecting!&quot;</span>;</a>
-<a class="sourceLine" id="cb7-8" title="8">        mSerial-&gt;close();</a>
-<a class="sourceLine" id="cb7-9" title="9">    }</a>
-<a class="sourceLine" id="cb7-10" title="10"></a>
-<a class="sourceLine" id="cb7-11" title="11">    mSerial-&gt;setPortName(serialLoc);</a>
-<a class="sourceLine" id="cb7-12" title="12">    mSerial-&gt;setBaudRate(<span class="ex">QSerialPort::</span>Baud115200);</a>
-<a class="sourceLine" id="cb7-13" title="13">    mSerial-&gt;setDataBits(<span class="ex">QSerialPort::</span>Data8);</a>
-<a class="sourceLine" id="cb7-14" title="14">    mSerial-&gt;setParity(<span class="ex">QSerialPort::</span>NoParity);</a>
-<a class="sourceLine" id="cb7-15" title="15">    mSerial-&gt;setStopBits(<span class="ex">QSerialPort::</span>OneStop);</a>
-<a class="sourceLine" id="cb7-16" title="16">    mSerial-&gt;setFlowControl(<span class="ex">QSerialPort::</span>NoFlowControl);</a>
-<a class="sourceLine" id="cb7-17" title="17"></a>
-<a class="sourceLine" id="cb7-18" title="18">    <span class="cf">if</span>(mSerial-&gt;open(<span class="ex">QIODevice::</span>ReadWrite)) {</a>
-<a class="sourceLine" id="cb7-19" title="19">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: OK!&quot;</span>;</a>
-<a class="sourceLine" id="cb7-20" title="20">    } <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb7-21" title="21">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: ERROR!&quot;</span>;</a>
-<a class="sourceLine" id="cb7-22" title="22">    }</a>
-<a class="sourceLine" id="cb7-23" title="23">    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">true</span>);</a>
-<a class="sourceLine" id="cb7-24" title="24">}</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">void</span> MainWindow::on_connectPushButton_clicked()</span>
+<span id="cb7-2"><a href="#cb7-2"></a>{</span>
+<span id="cb7-3"><a href="#cb7-3"></a>    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">false</span>);</span>
+<span id="cb7-4"><a href="#cb7-4"></a>    <span class="ex">QString</span> serialLoc  =  ui-&gt;serialComboBox-&gt;currentData().toString();</span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a>    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</span>
+<span id="cb7-7"><a href="#cb7-7"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial already connected, disconnecting!&quot;</span>;</span>
+<span id="cb7-8"><a href="#cb7-8"></a>        mSerial-&gt;close();</span>
+<span id="cb7-9"><a href="#cb7-9"></a>    }</span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a>    mSerial-&gt;setPortName(serialLoc);</span>
+<span id="cb7-12"><a href="#cb7-12"></a>    mSerial-&gt;setBaudRate(<span class="ex">QSerialPort::</span>Baud115200);</span>
+<span id="cb7-13"><a href="#cb7-13"></a>    mSerial-&gt;setDataBits(<span class="ex">QSerialPort::</span>Data8);</span>
+<span id="cb7-14"><a href="#cb7-14"></a>    mSerial-&gt;setParity(<span class="ex">QSerialPort::</span>NoParity);</span>
+<span id="cb7-15"><a href="#cb7-15"></a>    mSerial-&gt;setStopBits(<span class="ex">QSerialPort::</span>OneStop);</span>
+<span id="cb7-16"><a href="#cb7-16"></a>    mSerial-&gt;setFlowControl(<span class="ex">QSerialPort::</span>NoFlowControl);</span>
+<span id="cb7-17"><a href="#cb7-17"></a></span>
+<span id="cb7-18"><a href="#cb7-18"></a>    <span class="cf">if</span>(mSerial-&gt;open(<span class="ex">QIODevice::</span>ReadWrite)) {</span>
+<span id="cb7-19"><a href="#cb7-19"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: OK!&quot;</span>;</span>
+<span id="cb7-20"><a href="#cb7-20"></a>    } <span class="cf">else</span> {</span>
+<span id="cb7-21"><a href="#cb7-21"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: ERROR!&quot;</span>;</span>
+<span id="cb7-22"><a href="#cb7-22"></a>    }</span>
+<span id="cb7-23"><a href="#cb7-23"></a>    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">true</span>);</span>
+<span id="cb7-24"><a href="#cb7-24"></a>}</span></code></pre></div>
 <p>When the send button is clicked or the user presses return (while the focus is on the <em>QLineWidget</em> GUI element) the following code is executed.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb8-1" title="1"><span class="dt">void</span> MainWindow::on_sendPushButton_clicked()</a>
-<a class="sourceLine" id="cb8-2" title="2">{</a>
-<a class="sourceLine" id="cb8-3" title="3">    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</a>
-<a class="sourceLine" id="cb8-4" title="4"></a>
-<a class="sourceLine" id="cb8-5" title="5">        <span class="ex">QString</span> str= ui-&gt;inputLineEdit-&gt;text();</a>
-<a class="sourceLine" id="cb8-6" title="6">        ui-&gt;inputLineEdit-&gt;clear();</a>
-<a class="sourceLine" id="cb8-7" title="7">        str.append(<span class="st">&quot;</span><span class="sc">\r\n</span><span class="st">&quot;</span>);</a>
-<a class="sourceLine" id="cb8-8" title="8">        mSerial-&gt;write(str.toLocal8Bit());</a>
-<a class="sourceLine" id="cb8-9" title="9">    } <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb8-10" title="10">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial port not connected!&quot;</span>;</a>
-<a class="sourceLine" id="cb8-11" title="11">    }</a>
-<a class="sourceLine" id="cb8-12" title="12">}</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">void</span> MainWindow::on_sendPushButton_clicked()</span>
+<span id="cb8-2"><a href="#cb8-2"></a>{</span>
+<span id="cb8-3"><a href="#cb8-3"></a>    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a>        <span class="ex">QString</span> str= ui-&gt;inputLineEdit-&gt;text();</span>
+<span id="cb8-6"><a href="#cb8-6"></a>        ui-&gt;inputLineEdit-&gt;clear();</span>
+<span id="cb8-7"><a href="#cb8-7"></a>        str.append(<span class="st">&quot;</span><span class="sc">\r\n</span><span class="st">&quot;</span>);</span>
+<span id="cb8-8"><a href="#cb8-8"></a>        mSerial-&gt;write(str.toLocal8Bit());</span>
+<span id="cb8-9"><a href="#cb8-9"></a>    } <span class="cf">else</span> {</span>
+<span id="cb8-10"><a href="#cb8-10"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial port not connected!&quot;</span>;</span>
+<span id="cb8-11"><a href="#cb8-11"></a>    }</span>
+<span id="cb8-12"><a href="#cb8-12"></a>}</span></code></pre></div>
 <p>If the serial is connected, then a string is created from the contents of the <em>QLineEdit</em>. A carriage return and newline character is appended to the string which is then sent through the serial port. The string is converted to a raw 8 bit data before transmission.</p>
 <p>The last method is for reading of data from the serial port. This takes place whenever the signal <em>readyRead</em> is raised from the <em>QSerialPort</em>.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb9-1" title="1">oid MainWindow::serialReadyRead()</a>
-<a class="sourceLine" id="cb9-2" title="2">{</a>
-<a class="sourceLine" id="cb9-3" title="3">    <span class="ex">QByteArray</span> data = mSerial-&gt;readAll();</a>
-<a class="sourceLine" id="cb9-4" title="4">    <span class="ex">QString</span> str = <span class="ex">QString</span>(data);</a>
-<a class="sourceLine" id="cb9-5" title="5">    ui-&gt;outputTextBrowser-&gt;insertPlainText(str);</a>
-<a class="sourceLine" id="cb9-6" title="6">    <span class="ex">QScrollBar</span> *sb = ui-&gt;outputTextBrowser-&gt;verticalScrollBar();</a>
-<a class="sourceLine" id="cb9-7" title="7">    sb-&gt;setValue(sb-&gt;maximum());</a>
-<a class="sourceLine" id="cb9-8" title="8">}</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb9-1"><a href="#cb9-1"></a>oid MainWindow::serialReadyRead()</span>
+<span id="cb9-2"><a href="#cb9-2"></a>{</span>
+<span id="cb9-3"><a href="#cb9-3"></a>    <span class="ex">QByteArray</span> data = mSerial-&gt;readAll();</span>
+<span id="cb9-4"><a href="#cb9-4"></a>    <span class="ex">QString</span> str = <span class="ex">QString</span>(data);</span>
+<span id="cb9-5"><a href="#cb9-5"></a>    ui-&gt;outputTextBrowser-&gt;insertPlainText(str);</span>
+<span id="cb9-6"><a href="#cb9-6"></a>    <span class="ex">QScrollBar</span> *sb = ui-&gt;outputTextBrowser-&gt;verticalScrollBar();</span>
+<span id="cb9-7"><a href="#cb9-7"></a>    sb-&gt;setValue(sb-&gt;maximum());</span>
+<span id="cb9-8"><a href="#cb9-8"></a>}</span></code></pre></div>
 <p>All the data that is avaialable from the serial port is read, with <code>readAll()</code> as an array of raw bytes. The bytes are then converted into a string and displayed onto the <em>QTextBrowser</em> widget.</p>
 <p>Once a <em>QTextBrowser</em> has enough text in it, it grows a scrollbar. The final two lines of code there, scrolls to the end of the <em>QTextBrowser</em> so that it is automatically advanced to show the newly added text.</p>
 <p>Below you find the <em>mainwindow.cpp</em> file in its entirety:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb10-1" title="1"><span class="pp">#include </span><span class="im">&quot;mainwindow.h&quot;</span></a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="pp">#include </span><span class="im">&quot;ui_mainwindow.h&quot;</span></a>
-<a class="sourceLine" id="cb10-3" title="3"><span class="pp">#include </span><span class="im">&lt;QDebug&gt;</span></a>
-<a class="sourceLine" id="cb10-4" title="4"><span class="pp">#include </span><span class="im">&lt;QScrollBar&gt;</span></a>
-<a class="sourceLine" id="cb10-5" title="5"></a>
-<a class="sourceLine" id="cb10-6" title="6">MainWindow::MainWindow(<span class="ex">QWidget</span> *parent)</a>
-<a class="sourceLine" id="cb10-7" title="7">    : <span class="ex">QMainWindow</span>(parent)</a>
-<a class="sourceLine" id="cb10-8" title="8">    , ui(<span class="kw">new</span> Ui::MainWindow)</a>
-<a class="sourceLine" id="cb10-9" title="9">{</a>
-<a class="sourceLine" id="cb10-10" title="10">    ui-&gt;setupUi(<span class="kw">this</span>);</a>
-<a class="sourceLine" id="cb10-11" title="11">    <span class="kw">this</span>-&gt;setWindowTitle(<span class="st">&quot;Serial&quot;</span>);</a>
-<a class="sourceLine" id="cb10-12" title="12"></a>
-<a class="sourceLine" id="cb10-13" title="13">    mSerial = <span class="kw">new</span> <span class="ex">QSerialPort</span>(<span class="kw">this</span>);</a>
-<a class="sourceLine" id="cb10-14" title="14">    updateSerialPorts();</a>
-<a class="sourceLine" id="cb10-15" title="15"></a>
-<a class="sourceLine" id="cb10-16" title="16">    mSerialScanTimer = <span class="kw">new</span> <span class="ex">QTimer</span>(<span class="kw">this</span>);</a>
-<a class="sourceLine" id="cb10-17" title="17">    mSerialScanTimer-&gt;setInterval(<span class="dv">5000</span>);</a>
-<a class="sourceLine" id="cb10-18" title="18">    mSerialScanTimer-&gt;start();</a>
-<a class="sourceLine" id="cb10-19" title="19"></a>
-<a class="sourceLine" id="cb10-20" title="20">    <span class="fu">connect</span>(mSerialScanTimer, &amp;<span class="ex">QTimer::</span>timeout,</a>
-<a class="sourceLine" id="cb10-21" title="21">            <span class="kw">this</span>, &amp;MainWindow::updateSerialPorts);</a>
-<a class="sourceLine" id="cb10-22" title="22"></a>
-<a class="sourceLine" id="cb10-23" title="23">    <span class="fu">connect</span>(ui-&gt;inputLineEdit, &amp;<span class="ex">QLineEdit::</span>returnPressed,</a>
-<a class="sourceLine" id="cb10-24" title="24">            <span class="kw">this</span>, &amp;MainWindow::on_sendPushButton_clicked);</a>
-<a class="sourceLine" id="cb10-25" title="25"></a>
-<a class="sourceLine" id="cb10-26" title="26">    <span class="fu">connect</span>(mSerial, &amp;<span class="ex">QSerialPort::</span>readyRead,</a>
-<a class="sourceLine" id="cb10-27" title="27">            <span class="kw">this</span>, &amp;MainWindow::serialReadyRead);</a>
-<a class="sourceLine" id="cb10-28" title="28"></a>
-<a class="sourceLine" id="cb10-29" title="29">}</a>
-<a class="sourceLine" id="cb10-30" title="30"></a>
-<a class="sourceLine" id="cb10-31" title="31">MainWindow::~MainWindow()</a>
-<a class="sourceLine" id="cb10-32" title="32">{</a>
-<a class="sourceLine" id="cb10-33" title="33">    <span class="kw">delete</span> ui;</a>
-<a class="sourceLine" id="cb10-34" title="34">}</a>
-<a class="sourceLine" id="cb10-35" title="35"></a>
-<a class="sourceLine" id="cb10-36" title="36"><span class="dt">void</span> MainWindow::updateSerialPorts()</a>
-<a class="sourceLine" id="cb10-37" title="37">{</a>
-<a class="sourceLine" id="cb10-38" title="38">    mSerialPorts = <span class="ex">QSerialPortInfo::</span>availablePorts();</a>
-<a class="sourceLine" id="cb10-39" title="39"></a>
-<a class="sourceLine" id="cb10-40" title="40">    ui-&gt;serialComboBox-&gt;clear();</a>
-<a class="sourceLine" id="cb10-41" title="41">    <span class="cf">for</span> (<span class="ex">QSerialPortInfo</span> port : mSerialPorts) {</a>
-<a class="sourceLine" id="cb10-42" title="42">        ui-&gt;serialComboBox-&gt;addItem(port.portName(), port.systemLocation());</a>
-<a class="sourceLine" id="cb10-43" title="43">    }</a>
-<a class="sourceLine" id="cb10-44" title="44">}</a>
-<a class="sourceLine" id="cb10-45" title="45"></a>
-<a class="sourceLine" id="cb10-46" title="46"><span class="dt">void</span> MainWindow::on_connectPushButton_clicked()</a>
-<a class="sourceLine" id="cb10-47" title="47">{</a>
-<a class="sourceLine" id="cb10-48" title="48">    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">false</span>);</a>
-<a class="sourceLine" id="cb10-49" title="49">    <span class="ex">QString</span> serialName =  ui-&gt;serialComboBox-&gt;currentText();</a>
-<a class="sourceLine" id="cb10-50" title="50">    <span class="ex">QString</span> serialLoc  =  ui-&gt;serialComboBox-&gt;currentData().toString();</a>
-<a class="sourceLine" id="cb10-51" title="51"></a>
-<a class="sourceLine" id="cb10-52" title="52">    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</a>
-<a class="sourceLine" id="cb10-53" title="53">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial already connected, disconnecting!&quot;</span>;</a>
-<a class="sourceLine" id="cb10-54" title="54">        mSerial-&gt;close();</a>
-<a class="sourceLine" id="cb10-55" title="55">    }</a>
-<a class="sourceLine" id="cb10-56" title="56"></a>
-<a class="sourceLine" id="cb10-57" title="57">    mSerial-&gt;setPortName(serialLoc);</a>
-<a class="sourceLine" id="cb10-58" title="58">    mSerial-&gt;setBaudRate(<span class="ex">QSerialPort::</span>Baud115200);</a>
-<a class="sourceLine" id="cb10-59" title="59">    mSerial-&gt;setDataBits(<span class="ex">QSerialPort::</span>Data8);</a>
-<a class="sourceLine" id="cb10-60" title="60">    mSerial-&gt;setParity(<span class="ex">QSerialPort::</span>NoParity);</a>
-<a class="sourceLine" id="cb10-61" title="61">    mSerial-&gt;setStopBits(<span class="ex">QSerialPort::</span>OneStop);</a>
-<a class="sourceLine" id="cb10-62" title="62">    mSerial-&gt;setFlowControl(<span class="ex">QSerialPort::</span>NoFlowControl);</a>
-<a class="sourceLine" id="cb10-63" title="63"></a>
-<a class="sourceLine" id="cb10-64" title="64">    <span class="cf">if</span>(mSerial-&gt;open(<span class="ex">QIODevice::</span>ReadWrite)) {</a>
-<a class="sourceLine" id="cb10-65" title="65">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: OK!&quot;</span>;</a>
-<a class="sourceLine" id="cb10-66" title="66">    } <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb10-67" title="67">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: ERROR!&quot;</span>;</a>
-<a class="sourceLine" id="cb10-68" title="68">    }</a>
-<a class="sourceLine" id="cb10-69" title="69">    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">true</span>);</a>
-<a class="sourceLine" id="cb10-70" title="70">}</a>
-<a class="sourceLine" id="cb10-71" title="71"></a>
-<a class="sourceLine" id="cb10-72" title="72"><span class="dt">void</span> MainWindow::on_sendPushButton_clicked()</a>
-<a class="sourceLine" id="cb10-73" title="73">{</a>
-<a class="sourceLine" id="cb10-74" title="74">    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</a>
-<a class="sourceLine" id="cb10-75" title="75"></a>
-<a class="sourceLine" id="cb10-76" title="76">        <span class="ex">QString</span> str= ui-&gt;inputLineEdit-&gt;text();</a>
-<a class="sourceLine" id="cb10-77" title="77">        ui-&gt;inputLineEdit-&gt;clear();</a>
-<a class="sourceLine" id="cb10-78" title="78">        str.append(<span class="st">&quot;</span><span class="sc">\r\n</span><span class="st">&quot;</span>);</a>
-<a class="sourceLine" id="cb10-79" title="79">        mSerial-&gt;write(str.toLocal8Bit());</a>
-<a class="sourceLine" id="cb10-80" title="80">    } <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb10-81" title="81">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial port not connected!&quot;</span>;</a>
-<a class="sourceLine" id="cb10-82" title="82">    }</a>
-<a class="sourceLine" id="cb10-83" title="83">}</a>
-<a class="sourceLine" id="cb10-84" title="84"></a>
-<a class="sourceLine" id="cb10-85" title="85"><span class="dt">void</span> MainWindow::serialReadyRead()</a>
-<a class="sourceLine" id="cb10-86" title="86">{</a>
-<a class="sourceLine" id="cb10-87" title="87">    <span class="ex">QByteArray</span> data = mSerial   -&gt;readAll();</a>
-<a class="sourceLine" id="cb10-88" title="88">    <span class="ex">QString</span> str = <span class="ex">QString</span>(data);</a>
-<a class="sourceLine" id="cb10-89" title="89">    ui-&gt;outputTextBrowser-&gt;insertPlainText(str);</a>
-<a class="sourceLine" id="cb10-90" title="90">    <span class="ex">QScrollBar</span> *sb = ui-&gt;outputTextBrowser-&gt;verticalScrollBar();</a>
-<a class="sourceLine" id="cb10-91" title="91">    sb-&gt;setValue(sb-&gt;maximum());</a>
-<a class="sourceLine" id="cb10-92" title="92"></a>
-<a class="sourceLine" id="cb10-93" title="93">}</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1"></a><span class="pp">#include </span><span class="im">&quot;mainwindow.h&quot;</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="pp">#include </span><span class="im">&quot;ui_mainwindow.h&quot;</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="pp">#include </span><span class="im">&lt;QDebug&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="pp">#include </span><span class="im">&lt;QScrollBar&gt;</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a></span>
+<span id="cb10-6"><a href="#cb10-6"></a>MainWindow::MainWindow(<span class="ex">QWidget</span> *parent)</span>
+<span id="cb10-7"><a href="#cb10-7"></a>    : <span class="ex">QMainWindow</span>(parent)</span>
+<span id="cb10-8"><a href="#cb10-8"></a>    , ui(<span class="kw">new</span> Ui::MainWindow)</span>
+<span id="cb10-9"><a href="#cb10-9"></a>{</span>
+<span id="cb10-10"><a href="#cb10-10"></a>    ui-&gt;setupUi(<span class="kw">this</span>);</span>
+<span id="cb10-11"><a href="#cb10-11"></a>    <span class="kw">this</span>-&gt;setWindowTitle(<span class="st">&quot;Serial&quot;</span>);</span>
+<span id="cb10-12"><a href="#cb10-12"></a></span>
+<span id="cb10-13"><a href="#cb10-13"></a>    mSerial = <span class="kw">new</span> <span class="ex">QSerialPort</span>(<span class="kw">this</span>);</span>
+<span id="cb10-14"><a href="#cb10-14"></a>    updateSerialPorts();</span>
+<span id="cb10-15"><a href="#cb10-15"></a></span>
+<span id="cb10-16"><a href="#cb10-16"></a>    mSerialScanTimer = <span class="kw">new</span> <span class="ex">QTimer</span>(<span class="kw">this</span>);</span>
+<span id="cb10-17"><a href="#cb10-17"></a>    mSerialScanTimer-&gt;setInterval(<span class="dv">5000</span>);</span>
+<span id="cb10-18"><a href="#cb10-18"></a>    mSerialScanTimer-&gt;start();</span>
+<span id="cb10-19"><a href="#cb10-19"></a></span>
+<span id="cb10-20"><a href="#cb10-20"></a>    <span class="fu">connect</span>(mSerialScanTimer, &amp;<span class="ex">QTimer::</span>timeout,</span>
+<span id="cb10-21"><a href="#cb10-21"></a>            <span class="kw">this</span>, &amp;MainWindow::updateSerialPorts);</span>
+<span id="cb10-22"><a href="#cb10-22"></a></span>
+<span id="cb10-23"><a href="#cb10-23"></a>    <span class="fu">connect</span>(ui-&gt;inputLineEdit, &amp;<span class="ex">QLineEdit::</span>returnPressed,</span>
+<span id="cb10-24"><a href="#cb10-24"></a>            <span class="kw">this</span>, &amp;MainWindow::on_sendPushButton_clicked);</span>
+<span id="cb10-25"><a href="#cb10-25"></a></span>
+<span id="cb10-26"><a href="#cb10-26"></a>    <span class="fu">connect</span>(mSerial, &amp;<span class="ex">QSerialPort::</span>readyRead,</span>
+<span id="cb10-27"><a href="#cb10-27"></a>            <span class="kw">this</span>, &amp;MainWindow::serialReadyRead);</span>
+<span id="cb10-28"><a href="#cb10-28"></a></span>
+<span id="cb10-29"><a href="#cb10-29"></a>}</span>
+<span id="cb10-30"><a href="#cb10-30"></a></span>
+<span id="cb10-31"><a href="#cb10-31"></a>MainWindow::~MainWindow()</span>
+<span id="cb10-32"><a href="#cb10-32"></a>{</span>
+<span id="cb10-33"><a href="#cb10-33"></a>    <span class="kw">delete</span> ui;</span>
+<span id="cb10-34"><a href="#cb10-34"></a>}</span>
+<span id="cb10-35"><a href="#cb10-35"></a></span>
+<span id="cb10-36"><a href="#cb10-36"></a><span class="dt">void</span> MainWindow::updateSerialPorts()</span>
+<span id="cb10-37"><a href="#cb10-37"></a>{</span>
+<span id="cb10-38"><a href="#cb10-38"></a>    mSerialPorts = <span class="ex">QSerialPortInfo::</span>availablePorts();</span>
+<span id="cb10-39"><a href="#cb10-39"></a></span>
+<span id="cb10-40"><a href="#cb10-40"></a>    ui-&gt;serialComboBox-&gt;clear();</span>
+<span id="cb10-41"><a href="#cb10-41"></a>    <span class="cf">for</span> (<span class="ex">QSerialPortInfo</span> port : mSerialPorts) {</span>
+<span id="cb10-42"><a href="#cb10-42"></a>        ui-&gt;serialComboBox-&gt;addItem(port.portName(), port.systemLocation());</span>
+<span id="cb10-43"><a href="#cb10-43"></a>    }</span>
+<span id="cb10-44"><a href="#cb10-44"></a>}</span>
+<span id="cb10-45"><a href="#cb10-45"></a></span>
+<span id="cb10-46"><a href="#cb10-46"></a><span class="dt">void</span> MainWindow::on_connectPushButton_clicked()</span>
+<span id="cb10-47"><a href="#cb10-47"></a>{</span>
+<span id="cb10-48"><a href="#cb10-48"></a>    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">false</span>);</span>
+<span id="cb10-49"><a href="#cb10-49"></a>    <span class="ex">QString</span> serialName =  ui-&gt;serialComboBox-&gt;currentText();</span>
+<span id="cb10-50"><a href="#cb10-50"></a>    <span class="ex">QString</span> serialLoc  =  ui-&gt;serialComboBox-&gt;currentData().toString();</span>
+<span id="cb10-51"><a href="#cb10-51"></a></span>
+<span id="cb10-52"><a href="#cb10-52"></a>    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</span>
+<span id="cb10-53"><a href="#cb10-53"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial already connected, disconnecting!&quot;</span>;</span>
+<span id="cb10-54"><a href="#cb10-54"></a>        mSerial-&gt;close();</span>
+<span id="cb10-55"><a href="#cb10-55"></a>    }</span>
+<span id="cb10-56"><a href="#cb10-56"></a></span>
+<span id="cb10-57"><a href="#cb10-57"></a>    mSerial-&gt;setPortName(serialLoc);</span>
+<span id="cb10-58"><a href="#cb10-58"></a>    mSerial-&gt;setBaudRate(<span class="ex">QSerialPort::</span>Baud115200);</span>
+<span id="cb10-59"><a href="#cb10-59"></a>    mSerial-&gt;setDataBits(<span class="ex">QSerialPort::</span>Data8);</span>
+<span id="cb10-60"><a href="#cb10-60"></a>    mSerial-&gt;setParity(<span class="ex">QSerialPort::</span>NoParity);</span>
+<span id="cb10-61"><a href="#cb10-61"></a>    mSerial-&gt;setStopBits(<span class="ex">QSerialPort::</span>OneStop);</span>
+<span id="cb10-62"><a href="#cb10-62"></a>    mSerial-&gt;setFlowControl(<span class="ex">QSerialPort::</span>NoFlowControl);</span>
+<span id="cb10-63"><a href="#cb10-63"></a></span>
+<span id="cb10-64"><a href="#cb10-64"></a>    <span class="cf">if</span>(mSerial-&gt;open(<span class="ex">QIODevice::</span>ReadWrite)) {</span>
+<span id="cb10-65"><a href="#cb10-65"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: OK!&quot;</span>;</span>
+<span id="cb10-66"><a href="#cb10-66"></a>    } <span class="cf">else</span> {</span>
+<span id="cb10-67"><a href="#cb10-67"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: ERROR!&quot;</span>;</span>
+<span id="cb10-68"><a href="#cb10-68"></a>    }</span>
+<span id="cb10-69"><a href="#cb10-69"></a>    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">true</span>);</span>
+<span id="cb10-70"><a href="#cb10-70"></a>}</span>
+<span id="cb10-71"><a href="#cb10-71"></a></span>
+<span id="cb10-72"><a href="#cb10-72"></a><span class="dt">void</span> MainWindow::on_sendPushButton_clicked()</span>
+<span id="cb10-73"><a href="#cb10-73"></a>{</span>
+<span id="cb10-74"><a href="#cb10-74"></a>    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</span>
+<span id="cb10-75"><a href="#cb10-75"></a></span>
+<span id="cb10-76"><a href="#cb10-76"></a>        <span class="ex">QString</span> str= ui-&gt;inputLineEdit-&gt;text();</span>
+<span id="cb10-77"><a href="#cb10-77"></a>        ui-&gt;inputLineEdit-&gt;clear();</span>
+<span id="cb10-78"><a href="#cb10-78"></a>        str.append(<span class="st">&quot;</span><span class="sc">\r\n</span><span class="st">&quot;</span>);</span>
+<span id="cb10-79"><a href="#cb10-79"></a>        mSerial-&gt;write(str.toLocal8Bit());</span>
+<span id="cb10-80"><a href="#cb10-80"></a>    } <span class="cf">else</span> {</span>
+<span id="cb10-81"><a href="#cb10-81"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial port not connected!&quot;</span>;</span>
+<span id="cb10-82"><a href="#cb10-82"></a>    }</span>
+<span id="cb10-83"><a href="#cb10-83"></a>}</span>
+<span id="cb10-84"><a href="#cb10-84"></a></span>
+<span id="cb10-85"><a href="#cb10-85"></a><span class="dt">void</span> MainWindow::serialReadyRead()</span>
+<span id="cb10-86"><a href="#cb10-86"></a>{</span>
+<span id="cb10-87"><a href="#cb10-87"></a>    <span class="ex">QByteArray</span> data = mSerial   -&gt;readAll();</span>
+<span id="cb10-88"><a href="#cb10-88"></a>    <span class="ex">QString</span> str = <span class="ex">QString</span>(data);</span>
+<span id="cb10-89"><a href="#cb10-89"></a>    ui-&gt;outputTextBrowser-&gt;insertPlainText(str);</span>
+<span id="cb10-90"><a href="#cb10-90"></a>    <span class="ex">QScrollBar</span> *sb = ui-&gt;outputTextBrowser-&gt;verticalScrollBar();</span>
+<span id="cb10-91"><a href="#cb10-91"></a>    sb-&gt;setValue(sb-&gt;maximum());</span>
+<span id="cb10-92"><a href="#cb10-92"></a></span>
+<span id="cb10-93"><a href="#cb10-93"></a>}</span></code></pre></div>
 <h2 id="in-closing">In Closing</h2>
 <p>This program could serve as a base for more complicated interaction with a development board. Instead of repetitively type in long text strings add a button that performs that interaction. Another idea would be to add a history of typed in commands and some method of quickly bringing up a previously entered command.</p>
 <p><img src="media/serial_1.png" /></p>
@@ -435,4 +435,3 @@
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
 </HTML>
-

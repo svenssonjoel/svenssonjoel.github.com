@@ -178,49 +178,49 @@
 <p>Eight pins are unconnected so far. These eight pins, each turn a segment LED if you connect that pin to ground. That feels a bit awkward since I want to be able to turn the segments on using the STM32 MCU. and that would mean sinking the current through the seven-segment display circuit into the GPIO pins of the MCU. From the <a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/ef/92/76/6d/bb/c2/4f/f7/DM00037051.pdf/files/DM00037051.pdf/jcr:content/translations/en.DM00037051.pdf">datasheet</a> the maximum current we can sink into a GPIO pin is 25mA. Given the 365 Ohm resistor between the 3V supply and the anode, the current can not be higher than about 8.3 mA, which is well below the 25mA but still seems to be quite enough to light up the LEDs in the display so that they are visible even in a lit room. The way it is setup with a common anode, current limited with a resistor, the more of the LEDs turned on, the dimmer they become.</p>
 <h2 id="some-code">Some code</h2>
 <p>The Seven-segment display is connected to the STM32 at pins PA 0, 1, 2 and 3 and to PB 11, 12, 13, and 14. I think it makes sense to configure these as <code>PAL_MODE_OPENDRAIN</code> which as I understand it means that the pins will "float" (essentially act as unconnected) when you assert high (1) on them. Asserting a low (0) will mean the pin is pulled to ground.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb1-1" title="1">  palSetGroupMode(GPIOA, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">0</span>, PAL_MODE_OUTPUT_OPENDRAIN);</a>
-<a class="sourceLine" id="cb1-2" title="2">  palSetGroupMode(GPIOB, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">11</span>, PAL_MODE_OUTPUT_OPENDRAIN);</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a>  palSetGroupMode(GPIOA, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">0</span>, PAL_MODE_OUTPUT_OPENDRAIN);</span>
+<span id="cb1-2"><a href="#cb1-2"></a>  palSetGroupMode(GPIOB, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">11</span>, PAL_MODE_OUTPUT_OPENDRAIN);</span></code></pre></div>
 <p>The <code>palSetGroupMode</code> function used above changes the mode of a collection of GPIOs via a mask and a shift. The <code>PAL_GROUP_MASK(4)</code> function creates a mask with the 4 LSB set to 1, the shift distance (0 and 11) then moves this group of 1-bits to the position correlating with out GPIO A B pins.</p>
 <p>We can also write to these GPIOs in groups.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb2-1" title="1"><span class="dt">void</span> setSevenSegment(<span class="dt">uint8_t</span> pat) {</a>
-<a class="sourceLine" id="cb2-2" title="2">    palWriteGroup(GPIOA, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">0</span>, ~pat);</a>
-<a class="sourceLine" id="cb2-3" title="3">    palWriteGroup(GPIOB, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">11</span>, ~pat &gt;&gt; <span class="dv">4</span>);</a>
-<a class="sourceLine" id="cb2-4" title="4">}</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">void</span> setSevenSegment(<span class="dt">uint8_t</span> pat) {</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    palWriteGroup(GPIOA, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">0</span>, ~pat);</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    palWriteGroup(GPIOB, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">11</span>, ~pat &gt;&gt; <span class="dv">4</span>);</span>
+<span id="cb2-4"><a href="#cb2-4"></a>}</span></code></pre></div>
 <p>The <code>setSevenSegment</code> function takes a byte called <code>pat</code> where the containing ones for the leds to turn on. Since the LEDs will be active low, this <code>pat</code> is bitwise inverted. Now we can write the least significant 4 bits of <code>pat</code> to the GPIOA pins and the most significant 4 bits to the GPIOB pins using <code>palWriteGroup</code>.</p>
 <p>So now we have configured the GPIOs and we have a function for turning on arbitrary combinations of LEDs within the seven-segment display. To display numbers we need a set of codes that correspond to the shapes that represents numbers on the display.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb3-1" title="1"><span class="dt">uint8_t</span> ssCodes[<span class="dv">10</span>] = { <span class="bn">0x3f</span>, <span class="bn">0x06</span>, <span class="bn">0x5b</span>, <span class="bn">0x4f</span>, <span class="bn">0x66</span>, <span class="bn">0x6d</span>, <span class="bn">0x7d</span>, <span class="bn">0x07</span>, <span class="bn">0x7f</span>, <span class="bn">0x6f</span> }; </a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">uint8_t</span> ssCodes[<span class="dv">10</span>] = { <span class="bn">0x3f</span>, <span class="bn">0x06</span>, <span class="bn">0x5b</span>, <span class="bn">0x4f</span>, <span class="bn">0x66</span>, <span class="bn">0x6d</span>, <span class="bn">0x7d</span>, <span class="bn">0x07</span>, <span class="bn">0x7f</span>, <span class="bn">0x6f</span> }; </span></code></pre></div>
 <p>The list of numbers above are bit patterns that represent 0 - 9. What codes to use of course corresponds to how you wire up the display! But I chose a wiring that corresponded to a code (a code found on the web) rather then the other way around, to chose a code corresponding to the wiring.</p>
 <p>Below you find a complete ChibiOs based program that just counts 0-9 repeatedly and showing the digits on the display.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb4-1" title="1"><span class="pp">#include </span><span class="im">&quot;ch.h&quot;</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="pp">#include </span><span class="im">&quot;hal.h&quot;</span></a>
-<a class="sourceLine" id="cb4-3" title="3"></a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="dt">uint8_t</span> ssCodes[<span class="dv">10</span>] = { <span class="bn">0x3f</span>, <span class="bn">0x06</span>, <span class="bn">0x5b</span>, <span class="bn">0x4f</span>, <span class="bn">0x66</span>, <span class="bn">0x6d</span>, <span class="bn">0x7d</span>, <span class="bn">0x07</span>, <span class="bn">0x7f</span>, <span class="bn">0x6f</span> }; </a>
-<a class="sourceLine" id="cb4-5" title="5"></a>
-<a class="sourceLine" id="cb4-6" title="6"></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="dt">void</span> setSevenSegment(<span class="dt">uint8_t</span> pat) {</a>
-<a class="sourceLine" id="cb4-8" title="8">    palWriteGroup(GPIOA, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">0</span>, ~pat);</a>
-<a class="sourceLine" id="cb4-9" title="9">    palWriteGroup(GPIOB, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">11</span>, ~pat &gt;&gt; <span class="dv">4</span>);</a>
-<a class="sourceLine" id="cb4-10" title="10">}</a>
-<a class="sourceLine" id="cb4-11" title="11"></a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="dt">int</span> main(<span class="dt">void</span>) {</a>
-<a class="sourceLine" id="cb4-13" title="13">  halInit();</a>
-<a class="sourceLine" id="cb4-14" title="14">  chSysInit();</a>
-<a class="sourceLine" id="cb4-15" title="15">    </a>
-<a class="sourceLine" id="cb4-16" title="16">  palSetGroupMode(GPIOA, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">0</span>, PAL_MODE_OUTPUT_OPENDRAIN);</a>
-<a class="sourceLine" id="cb4-17" title="17">  palSetGroupMode(GPIOB, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">11</span>, PAL_MODE_OUTPUT_OPENDRAIN);</a>
-<a class="sourceLine" id="cb4-18" title="18">      </a>
-<a class="sourceLine" id="cb4-19" title="19">  <span class="dt">uint8_t</span> i = <span class="dv">0</span>;</a>
-<a class="sourceLine" id="cb4-20" title="20">  </a>
-<a class="sourceLine" id="cb4-21" title="21">  <span class="cf">while</span>(true) {</a>
-<a class="sourceLine" id="cb4-22" title="22">      </a>
-<a class="sourceLine" id="cb4-23" title="23">    setSevenSegment(ssCodes[i]);</a>
-<a class="sourceLine" id="cb4-24" title="24">    chThdSleepMilliseconds(<span class="dv">250</span>);</a>
-<a class="sourceLine" id="cb4-25" title="25">    </a>
-<a class="sourceLine" id="cb4-26" title="26">    i ++;</a>
-<a class="sourceLine" id="cb4-27" title="27">    <span class="cf">if</span> (i &gt;= <span class="dv">10</span>) i = <span class="dv">0</span>;</a>
-<a class="sourceLine" id="cb4-28" title="28">  }</a>
-<a class="sourceLine" id="cb4-29" title="29"></a>
-<a class="sourceLine" id="cb4-30" title="30">}</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#include </span><span class="im">&quot;ch.h&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="pp">#include </span><span class="im">&quot;hal.h&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="dt">uint8_t</span> ssCodes[<span class="dv">10</span>] = { <span class="bn">0x3f</span>, <span class="bn">0x06</span>, <span class="bn">0x5b</span>, <span class="bn">0x4f</span>, <span class="bn">0x66</span>, <span class="bn">0x6d</span>, <span class="bn">0x7d</span>, <span class="bn">0x07</span>, <span class="bn">0x7f</span>, <span class="bn">0x6f</span> }; </span>
+<span id="cb4-5"><a href="#cb4-5"></a></span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="dt">void</span> setSevenSegment(<span class="dt">uint8_t</span> pat) {</span>
+<span id="cb4-8"><a href="#cb4-8"></a>    palWriteGroup(GPIOA, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">0</span>, ~pat);</span>
+<span id="cb4-9"><a href="#cb4-9"></a>    palWriteGroup(GPIOB, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">11</span>, ~pat &gt;&gt; <span class="dv">4</span>);</span>
+<span id="cb4-10"><a href="#cb4-10"></a>}</span>
+<span id="cb4-11"><a href="#cb4-11"></a></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="dt">int</span> main(<span class="dt">void</span>) {</span>
+<span id="cb4-13"><a href="#cb4-13"></a>  halInit();</span>
+<span id="cb4-14"><a href="#cb4-14"></a>  chSysInit();</span>
+<span id="cb4-15"><a href="#cb4-15"></a>    </span>
+<span id="cb4-16"><a href="#cb4-16"></a>  palSetGroupMode(GPIOA, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">0</span>, PAL_MODE_OUTPUT_OPENDRAIN);</span>
+<span id="cb4-17"><a href="#cb4-17"></a>  palSetGroupMode(GPIOB, PAL_GROUP_MASK(<span class="dv">4</span>), <span class="dv">11</span>, PAL_MODE_OUTPUT_OPENDRAIN);</span>
+<span id="cb4-18"><a href="#cb4-18"></a>      </span>
+<span id="cb4-19"><a href="#cb4-19"></a>  <span class="dt">uint8_t</span> i = <span class="dv">0</span>;</span>
+<span id="cb4-20"><a href="#cb4-20"></a>  </span>
+<span id="cb4-21"><a href="#cb4-21"></a>  <span class="cf">while</span>(true) {</span>
+<span id="cb4-22"><a href="#cb4-22"></a>      </span>
+<span id="cb4-23"><a href="#cb4-23"></a>    setSevenSegment(ssCodes[i]);</span>
+<span id="cb4-24"><a href="#cb4-24"></a>    chThdSleepMilliseconds(<span class="dv">250</span>);</span>
+<span id="cb4-25"><a href="#cb4-25"></a>    </span>
+<span id="cb4-26"><a href="#cb4-26"></a>    i ++;</span>
+<span id="cb4-27"><a href="#cb4-27"></a>    <span class="cf">if</span> (i &gt;= <span class="dv">10</span>) i = <span class="dv">0</span>;</span>
+<span id="cb4-28"><a href="#cb4-28"></a>  }</span>
+<span id="cb4-29"><a href="#cb4-29"></a></span>
+<span id="cb4-30"><a href="#cb4-30"></a>}</span></code></pre></div>
 <h2 id="conclusion">Conclusion</h2>
 <p>Wow. It is actually quite interesting how tricky even simple things become when they are in border-zone of electronics and software. How insecure I get when doing things like this is a clear indication that there is a lot left to learn.</p>
 <p>It feels a bit wonky to hook something up like this and sink current through the GPIO pins, but maybe it is fine? the board has been running here next to me repeatedly counting from 0 - 9 all day today, while I have doing my day-job, and all seems fine ;)</p>
@@ -233,4 +233,3 @@
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
 </HTML>
-
