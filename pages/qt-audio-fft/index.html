@@ -183,72 +183,72 @@
 <h2 id="the-code">The Code</h2>
 <p>Since the code is mostly identical to the <a href="../qt-audio-input/index.html">previous post</a>, we will only look at the new additions in any detail.</p>
 <p>To get started, let's jump into <code>mainwindow.h</code> and take a look at the new bit of private state added to the <em>MainWindow</em> class.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1"></a>    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; mFftIndices;</span>
-<span id="cb2-2"><a href="#cb2-2"></a></span>
-<span id="cb2-3"><a href="#cb2-3"></a>    fftw_plan mFftPlan;</span>
-<span id="cb2-4"><a href="#cb2-4"></a>    <span class="dt">double</span> *mFftIn;</span>
-<span id="cb2-5"><a href="#cb2-5"></a>    <span class="dt">double</span> *mFftOut;</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb2-1" title="1">    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; mFftIndices;</a>
+<a class="sourceLine" id="cb2-2" title="2"></a>
+<a class="sourceLine" id="cb2-3" title="3">    fftw_plan mFftPlan;</a>
+<a class="sourceLine" id="cb2-4" title="4">    <span class="dt">double</span> *mFftIn;</a>
+<a class="sourceLine" id="cb2-5" title="5">    <span class="dt">double</span> *mFftOut;</a></code></pre></div>
 <p>First there is a <em>QVector</em> called <code>mFFtIndices</code> this will be frequencies and is used in the drawing of the FFT plot. More about this when it is filled with values in the <em>MainWindow</em> constructor.</p>
 <p>Next up is an <code>fftw_plan</code>. FFTW is very clever software that will try and find optimal code for the particular system it is running for solving the task we ask of it. The <code>mFftPlan</code>object will initialized in the <em>MainWindow</em> constructor.</p>
 <p>Lastly there are two pointers, <code>mFftIn</code> and <code>mFftOut</code>. Arrays will be allocated for input and output data that we use together with the <code>FFTW_plan</code>. These will also be initialized in the <em>MainWindow</em> constructor.</p>
 <p>Oh, and then we need to also include the fftw3 header!</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;fftw3.h&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb3-1" title="1"><span class="pp">#include </span><span class="im">&lt;fftw3.h&gt;</span></a></code></pre></div>
 <p>But with that done, we are finished in the <code>mainwindow.h</code> file. <code>mainwindow.h</code> is shown in its entirety below.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#ifndef MAINWINDOW_H</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="pp">#define MAINWINDOW_H</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="pp">#include </span><span class="im">&lt;QMainWindow&gt;</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="pp">#include </span><span class="im">&lt;QtMultimedia/QAudioInput&gt;</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="pp">#include </span><span class="im">&lt;QBuffer&gt;</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="pp">#include </span><span class="im">&quot;qcustomplot.h&quot;</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="pp">#include </span><span class="im">&lt;fftw3.h&gt;</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a></span>
-<span id="cb4-10"><a href="#cb4-10"></a></span>
-<span id="cb4-11"><a href="#cb4-11"></a>QT_BEGIN_NAMESPACE</span>
-<span id="cb4-12"><a href="#cb4-12"></a><span class="kw">namespace</span> Ui { <span class="kw">class</span> MainWindow; }</span>
-<span id="cb4-13"><a href="#cb4-13"></a>QT_END_NAMESPACE</span>
-<span id="cb4-14"><a href="#cb4-14"></a></span>
-<span id="cb4-15"><a href="#cb4-15"></a><span class="kw">class</span> MainWindow : <span class="kw">public</span> <span class="ex">QMainWindow</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a>{</span>
-<span id="cb4-17"><a href="#cb4-17"></a>    <span class="ex">Q_OBJECT</span></span>
-<span id="cb4-18"><a href="#cb4-18"></a></span>
-<span id="cb4-19"><a href="#cb4-19"></a><span class="kw">public</span>:</span>
-<span id="cb4-20"><a href="#cb4-20"></a>    MainWindow(<span class="ex">QWidget</span> *parent = <span class="kw">nullptr</span>);</span>
-<span id="cb4-21"><a href="#cb4-21"></a>    ~MainWindow();</span>
-<span id="cb4-22"><a href="#cb4-22"></a></span>
-<span id="cb4-23"><a href="#cb4-23"></a><span class="kw">private</span> <span class="ex">slots</span>:</span>
-<span id="cb4-24"><a href="#cb4-24"></a>    <span class="dt">void</span> on_refreshInputPushButton_clicked();</span>
-<span id="cb4-25"><a href="#cb4-25"></a>    <span class="dt">void</span> on_useInputPushButton_clicked();</span>
-<span id="cb4-26"><a href="#cb4-26"></a></span>
-<span id="cb4-27"><a href="#cb4-27"></a>    <span class="dt">void</span> processAudioIn();</span>
-<span id="cb4-28"><a href="#cb4-28"></a>    <span class="dt">void</span> stateChangeAudioIn(QAudio::State s);</span>
-<span id="cb4-29"><a href="#cb4-29"></a>    <span class="dt">void</span> on_volumeHorizontalSlider_sliderMoved(<span class="dt">int</span> position);</span>
-<span id="cb4-30"><a href="#cb4-30"></a></span>
-<span id="cb4-31"><a href="#cb4-31"></a><span class="kw">private</span>:</span>
-<span id="cb4-32"><a href="#cb4-32"></a>    Ui::MainWindow *ui;</span>
-<span id="cb4-33"><a href="#cb4-33"></a></span>
-<span id="cb4-34"><a href="#cb4-34"></a>    <span class="dt">void</span> samplesUpdated();</span>
-<span id="cb4-35"><a href="#cb4-35"></a></span>
-<span id="cb4-36"><a href="#cb4-36"></a>    <span class="ex">QList</span>&lt;<span class="ex">QAudioDeviceInfo</span>&gt; mInputDevices;</span>
-<span id="cb4-37"><a href="#cb4-37"></a>    <span class="ex">QAudioInput</span> *mAudioIn = <span class="kw">nullptr</span>;</span>
-<span id="cb4-38"><a href="#cb4-38"></a>    <span class="ex">QBuffer</span>  mInputBuffer;</span>
-<span id="cb4-39"><a href="#cb4-39"></a></span>
-<span id="cb4-40"><a href="#cb4-40"></a>    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; mSamples;</span>
-<span id="cb4-41"><a href="#cb4-41"></a>    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; mIndices;</span>
-<span id="cb4-42"><a href="#cb4-42"></a>    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; mFftIndices;</span>
-<span id="cb4-43"><a href="#cb4-43"></a></span>
-<span id="cb4-44"><a href="#cb4-44"></a>    fftw_plan mFftPlan;</span>
-<span id="cb4-45"><a href="#cb4-45"></a>    <span class="dt">double</span> *mFftIn;</span>
-<span id="cb4-46"><a href="#cb4-46"></a>    <span class="dt">double</span> *mFftOut;</span>
-<span id="cb4-47"><a href="#cb4-47"></a></span>
-<span id="cb4-48"><a href="#cb4-48"></a></span>
-<span id="cb4-49"><a href="#cb4-49"></a>};</span>
-<span id="cb4-50"><a href="#cb4-50"></a><span class="pp">#endif </span><span class="co">// MAINWINDOW_H</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb4-1" title="1"><span class="pp">#ifndef MAINWINDOW_H</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="pp">#define M</span>AINWINDOW_H</a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="pp">#include </span><span class="im">&lt;QMainWindow&gt;</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="pp">#include </span><span class="im">&lt;QtMultimedia/QAudioInput&gt;</span></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="pp">#include </span><span class="im">&lt;QBuffer&gt;</span></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="pp">#include </span><span class="im">&quot;qcustomplot.h&quot;</span></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="pp">#include </span><span class="im">&lt;fftw3.h&gt;</span></a>
+<a class="sourceLine" id="cb4-9" title="9"></a>
+<a class="sourceLine" id="cb4-10" title="10"></a>
+<a class="sourceLine" id="cb4-11" title="11">QT_BEGIN_NAMESPACE</a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="kw">namespace</span> Ui { <span class="kw">class</span> MainWindow; }</a>
+<a class="sourceLine" id="cb4-13" title="13">QT_END_NAMESPACE</a>
+<a class="sourceLine" id="cb4-14" title="14"></a>
+<a class="sourceLine" id="cb4-15" title="15"><span class="kw">class</span> MainWindow : <span class="kw">public</span> <span class="ex">QMainWindow</span></a>
+<a class="sourceLine" id="cb4-16" title="16">{</a>
+<a class="sourceLine" id="cb4-17" title="17">    <span class="ex">Q_OBJECT</span></a>
+<a class="sourceLine" id="cb4-18" title="18"></a>
+<a class="sourceLine" id="cb4-19" title="19"><span class="kw">public</span>:</a>
+<a class="sourceLine" id="cb4-20" title="20">    MainWindow(<span class="ex">QWidget</span> *parent = <span class="kw">nullptr</span>);</a>
+<a class="sourceLine" id="cb4-21" title="21">    ~MainWindow();</a>
+<a class="sourceLine" id="cb4-22" title="22"></a>
+<a class="sourceLine" id="cb4-23" title="23"><span class="kw">private</span> <span class="ex">slots</span>:</a>
+<a class="sourceLine" id="cb4-24" title="24">    <span class="dt">void</span> on_refreshInputPushButton_clicked();</a>
+<a class="sourceLine" id="cb4-25" title="25">    <span class="dt">void</span> on_useInputPushButton_clicked();</a>
+<a class="sourceLine" id="cb4-26" title="26"></a>
+<a class="sourceLine" id="cb4-27" title="27">    <span class="dt">void</span> processAudioIn();</a>
+<a class="sourceLine" id="cb4-28" title="28">    <span class="dt">void</span> stateChangeAudioIn(QAudio::State s);</a>
+<a class="sourceLine" id="cb4-29" title="29">    <span class="dt">void</span> on_volumeHorizontalSlider_sliderMoved(<span class="dt">int</span> position);</a>
+<a class="sourceLine" id="cb4-30" title="30"></a>
+<a class="sourceLine" id="cb4-31" title="31"><span class="kw">private</span>:</a>
+<a class="sourceLine" id="cb4-32" title="32">    Ui::MainWindow *ui;</a>
+<a class="sourceLine" id="cb4-33" title="33"></a>
+<a class="sourceLine" id="cb4-34" title="34">    <span class="dt">void</span> samplesUpdated();</a>
+<a class="sourceLine" id="cb4-35" title="35"></a>
+<a class="sourceLine" id="cb4-36" title="36">    <span class="ex">QList</span>&lt;<span class="ex">QAudioDeviceInfo</span>&gt; mInputDevices;</a>
+<a class="sourceLine" id="cb4-37" title="37">    <span class="ex">QAudioInput</span> *mAudioIn = <span class="kw">nullptr</span>;</a>
+<a class="sourceLine" id="cb4-38" title="38">    <span class="ex">QBuffer</span>  mInputBuffer;</a>
+<a class="sourceLine" id="cb4-39" title="39"></a>
+<a class="sourceLine" id="cb4-40" title="40">    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; mSamples;</a>
+<a class="sourceLine" id="cb4-41" title="41">    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; mIndices;</a>
+<a class="sourceLine" id="cb4-42" title="42">    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; mFftIndices;</a>
+<a class="sourceLine" id="cb4-43" title="43"></a>
+<a class="sourceLine" id="cb4-44" title="44">    fftw_plan mFftPlan;</a>
+<a class="sourceLine" id="cb4-45" title="45">    <span class="dt">double</span> *mFftIn;</a>
+<a class="sourceLine" id="cb4-46" title="46">    <span class="dt">double</span> *mFftOut;</a>
+<a class="sourceLine" id="cb4-47" title="47"></a>
+<a class="sourceLine" id="cb4-48" title="48"></a>
+<a class="sourceLine" id="cb4-49" title="49">};</a>
+<a class="sourceLine" id="cb4-50" title="50"><span class="pp">#endif </span><span class="co">// MAINWINDOW_H</span></a></code></pre></div>
 <p>Now we can turn to the <code>mainwindow.cpp</code> file and take a look at what is new there. To start with, I added a few defines in order to name some constants used in the program.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#define AUDIBLE_RANGE_START </span><span class="dv">20</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="pp">#define AUDIBLE_RANGE_END   </span><span class="dv">20000</span><span class="pp"> </span><span class="co">/* very optimistic */</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="pp">#define NUM_SAMPLES </span><span class="dv">96000</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="pp">#define SAMPLE_FREQ </span><span class="dv">48000</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb5-1" title="1"><span class="pp">#define AUDIBLE_RANGE_START </span><span class="dv">20</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="pp">#define AUDIBLE_RANGE_END   </span><span class="dv">20000</span><span class="pp"> </span><span class="co">/* very optimistic */</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="pp">#define NUM_SAMPLES </span><span class="dv">96000</span></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="pp">#define SAMPLE_FREQ </span><span class="dv">48000</span></a></code></pre></div>
 <p>First I have defined the audible range of frequencies. That range will be used to narrow down which results in the DFT output data that we are interested in. Then <code>NUM_SAMPLES</code> is the number of samples that we store in our 2 second sliding window. <code>SAMPLE_FREQ</code> is of course the frequency we sample our input at. At a sampling frequency of 48KHz, the frequencies should be uniquely identifiable using DFT but signals above half of 48KHz could produce the same DFT output, given the <a href="https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem">Nyqvist sampling theorem</a>. My understanding of these concepts is quite limited! But we can all keep learning as long as we are alive.</p>
 <p>What we will look at in the rest of this text is:</p>
 <ul>
@@ -261,31 +261,31 @@
 <li>Shut down of FFTW.</li>
 </ul>
 <p>The first four of these activities take place in the constructor for the <em>MainWindow</em> object.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1"></a>    <span class="co">/* Setup plot 2 */</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>    ui-&gt;plot2-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);</span>
-<span id="cb6-3"><a href="#cb6-3"></a>    ui-&gt;plot2-&gt;legend-&gt;setVisible(<span class="kw">false</span>);</span>
-<span id="cb6-4"><a href="#cb6-4"></a>    ui-&gt;plot2-&gt;yAxis-&gt;setLabel(<span class="st">&quot;&quot;</span>);</span>
-<span id="cb6-5"><a href="#cb6-5"></a>    ui-&gt;plot2-&gt;xAxis-&gt;setLabel(<span class="st">&quot;Frequency&quot;</span>);</span>
-<span id="cb6-6"><a href="#cb6-6"></a>    ui-&gt;plot2-&gt;xAxis-&gt;setRange(AUDIBLE_RANGE_START, AUDIBLE_RANGE_END);</span>
-<span id="cb6-7"><a href="#cb6-7"></a>    ui-&gt;plot2-&gt;yAxis-&gt;setRange(<span class="fl">0.0</span>, <span class="fl">500.0</span>);</span>
-<span id="cb6-8"><a href="#cb6-8"></a>    ui-&gt;plot2-&gt;clearGraphs();</span>
-<span id="cb6-9"><a href="#cb6-9"></a>    ui-&gt;plot2-&gt;addGraph();</span>
-<span id="cb6-10"><a href="#cb6-10"></a></span>
-<span id="cb6-11"><a href="#cb6-11"></a>    ui-&gt;plot2-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</span>
-<span id="cb6-12"><a href="#cb6-12"></a>    ui-&gt;plot2-&gt;graph()-&gt;setName(<span class="st">&quot;fft&quot;</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb6-1" title="1">    <span class="co">/* Setup plot 2 */</span></a>
+<a class="sourceLine" id="cb6-2" title="2">    ui-&gt;plot2-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);</a>
+<a class="sourceLine" id="cb6-3" title="3">    ui-&gt;plot2-&gt;legend-&gt;setVisible(<span class="kw">false</span>);</a>
+<a class="sourceLine" id="cb6-4" title="4">    ui-&gt;plot2-&gt;yAxis-&gt;setLabel(<span class="st">&quot;&quot;</span>);</a>
+<a class="sourceLine" id="cb6-5" title="5">    ui-&gt;plot2-&gt;xAxis-&gt;setLabel(<span class="st">&quot;Frequency&quot;</span>);</a>
+<a class="sourceLine" id="cb6-6" title="6">    ui-&gt;plot2-&gt;xAxis-&gt;setRange(AUDIBLE_RANGE_START, AUDIBLE_RANGE_END);</a>
+<a class="sourceLine" id="cb6-7" title="7">    ui-&gt;plot2-&gt;yAxis-&gt;setRange(<span class="fl">0.0</span>, <span class="fl">500.0</span>);</a>
+<a class="sourceLine" id="cb6-8" title="8">    ui-&gt;plot2-&gt;clearGraphs();</a>
+<a class="sourceLine" id="cb6-9" title="9">    ui-&gt;plot2-&gt;addGraph();</a>
+<a class="sourceLine" id="cb6-10" title="10"></a>
+<a class="sourceLine" id="cb6-11" title="11">    ui-&gt;plot2-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</a>
+<a class="sourceLine" id="cb6-12" title="12">    ui-&gt;plot2-&gt;graph()-&gt;setName(<span class="st">&quot;fft&quot;</span>);</a></code></pre></div>
 <p>The newly added <em>QCustomPlot</em> us called <code>plot2</code> and is here set up to not have any visible legend, the x-axis will range over the audible range of frequencies and the y-axis will range over 0 - 500. Now, these ranges are scalable and drag-able with the mouse when the program is running, so you can zoom in on a subrange of frequencies and look at the behavior of the sound at that point in more detail.</p>
 <p>Next it is time to set up the indices for the plot that will be displayed as the x-axis labels. Here, an indices are created starting with the lowest audible frequency and then we keep adding <code>freqStep</code> to this until we reach the end of the audible range. The reason for this is that the output array produced by FFTW will not show a response for frequency f at index f, that response will rather be seen at index = (NUM_SAMPLES/SAMPLE_FREQ) * f. This means, in our case, that the output array will at index X have the response for frequency (1/2)X. So the function below creates a list of indices to display in the GUI that makes it so that the response for frequency X appears over the number X in the graph. Bah! I think this is quite on the edge of what I manage to explain. If you know of a good clear explanation, please share it with me and I'll edit for its inclusion.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1"></a>    <span class="dt">double</span> freqStep = (<span class="dt">double</span>)SAMPLE_FREQ / (<span class="dt">double</span>)NUM_SAMPLES;</span>
-<span id="cb7-2"><a href="#cb7-2"></a>    <span class="dt">double</span> f = AUDIBLE_RANGE_START;</span>
-<span id="cb7-3"><a href="#cb7-3"></a>    <span class="cf">while</span> (f &lt; AUDIBLE_RANGE_END) {</span>
-<span id="cb7-4"><a href="#cb7-4"></a>        mFftIndices.append(f);</span>
-<span id="cb7-5"><a href="#cb7-5"></a>        f += freqStep;</span>
-<span id="cb7-6"><a href="#cb7-6"></a>    }</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb7-1" title="1">    <span class="dt">double</span> freqStep = (<span class="dt">double</span>)SAMPLE_FREQ / (<span class="dt">double</span>)NUM_SAMPLES;</a>
+<a class="sourceLine" id="cb7-2" title="2">    <span class="dt">double</span> f = AUDIBLE_RANGE_START;</a>
+<a class="sourceLine" id="cb7-3" title="3">    <span class="cf">while</span> (f &lt; AUDIBLE_RANGE_END) {</a>
+<a class="sourceLine" id="cb7-4" title="4">        mFftIndices.append(f);</a>
+<a class="sourceLine" id="cb7-5" title="5">        f += freqStep;</a>
+<a class="sourceLine" id="cb7-6" title="6">    }</a></code></pre></div>
 <p>This creates more indices than we will probably ever use though, we will trim that later.</p>
 <p>Ok now we got to the setup of the FFTW related things.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1"></a>    mFftIn  = fftw_alloc_real(NUM_SAMPLES);</span>
-<span id="cb8-2"><a href="#cb8-2"></a>    mFftOut = fftw_alloc_real(NUM_SAMPLES);</span>
-<span id="cb8-3"><a href="#cb8-3"></a>    mFftPlan = fftw_plan_r2r_1d(NUM_SAMPLES, mFftIn, mFftOut, FFTW_R2HC,FFTW_ESTIMATE);</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb8-1" title="1">    mFftIn  = fftw_alloc_real(NUM_SAMPLES);</a>
+<a class="sourceLine" id="cb8-2" title="2">    mFftOut = fftw_alloc_real(NUM_SAMPLES);</a>
+<a class="sourceLine" id="cb8-3" title="3">    mFftPlan = fftw_plan_r2r_1d(NUM_SAMPLES, mFftIn, mFftOut, FFTW_R2HC,FFTW_ESTIMATE);</a></code></pre></div>
 <p>FFTW functions are used to the allocation of the arrays used for input and output to the plan. Then the plan is set up.</p>
 <p>For more information about FFTW plans check out these links:</p>
 <ul>
@@ -295,236 +295,236 @@
 <p>But as I understand this, we are now setting up for a "real to real" type of transform and there is some different kinds of those. The kind chosen here is <code>FFTW_R2HC</code> which should be a DFT according to the documentation linked above. Now when we have created a plan, FFTW has set up a function for performing the DFT according to our specifications. The <code>mFftPlan</code> member is our way to access that functionality.</p>
 <p>Later in the code we will execute the plan and when doing so the data in the input array will be processed and the result stored in the output. The output will contain half as many elements as the input array, but those will be complex numbers and thus use up all the <code>NUM_SAMPLES</code> indices of the output array. Real components will be stored sequentially in the first half of the array and imaginary components in the second half.</p>
 <p>The next set of additions to the program go into the <code>samplesUpdated</code> function. This is where the plan is executed and the plot updated.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">void</span> MainWindow::samplesUpdated()</span>
-<span id="cb9-2"><a href="#cb9-2"></a>{</span>
-<span id="cb9-3"><a href="#cb9-3"></a>    <span class="dt">int</span> n = mSamples.length();</span>
-<span id="cb9-4"><a href="#cb9-4"></a>    <span class="cf">if</span> (n &gt; NUM_SAMPLES) mSamples = mSamples.mid(n - NUM_SAMPLES,-<span class="dv">1</span>);</span>
-<span id="cb9-5"><a href="#cb9-5"></a></span>
-<span id="cb9-6"><a href="#cb9-6"></a>    memcpy(mFftIn, mSamples.data(), NUM_SAMPLES*<span class="kw">sizeof</span>(<span class="dt">double</span>));</span>
-<span id="cb9-7"><a href="#cb9-7"></a></span>
-<span id="cb9-8"><a href="#cb9-8"></a>    fftw_execute(mFftPlan);</span>
-<span id="cb9-9"><a href="#cb9-9"></a></span>
-<span id="cb9-10"><a href="#cb9-10"></a>    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; fftVec;</span>
-<span id="cb9-11"><a href="#cb9-11"></a>    <span class="cf">for</span> (<span class="dt">int</span> i = (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_START;</span>
-<span id="cb9-12"><a href="#cb9-12"></a>             i &lt; (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_END;</span>
-<span id="cb9-13"><a href="#cb9-13"></a>             i ++) {</span>
-<span id="cb9-14"><a href="#cb9-14"></a>        fftVec.append(abs(mFftOut[i]));</span>
-<span id="cb9-15"><a href="#cb9-15"></a>    }</span>
-<span id="cb9-16"><a href="#cb9-16"></a></span>
-<span id="cb9-17"><a href="#cb9-17"></a>    ui-&gt;plot-&gt;graph(<span class="dv">0</span>)-&gt;setData(mIndices,mSamples);</span>
-<span id="cb9-18"><a href="#cb9-18"></a>    ui-&gt;plot-&gt;xAxis-&gt;rescale();</span>
-<span id="cb9-19"><a href="#cb9-19"></a>    ui-&gt;plot-&gt;replot();</span>
-<span id="cb9-20"><a href="#cb9-20"></a></span>
-<span id="cb9-21"><a href="#cb9-21"></a>    ui-&gt;plot2-&gt;graph(<span class="dv">0</span>)-&gt;setData(mFftIndices.mid(<span class="dv">0</span>,fftVec.length()),fftVec);</span>
-<span id="cb9-22"><a href="#cb9-22"></a>    ui-&gt;plot2-&gt;replot();</span>
-<span id="cb9-23"><a href="#cb9-23"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb9-1" title="1"><span class="dt">void</span> MainWindow::samplesUpdated()</a>
+<a class="sourceLine" id="cb9-2" title="2">{</a>
+<a class="sourceLine" id="cb9-3" title="3">    <span class="dt">int</span> n = mSamples.length();</a>
+<a class="sourceLine" id="cb9-4" title="4">    <span class="cf">if</span> (n &gt; NUM_SAMPLES) mSamples = mSamples.mid(n - NUM_SAMPLES,-<span class="dv">1</span>);</a>
+<a class="sourceLine" id="cb9-5" title="5"></a>
+<a class="sourceLine" id="cb9-6" title="6">    memcpy(mFftIn, mSamples.data(), NUM_SAMPLES*<span class="kw">sizeof</span>(<span class="dt">double</span>));</a>
+<a class="sourceLine" id="cb9-7" title="7"></a>
+<a class="sourceLine" id="cb9-8" title="8">    fftw_execute(mFftPlan);</a>
+<a class="sourceLine" id="cb9-9" title="9"></a>
+<a class="sourceLine" id="cb9-10" title="10">    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; fftVec;</a>
+<a class="sourceLine" id="cb9-11" title="11">    <span class="cf">for</span> (<span class="dt">int</span> i = (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_START;</a>
+<a class="sourceLine" id="cb9-12" title="12">             i &lt; (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_END;</a>
+<a class="sourceLine" id="cb9-13" title="13">             i ++) {</a>
+<a class="sourceLine" id="cb9-14" title="14">        fftVec.append(abs(mFftOut[i]));</a>
+<a class="sourceLine" id="cb9-15" title="15">    }</a>
+<a class="sourceLine" id="cb9-16" title="16"></a>
+<a class="sourceLine" id="cb9-17" title="17">    ui-&gt;plot-&gt;graph(<span class="dv">0</span>)-&gt;setData(mIndices,mSamples);</a>
+<a class="sourceLine" id="cb9-18" title="18">    ui-&gt;plot-&gt;xAxis-&gt;rescale();</a>
+<a class="sourceLine" id="cb9-19" title="19">    ui-&gt;plot-&gt;replot();</a>
+<a class="sourceLine" id="cb9-20" title="20"></a>
+<a class="sourceLine" id="cb9-21" title="21">    ui-&gt;plot2-&gt;graph(<span class="dv">0</span>)-&gt;setData(mFftIndices.mid(<span class="dv">0</span>,fftVec.length()),fftVec);</a>
+<a class="sourceLine" id="cb9-22" title="22">    ui-&gt;plot2-&gt;replot();</a>
+<a class="sourceLine" id="cb9-23" title="23">}</a></code></pre></div>
 <p>The samples in the 2 seconds window is copied into the <code>mFftIn</code> array and the plan is executed.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1"></a>    memcpy(mFftIn, mSamples.data(), NUM_SAMPLES*<span class="kw">sizeof</span>(<span class="dt">double</span>));</span>
-<span id="cb10-2"><a href="#cb10-2"></a></span>
-<span id="cb10-3"><a href="#cb10-3"></a>    fftw_execute(mFftPlan);</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb10-1" title="1">    memcpy(mFftIn, mSamples.data(), NUM_SAMPLES*<span class="kw">sizeof</span>(<span class="dt">double</span>));</a>
+<a class="sourceLine" id="cb10-2" title="2"></a>
+<a class="sourceLine" id="cb10-3" title="3">    fftw_execute(mFftPlan);</a></code></pre></div>
 <p>When doing so, <code>NUM_SAMPLES</code> values are created into the <code>mFftOut</code> array. The first half of these contain the real component of the DFT, so that is NUM_SAMPLES/2 values or in our case 48000 values. But given that the value at index i corresponds to the frequency 2*i (in this particular case), really the highest frequency represented in there is 24KHz.</p>
 <p>Next, we copy data from the <code>mFftOut</code> array to a <em>QVector</em> to be able to pass it on to <em>QCustomPlot</em> for display.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1"></a>    <span class="cf">for</span> (<span class="dt">int</span> i = (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_START;</span>
-<span id="cb11-2"><a href="#cb11-2"></a>             i &lt; (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_END;</span>
-<span id="cb11-3"><a href="#cb11-3"></a>             i ++) {</span>
-<span id="cb11-4"><a href="#cb11-4"></a>        fftVec.append(abs(mFftOut[i]));</span>
-<span id="cb11-5"><a href="#cb11-5"></a>    }</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb11-1" title="1">    <span class="cf">for</span> (<span class="dt">int</span> i = (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_START;</a>
+<a class="sourceLine" id="cb11-2" title="2">             i &lt; (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_END;</a>
+<a class="sourceLine" id="cb11-3" title="3">             i ++) {</a>
+<a class="sourceLine" id="cb11-4" title="4">        fftVec.append(abs(mFftOut[i]));</a>
+<a class="sourceLine" id="cb11-5" title="5">    }</a></code></pre></div>
 <p>Here, the starting and end point of the audible range is multiplied with, in this case, 2. this is again because the response for frequency i will be at index 2i. Notice that for the values added to the <em>QVector</em> for plotting we are only interested in the magnitude of the response, not if it is positive or negative. This is why there is an application of <code>abs</code> to the values of <code>mFftOut</code>. I was, at first, a bit surprised to see nagive values in the result but a look at the <a href="https://youtu.be/spUNpyF58BY">Three Blue one Brown</a> video cleared that up.</p>
 <p>Then <em>QCustomPlot</em> takes over and makes the plot appear.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb12-1"><a href="#cb12-1"></a>    ui-&gt;plot2-&gt;graph(<span class="dv">0</span>)-&gt;setData(mFftIndices.mid(<span class="dv">0</span>,fftVec.length()),fftVec);</span>
-<span id="cb12-2"><a href="#cb12-2"></a>    ui-&gt;plot2-&gt;replot();</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb12-1" title="1">    ui-&gt;plot2-&gt;graph(<span class="dv">0</span>)-&gt;setData(mFftIndices.mid(<span class="dv">0</span>,fftVec.length()),fftVec);</a>
+<a class="sourceLine" id="cb12-2" title="2">    ui-&gt;plot2-&gt;replot();</a></code></pre></div>
 <p>Here we just match up the lengths of the <code>mFftIndices</code> and the <code>fftVec</code> vectors and call <code>setData</code>. No rescaling is automatically performed so it wont interfere with any manual zooming or paning that you may do with the mouse.</p>
 <p>Only one more addition left and it is in the <em>MainWindow</em> destructor.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb13-1"><a href="#cb13-1"></a>MainWindow::~MainWindow()</span>
-<span id="cb13-2"><a href="#cb13-2"></a>{</span>
-<span id="cb13-3"><a href="#cb13-3"></a>    <span class="kw">delete</span> ui;</span>
-<span id="cb13-4"><a href="#cb13-4"></a></span>
-<span id="cb13-5"><a href="#cb13-5"></a>    fftw_free(mFftIn);</span>
-<span id="cb13-6"><a href="#cb13-6"></a>    fftw_free(mFftOut);</span>
-<span id="cb13-7"><a href="#cb13-7"></a>    fftw_destroy_plan(mFftPlan);</span>
-<span id="cb13-8"><a href="#cb13-8"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb13-1" title="1">MainWindow::~MainWindow()</a>
+<a class="sourceLine" id="cb13-2" title="2">{</a>
+<a class="sourceLine" id="cb13-3" title="3">    <span class="kw">delete</span> ui;</a>
+<a class="sourceLine" id="cb13-4" title="4"></a>
+<a class="sourceLine" id="cb13-5" title="5">    fftw_free(mFftIn);</a>
+<a class="sourceLine" id="cb13-6" title="6">    fftw_free(mFftOut);</a>
+<a class="sourceLine" id="cb13-7" title="7">    fftw_destroy_plan(mFftPlan);</a>
+<a class="sourceLine" id="cb13-8" title="8">}</a></code></pre></div>
 <p>The input and output arrays are freed and the plan is destroyed.</p>
 <p>Below is the complete <code>mainwindow.cpp</code> file.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb14-1"><a href="#cb14-1"></a><span class="pp">#include </span><span class="im">&quot;mainwindow.h&quot;</span></span>
-<span id="cb14-2"><a href="#cb14-2"></a><span class="pp">#include </span><span class="im">&quot;ui_mainwindow.h&quot;</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a><span class="pp">#include </span><span class="im">&lt;QDebug&gt;</span></span>
-<span id="cb14-4"><a href="#cb14-4"></a></span>
-<span id="cb14-5"><a href="#cb14-5"></a><span class="pp">#define AUDIBLE_RANGE_START </span><span class="dv">20</span></span>
-<span id="cb14-6"><a href="#cb14-6"></a><span class="pp">#define AUDIBLE_RANGE_END   </span><span class="dv">20000</span><span class="pp"> </span><span class="co">/* very optimistic */</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a><span class="pp">#define NUM_SAMPLES </span><span class="dv">96000</span></span>
-<span id="cb14-8"><a href="#cb14-8"></a><span class="pp">#define SAMPLE_FREQ </span><span class="dv">48000</span></span>
-<span id="cb14-9"><a href="#cb14-9"></a></span>
-<span id="cb14-10"><a href="#cb14-10"></a>MainWindow::MainWindow(<span class="ex">QWidget</span> *parent)</span>
-<span id="cb14-11"><a href="#cb14-11"></a>    : <span class="ex">QMainWindow</span>(parent)</span>
-<span id="cb14-12"><a href="#cb14-12"></a>    , ui(<span class="kw">new</span> Ui::MainWindow)</span>
-<span id="cb14-13"><a href="#cb14-13"></a>{</span>
-<span id="cb14-14"><a href="#cb14-14"></a>    ui-&gt;setupUi(<span class="kw">this</span>);</span>
-<span id="cb14-15"><a href="#cb14-15"></a>    <span class="kw">this</span>-&gt;setWindowTitle(<span class="st">&quot;Sound&quot;</span>);</span>
-<span id="cb14-16"><a href="#cb14-16"></a></span>
-<span id="cb14-17"><a href="#cb14-17"></a></span>
-<span id="cb14-18"><a href="#cb14-18"></a>    <span class="ex">QList</span>&lt;<span class="ex">QAudioDeviceInfo</span>&gt; inputDevices =</span>
-<span id="cb14-19"><a href="#cb14-19"></a>            <span class="ex">QAudioDeviceInfo::</span>availableDevices(QAudio::AudioInput);</span>
-<span id="cb14-20"><a href="#cb14-20"></a></span>
-<span id="cb14-21"><a href="#cb14-21"></a>    <span class="cf">for</span> (<span class="ex">QAudioDeviceInfo</span> d : inputDevices) {</span>
-<span id="cb14-22"><a href="#cb14-22"></a>        ui-&gt;inputDeviceComboBox-&gt;addItem(d.deviceName(),<span class="ex">QVariant::</span>fromValue(d));</span>
-<span id="cb14-23"><a href="#cb14-23"></a>    }</span>
-<span id="cb14-24"><a href="#cb14-24"></a></span>
-<span id="cb14-25"><a href="#cb14-25"></a>    <span class="co">/* Setup plot */</span></span>
-<span id="cb14-26"><a href="#cb14-26"></a>    ui-&gt;plot-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);</span>
-<span id="cb14-27"><a href="#cb14-27"></a>    ui-&gt;plot-&gt;legend-&gt;setVisible(<span class="kw">true</span>);</span>
-<span id="cb14-28"><a href="#cb14-28"></a>    <span class="ex">QFont</span> legendFont = font();</span>
-<span id="cb14-29"><a href="#cb14-29"></a>    legendFont.setPointSize(<span class="dv">10</span>);</span>
-<span id="cb14-30"><a href="#cb14-30"></a>    ui-&gt;plot-&gt;legend-&gt;setFont(legendFont);</span>
-<span id="cb14-31"><a href="#cb14-31"></a>    ui-&gt;plot-&gt;legend-&gt;setSelectedFont(legendFont);</span>
-<span id="cb14-32"><a href="#cb14-32"></a>    ui-&gt;plot-&gt;legend-&gt;setSelectableParts(QCPLegend::spItems);</span>
-<span id="cb14-33"><a href="#cb14-33"></a>    ui-&gt;plot-&gt;yAxis-&gt;setLabel(<span class="st">&quot;Amplitude&quot;</span>);</span>
-<span id="cb14-34"><a href="#cb14-34"></a>    ui-&gt;plot-&gt;xAxis-&gt;setLabel(<span class="st">&quot;Sample&quot;</span>);</span>
-<span id="cb14-35"><a href="#cb14-35"></a>    ui-&gt;plot-&gt;yAxis-&gt;setRange(-<span class="fl">1.0</span>, <span class="fl">1.0</span>);</span>
-<span id="cb14-36"><a href="#cb14-36"></a>    ui-&gt;plot-&gt;clearGraphs();</span>
-<span id="cb14-37"><a href="#cb14-37"></a>    ui-&gt;plot-&gt;addGraph();</span>
-<span id="cb14-38"><a href="#cb14-38"></a></span>
-<span id="cb14-39"><a href="#cb14-39"></a>    ui-&gt;plot-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</span>
-<span id="cb14-40"><a href="#cb14-40"></a>    ui-&gt;plot-&gt;graph()-&gt;setName(<span class="st">&quot;Audio In&quot;</span>);</span>
-<span id="cb14-41"><a href="#cb14-41"></a></span>
-<span id="cb14-42"><a href="#cb14-42"></a>    <span class="co">/* Setup plot 2 */</span></span>
-<span id="cb14-43"><a href="#cb14-43"></a>    ui-&gt;plot2-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);</span>
-<span id="cb14-44"><a href="#cb14-44"></a>    ui-&gt;plot2-&gt;legend-&gt;setVisible(<span class="kw">false</span>);</span>
-<span id="cb14-45"><a href="#cb14-45"></a>    ui-&gt;plot2-&gt;yAxis-&gt;setLabel(<span class="st">&quot;&quot;</span>);</span>
-<span id="cb14-46"><a href="#cb14-46"></a>    ui-&gt;plot2-&gt;xAxis-&gt;setLabel(<span class="st">&quot;Frequency&quot;</span>);</span>
-<span id="cb14-47"><a href="#cb14-47"></a>    ui-&gt;plot2-&gt;xAxis-&gt;setRange(AUDIBLE_RANGE_START, AUDIBLE_RANGE_END);</span>
-<span id="cb14-48"><a href="#cb14-48"></a>    ui-&gt;plot2-&gt;yAxis-&gt;setRange(<span class="fl">0.0</span>, <span class="fl">500.0</span>);</span>
-<span id="cb14-49"><a href="#cb14-49"></a>    ui-&gt;plot2-&gt;clearGraphs();</span>
-<span id="cb14-50"><a href="#cb14-50"></a>    ui-&gt;plot2-&gt;addGraph();</span>
-<span id="cb14-51"><a href="#cb14-51"></a></span>
-<span id="cb14-52"><a href="#cb14-52"></a>    ui-&gt;plot2-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</span>
-<span id="cb14-53"><a href="#cb14-53"></a>    ui-&gt;plot2-&gt;graph()-&gt;setName(<span class="st">&quot;fft&quot;</span>);</span>
-<span id="cb14-54"><a href="#cb14-54"></a></span>
-<span id="cb14-55"><a href="#cb14-55"></a></span>
-<span id="cb14-56"><a href="#cb14-56"></a>    <span class="cf">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; NUM_SAMPLES; i ++) {</span>
-<span id="cb14-57"><a href="#cb14-57"></a>        mIndices.append((<span class="dt">double</span>)i);</span>
-<span id="cb14-58"><a href="#cb14-58"></a>        mSamples.append(<span class="dv">0</span>);</span>
-<span id="cb14-59"><a href="#cb14-59"></a>    }</span>
-<span id="cb14-60"><a href="#cb14-60"></a></span>
-<span id="cb14-61"><a href="#cb14-61"></a>    <span class="dt">double</span> freqStep = (<span class="dt">double</span>)SAMPLE_FREQ / (<span class="dt">double</span>)NUM_SAMPLES;</span>
-<span id="cb14-62"><a href="#cb14-62"></a>    <span class="dt">double</span> f = AUDIBLE_RANGE_START;</span>
-<span id="cb14-63"><a href="#cb14-63"></a>    <span class="cf">while</span> (f &lt; AUDIBLE_RANGE_END) {</span>
-<span id="cb14-64"><a href="#cb14-64"></a>        mFftIndices.append(f);</span>
-<span id="cb14-65"><a href="#cb14-65"></a>        f += freqStep;</span>
-<span id="cb14-66"><a href="#cb14-66"></a>    }</span>
-<span id="cb14-67"><a href="#cb14-67"></a></span>
-<span id="cb14-68"><a href="#cb14-68"></a>    <span class="co">/* Set up FFT plan */</span></span>
-<span id="cb14-69"><a href="#cb14-69"></a>    mFftIn  = fftw_alloc_real(NUM_SAMPLES);</span>
-<span id="cb14-70"><a href="#cb14-70"></a>    mFftOut = fftw_alloc_real(NUM_SAMPLES);</span>
-<span id="cb14-71"><a href="#cb14-71"></a>    mFftPlan = fftw_plan_r2r_1d(NUM_SAMPLES, mFftIn, mFftOut, FFTW_R2HC,FFTW_ESTIMATE);</span>
-<span id="cb14-72"><a href="#cb14-72"></a>}</span>
-<span id="cb14-73"><a href="#cb14-73"></a></span>
-<span id="cb14-74"><a href="#cb14-74"></a>MainWindow::~MainWindow()</span>
-<span id="cb14-75"><a href="#cb14-75"></a>{</span>
-<span id="cb14-76"><a href="#cb14-76"></a>    <span class="kw">delete</span> ui;</span>
-<span id="cb14-77"><a href="#cb14-77"></a></span>
-<span id="cb14-78"><a href="#cb14-78"></a>    fftw_free(mFftIn);</span>
-<span id="cb14-79"><a href="#cb14-79"></a>    fftw_free(mFftOut);</span>
-<span id="cb14-80"><a href="#cb14-80"></a>    fftw_destroy_plan(mFftPlan);</span>
-<span id="cb14-81"><a href="#cb14-81"></a>}</span>
-<span id="cb14-82"><a href="#cb14-82"></a></span>
-<span id="cb14-83"><a href="#cb14-83"></a></span>
-<span id="cb14-84"><a href="#cb14-84"></a><span class="dt">void</span> MainWindow::on_refreshInputPushButton_clicked()</span>
-<span id="cb14-85"><a href="#cb14-85"></a>{</span>
-<span id="cb14-86"><a href="#cb14-86"></a>    <span class="ex">QList</span>&lt;<span class="ex">QAudioDeviceInfo</span>&gt; inputDevices =</span>
-<span id="cb14-87"><a href="#cb14-87"></a>            <span class="ex">QAudioDeviceInfo::</span>availableDevices(QAudio::AudioInput);</span>
-<span id="cb14-88"><a href="#cb14-88"></a></span>
-<span id="cb14-89"><a href="#cb14-89"></a>    ui-&gt;inputDeviceComboBox-&gt;clear();</span>
-<span id="cb14-90"><a href="#cb14-90"></a>    <span class="cf">for</span> (<span class="ex">QAudioDeviceInfo</span> d : inputDevices) {</span>
-<span id="cb14-91"><a href="#cb14-91"></a>        ui-&gt;inputDeviceComboBox-&gt;addItem(d.deviceName(),<span class="ex">QVariant::</span>fromValue(d));</span>
-<span id="cb14-92"><a href="#cb14-92"></a>    }</span>
-<span id="cb14-93"><a href="#cb14-93"></a>}</span>
-<span id="cb14-94"><a href="#cb14-94"></a></span>
-<span id="cb14-95"><a href="#cb14-95"></a><span class="dt">void</span> MainWindow::on_useInputPushButton_clicked()</span>
-<span id="cb14-96"><a href="#cb14-96"></a>{</span>
-<span id="cb14-97"><a href="#cb14-97"></a>    <span class="ex">QVariant</span> v = ui-&gt;inputDeviceComboBox-&gt;currentData();</span>
-<span id="cb14-98"><a href="#cb14-98"></a>    <span class="ex">QAudioDeviceInfo</span> dev = v.value&lt;<span class="ex">QAudioDeviceInfo</span>&gt;();</span>
-<span id="cb14-99"><a href="#cb14-99"></a></span>
-<span id="cb14-100"><a href="#cb14-100"></a>    <span class="ex">QAudioFormat</span> format;</span>
-<span id="cb14-101"><a href="#cb14-101"></a>    format.setSampleRate(SAMPLE_FREQ);</span>
-<span id="cb14-102"><a href="#cb14-102"></a>    format.setChannelCount(<span class="dv">1</span>);</span>
-<span id="cb14-103"><a href="#cb14-103"></a>    format.setSampleType(<span class="ex">QAudioFormat::</span>SignedInt);</span>
-<span id="cb14-104"><a href="#cb14-104"></a>    format.setCodec(<span class="st">&quot;raw&quot;</span>);</span>
-<span id="cb14-105"><a href="#cb14-105"></a>    format.setSampleSize(<span class="dv">16</span>);</span>
-<span id="cb14-106"><a href="#cb14-106"></a></span>
-<span id="cb14-107"><a href="#cb14-107"></a>    <span class="cf">if</span> (mAudioIn) <span class="kw">delete</span> mAudioIn;</span>
-<span id="cb14-108"><a href="#cb14-108"></a>    mAudioIn = <span class="kw">nullptr</span>;</span>
-<span id="cb14-109"><a href="#cb14-109"></a></span>
-<span id="cb14-110"><a href="#cb14-110"></a>    mAudioIn = <span class="kw">new</span> <span class="ex">QAudioInput</span>(dev,format);</span>
-<span id="cb14-111"><a href="#cb14-111"></a>    mAudioIn-&gt;setVolume(<span class="fl">0.1</span>);</span>
-<span id="cb14-112"><a href="#cb14-112"></a>    mAudioIn-&gt;setNotifyInterval(<span class="dv">100</span>);</span>
-<span id="cb14-113"><a href="#cb14-113"></a></span>
-<span id="cb14-114"><a href="#cb14-114"></a>    <span class="fu">connect</span>(mAudioIn, &amp;<span class="ex">QAudioInput::</span>notify,</span>
-<span id="cb14-115"><a href="#cb14-115"></a>            <span class="kw">this</span>, &amp;MainWindow::processAudioIn);</span>
-<span id="cb14-116"><a href="#cb14-116"></a>    <span class="fu">connect</span>(mAudioIn, &amp;<span class="ex">QAudioInput::</span>stateChanged,</span>
-<span id="cb14-117"><a href="#cb14-117"></a>            <span class="kw">this</span>, &amp;MainWindow::stateChangeAudioIn);</span>
-<span id="cb14-118"><a href="#cb14-118"></a></span>
-<span id="cb14-119"><a href="#cb14-119"></a>    mInputBuffer.open(<span class="ex">QBuffer::</span>ReadWrite);</span>
-<span id="cb14-120"><a href="#cb14-120"></a>    mAudioIn-&gt;start(&amp;mInputBuffer);</span>
-<span id="cb14-121"><a href="#cb14-121"></a>}</span>
-<span id="cb14-122"><a href="#cb14-122"></a></span>
-<span id="cb14-123"><a href="#cb14-123"></a><span class="dt">void</span> MainWindow::processAudioIn()</span>
-<span id="cb14-124"><a href="#cb14-124"></a>{</span>
-<span id="cb14-125"><a href="#cb14-125"></a>    mInputBuffer.seek(<span class="dv">0</span>);</span>
-<span id="cb14-126"><a href="#cb14-126"></a>    <span class="ex">QByteArray</span> ba = mInputBuffer.readAll();</span>
-<span id="cb14-127"><a href="#cb14-127"></a></span>
-<span id="cb14-128"><a href="#cb14-128"></a>    <span class="dt">int</span> num_samples = ba.length() / <span class="dv">2</span>;</span>
-<span id="cb14-129"><a href="#cb14-129"></a>    <span class="dt">int</span> b_pos = <span class="dv">0</span>;</span>
-<span id="cb14-130"><a href="#cb14-130"></a>    <span class="cf">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; num_samples; i ++) {</span>
-<span id="cb14-131"><a href="#cb14-131"></a>        <span class="dt">int16_t</span> s;</span>
-<span id="cb14-132"><a href="#cb14-132"></a>        s = ba.at(b_pos++);</span>
-<span id="cb14-133"><a href="#cb14-133"></a>        s |= ba.at(b_pos++) &lt;&lt; <span class="dv">8</span>;</span>
-<span id="cb14-134"><a href="#cb14-134"></a>        <span class="cf">if</span> (s != <span class="dv">0</span>) {</span>
-<span id="cb14-135"><a href="#cb14-135"></a>            mSamples.append((<span class="dt">double</span>)s / <span class="fl">32768.0</span>);</span>
-<span id="cb14-136"><a href="#cb14-136"></a>        } <span class="cf">else</span> {</span>
-<span id="cb14-137"><a href="#cb14-137"></a>            mSamples.append(<span class="dv">0</span>);</span>
-<span id="cb14-138"><a href="#cb14-138"></a>        }</span>
-<span id="cb14-139"><a href="#cb14-139"></a>    }</span>
-<span id="cb14-140"><a href="#cb14-140"></a>    mInputBuffer.buffer().clear();</span>
-<span id="cb14-141"><a href="#cb14-141"></a>    mInputBuffer.seek(<span class="dv">0</span>);</span>
-<span id="cb14-142"><a href="#cb14-142"></a></span>
-<span id="cb14-143"><a href="#cb14-143"></a>    samplesUpdated();</span>
-<span id="cb14-144"><a href="#cb14-144"></a>}</span>
-<span id="cb14-145"><a href="#cb14-145"></a></span>
-<span id="cb14-146"><a href="#cb14-146"></a><span class="dt">void</span> MainWindow::stateChangeAudioIn(QAudio::State s)</span>
-<span id="cb14-147"><a href="#cb14-147"></a>{</span>
-<span id="cb14-148"><a href="#cb14-148"></a>    <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;State change: &quot;</span> &lt;&lt; s;</span>
-<span id="cb14-149"><a href="#cb14-149"></a>}</span>
-<span id="cb14-150"><a href="#cb14-150"></a></span>
-<span id="cb14-151"><a href="#cb14-151"></a><span class="dt">void</span> MainWindow::on_volumeHorizontalSlider_sliderMoved(<span class="dt">int</span> position)</span>
-<span id="cb14-152"><a href="#cb14-152"></a>{</span>
-<span id="cb14-153"><a href="#cb14-153"></a>    <span class="cf">if</span> (mAudioIn) {</span>
-<span id="cb14-154"><a href="#cb14-154"></a>        mAudioIn-&gt;setVolume((<span class="dt">double</span>)position/<span class="fl">1000.0</span>);</span>
-<span id="cb14-155"><a href="#cb14-155"></a>    }</span>
-<span id="cb14-156"><a href="#cb14-156"></a>}</span>
-<span id="cb14-157"><a href="#cb14-157"></a></span>
-<span id="cb14-158"><a href="#cb14-158"></a><span class="dt">void</span> MainWindow::samplesUpdated()</span>
-<span id="cb14-159"><a href="#cb14-159"></a>{</span>
-<span id="cb14-160"><a href="#cb14-160"></a>    <span class="dt">int</span> n = mSamples.length();</span>
-<span id="cb14-161"><a href="#cb14-161"></a>    <span class="cf">if</span> (n &gt; <span class="dv">96000</span>) mSamples = mSamples.mid(n - NUM_SAMPLES,-<span class="dv">1</span>);</span>
-<span id="cb14-162"><a href="#cb14-162"></a></span>
-<span id="cb14-163"><a href="#cb14-163"></a>    memcpy(mFftIn, mSamples.data(), NUM_SAMPLES*<span class="kw">sizeof</span>(<span class="dt">double</span>));</span>
-<span id="cb14-164"><a href="#cb14-164"></a></span>
-<span id="cb14-165"><a href="#cb14-165"></a>    fftw_execute(mFftPlan);</span>
-<span id="cb14-166"><a href="#cb14-166"></a></span>
-<span id="cb14-167"><a href="#cb14-167"></a>    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; fftVec;</span>
-<span id="cb14-168"><a href="#cb14-168"></a></span>
-<span id="cb14-169"><a href="#cb14-169"></a>    <span class="cf">for</span> (<span class="dt">int</span> i = (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_START;</span>
-<span id="cb14-170"><a href="#cb14-170"></a>             i &lt; (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_END;</span>
-<span id="cb14-171"><a href="#cb14-171"></a>             i ++) {</span>
-<span id="cb14-172"><a href="#cb14-172"></a>        fftVec.append(abs(mFftOut[i]));</span>
-<span id="cb14-173"><a href="#cb14-173"></a>    }</span>
-<span id="cb14-174"><a href="#cb14-174"></a></span>
-<span id="cb14-175"><a href="#cb14-175"></a>    ui-&gt;plot-&gt;graph(<span class="dv">0</span>)-&gt;setData(mIndices,mSamples);</span>
-<span id="cb14-176"><a href="#cb14-176"></a>    ui-&gt;plot-&gt;xAxis-&gt;rescale();</span>
-<span id="cb14-177"><a href="#cb14-177"></a>    ui-&gt;plot-&gt;replot();</span>
-<span id="cb14-178"><a href="#cb14-178"></a></span>
-<span id="cb14-179"><a href="#cb14-179"></a>    ui-&gt;plot2-&gt;graph(<span class="dv">0</span>)-&gt;setData(mFftIndices.mid(<span class="dv">0</span>,fftVec.length()),fftVec);</span>
-<span id="cb14-180"><a href="#cb14-180"></a>    ui-&gt;plot2-&gt;replot();</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb14-1" title="1"><span class="pp">#include </span><span class="im">&quot;mainwindow.h&quot;</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="pp">#include </span><span class="im">&quot;ui_mainwindow.h&quot;</span></a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="pp">#include </span><span class="im">&lt;QDebug&gt;</span></a>
+<a class="sourceLine" id="cb14-4" title="4"></a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="pp">#define AUDIBLE_RANGE_START </span><span class="dv">20</span></a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="pp">#define AUDIBLE_RANGE_END   </span><span class="dv">20000</span><span class="pp"> </span><span class="co">/* very optimistic */</span></a>
+<a class="sourceLine" id="cb14-7" title="7"><span class="pp">#define NUM_SAMPLES </span><span class="dv">96000</span></a>
+<a class="sourceLine" id="cb14-8" title="8"><span class="pp">#define SAMPLE_FREQ </span><span class="dv">48000</span></a>
+<a class="sourceLine" id="cb14-9" title="9"></a>
+<a class="sourceLine" id="cb14-10" title="10">MainWindow::MainWindow(<span class="ex">QWidget</span> *parent)</a>
+<a class="sourceLine" id="cb14-11" title="11">    : <span class="ex">QMainWindow</span>(parent)</a>
+<a class="sourceLine" id="cb14-12" title="12">    , ui(<span class="kw">new</span> Ui::MainWindow)</a>
+<a class="sourceLine" id="cb14-13" title="13">{</a>
+<a class="sourceLine" id="cb14-14" title="14">    ui-&gt;setupUi(<span class="kw">this</span>);</a>
+<a class="sourceLine" id="cb14-15" title="15">    <span class="kw">this</span>-&gt;setWindowTitle(<span class="st">&quot;Sound&quot;</span>);</a>
+<a class="sourceLine" id="cb14-16" title="16"></a>
+<a class="sourceLine" id="cb14-17" title="17"></a>
+<a class="sourceLine" id="cb14-18" title="18">    <span class="ex">QList</span>&lt;<span class="ex">QAudioDeviceInfo</span>&gt; inputDevices =</a>
+<a class="sourceLine" id="cb14-19" title="19">            <span class="ex">QAudioDeviceInfo::</span>availableDevices(QAudio::AudioInput);</a>
+<a class="sourceLine" id="cb14-20" title="20"></a>
+<a class="sourceLine" id="cb14-21" title="21">    <span class="cf">for</span> (<span class="ex">QAudioDeviceInfo</span> d : inputDevices) {</a>
+<a class="sourceLine" id="cb14-22" title="22">        ui-&gt;inputDeviceComboBox-&gt;addItem(d.deviceName(),<span class="ex">QVariant::</span>fromValue(d));</a>
+<a class="sourceLine" id="cb14-23" title="23">    }</a>
+<a class="sourceLine" id="cb14-24" title="24"></a>
+<a class="sourceLine" id="cb14-25" title="25">    <span class="co">/* Setup plot */</span></a>
+<a class="sourceLine" id="cb14-26" title="26">    ui-&gt;plot-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);</a>
+<a class="sourceLine" id="cb14-27" title="27">    ui-&gt;plot-&gt;legend-&gt;setVisible(<span class="kw">true</span>);</a>
+<a class="sourceLine" id="cb14-28" title="28">    <span class="ex">QFont</span> legendFont = font();</a>
+<a class="sourceLine" id="cb14-29" title="29">    legendFont.setPointSize(<span class="dv">10</span>);</a>
+<a class="sourceLine" id="cb14-30" title="30">    ui-&gt;plot-&gt;legend-&gt;setFont(legendFont);</a>
+<a class="sourceLine" id="cb14-31" title="31">    ui-&gt;plot-&gt;legend-&gt;setSelectedFont(legendFont);</a>
+<a class="sourceLine" id="cb14-32" title="32">    ui-&gt;plot-&gt;legend-&gt;setSelectableParts(QCPLegend::spItems);</a>
+<a class="sourceLine" id="cb14-33" title="33">    ui-&gt;plot-&gt;yAxis-&gt;setLabel(<span class="st">&quot;Amplitude&quot;</span>);</a>
+<a class="sourceLine" id="cb14-34" title="34">    ui-&gt;plot-&gt;xAxis-&gt;setLabel(<span class="st">&quot;Sample&quot;</span>);</a>
+<a class="sourceLine" id="cb14-35" title="35">    ui-&gt;plot-&gt;yAxis-&gt;setRange(-<span class="fl">1.0</span>, <span class="fl">1.0</span>);</a>
+<a class="sourceLine" id="cb14-36" title="36">    ui-&gt;plot-&gt;clearGraphs();</a>
+<a class="sourceLine" id="cb14-37" title="37">    ui-&gt;plot-&gt;addGraph();</a>
+<a class="sourceLine" id="cb14-38" title="38"></a>
+<a class="sourceLine" id="cb14-39" title="39">    ui-&gt;plot-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</a>
+<a class="sourceLine" id="cb14-40" title="40">    ui-&gt;plot-&gt;graph()-&gt;setName(<span class="st">&quot;Audio In&quot;</span>);</a>
+<a class="sourceLine" id="cb14-41" title="41"></a>
+<a class="sourceLine" id="cb14-42" title="42">    <span class="co">/* Setup plot 2 */</span></a>
+<a class="sourceLine" id="cb14-43" title="43">    ui-&gt;plot2-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);</a>
+<a class="sourceLine" id="cb14-44" title="44">    ui-&gt;plot2-&gt;legend-&gt;setVisible(<span class="kw">false</span>);</a>
+<a class="sourceLine" id="cb14-45" title="45">    ui-&gt;plot2-&gt;yAxis-&gt;setLabel(<span class="st">&quot;&quot;</span>);</a>
+<a class="sourceLine" id="cb14-46" title="46">    ui-&gt;plot2-&gt;xAxis-&gt;setLabel(<span class="st">&quot;Frequency&quot;</span>);</a>
+<a class="sourceLine" id="cb14-47" title="47">    ui-&gt;plot2-&gt;xAxis-&gt;setRange(AUDIBLE_RANGE_START, AUDIBLE_RANGE_END);</a>
+<a class="sourceLine" id="cb14-48" title="48">    ui-&gt;plot2-&gt;yAxis-&gt;setRange(<span class="fl">0.0</span>, <span class="fl">500.0</span>);</a>
+<a class="sourceLine" id="cb14-49" title="49">    ui-&gt;plot2-&gt;clearGraphs();</a>
+<a class="sourceLine" id="cb14-50" title="50">    ui-&gt;plot2-&gt;addGraph();</a>
+<a class="sourceLine" id="cb14-51" title="51"></a>
+<a class="sourceLine" id="cb14-52" title="52">    ui-&gt;plot2-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</a>
+<a class="sourceLine" id="cb14-53" title="53">    ui-&gt;plot2-&gt;graph()-&gt;setName(<span class="st">&quot;fft&quot;</span>);</a>
+<a class="sourceLine" id="cb14-54" title="54"></a>
+<a class="sourceLine" id="cb14-55" title="55"></a>
+<a class="sourceLine" id="cb14-56" title="56">    <span class="cf">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; NUM_SAMPLES; i ++) {</a>
+<a class="sourceLine" id="cb14-57" title="57">        mIndices.append((<span class="dt">double</span>)i);</a>
+<a class="sourceLine" id="cb14-58" title="58">        mSamples.append(<span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb14-59" title="59">    }</a>
+<a class="sourceLine" id="cb14-60" title="60"></a>
+<a class="sourceLine" id="cb14-61" title="61">    <span class="dt">double</span> freqStep = (<span class="dt">double</span>)SAMPLE_FREQ / (<span class="dt">double</span>)NUM_SAMPLES;</a>
+<a class="sourceLine" id="cb14-62" title="62">    <span class="dt">double</span> f = AUDIBLE_RANGE_START;</a>
+<a class="sourceLine" id="cb14-63" title="63">    <span class="cf">while</span> (f &lt; AUDIBLE_RANGE_END) {</a>
+<a class="sourceLine" id="cb14-64" title="64">        mFftIndices.append(f);</a>
+<a class="sourceLine" id="cb14-65" title="65">        f += freqStep;</a>
+<a class="sourceLine" id="cb14-66" title="66">    }</a>
+<a class="sourceLine" id="cb14-67" title="67"></a>
+<a class="sourceLine" id="cb14-68" title="68">    <span class="co">/* Set up FFT plan */</span></a>
+<a class="sourceLine" id="cb14-69" title="69">    mFftIn  = fftw_alloc_real(NUM_SAMPLES);</a>
+<a class="sourceLine" id="cb14-70" title="70">    mFftOut = fftw_alloc_real(NUM_SAMPLES);</a>
+<a class="sourceLine" id="cb14-71" title="71">    mFftPlan = fftw_plan_r2r_1d(NUM_SAMPLES, mFftIn, mFftOut, FFTW_R2HC,FFTW_ESTIMATE);</a>
+<a class="sourceLine" id="cb14-72" title="72">}</a>
+<a class="sourceLine" id="cb14-73" title="73"></a>
+<a class="sourceLine" id="cb14-74" title="74">MainWindow::~MainWindow()</a>
+<a class="sourceLine" id="cb14-75" title="75">{</a>
+<a class="sourceLine" id="cb14-76" title="76">    <span class="kw">delete</span> ui;</a>
+<a class="sourceLine" id="cb14-77" title="77"></a>
+<a class="sourceLine" id="cb14-78" title="78">    fftw_free(mFftIn);</a>
+<a class="sourceLine" id="cb14-79" title="79">    fftw_free(mFftOut);</a>
+<a class="sourceLine" id="cb14-80" title="80">    fftw_destroy_plan(mFftPlan);</a>
+<a class="sourceLine" id="cb14-81" title="81">}</a>
+<a class="sourceLine" id="cb14-82" title="82"></a>
+<a class="sourceLine" id="cb14-83" title="83"></a>
+<a class="sourceLine" id="cb14-84" title="84"><span class="dt">void</span> MainWindow::on_refreshInputPushButton_clicked()</a>
+<a class="sourceLine" id="cb14-85" title="85">{</a>
+<a class="sourceLine" id="cb14-86" title="86">    <span class="ex">QList</span>&lt;<span class="ex">QAudioDeviceInfo</span>&gt; inputDevices =</a>
+<a class="sourceLine" id="cb14-87" title="87">            <span class="ex">QAudioDeviceInfo::</span>availableDevices(QAudio::AudioInput);</a>
+<a class="sourceLine" id="cb14-88" title="88"></a>
+<a class="sourceLine" id="cb14-89" title="89">    ui-&gt;inputDeviceComboBox-&gt;clear();</a>
+<a class="sourceLine" id="cb14-90" title="90">    <span class="cf">for</span> (<span class="ex">QAudioDeviceInfo</span> d : inputDevices) {</a>
+<a class="sourceLine" id="cb14-91" title="91">        ui-&gt;inputDeviceComboBox-&gt;addItem(d.deviceName(),<span class="ex">QVariant::</span>fromValue(d));</a>
+<a class="sourceLine" id="cb14-92" title="92">    }</a>
+<a class="sourceLine" id="cb14-93" title="93">}</a>
+<a class="sourceLine" id="cb14-94" title="94"></a>
+<a class="sourceLine" id="cb14-95" title="95"><span class="dt">void</span> MainWindow::on_useInputPushButton_clicked()</a>
+<a class="sourceLine" id="cb14-96" title="96">{</a>
+<a class="sourceLine" id="cb14-97" title="97">    <span class="ex">QVariant</span> v = ui-&gt;inputDeviceComboBox-&gt;currentData();</a>
+<a class="sourceLine" id="cb14-98" title="98">    <span class="ex">QAudioDeviceInfo</span> dev = v.value&lt;<span class="ex">QAudioDeviceInfo</span>&gt;();</a>
+<a class="sourceLine" id="cb14-99" title="99"></a>
+<a class="sourceLine" id="cb14-100" title="100">    <span class="ex">QAudioFormat</span> format;</a>
+<a class="sourceLine" id="cb14-101" title="101">    format.setSampleRate(SAMPLE_FREQ);</a>
+<a class="sourceLine" id="cb14-102" title="102">    format.setChannelCount(<span class="dv">1</span>);</a>
+<a class="sourceLine" id="cb14-103" title="103">    format.setSampleType(<span class="ex">QAudioFormat::</span>SignedInt);</a>
+<a class="sourceLine" id="cb14-104" title="104">    format.setCodec(<span class="st">&quot;raw&quot;</span>);</a>
+<a class="sourceLine" id="cb14-105" title="105">    format.setSampleSize(<span class="dv">16</span>);</a>
+<a class="sourceLine" id="cb14-106" title="106"></a>
+<a class="sourceLine" id="cb14-107" title="107">    <span class="cf">if</span> (mAudioIn) <span class="kw">delete</span> mAudioIn;</a>
+<a class="sourceLine" id="cb14-108" title="108">    mAudioIn = <span class="kw">nullptr</span>;</a>
+<a class="sourceLine" id="cb14-109" title="109"></a>
+<a class="sourceLine" id="cb14-110" title="110">    mAudioIn = <span class="kw">new</span> <span class="ex">QAudioInput</span>(dev,format);</a>
+<a class="sourceLine" id="cb14-111" title="111">    mAudioIn-&gt;setVolume(<span class="fl">0.1</span>);</a>
+<a class="sourceLine" id="cb14-112" title="112">    mAudioIn-&gt;setNotifyInterval(<span class="dv">100</span>);</a>
+<a class="sourceLine" id="cb14-113" title="113"></a>
+<a class="sourceLine" id="cb14-114" title="114">    <span class="fu">connect</span>(mAudioIn, &amp;<span class="ex">QAudioInput::</span>notify,</a>
+<a class="sourceLine" id="cb14-115" title="115">            <span class="kw">this</span>, &amp;MainWindow::processAudioIn);</a>
+<a class="sourceLine" id="cb14-116" title="116">    <span class="fu">connect</span>(mAudioIn, &amp;<span class="ex">QAudioInput::</span>stateChanged,</a>
+<a class="sourceLine" id="cb14-117" title="117">            <span class="kw">this</span>, &amp;MainWindow::stateChangeAudioIn);</a>
+<a class="sourceLine" id="cb14-118" title="118"></a>
+<a class="sourceLine" id="cb14-119" title="119">    mInputBuffer.open(<span class="ex">QBuffer::</span>ReadWrite);</a>
+<a class="sourceLine" id="cb14-120" title="120">    mAudioIn-&gt;start(&amp;mInputBuffer);</a>
+<a class="sourceLine" id="cb14-121" title="121">}</a>
+<a class="sourceLine" id="cb14-122" title="122"></a>
+<a class="sourceLine" id="cb14-123" title="123"><span class="dt">void</span> MainWindow::processAudioIn()</a>
+<a class="sourceLine" id="cb14-124" title="124">{</a>
+<a class="sourceLine" id="cb14-125" title="125">    mInputBuffer.seek(<span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb14-126" title="126">    <span class="ex">QByteArray</span> ba = mInputBuffer.readAll();</a>
+<a class="sourceLine" id="cb14-127" title="127"></a>
+<a class="sourceLine" id="cb14-128" title="128">    <span class="dt">int</span> num_samples = ba.length() / <span class="dv">2</span>;</a>
+<a class="sourceLine" id="cb14-129" title="129">    <span class="dt">int</span> b_pos = <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb14-130" title="130">    <span class="cf">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; num_samples; i ++) {</a>
+<a class="sourceLine" id="cb14-131" title="131">        <span class="dt">int16_t</span> s;</a>
+<a class="sourceLine" id="cb14-132" title="132">        s = ba.at(b_pos++);</a>
+<a class="sourceLine" id="cb14-133" title="133">        s |= ba.at(b_pos++) &lt;&lt; <span class="dv">8</span>;</a>
+<a class="sourceLine" id="cb14-134" title="134">        <span class="cf">if</span> (s != <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb14-135" title="135">            mSamples.append((<span class="dt">double</span>)s / <span class="fl">32768.0</span>);</a>
+<a class="sourceLine" id="cb14-136" title="136">        } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb14-137" title="137">            mSamples.append(<span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb14-138" title="138">        }</a>
+<a class="sourceLine" id="cb14-139" title="139">    }</a>
+<a class="sourceLine" id="cb14-140" title="140">    mInputBuffer.buffer().clear();</a>
+<a class="sourceLine" id="cb14-141" title="141">    mInputBuffer.seek(<span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb14-142" title="142"></a>
+<a class="sourceLine" id="cb14-143" title="143">    samplesUpdated();</a>
+<a class="sourceLine" id="cb14-144" title="144">}</a>
+<a class="sourceLine" id="cb14-145" title="145"></a>
+<a class="sourceLine" id="cb14-146" title="146"><span class="dt">void</span> MainWindow::stateChangeAudioIn(QAudio::State s)</a>
+<a class="sourceLine" id="cb14-147" title="147">{</a>
+<a class="sourceLine" id="cb14-148" title="148">    <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;State change: &quot;</span> &lt;&lt; s;</a>
+<a class="sourceLine" id="cb14-149" title="149">}</a>
+<a class="sourceLine" id="cb14-150" title="150"></a>
+<a class="sourceLine" id="cb14-151" title="151"><span class="dt">void</span> MainWindow::on_volumeHorizontalSlider_sliderMoved(<span class="dt">int</span> position)</a>
+<a class="sourceLine" id="cb14-152" title="152">{</a>
+<a class="sourceLine" id="cb14-153" title="153">    <span class="cf">if</span> (mAudioIn) {</a>
+<a class="sourceLine" id="cb14-154" title="154">        mAudioIn-&gt;setVolume((<span class="dt">double</span>)position/<span class="fl">1000.0</span>);</a>
+<a class="sourceLine" id="cb14-155" title="155">    }</a>
+<a class="sourceLine" id="cb14-156" title="156">}</a>
+<a class="sourceLine" id="cb14-157" title="157"></a>
+<a class="sourceLine" id="cb14-158" title="158"><span class="dt">void</span> MainWindow::samplesUpdated()</a>
+<a class="sourceLine" id="cb14-159" title="159">{</a>
+<a class="sourceLine" id="cb14-160" title="160">    <span class="dt">int</span> n = mSamples.length();</a>
+<a class="sourceLine" id="cb14-161" title="161">    <span class="cf">if</span> (n &gt; <span class="dv">96000</span>) mSamples = mSamples.mid(n - NUM_SAMPLES,-<span class="dv">1</span>);</a>
+<a class="sourceLine" id="cb14-162" title="162"></a>
+<a class="sourceLine" id="cb14-163" title="163">    memcpy(mFftIn, mSamples.data(), NUM_SAMPLES*<span class="kw">sizeof</span>(<span class="dt">double</span>));</a>
+<a class="sourceLine" id="cb14-164" title="164"></a>
+<a class="sourceLine" id="cb14-165" title="165">    fftw_execute(mFftPlan);</a>
+<a class="sourceLine" id="cb14-166" title="166"></a>
+<a class="sourceLine" id="cb14-167" title="167">    <span class="ex">QVector</span>&lt;<span class="dt">double</span>&gt; fftVec;</a>
+<a class="sourceLine" id="cb14-168" title="168"></a>
+<a class="sourceLine" id="cb14-169" title="169">    <span class="cf">for</span> (<span class="dt">int</span> i = (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_START;</a>
+<a class="sourceLine" id="cb14-170" title="170">             i &lt; (NUM_SAMPLES/SAMPLE_FREQ)*AUDIBLE_RANGE_END;</a>
+<a class="sourceLine" id="cb14-171" title="171">             i ++) {</a>
+<a class="sourceLine" id="cb14-172" title="172">        fftVec.append(abs(mFftOut[i]));</a>
+<a class="sourceLine" id="cb14-173" title="173">    }</a>
+<a class="sourceLine" id="cb14-174" title="174"></a>
+<a class="sourceLine" id="cb14-175" title="175">    ui-&gt;plot-&gt;graph(<span class="dv">0</span>)-&gt;setData(mIndices,mSamples);</a>
+<a class="sourceLine" id="cb14-176" title="176">    ui-&gt;plot-&gt;xAxis-&gt;rescale();</a>
+<a class="sourceLine" id="cb14-177" title="177">    ui-&gt;plot-&gt;replot();</a>
+<a class="sourceLine" id="cb14-178" title="178"></a>
+<a class="sourceLine" id="cb14-179" title="179">    ui-&gt;plot2-&gt;graph(<span class="dv">0</span>)-&gt;setData(mFftIndices.mid(<span class="dv">0</span>,fftVec.length()),fftVec);</a>
+<a class="sourceLine" id="cb14-180" title="180">    ui-&gt;plot2-&gt;replot();</a></code></pre></div>
 <h1 id="the-end">The end</h1>
 <p>Thanks for reading. This was an experiment with calling FFTW from Qt and to plot the result of an DFT alongside the waveform used to compute it. I hope it is useful for someone. If you have questions, feedback, hints or tips, please contact me (information below).</p>
 <p>Have a good day!</p>
@@ -535,3 +535,4 @@
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
 </HTML>
+

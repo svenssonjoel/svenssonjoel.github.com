@@ -193,90 +193,90 @@
 </code></pre>
 <p>Include the <code>qcustomplot.h</code> file. QCustomPlot (at least the version I have) comes as just two files, <code>qcustomplot.h</code> and <code>qcustomplot.cpp</code>, just add these two files to the project.</p>
 <p>The state held by the <em>MainWindow</em> object is augmented with an <code>mData</code> member where we accumulate the data collected.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">private</span>:</span>
-<span id="cb3-2"><a href="#cb3-2"></a>    Ui::MainWindow *ui;</span>
-<span id="cb3-3"><a href="#cb3-3"></a></span>
-<span id="cb3-4"><a href="#cb3-4"></a>    <span class="ex">QSerialPort</span> *mSerial;</span>
-<span id="cb3-5"><a href="#cb3-5"></a>    <span class="ex">QList</span>&lt;<span class="ex">QSerialPortInfo</span>&gt; mSerialPorts;</span>
-<span id="cb3-6"><a href="#cb3-6"></a>    <span class="ex">QTimer</span> *mSerialScanTimer;</span>
-<span id="cb3-7"><a href="#cb3-7"></a></span>
-<span id="cb3-8"><a href="#cb3-8"></a>    <span class="ex">QSharedPointer</span>&lt;QCPGraphDataContainer&gt; mData;</span>
-<span id="cb3-9"><a href="#cb3-9"></a></span>
-<span id="cb3-10"><a href="#cb3-10"></a>    <span class="dt">void</span> updateSerialPorts();</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">private</span>:</a>
+<a class="sourceLine" id="cb3-2" title="2">    Ui::MainWindow *ui;</a>
+<a class="sourceLine" id="cb3-3" title="3"></a>
+<a class="sourceLine" id="cb3-4" title="4">    <span class="ex">QSerialPort</span> *mSerial;</a>
+<a class="sourceLine" id="cb3-5" title="5">    <span class="ex">QList</span>&lt;<span class="ex">QSerialPortInfo</span>&gt; mSerialPorts;</a>
+<a class="sourceLine" id="cb3-6" title="6">    <span class="ex">QTimer</span> *mSerialScanTimer;</a>
+<a class="sourceLine" id="cb3-7" title="7"></a>
+<a class="sourceLine" id="cb3-8" title="8">    <span class="ex">QSharedPointer</span>&lt;QCPGraphDataContainer&gt; mData;</a>
+<a class="sourceLine" id="cb3-9" title="9"></a>
+<a class="sourceLine" id="cb3-10" title="10">    <span class="dt">void</span> updateSerialPorts();</a></code></pre></div>
 <p><code>mData</code> is a <em>QSharedPointer</em> to a <em>QCPGraphDataContainer</em>. The <em>QCPGraphDataContainer</em> is an abstract data container of <em>QCPGraphData</em> object, one of which will be created for each data point that we parse.</p>
 <p>There seems to be two ways to add data to a QCustomPlot graph, either you use data stored in a <em>QVector<double></em> or you use one these <em>QSharedPointer</em> to a <em>QCPGraphDataContainer</em>. It seems to me that having a shared pointer to the data is beneficial as we can add data to the same storage as QCustomPlot uses to plot without the need to copy elements back and forth. This is speculation on my part.</p>
 <p>That covers the changes to the header file. Below you can find the complete code listing for <code>mainwindow.h</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#ifndef MAINWINDOW_H</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="pp">#define MAINWINDOW_H</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="pp">#include </span><span class="im">&lt;QMainWindow&gt;</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="pp">#include </span><span class="im">&lt;QSerialPort&gt;</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="pp">#include </span><span class="im">&lt;QSerialPortInfo&gt;</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="pp">#include </span><span class="im">&lt;QTimer&gt;</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="pp">#include </span><span class="im">&quot;qcustomplot.h&quot;</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a></span>
-<span id="cb4-10"><a href="#cb4-10"></a>QT_BEGIN_NAMESPACE</span>
-<span id="cb4-11"><a href="#cb4-11"></a><span class="kw">namespace</span> Ui { <span class="kw">class</span> MainWindow; }</span>
-<span id="cb4-12"><a href="#cb4-12"></a>QT_END_NAMESPACE</span>
-<span id="cb4-13"><a href="#cb4-13"></a></span>
-<span id="cb4-14"><a href="#cb4-14"></a><span class="kw">class</span> MainWindow : <span class="kw">public</span> <span class="ex">QMainWindow</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a>{</span>
-<span id="cb4-16"><a href="#cb4-16"></a>    <span class="ex">Q_OBJECT</span></span>
-<span id="cb4-17"><a href="#cb4-17"></a></span>
-<span id="cb4-18"><a href="#cb4-18"></a><span class="kw">public</span>:</span>
-<span id="cb4-19"><a href="#cb4-19"></a>    MainWindow(<span class="ex">QWidget</span> *parent = <span class="kw">nullptr</span>);</span>
-<span id="cb4-20"><a href="#cb4-20"></a>    ~MainWindow();</span>
-<span id="cb4-21"><a href="#cb4-21"></a></span>
-<span id="cb4-22"><a href="#cb4-22"></a><span class="kw">private</span> <span class="ex">slots</span>:</span>
-<span id="cb4-23"><a href="#cb4-23"></a>    <span class="dt">void</span> on_connectPushButton_clicked();</span>
-<span id="cb4-24"><a href="#cb4-24"></a>    <span class="dt">void</span> on_sendPushButton_clicked();</span>
-<span id="cb4-25"><a href="#cb4-25"></a>    <span class="dt">void</span> serialReadyRead();</span>
-<span id="cb4-26"><a href="#cb4-26"></a></span>
-<span id="cb4-27"><a href="#cb4-27"></a>    <span class="dt">void</span> on_clearGraphPushButton_clicked();</span>
-<span id="cb4-28"><a href="#cb4-28"></a></span>
-<span id="cb4-29"><a href="#cb4-29"></a>    <span class="dt">void</span> on_saveGraphPushButton_clicked();</span>
-<span id="cb4-30"><a href="#cb4-30"></a></span>
-<span id="cb4-31"><a href="#cb4-31"></a><span class="kw">private</span>:</span>
-<span id="cb4-32"><a href="#cb4-32"></a>    Ui::MainWindow *ui;</span>
-<span id="cb4-33"><a href="#cb4-33"></a></span>
-<span id="cb4-34"><a href="#cb4-34"></a>    <span class="ex">QSerialPort</span> *mSerial;</span>
-<span id="cb4-35"><a href="#cb4-35"></a>    <span class="ex">QList</span>&lt;<span class="ex">QSerialPortInfo</span>&gt; mSerialPorts;</span>
-<span id="cb4-36"><a href="#cb4-36"></a>    <span class="ex">QTimer</span> *mSerialScanTimer;</span>
-<span id="cb4-37"><a href="#cb4-37"></a></span>
-<span id="cb4-38"><a href="#cb4-38"></a>    <span class="ex">QSharedPointer</span>&lt;QCPGraphDataContainer&gt; mData;</span>
-<span id="cb4-39"><a href="#cb4-39"></a></span>
-<span id="cb4-40"><a href="#cb4-40"></a>    <span class="dt">void</span> updateSerialPorts();</span>
-<span id="cb4-41"><a href="#cb4-41"></a>};</span>
-<span id="cb4-42"><a href="#cb4-42"></a><span class="pp">#endif </span><span class="co">// MAINWINDOW_H</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb4-1" title="1"><span class="pp">#ifndef MAINWINDOW_H</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="pp">#define M</span>AINWINDOW_H</a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="pp">#include </span><span class="im">&lt;QMainWindow&gt;</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="pp">#include </span><span class="im">&lt;QSerialPort&gt;</span></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="pp">#include </span><span class="im">&lt;QSerialPortInfo&gt;</span></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="pp">#include </span><span class="im">&lt;QTimer&gt;</span></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="pp">#include </span><span class="im">&quot;qcustomplot.h&quot;</span></a>
+<a class="sourceLine" id="cb4-9" title="9"></a>
+<a class="sourceLine" id="cb4-10" title="10">QT_BEGIN_NAMESPACE</a>
+<a class="sourceLine" id="cb4-11" title="11"><span class="kw">namespace</span> Ui { <span class="kw">class</span> MainWindow; }</a>
+<a class="sourceLine" id="cb4-12" title="12">QT_END_NAMESPACE</a>
+<a class="sourceLine" id="cb4-13" title="13"></a>
+<a class="sourceLine" id="cb4-14" title="14"><span class="kw">class</span> MainWindow : <span class="kw">public</span> <span class="ex">QMainWindow</span></a>
+<a class="sourceLine" id="cb4-15" title="15">{</a>
+<a class="sourceLine" id="cb4-16" title="16">    <span class="ex">Q_OBJECT</span></a>
+<a class="sourceLine" id="cb4-17" title="17"></a>
+<a class="sourceLine" id="cb4-18" title="18"><span class="kw">public</span>:</a>
+<a class="sourceLine" id="cb4-19" title="19">    MainWindow(<span class="ex">QWidget</span> *parent = <span class="kw">nullptr</span>);</a>
+<a class="sourceLine" id="cb4-20" title="20">    ~MainWindow();</a>
+<a class="sourceLine" id="cb4-21" title="21"></a>
+<a class="sourceLine" id="cb4-22" title="22"><span class="kw">private</span> <span class="ex">slots</span>:</a>
+<a class="sourceLine" id="cb4-23" title="23">    <span class="dt">void</span> on_connectPushButton_clicked();</a>
+<a class="sourceLine" id="cb4-24" title="24">    <span class="dt">void</span> on_sendPushButton_clicked();</a>
+<a class="sourceLine" id="cb4-25" title="25">    <span class="dt">void</span> serialReadyRead();</a>
+<a class="sourceLine" id="cb4-26" title="26"></a>
+<a class="sourceLine" id="cb4-27" title="27">    <span class="dt">void</span> on_clearGraphPushButton_clicked();</a>
+<a class="sourceLine" id="cb4-28" title="28"></a>
+<a class="sourceLine" id="cb4-29" title="29">    <span class="dt">void</span> on_saveGraphPushButton_clicked();</a>
+<a class="sourceLine" id="cb4-30" title="30"></a>
+<a class="sourceLine" id="cb4-31" title="31"><span class="kw">private</span>:</a>
+<a class="sourceLine" id="cb4-32" title="32">    Ui::MainWindow *ui;</a>
+<a class="sourceLine" id="cb4-33" title="33"></a>
+<a class="sourceLine" id="cb4-34" title="34">    <span class="ex">QSerialPort</span> *mSerial;</a>
+<a class="sourceLine" id="cb4-35" title="35">    <span class="ex">QList</span>&lt;<span class="ex">QSerialPortInfo</span>&gt; mSerialPorts;</a>
+<a class="sourceLine" id="cb4-36" title="36">    <span class="ex">QTimer</span> *mSerialScanTimer;</a>
+<a class="sourceLine" id="cb4-37" title="37"></a>
+<a class="sourceLine" id="cb4-38" title="38">    <span class="ex">QSharedPointer</span>&lt;QCPGraphDataContainer&gt; mData;</a>
+<a class="sourceLine" id="cb4-39" title="39"></a>
+<a class="sourceLine" id="cb4-40" title="40">    <span class="dt">void</span> updateSerialPorts();</a>
+<a class="sourceLine" id="cb4-41" title="41">};</a>
+<a class="sourceLine" id="cb4-42" title="42"><span class="pp">#endif </span><span class="co">// MAINWINDOW_H</span></a></code></pre></div>
 <p>Now, let us jump into the <code>mainwindow.cpp</code> file and take a look at the constructor of <em>MainWindow</em> objects. The unchanged code has been omitted.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1"></a>MainWindow::MainWindow(<span class="ex">QWidget</span> *parent)</span>
-<span id="cb5-2"><a href="#cb5-2"></a>    : <span class="ex">QMainWindow</span>(parent)</span>
-<span id="cb5-3"><a href="#cb5-3"></a>    , ui(<span class="kw">new</span> Ui::MainWindow)</span>
-<span id="cb5-4"><a href="#cb5-4"></a>{</span>
-<span id="cb5-5"><a href="#cb5-5"></a></span>
-<span id="cb5-6"><a href="#cb5-6"></a>    <span class="co">/* The unchanged code is omitted */</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a>    </span>
-<span id="cb5-8"><a href="#cb5-8"></a>    mData = <span class="ex">QSharedPointer</span>&lt;QCPGraphDataContainer&gt;(<span class="kw">new</span> QCPGraphDataContainer);</span>
-<span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a>    <span class="co">/* Setup plot */</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>    ui-&gt;plot-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);</span>
-<span id="cb5-12"><a href="#cb5-12"></a>    ui-&gt;plot-&gt;legend-&gt;setVisible(<span class="kw">true</span>);</span>
-<span id="cb5-13"><a href="#cb5-13"></a>    <span class="ex">QFont</span> legendFont = font();</span>
-<span id="cb5-14"><a href="#cb5-14"></a>    legendFont.setPointSize(<span class="dv">10</span>);</span>
-<span id="cb5-15"><a href="#cb5-15"></a>    ui-&gt;plot-&gt;legend-&gt;setFont(legendFont);</span>
-<span id="cb5-16"><a href="#cb5-16"></a>    ui-&gt;plot-&gt;legend-&gt;setSelectedFont(legendFont);</span>
-<span id="cb5-17"><a href="#cb5-17"></a>    ui-&gt;plot-&gt;legend-&gt;setSelectableParts(QCPLegend::spItems);</span>
-<span id="cb5-18"><a href="#cb5-18"></a>    ui-&gt;plot-&gt;yAxis-&gt;setLabel(<span class="st">&quot;Magnitude&quot;</span>);</span>
-<span id="cb5-19"><a href="#cb5-19"></a>    ui-&gt;plot-&gt;xAxis-&gt;setLabel(<span class="st">&quot;Sample&quot;</span>);</span>
-<span id="cb5-20"><a href="#cb5-20"></a>    ui-&gt;plot-&gt;clearGraphs();</span>
-<span id="cb5-21"><a href="#cb5-21"></a>    ui-&gt;plot-&gt;addGraph();</span>
-<span id="cb5-22"><a href="#cb5-22"></a></span>
-<span id="cb5-23"><a href="#cb5-23"></a>    ui-&gt;plot-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</span>
-<span id="cb5-24"><a href="#cb5-24"></a>    ui-&gt;plot-&gt;graph()-&gt;setData(mData);</span>
-<span id="cb5-25"><a href="#cb5-25"></a>    ui-&gt;plot-&gt;graph()-&gt;setName(<span class="st">&quot;STM32 ADC&quot;</span>);</span>
-<span id="cb5-26"><a href="#cb5-26"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb5-1" title="1">MainWindow::MainWindow(<span class="ex">QWidget</span> *parent)</a>
+<a class="sourceLine" id="cb5-2" title="2">    : <span class="ex">QMainWindow</span>(parent)</a>
+<a class="sourceLine" id="cb5-3" title="3">    , ui(<span class="kw">new</span> Ui::MainWindow)</a>
+<a class="sourceLine" id="cb5-4" title="4">{</a>
+<a class="sourceLine" id="cb5-5" title="5"></a>
+<a class="sourceLine" id="cb5-6" title="6">    <span class="co">/* The unchanged code is omitted */</span></a>
+<a class="sourceLine" id="cb5-7" title="7">    </a>
+<a class="sourceLine" id="cb5-8" title="8">    mData = <span class="ex">QSharedPointer</span>&lt;QCPGraphDataContainer&gt;(<span class="kw">new</span> QCPGraphDataContainer);</a>
+<a class="sourceLine" id="cb5-9" title="9"></a>
+<a class="sourceLine" id="cb5-10" title="10">    <span class="co">/* Setup plot */</span></a>
+<a class="sourceLine" id="cb5-11" title="11">    ui-&gt;plot-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);</a>
+<a class="sourceLine" id="cb5-12" title="12">    ui-&gt;plot-&gt;legend-&gt;setVisible(<span class="kw">true</span>);</a>
+<a class="sourceLine" id="cb5-13" title="13">    <span class="ex">QFont</span> legendFont = font();</a>
+<a class="sourceLine" id="cb5-14" title="14">    legendFont.setPointSize(<span class="dv">10</span>);</a>
+<a class="sourceLine" id="cb5-15" title="15">    ui-&gt;plot-&gt;legend-&gt;setFont(legendFont);</a>
+<a class="sourceLine" id="cb5-16" title="16">    ui-&gt;plot-&gt;legend-&gt;setSelectedFont(legendFont);</a>
+<a class="sourceLine" id="cb5-17" title="17">    ui-&gt;plot-&gt;legend-&gt;setSelectableParts(QCPLegend::spItems);</a>
+<a class="sourceLine" id="cb5-18" title="18">    ui-&gt;plot-&gt;yAxis-&gt;setLabel(<span class="st">&quot;Magnitude&quot;</span>);</a>
+<a class="sourceLine" id="cb5-19" title="19">    ui-&gt;plot-&gt;xAxis-&gt;setLabel(<span class="st">&quot;Sample&quot;</span>);</a>
+<a class="sourceLine" id="cb5-20" title="20">    ui-&gt;plot-&gt;clearGraphs();</a>
+<a class="sourceLine" id="cb5-21" title="21">    ui-&gt;plot-&gt;addGraph();</a>
+<a class="sourceLine" id="cb5-22" title="22"></a>
+<a class="sourceLine" id="cb5-23" title="23">    ui-&gt;plot-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</a>
+<a class="sourceLine" id="cb5-24" title="24">    ui-&gt;plot-&gt;graph()-&gt;setData(mData);</a>
+<a class="sourceLine" id="cb5-25" title="25">    ui-&gt;plot-&gt;graph()-&gt;setName(<span class="st">&quot;STM32 ADC&quot;</span>);</a>
+<a class="sourceLine" id="cb5-26" title="26">}</a></code></pre></div>
 <p>First a new <em>QCPGraphDataContainer</em> is created and a shared pointer to it is assigned to <code>mData</code>. That initializes our storage area for data samples.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1"></a>    mData = <span class="ex">QSharedPointer</span>&lt;QCPGraphDataContainer&gt;(<span class="kw">new</span> QCPGraphDataContainer);</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb6-1" title="1">    mData = <span class="ex">QSharedPointer</span>&lt;QCPGraphDataContainer&gt;(<span class="kw">new</span> QCPGraphDataContainer);</a></code></pre></div>
 <p>Then the plot is configured and set up.</p>
 <pre><code>    ui-&gt;plot-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     ui-&gt;plot-&gt;legend-&gt;setVisible(true);
@@ -291,206 +291,206 @@
 </code></pre>
 <p>Dragging and zooming is enabled, the legend is set to be visible and so on. Then y-axis and x-axis labels are set to "Magnitude" and "Sample". There are a lot of things to configure and tweak when it comes to QCustomPlot and I don't know even a third of it.</p>
 <p>Then we add a graph.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1"></a>    ui-&gt;plot-&gt;clearGraphs();</span>
-<span id="cb8-2"><a href="#cb8-2"></a>    ui-&gt;plot-&gt;addGraph();</span>
-<span id="cb8-3"><a href="#cb8-3"></a></span>
-<span id="cb8-4"><a href="#cb8-4"></a>    ui-&gt;plot-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</span>
-<span id="cb8-5"><a href="#cb8-5"></a>    ui-&gt;plot-&gt;graph()-&gt;setData(mData);</span>
-<span id="cb8-6"><a href="#cb8-6"></a>    ui-&gt;plot-&gt;graph()-&gt;setName(<span class="st">&quot;STM32 ADC&quot;</span>);</span>
-<span id="cb8-7"><a href="#cb8-7"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb8-1" title="1">    ui-&gt;plot-&gt;clearGraphs();</a>
+<a class="sourceLine" id="cb8-2" title="2">    ui-&gt;plot-&gt;addGraph();</a>
+<a class="sourceLine" id="cb8-3" title="3"></a>
+<a class="sourceLine" id="cb8-4" title="4">    ui-&gt;plot-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</a>
+<a class="sourceLine" id="cb8-5" title="5">    ui-&gt;plot-&gt;graph()-&gt;setData(mData);</a>
+<a class="sourceLine" id="cb8-6" title="6">    ui-&gt;plot-&gt;graph()-&gt;setName(<span class="st">&quot;STM32 ADC&quot;</span>);</a>
+<a class="sourceLine" id="cb8-7" title="7">}</a></code></pre></div>
 <p>These settings are related to a particular data set, that we here give the name "STM32 ADC". <code>setData</code> is available in two different flavors, one that take two QVector<double> or this one that takes just one shared pointer to a QCPGraphDataContainer. With that, we are finished with the changes to the constructor.</p>
 <p>Next we take a look at the parsing of data to be plotted. This is implemented in the <code>serialReadyRead</code> slot. Just as in the earlier GUI, a string is read from the serial port and output onto the text browser.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">void</span> MainWindow::serialReadyRead()</span>
-<span id="cb9-2"><a href="#cb9-2"></a>{</span>
-<span id="cb9-3"><a href="#cb9-3"></a>    <span class="ex">QByteArray</span> data = mSerial-&gt;readAll();</span>
-<span id="cb9-4"><a href="#cb9-4"></a>    <span class="ex">QString</span> str = <span class="ex">QString</span>(data);</span>
-<span id="cb9-5"><a href="#cb9-5"></a>    ui-&gt;outputTextBrowser-&gt;insertPlainText(str);</span>
-<span id="cb9-6"><a href="#cb9-6"></a>    <span class="ex">QScrollBar</span> *sb = ui-&gt;outputTextBrowser-&gt;verticalScrollBar();</span>
-<span id="cb9-7"><a href="#cb9-7"></a>    sb-&gt;setValue(sb-&gt;maximum());</span>
-<span id="cb9-8"><a href="#cb9-8"></a></span>
-<span id="cb9-9"><a href="#cb9-9"></a></span>
-<span id="cb9-10"><a href="#cb9-10"></a>    <span class="cf">if</span> (str.startsWith(<span class="st">&quot;sample:&quot;</span>,<span class="ex">Qt::</span>CaseInsensitive)) {</span>
-<span id="cb9-11"><a href="#cb9-11"></a>       <span class="ex">QStringList</span> parts = str.split(<span class="st">&quot; &quot;</span>);</span>
-<span id="cb9-12"><a href="#cb9-12"></a>       <span class="cf">if</span> (parts.size() == <span class="dv">3</span>) {</span>
-<span id="cb9-13"><a href="#cb9-13"></a>         <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Got a sample &quot;</span> &lt;&lt; parts.at(<span class="dv">1</span>).toDouble() &lt;&lt; parts.at(<span class="dv">2</span>).toDouble();</span>
-<span id="cb9-14"><a href="#cb9-14"></a>         <span class="dt">double</span> num = parts.at(<span class="dv">1</span>).toDouble();</span>
-<span id="cb9-15"><a href="#cb9-15"></a>         <span class="dt">double</span> mag = parts.at(<span class="dv">2</span>).toDouble();</span>
-<span id="cb9-16"><a href="#cb9-16"></a>         mData-&gt;add(QCPGraphData(num, mag));</span>
-<span id="cb9-17"><a href="#cb9-17"></a>         ui-&gt;plot-&gt;rescaleAxes();</span>
-<span id="cb9-18"><a href="#cb9-18"></a>         ui-&gt;plot-&gt;replot();</span>
-<span id="cb9-19"><a href="#cb9-19"></a>       }</span>
-<span id="cb9-20"><a href="#cb9-20"></a>    }</span>
-<span id="cb9-21"><a href="#cb9-21"></a></span>
-<span id="cb9-22"><a href="#cb9-22"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb9-1" title="1"><span class="dt">void</span> MainWindow::serialReadyRead()</a>
+<a class="sourceLine" id="cb9-2" title="2">{</a>
+<a class="sourceLine" id="cb9-3" title="3">    <span class="ex">QByteArray</span> data = mSerial-&gt;readAll();</a>
+<a class="sourceLine" id="cb9-4" title="4">    <span class="ex">QString</span> str = <span class="ex">QString</span>(data);</a>
+<a class="sourceLine" id="cb9-5" title="5">    ui-&gt;outputTextBrowser-&gt;insertPlainText(str);</a>
+<a class="sourceLine" id="cb9-6" title="6">    <span class="ex">QScrollBar</span> *sb = ui-&gt;outputTextBrowser-&gt;verticalScrollBar();</a>
+<a class="sourceLine" id="cb9-7" title="7">    sb-&gt;setValue(sb-&gt;maximum());</a>
+<a class="sourceLine" id="cb9-8" title="8"></a>
+<a class="sourceLine" id="cb9-9" title="9"></a>
+<a class="sourceLine" id="cb9-10" title="10">    <span class="cf">if</span> (str.startsWith(<span class="st">&quot;sample:&quot;</span>,<span class="ex">Qt::</span>CaseInsensitive)) {</a>
+<a class="sourceLine" id="cb9-11" title="11">       <span class="ex">QStringList</span> parts = str.split(<span class="st">&quot; &quot;</span>);</a>
+<a class="sourceLine" id="cb9-12" title="12">       <span class="cf">if</span> (parts.size() == <span class="dv">3</span>) {</a>
+<a class="sourceLine" id="cb9-13" title="13">         <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Got a sample &quot;</span> &lt;&lt; parts.at(<span class="dv">1</span>).toDouble() &lt;&lt; parts.at(<span class="dv">2</span>).toDouble();</a>
+<a class="sourceLine" id="cb9-14" title="14">         <span class="dt">double</span> num = parts.at(<span class="dv">1</span>).toDouble();</a>
+<a class="sourceLine" id="cb9-15" title="15">         <span class="dt">double</span> mag = parts.at(<span class="dv">2</span>).toDouble();</a>
+<a class="sourceLine" id="cb9-16" title="16">         mData-&gt;add(QCPGraphData(num, mag));</a>
+<a class="sourceLine" id="cb9-17" title="17">         ui-&gt;plot-&gt;rescaleAxes();</a>
+<a class="sourceLine" id="cb9-18" title="18">         ui-&gt;plot-&gt;replot();</a>
+<a class="sourceLine" id="cb9-19" title="19">       }</a>
+<a class="sourceLine" id="cb9-20" title="20">    }</a>
+<a class="sourceLine" id="cb9-21" title="21"></a>
+<a class="sourceLine" id="cb9-22" title="22">}</a></code></pre></div>
 <p>In addition to outputting the str to the text window, we check if the string has the prefix "sample:" (using <code>str.startsWith</code>). If the string does start with "sample:" we split it up at the spaces and check if the result of that splitting is a list of three elements. If there are not three strings in the <code>parts</code> list, that means the data is malformed and cannot be used. This is of course also application dependent, for a particular tag you could have more than 2 data fields.</p>
 <p>Anyway! if the string splits nicely into 3 chunks, the second and third of those string chunks are converted to doubles (<code>toDouble()</code>) and added to the <code>mData</code> (<code>mData-&gt;add(QCPGraphData(num, mag));</code>).</p>
 <p>Lastly the plot is rescaled and replotted.</p>
 <p>This brings us to the final parts of the extended GUI, the save and clear buttons. These are implemented in the slots <code>on_clearGraphPushButton_clicked</code> and <code>on_saveGraphPushButton_clicked</code>. First the clear function, it is very simple.</p>
 <p>When the user presses the clear button, the data is cleared and the plot is rescaled and replotted. It is now ready to accept a new set of samples if that is desirable.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">void</span> MainWindow::on_clearGraphPushButton_clicked()</span>
-<span id="cb10-2"><a href="#cb10-2"></a>{</span>
-<span id="cb10-3"><a href="#cb10-3"></a>    mData-&gt;clear();</span>
-<span id="cb10-4"><a href="#cb10-4"></a>    ui-&gt;plot-&gt;rescaleAxes();</span>
-<span id="cb10-5"><a href="#cb10-5"></a>    ui-&gt;plot-&gt;replot();</span>
-<span id="cb10-6"><a href="#cb10-6"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb10-1" title="1"><span class="dt">void</span> MainWindow::on_clearGraphPushButton_clicked()</a>
+<a class="sourceLine" id="cb10-2" title="2">{</a>
+<a class="sourceLine" id="cb10-3" title="3">    mData-&gt;clear();</a>
+<a class="sourceLine" id="cb10-4" title="4">    ui-&gt;plot-&gt;rescaleAxes();</a>
+<a class="sourceLine" id="cb10-5" title="5">    ui-&gt;plot-&gt;replot();</a>
+<a class="sourceLine" id="cb10-6" title="6">}</a></code></pre></div>
 <p>The save button uses a <em>QFileDialog</em> to open up a filename selector/specification window. This results in a string representing a filename.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1"></a></span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="dt">void</span> MainWindow::on_saveGraphPushButton_clicked()</span>
-<span id="cb11-3"><a href="#cb11-3"></a>{</span>
-<span id="cb11-4"><a href="#cb11-4"></a>    <span class="ex">QString</span> filename = <span class="ex">QFileDialog::</span>getSaveFileName(<span class="kw">this</span>,</span>
-<span id="cb11-5"><a href="#cb11-5"></a>                                                    <span class="fu">tr</span>(<span class="st">&quot;Save pdf&quot;</span>), <span class="st">&quot;&quot;</span>,</span>
-<span id="cb11-6"><a href="#cb11-6"></a>                                                    <span class="fu">tr</span>(<span class="st">&quot;Pdf files (*.pdf)&quot;</span>));</span>
-<span id="cb11-7"><a href="#cb11-7"></a></span>
-<span id="cb11-8"><a href="#cb11-8"></a>    <span class="cf">if</span> (!filename.isEmpty()) {</span>
-<span id="cb11-9"><a href="#cb11-9"></a>        ui-&gt;plot-&gt;savePdf(filename);</span>
-<span id="cb11-10"><a href="#cb11-10"></a>    }</span>
-<span id="cb11-11"><a href="#cb11-11"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb11-1" title="1"></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="dt">void</span> MainWindow::on_saveGraphPushButton_clicked()</a>
+<a class="sourceLine" id="cb11-3" title="3">{</a>
+<a class="sourceLine" id="cb11-4" title="4">    <span class="ex">QString</span> filename = <span class="ex">QFileDialog::</span>getSaveFileName(<span class="kw">this</span>,</a>
+<a class="sourceLine" id="cb11-5" title="5">                                                    <span class="fu">tr</span>(<span class="st">&quot;Save pdf&quot;</span>), <span class="st">&quot;&quot;</span>,</a>
+<a class="sourceLine" id="cb11-6" title="6">                                                    <span class="fu">tr</span>(<span class="st">&quot;Pdf files (*.pdf)&quot;</span>));</a>
+<a class="sourceLine" id="cb11-7" title="7"></a>
+<a class="sourceLine" id="cb11-8" title="8">    <span class="cf">if</span> (!filename.isEmpty()) {</a>
+<a class="sourceLine" id="cb11-9" title="9">        ui-&gt;plot-&gt;savePdf(filename);</a>
+<a class="sourceLine" id="cb11-10" title="10">    }</a>
+<a class="sourceLine" id="cb11-11" title="11">}</a></code></pre></div>
 <p>If the filename is not an empty string, then QCustomPlot's function for saving as pdf is called and the pdf is generated. Quite nice! The result of storing as pdf can be seen below.</p>
 <p><embed src="./media/graph_qt.pdf" /></p>
 <p>Below you find the entire <code>mainwindow.cpp</code> for the extended functionality.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb12-1"><a href="#cb12-1"></a><span class="pp">#include </span><span class="im">&quot;mainwindow.h&quot;</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="pp">#include </span><span class="im">&quot;ui_mainwindow.h&quot;</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="pp">#include </span><span class="im">&lt;QDebug&gt;</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="pp">#include </span><span class="im">&lt;QScrollBar&gt;</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="pp">#include </span><span class="im">&lt;QFileDialog&gt;</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a></span>
-<span id="cb12-7"><a href="#cb12-7"></a>MainWindow::MainWindow(<span class="ex">QWidget</span> *parent)</span>
-<span id="cb12-8"><a href="#cb12-8"></a>    : <span class="ex">QMainWindow</span>(parent)</span>
-<span id="cb12-9"><a href="#cb12-9"></a>    , ui(<span class="kw">new</span> Ui::MainWindow)</span>
-<span id="cb12-10"><a href="#cb12-10"></a>{</span>
-<span id="cb12-11"><a href="#cb12-11"></a>    ui-&gt;setupUi(<span class="kw">this</span>);</span>
-<span id="cb12-12"><a href="#cb12-12"></a>    <span class="kw">this</span>-&gt;setWindowTitle(<span class="st">&quot;Serial&quot;</span>);</span>
-<span id="cb12-13"><a href="#cb12-13"></a></span>
-<span id="cb12-14"><a href="#cb12-14"></a>    mSerial = <span class="kw">new</span> <span class="ex">QSerialPort</span>(<span class="kw">this</span>);</span>
-<span id="cb12-15"><a href="#cb12-15"></a>    updateSerialPorts();</span>
-<span id="cb12-16"><a href="#cb12-16"></a></span>
-<span id="cb12-17"><a href="#cb12-17"></a>    mSerialScanTimer = <span class="kw">new</span> <span class="ex">QTimer</span>(<span class="kw">this</span>);</span>
-<span id="cb12-18"><a href="#cb12-18"></a>    mSerialScanTimer-&gt;setInterval(<span class="dv">5000</span>);</span>
-<span id="cb12-19"><a href="#cb12-19"></a>    mSerialScanTimer-&gt;start();</span>
-<span id="cb12-20"><a href="#cb12-20"></a></span>
-<span id="cb12-21"><a href="#cb12-21"></a>    <span class="fu">connect</span>(mSerialScanTimer, &amp;<span class="ex">QTimer::</span>timeout,</span>
-<span id="cb12-22"><a href="#cb12-22"></a>            <span class="kw">this</span>, &amp;MainWindow::updateSerialPorts);</span>
-<span id="cb12-23"><a href="#cb12-23"></a></span>
-<span id="cb12-24"><a href="#cb12-24"></a>    <span class="fu">connect</span>(ui-&gt;inputLineEdit, &amp;<span class="ex">QLineEdit::</span>returnPressed,</span>
-<span id="cb12-25"><a href="#cb12-25"></a>            <span class="kw">this</span>, &amp;MainWindow::on_sendPushButton_clicked);</span>
-<span id="cb12-26"><a href="#cb12-26"></a></span>
-<span id="cb12-27"><a href="#cb12-27"></a>    <span class="fu">connect</span>(mSerial, &amp;<span class="ex">QSerialPort::</span>readyRead,</span>
-<span id="cb12-28"><a href="#cb12-28"></a>            <span class="kw">this</span>, &amp;MainWindow::serialReadyRead);</span>
-<span id="cb12-29"><a href="#cb12-29"></a></span>
-<span id="cb12-30"><a href="#cb12-30"></a>    mData = <span class="ex">QSharedPointer</span>&lt;QCPGraphDataContainer&gt;(<span class="kw">new</span> QCPGraphDataContainer);</span>
-<span id="cb12-31"><a href="#cb12-31"></a></span>
-<span id="cb12-32"><a href="#cb12-32"></a>    <span class="co">/* Setup plot */</span></span>
-<span id="cb12-33"><a href="#cb12-33"></a>    ui-&gt;plot-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);</span>
-<span id="cb12-34"><a href="#cb12-34"></a>    ui-&gt;plot-&gt;legend-&gt;setVisible(<span class="kw">true</span>);</span>
-<span id="cb12-35"><a href="#cb12-35"></a>    <span class="ex">QFont</span> legendFont = font();</span>
-<span id="cb12-36"><a href="#cb12-36"></a>    legendFont.setPointSize(<span class="dv">10</span>);</span>
-<span id="cb12-37"><a href="#cb12-37"></a>    ui-&gt;plot-&gt;legend-&gt;setFont(legendFont);</span>
-<span id="cb12-38"><a href="#cb12-38"></a>    ui-&gt;plot-&gt;legend-&gt;setSelectedFont(legendFont);</span>
-<span id="cb12-39"><a href="#cb12-39"></a>    ui-&gt;plot-&gt;legend-&gt;setSelectableParts(QCPLegend::spItems);</span>
-<span id="cb12-40"><a href="#cb12-40"></a>    ui-&gt;plot-&gt;yAxis-&gt;setLabel(<span class="st">&quot;Magnitude&quot;</span>);</span>
-<span id="cb12-41"><a href="#cb12-41"></a>    ui-&gt;plot-&gt;xAxis-&gt;setLabel(<span class="st">&quot;Sample&quot;</span>);</span>
-<span id="cb12-42"><a href="#cb12-42"></a>    ui-&gt;plot-&gt;clearGraphs();</span>
-<span id="cb12-43"><a href="#cb12-43"></a>    ui-&gt;plot-&gt;addGraph();</span>
-<span id="cb12-44"><a href="#cb12-44"></a></span>
-<span id="cb12-45"><a href="#cb12-45"></a>    ui-&gt;plot-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</span>
-<span id="cb12-46"><a href="#cb12-46"></a>    ui-&gt;plot-&gt;graph()-&gt;setData(mData);</span>
-<span id="cb12-47"><a href="#cb12-47"></a>    ui-&gt;plot-&gt;graph()-&gt;setName(<span class="st">&quot;STM32 ADC&quot;</span>);</span>
-<span id="cb12-48"><a href="#cb12-48"></a></span>
-<span id="cb12-49"><a href="#cb12-49"></a>}</span>
-<span id="cb12-50"><a href="#cb12-50"></a></span>
-<span id="cb12-51"><a href="#cb12-51"></a>MainWindow::~MainWindow()</span>
-<span id="cb12-52"><a href="#cb12-52"></a>{</span>
-<span id="cb12-53"><a href="#cb12-53"></a>    <span class="kw">delete</span> ui;</span>
-<span id="cb12-54"><a href="#cb12-54"></a>}</span>
-<span id="cb12-55"><a href="#cb12-55"></a></span>
-<span id="cb12-56"><a href="#cb12-56"></a><span class="dt">void</span> MainWindow::updateSerialPorts()</span>
-<span id="cb12-57"><a href="#cb12-57"></a>{</span>
-<span id="cb12-58"><a href="#cb12-58"></a>    mSerialPorts = <span class="ex">QSerialPortInfo::</span>availablePorts();</span>
-<span id="cb12-59"><a href="#cb12-59"></a></span>
-<span id="cb12-60"><a href="#cb12-60"></a>    ui-&gt;serialComboBox-&gt;clear();</span>
-<span id="cb12-61"><a href="#cb12-61"></a>    <span class="cf">for</span> (<span class="ex">QSerialPortInfo</span> port : mSerialPorts) {</span>
-<span id="cb12-62"><a href="#cb12-62"></a>        ui-&gt;serialComboBox-&gt;addItem(port.portName(), port.systemLocation());</span>
-<span id="cb12-63"><a href="#cb12-63"></a>    }</span>
-<span id="cb12-64"><a href="#cb12-64"></a>}</span>
-<span id="cb12-65"><a href="#cb12-65"></a></span>
-<span id="cb12-66"><a href="#cb12-66"></a><span class="dt">void</span> MainWindow::on_connectPushButton_clicked()</span>
-<span id="cb12-67"><a href="#cb12-67"></a>{</span>
-<span id="cb12-68"><a href="#cb12-68"></a>    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">false</span>);</span>
-<span id="cb12-69"><a href="#cb12-69"></a>    <span class="co">//QString serialName =  ui-&gt;serialComboBox-&gt;currentText();</span></span>
-<span id="cb12-70"><a href="#cb12-70"></a>    <span class="ex">QString</span> serialLoc  =  ui-&gt;serialComboBox-&gt;currentData().toString();</span>
-<span id="cb12-71"><a href="#cb12-71"></a></span>
-<span id="cb12-72"><a href="#cb12-72"></a>    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</span>
-<span id="cb12-73"><a href="#cb12-73"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial already connected, disconnecting!&quot;</span>;</span>
-<span id="cb12-74"><a href="#cb12-74"></a>        mSerial-&gt;close();</span>
-<span id="cb12-75"><a href="#cb12-75"></a>    }</span>
-<span id="cb12-76"><a href="#cb12-76"></a></span>
-<span id="cb12-77"><a href="#cb12-77"></a>    mSerial-&gt;setPortName(serialLoc);</span>
-<span id="cb12-78"><a href="#cb12-78"></a>    mSerial-&gt;setBaudRate(<span class="ex">QSerialPort::</span>Baud115200);</span>
-<span id="cb12-79"><a href="#cb12-79"></a>    mSerial-&gt;setDataBits(<span class="ex">QSerialPort::</span>Data8);</span>
-<span id="cb12-80"><a href="#cb12-80"></a>    mSerial-&gt;setParity(<span class="ex">QSerialPort::</span>NoParity);</span>
-<span id="cb12-81"><a href="#cb12-81"></a>    mSerial-&gt;setStopBits(<span class="ex">QSerialPort::</span>OneStop);</span>
-<span id="cb12-82"><a href="#cb12-82"></a>    mSerial-&gt;setFlowControl(<span class="ex">QSerialPort::</span>NoFlowControl);</span>
-<span id="cb12-83"><a href="#cb12-83"></a></span>
-<span id="cb12-84"><a href="#cb12-84"></a>    <span class="cf">if</span>(mSerial-&gt;open(<span class="ex">QIODevice::</span>ReadWrite)) {</span>
-<span id="cb12-85"><a href="#cb12-85"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: OK!&quot;</span>;</span>
-<span id="cb12-86"><a href="#cb12-86"></a>    } <span class="cf">else</span> {</span>
-<span id="cb12-87"><a href="#cb12-87"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: ERROR!&quot;</span>;</span>
-<span id="cb12-88"><a href="#cb12-88"></a>    }</span>
-<span id="cb12-89"><a href="#cb12-89"></a>    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">true</span>);</span>
-<span id="cb12-90"><a href="#cb12-90"></a>}</span>
-<span id="cb12-91"><a href="#cb12-91"></a></span>
-<span id="cb12-92"><a href="#cb12-92"></a><span class="dt">void</span> MainWindow::on_sendPushButton_clicked()</span>
-<span id="cb12-93"><a href="#cb12-93"></a>{</span>
-<span id="cb12-94"><a href="#cb12-94"></a>    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</span>
-<span id="cb12-95"><a href="#cb12-95"></a></span>
-<span id="cb12-96"><a href="#cb12-96"></a>        <span class="ex">QString</span> str= ui-&gt;inputLineEdit-&gt;text();</span>
-<span id="cb12-97"><a href="#cb12-97"></a>        ui-&gt;inputLineEdit-&gt;clear();</span>
-<span id="cb12-98"><a href="#cb12-98"></a>        str.append(<span class="st">&quot;</span><span class="sc">\r\n</span><span class="st">&quot;</span>);</span>
-<span id="cb12-99"><a href="#cb12-99"></a>        mSerial-&gt;write(str.toLocal8Bit());</span>
-<span id="cb12-100"><a href="#cb12-100"></a>    } <span class="cf">else</span> {</span>
-<span id="cb12-101"><a href="#cb12-101"></a>        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial port not connected!&quot;</span>;</span>
-<span id="cb12-102"><a href="#cb12-102"></a>    }</span>
-<span id="cb12-103"><a href="#cb12-103"></a>}</span>
-<span id="cb12-104"><a href="#cb12-104"></a></span>
-<span id="cb12-105"><a href="#cb12-105"></a><span class="dt">void</span> MainWindow::serialReadyRead()</span>
-<span id="cb12-106"><a href="#cb12-106"></a>{</span>
-<span id="cb12-107"><a href="#cb12-107"></a>    <span class="ex">QByteArray</span> data = mSerial-&gt;readAll();</span>
-<span id="cb12-108"><a href="#cb12-108"></a>    <span class="ex">QString</span> str = <span class="ex">QString</span>(data);</span>
-<span id="cb12-109"><a href="#cb12-109"></a>    ui-&gt;outputTextBrowser-&gt;insertPlainText(str);</span>
-<span id="cb12-110"><a href="#cb12-110"></a>    <span class="ex">QScrollBar</span> *sb = ui-&gt;outputTextBrowser-&gt;verticalScrollBar();</span>
-<span id="cb12-111"><a href="#cb12-111"></a>    sb-&gt;setValue(sb-&gt;maximum());</span>
-<span id="cb12-112"><a href="#cb12-112"></a></span>
-<span id="cb12-113"><a href="#cb12-113"></a></span>
-<span id="cb12-114"><a href="#cb12-114"></a>    <span class="cf">if</span> (str.startsWith(<span class="st">&quot;sample:&quot;</span>,<span class="ex">Qt::</span>CaseInsensitive)) {</span>
-<span id="cb12-115"><a href="#cb12-115"></a>       <span class="ex">QStringList</span> parts = str.split(<span class="st">&quot; &quot;</span>);</span>
-<span id="cb12-116"><a href="#cb12-116"></a>       <span class="cf">if</span> (parts.size() == <span class="dv">3</span>) {</span>
-<span id="cb12-117"><a href="#cb12-117"></a>         <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Got a sample &quot;</span> &lt;&lt; parts.at(<span class="dv">1</span>).toDouble() &lt;&lt; parts.at(<span class="dv">2</span>).toDouble();</span>
-<span id="cb12-118"><a href="#cb12-118"></a>         <span class="dt">double</span> num = parts.at(<span class="dv">1</span>).toDouble();</span>
-<span id="cb12-119"><a href="#cb12-119"></a>         <span class="dt">double</span> mag = parts.at(<span class="dv">2</span>).toDouble();</span>
-<span id="cb12-120"><a href="#cb12-120"></a>         mData-&gt;add(QCPGraphData(num, mag));</span>
-<span id="cb12-121"><a href="#cb12-121"></a>         ui-&gt;plot-&gt;rescaleAxes();</span>
-<span id="cb12-122"><a href="#cb12-122"></a>         ui-&gt;plot-&gt;replot();</span>
-<span id="cb12-123"><a href="#cb12-123"></a>       }</span>
-<span id="cb12-124"><a href="#cb12-124"></a>    }</span>
-<span id="cb12-125"><a href="#cb12-125"></a>}</span>
-<span id="cb12-126"><a href="#cb12-126"></a></span>
-<span id="cb12-127"><a href="#cb12-127"></a><span class="dt">void</span> MainWindow::on_clearGraphPushButton_clicked()</span>
-<span id="cb12-128"><a href="#cb12-128"></a>{</span>
-<span id="cb12-129"><a href="#cb12-129"></a>    mData-&gt;clear();</span>
-<span id="cb12-130"><a href="#cb12-130"></a>    ui-&gt;plot-&gt;rescaleAxes();</span>
-<span id="cb12-131"><a href="#cb12-131"></a>    ui-&gt;plot-&gt;replot();</span>
-<span id="cb12-132"><a href="#cb12-132"></a>}</span>
-<span id="cb12-133"><a href="#cb12-133"></a></span>
-<span id="cb12-134"><a href="#cb12-134"></a><span class="dt">void</span> MainWindow::on_saveGraphPushButton_clicked()</span>
-<span id="cb12-135"><a href="#cb12-135"></a>{</span>
-<span id="cb12-136"><a href="#cb12-136"></a>    <span class="ex">QString</span> filename = <span class="ex">QFileDialog::</span>getSaveFileName(<span class="kw">this</span>,</span>
-<span id="cb12-137"><a href="#cb12-137"></a>                                                    <span class="fu">tr</span>(<span class="st">&quot;Save pdf&quot;</span>), <span class="st">&quot;&quot;</span>,</span>
-<span id="cb12-138"><a href="#cb12-138"></a>                                                    <span class="fu">tr</span>(<span class="st">&quot;Pdf files (*.pdf)&quot;</span>));</span>
-<span id="cb12-139"><a href="#cb12-139"></a></span>
-<span id="cb12-140"><a href="#cb12-140"></a>    <span class="cf">if</span> (!filename.isEmpty()) {</span>
-<span id="cb12-141"><a href="#cb12-141"></a>        ui-&gt;plot-&gt;savePdf(filename);</span>
-<span id="cb12-142"><a href="#cb12-142"></a>    }</span>
-<span id="cb12-143"><a href="#cb12-143"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb12-1" title="1"><span class="pp">#include </span><span class="im">&quot;mainwindow.h&quot;</span></a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="pp">#include </span><span class="im">&quot;ui_mainwindow.h&quot;</span></a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="pp">#include </span><span class="im">&lt;QDebug&gt;</span></a>
+<a class="sourceLine" id="cb12-4" title="4"><span class="pp">#include </span><span class="im">&lt;QScrollBar&gt;</span></a>
+<a class="sourceLine" id="cb12-5" title="5"><span class="pp">#include </span><span class="im">&lt;QFileDialog&gt;</span></a>
+<a class="sourceLine" id="cb12-6" title="6"></a>
+<a class="sourceLine" id="cb12-7" title="7">MainWindow::MainWindow(<span class="ex">QWidget</span> *parent)</a>
+<a class="sourceLine" id="cb12-8" title="8">    : <span class="ex">QMainWindow</span>(parent)</a>
+<a class="sourceLine" id="cb12-9" title="9">    , ui(<span class="kw">new</span> Ui::MainWindow)</a>
+<a class="sourceLine" id="cb12-10" title="10">{</a>
+<a class="sourceLine" id="cb12-11" title="11">    ui-&gt;setupUi(<span class="kw">this</span>);</a>
+<a class="sourceLine" id="cb12-12" title="12">    <span class="kw">this</span>-&gt;setWindowTitle(<span class="st">&quot;Serial&quot;</span>);</a>
+<a class="sourceLine" id="cb12-13" title="13"></a>
+<a class="sourceLine" id="cb12-14" title="14">    mSerial = <span class="kw">new</span> <span class="ex">QSerialPort</span>(<span class="kw">this</span>);</a>
+<a class="sourceLine" id="cb12-15" title="15">    updateSerialPorts();</a>
+<a class="sourceLine" id="cb12-16" title="16"></a>
+<a class="sourceLine" id="cb12-17" title="17">    mSerialScanTimer = <span class="kw">new</span> <span class="ex">QTimer</span>(<span class="kw">this</span>);</a>
+<a class="sourceLine" id="cb12-18" title="18">    mSerialScanTimer-&gt;setInterval(<span class="dv">5000</span>);</a>
+<a class="sourceLine" id="cb12-19" title="19">    mSerialScanTimer-&gt;start();</a>
+<a class="sourceLine" id="cb12-20" title="20"></a>
+<a class="sourceLine" id="cb12-21" title="21">    <span class="fu">connect</span>(mSerialScanTimer, &amp;<span class="ex">QTimer::</span>timeout,</a>
+<a class="sourceLine" id="cb12-22" title="22">            <span class="kw">this</span>, &amp;MainWindow::updateSerialPorts);</a>
+<a class="sourceLine" id="cb12-23" title="23"></a>
+<a class="sourceLine" id="cb12-24" title="24">    <span class="fu">connect</span>(ui-&gt;inputLineEdit, &amp;<span class="ex">QLineEdit::</span>returnPressed,</a>
+<a class="sourceLine" id="cb12-25" title="25">            <span class="kw">this</span>, &amp;MainWindow::on_sendPushButton_clicked);</a>
+<a class="sourceLine" id="cb12-26" title="26"></a>
+<a class="sourceLine" id="cb12-27" title="27">    <span class="fu">connect</span>(mSerial, &amp;<span class="ex">QSerialPort::</span>readyRead,</a>
+<a class="sourceLine" id="cb12-28" title="28">            <span class="kw">this</span>, &amp;MainWindow::serialReadyRead);</a>
+<a class="sourceLine" id="cb12-29" title="29"></a>
+<a class="sourceLine" id="cb12-30" title="30">    mData = <span class="ex">QSharedPointer</span>&lt;QCPGraphDataContainer&gt;(<span class="kw">new</span> QCPGraphDataContainer);</a>
+<a class="sourceLine" id="cb12-31" title="31"></a>
+<a class="sourceLine" id="cb12-32" title="32">    <span class="co">/* Setup plot */</span></a>
+<a class="sourceLine" id="cb12-33" title="33">    ui-&gt;plot-&gt;setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);</a>
+<a class="sourceLine" id="cb12-34" title="34">    ui-&gt;plot-&gt;legend-&gt;setVisible(<span class="kw">true</span>);</a>
+<a class="sourceLine" id="cb12-35" title="35">    <span class="ex">QFont</span> legendFont = font();</a>
+<a class="sourceLine" id="cb12-36" title="36">    legendFont.setPointSize(<span class="dv">10</span>);</a>
+<a class="sourceLine" id="cb12-37" title="37">    ui-&gt;plot-&gt;legend-&gt;setFont(legendFont);</a>
+<a class="sourceLine" id="cb12-38" title="38">    ui-&gt;plot-&gt;legend-&gt;setSelectedFont(legendFont);</a>
+<a class="sourceLine" id="cb12-39" title="39">    ui-&gt;plot-&gt;legend-&gt;setSelectableParts(QCPLegend::spItems);</a>
+<a class="sourceLine" id="cb12-40" title="40">    ui-&gt;plot-&gt;yAxis-&gt;setLabel(<span class="st">&quot;Magnitude&quot;</span>);</a>
+<a class="sourceLine" id="cb12-41" title="41">    ui-&gt;plot-&gt;xAxis-&gt;setLabel(<span class="st">&quot;Sample&quot;</span>);</a>
+<a class="sourceLine" id="cb12-42" title="42">    ui-&gt;plot-&gt;clearGraphs();</a>
+<a class="sourceLine" id="cb12-43" title="43">    ui-&gt;plot-&gt;addGraph();</a>
+<a class="sourceLine" id="cb12-44" title="44"></a>
+<a class="sourceLine" id="cb12-45" title="45">    ui-&gt;plot-&gt;graph()-&gt;setPen(<span class="ex">QPen</span>(<span class="ex">Qt::</span>black));</a>
+<a class="sourceLine" id="cb12-46" title="46">    ui-&gt;plot-&gt;graph()-&gt;setData(mData);</a>
+<a class="sourceLine" id="cb12-47" title="47">    ui-&gt;plot-&gt;graph()-&gt;setName(<span class="st">&quot;STM32 ADC&quot;</span>);</a>
+<a class="sourceLine" id="cb12-48" title="48"></a>
+<a class="sourceLine" id="cb12-49" title="49">}</a>
+<a class="sourceLine" id="cb12-50" title="50"></a>
+<a class="sourceLine" id="cb12-51" title="51">MainWindow::~MainWindow()</a>
+<a class="sourceLine" id="cb12-52" title="52">{</a>
+<a class="sourceLine" id="cb12-53" title="53">    <span class="kw">delete</span> ui;</a>
+<a class="sourceLine" id="cb12-54" title="54">}</a>
+<a class="sourceLine" id="cb12-55" title="55"></a>
+<a class="sourceLine" id="cb12-56" title="56"><span class="dt">void</span> MainWindow::updateSerialPorts()</a>
+<a class="sourceLine" id="cb12-57" title="57">{</a>
+<a class="sourceLine" id="cb12-58" title="58">    mSerialPorts = <span class="ex">QSerialPortInfo::</span>availablePorts();</a>
+<a class="sourceLine" id="cb12-59" title="59"></a>
+<a class="sourceLine" id="cb12-60" title="60">    ui-&gt;serialComboBox-&gt;clear();</a>
+<a class="sourceLine" id="cb12-61" title="61">    <span class="cf">for</span> (<span class="ex">QSerialPortInfo</span> port : mSerialPorts) {</a>
+<a class="sourceLine" id="cb12-62" title="62">        ui-&gt;serialComboBox-&gt;addItem(port.portName(), port.systemLocation());</a>
+<a class="sourceLine" id="cb12-63" title="63">    }</a>
+<a class="sourceLine" id="cb12-64" title="64">}</a>
+<a class="sourceLine" id="cb12-65" title="65"></a>
+<a class="sourceLine" id="cb12-66" title="66"><span class="dt">void</span> MainWindow::on_connectPushButton_clicked()</a>
+<a class="sourceLine" id="cb12-67" title="67">{</a>
+<a class="sourceLine" id="cb12-68" title="68">    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">false</span>);</a>
+<a class="sourceLine" id="cb12-69" title="69">    <span class="co">//QString serialName =  ui-&gt;serialComboBox-&gt;currentText();</span></a>
+<a class="sourceLine" id="cb12-70" title="70">    <span class="ex">QString</span> serialLoc  =  ui-&gt;serialComboBox-&gt;currentData().toString();</a>
+<a class="sourceLine" id="cb12-71" title="71"></a>
+<a class="sourceLine" id="cb12-72" title="72">    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</a>
+<a class="sourceLine" id="cb12-73" title="73">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial already connected, disconnecting!&quot;</span>;</a>
+<a class="sourceLine" id="cb12-74" title="74">        mSerial-&gt;close();</a>
+<a class="sourceLine" id="cb12-75" title="75">    }</a>
+<a class="sourceLine" id="cb12-76" title="76"></a>
+<a class="sourceLine" id="cb12-77" title="77">    mSerial-&gt;setPortName(serialLoc);</a>
+<a class="sourceLine" id="cb12-78" title="78">    mSerial-&gt;setBaudRate(<span class="ex">QSerialPort::</span>Baud115200);</a>
+<a class="sourceLine" id="cb12-79" title="79">    mSerial-&gt;setDataBits(<span class="ex">QSerialPort::</span>Data8);</a>
+<a class="sourceLine" id="cb12-80" title="80">    mSerial-&gt;setParity(<span class="ex">QSerialPort::</span>NoParity);</a>
+<a class="sourceLine" id="cb12-81" title="81">    mSerial-&gt;setStopBits(<span class="ex">QSerialPort::</span>OneStop);</a>
+<a class="sourceLine" id="cb12-82" title="82">    mSerial-&gt;setFlowControl(<span class="ex">QSerialPort::</span>NoFlowControl);</a>
+<a class="sourceLine" id="cb12-83" title="83"></a>
+<a class="sourceLine" id="cb12-84" title="84">    <span class="cf">if</span>(mSerial-&gt;open(<span class="ex">QIODevice::</span>ReadWrite)) {</a>
+<a class="sourceLine" id="cb12-85" title="85">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: OK!&quot;</span>;</a>
+<a class="sourceLine" id="cb12-86" title="86">    } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb12-87" title="87">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;SERIAL: ERROR!&quot;</span>;</a>
+<a class="sourceLine" id="cb12-88" title="88">    }</a>
+<a class="sourceLine" id="cb12-89" title="89">    ui-&gt;connectPushButton-&gt;setEnabled(<span class="kw">true</span>);</a>
+<a class="sourceLine" id="cb12-90" title="90">}</a>
+<a class="sourceLine" id="cb12-91" title="91"></a>
+<a class="sourceLine" id="cb12-92" title="92"><span class="dt">void</span> MainWindow::on_sendPushButton_clicked()</a>
+<a class="sourceLine" id="cb12-93" title="93">{</a>
+<a class="sourceLine" id="cb12-94" title="94">    <span class="cf">if</span> (mSerial-&gt;isOpen()) {</a>
+<a class="sourceLine" id="cb12-95" title="95"></a>
+<a class="sourceLine" id="cb12-96" title="96">        <span class="ex">QString</span> str= ui-&gt;inputLineEdit-&gt;text();</a>
+<a class="sourceLine" id="cb12-97" title="97">        ui-&gt;inputLineEdit-&gt;clear();</a>
+<a class="sourceLine" id="cb12-98" title="98">        str.append(<span class="st">&quot;</span><span class="sc">\r\n</span><span class="st">&quot;</span>);</a>
+<a class="sourceLine" id="cb12-99" title="99">        mSerial-&gt;write(str.toLocal8Bit());</a>
+<a class="sourceLine" id="cb12-100" title="100">    } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb12-101" title="101">        <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Serial port not connected!&quot;</span>;</a>
+<a class="sourceLine" id="cb12-102" title="102">    }</a>
+<a class="sourceLine" id="cb12-103" title="103">}</a>
+<a class="sourceLine" id="cb12-104" title="104"></a>
+<a class="sourceLine" id="cb12-105" title="105"><span class="dt">void</span> MainWindow::serialReadyRead()</a>
+<a class="sourceLine" id="cb12-106" title="106">{</a>
+<a class="sourceLine" id="cb12-107" title="107">    <span class="ex">QByteArray</span> data = mSerial-&gt;readAll();</a>
+<a class="sourceLine" id="cb12-108" title="108">    <span class="ex">QString</span> str = <span class="ex">QString</span>(data);</a>
+<a class="sourceLine" id="cb12-109" title="109">    ui-&gt;outputTextBrowser-&gt;insertPlainText(str);</a>
+<a class="sourceLine" id="cb12-110" title="110">    <span class="ex">QScrollBar</span> *sb = ui-&gt;outputTextBrowser-&gt;verticalScrollBar();</a>
+<a class="sourceLine" id="cb12-111" title="111">    sb-&gt;setValue(sb-&gt;maximum());</a>
+<a class="sourceLine" id="cb12-112" title="112"></a>
+<a class="sourceLine" id="cb12-113" title="113"></a>
+<a class="sourceLine" id="cb12-114" title="114">    <span class="cf">if</span> (str.startsWith(<span class="st">&quot;sample:&quot;</span>,<span class="ex">Qt::</span>CaseInsensitive)) {</a>
+<a class="sourceLine" id="cb12-115" title="115">       <span class="ex">QStringList</span> parts = str.split(<span class="st">&quot; &quot;</span>);</a>
+<a class="sourceLine" id="cb12-116" title="116">       <span class="cf">if</span> (parts.size() == <span class="dv">3</span>) {</a>
+<a class="sourceLine" id="cb12-117" title="117">         <span class="fu">qDebug</span>() &lt;&lt; <span class="st">&quot;Got a sample &quot;</span> &lt;&lt; parts.at(<span class="dv">1</span>).toDouble() &lt;&lt; parts.at(<span class="dv">2</span>).toDouble();</a>
+<a class="sourceLine" id="cb12-118" title="118">         <span class="dt">double</span> num = parts.at(<span class="dv">1</span>).toDouble();</a>
+<a class="sourceLine" id="cb12-119" title="119">         <span class="dt">double</span> mag = parts.at(<span class="dv">2</span>).toDouble();</a>
+<a class="sourceLine" id="cb12-120" title="120">         mData-&gt;add(QCPGraphData(num, mag));</a>
+<a class="sourceLine" id="cb12-121" title="121">         ui-&gt;plot-&gt;rescaleAxes();</a>
+<a class="sourceLine" id="cb12-122" title="122">         ui-&gt;plot-&gt;replot();</a>
+<a class="sourceLine" id="cb12-123" title="123">       }</a>
+<a class="sourceLine" id="cb12-124" title="124">    }</a>
+<a class="sourceLine" id="cb12-125" title="125">}</a>
+<a class="sourceLine" id="cb12-126" title="126"></a>
+<a class="sourceLine" id="cb12-127" title="127"><span class="dt">void</span> MainWindow::on_clearGraphPushButton_clicked()</a>
+<a class="sourceLine" id="cb12-128" title="128">{</a>
+<a class="sourceLine" id="cb12-129" title="129">    mData-&gt;clear();</a>
+<a class="sourceLine" id="cb12-130" title="130">    ui-&gt;plot-&gt;rescaleAxes();</a>
+<a class="sourceLine" id="cb12-131" title="131">    ui-&gt;plot-&gt;replot();</a>
+<a class="sourceLine" id="cb12-132" title="132">}</a>
+<a class="sourceLine" id="cb12-133" title="133"></a>
+<a class="sourceLine" id="cb12-134" title="134"><span class="dt">void</span> MainWindow::on_saveGraphPushButton_clicked()</a>
+<a class="sourceLine" id="cb12-135" title="135">{</a>
+<a class="sourceLine" id="cb12-136" title="136">    <span class="ex">QString</span> filename = <span class="ex">QFileDialog::</span>getSaveFileName(<span class="kw">this</span>,</a>
+<a class="sourceLine" id="cb12-137" title="137">                                                    <span class="fu">tr</span>(<span class="st">&quot;Save pdf&quot;</span>), <span class="st">&quot;&quot;</span>,</a>
+<a class="sourceLine" id="cb12-138" title="138">                                                    <span class="fu">tr</span>(<span class="st">&quot;Pdf files (*.pdf)&quot;</span>));</a>
+<a class="sourceLine" id="cb12-139" title="139"></a>
+<a class="sourceLine" id="cb12-140" title="140">    <span class="cf">if</span> (!filename.isEmpty()) {</a>
+<a class="sourceLine" id="cb12-141" title="141">        ui-&gt;plot-&gt;savePdf(filename);</a>
+<a class="sourceLine" id="cb12-142" title="142">    }</a>
+<a class="sourceLine" id="cb12-143" title="143">}</a></code></pre></div>
 <h2 id="in-closing">In closing</h2>
 <p>This is a picture of the STM32F4-Discovery and potentiometer setup used in the examples.</p>
 <p><img src="./media/pot.jpg" alt="Experimental setup" /></p>
@@ -502,3 +502,4 @@
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
 </HTML>
+

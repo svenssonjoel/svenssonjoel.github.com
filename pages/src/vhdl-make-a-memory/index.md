@@ -72,7 +72,7 @@ The number of elements in the array is decided by the number of address bits.
 We need a couple of signals internally in the architecture. These are `mem`, the actual 
 instance of an object of type `mem_array` and we need a *kind of* intermediate signal 
 that I call `data_out`. I ran into some problems here at first trying to implement 
-this without the intermediate `data_out` signal but ran into problems. 
+the memory without the intermediate `data_out` signal. 
 
 The problem I ran into is that you want to put the `data` signals into state `Z` whenever 
 there is no `ce`. I thought it would be fine to this with a statement like this: 
@@ -87,7 +87,7 @@ it right now should mean something like data is always "ZZZ..." and what happens
 if I later have a (inside a process) `data <= the_actual_data` is that `data` is being 
 driven from two places at once. So, do not do that... 
 
-Here is what the statement looks like that seems to be better: 
+Here is what a better statement looks like: 
 
 ```
 data <= data_out when (ce = '1' and re ='1' and we = '0') else "ZZZZZZZZ";

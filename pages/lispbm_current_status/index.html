@@ -352,15 +352,15 @@ Hello world
 <p>The <code>print</code> function used in this example is an <em>extension</em>. Extensions are a way to add platform dependent functionality to lispBM. The target platforms have many different ways of dealing with this kind of IO so I don't want to build any expectations on existing methods of presenting text into lispBM itself. There are still a few calls to <code>printf</code> present in lispBM but removing these are on the todo-list.</p>
 <h3 id="a-slightly-larger-example">A Slightly Larger Example</h3>
 <p>Here is a larger example that makes combined use of many of the features introduced above. It is a function that computes the nth Fibonacci number in a tail-recursive way. There will be more about tail-recursion in the section about the evaluator.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb22-1"><a href="#cb22-1"></a>(define fib (<span class="kw">lambda</span> (n)</span>
-<span id="cb22-2"><a href="#cb22-2"></a>          (<span class="kw">let</span> ((fib0 (<span class="kw">lambda</span> (n a b)</span>
-<span id="cb22-3"><a href="#cb22-3"></a>               (<span class="kw">if</span> (<span class="op">=</span> n <span class="dv">0</span>) a</span>
-<span id="cb22-4"><a href="#cb22-4"></a>                 (<span class="kw">if</span> (<span class="op">=</span> n <span class="dv">1</span>) b</span>
-<span id="cb22-5"><a href="#cb22-5"></a>                   (fib0 (<span class="op">-</span> n <span class="dv">1</span>) b (<span class="op">+</span> a b)))))))</span>
-<span id="cb22-6"><a href="#cb22-6"></a>        (fib0 n <span class="dv">0</span> <span class="dv">1</span>))))</span>
-<span id="cb22-7"><a href="#cb22-7"></a></span>
-<span id="cb22-8"><a href="#cb22-8"></a></span>
-<span id="cb22-9"><a href="#cb22-9"></a>(fib <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><a class="sourceLine" id="cb22-1" title="1">(define fib (<span class="kw">lambda</span> (n)</a>
+<a class="sourceLine" id="cb22-2" title="2">          (<span class="kw">let</span> ((fib0 (<span class="kw">lambda</span> (n a b)</a>
+<a class="sourceLine" id="cb22-3" title="3">               (<span class="kw">if</span> (<span class="op">=</span> n <span class="dv">0</span>) a</a>
+<a class="sourceLine" id="cb22-4" title="4">                 (<span class="kw">if</span> (<span class="op">=</span> n <span class="dv">1</span>) b</a>
+<a class="sourceLine" id="cb22-5" title="5">                   (fib0 (<span class="op">-</span> n <span class="dv">1</span>) b (<span class="op">+</span> a b)))))))</a>
+<a class="sourceLine" id="cb22-6" title="6">        (fib0 n <span class="dv">0</span> <span class="dv">1</span>))))</a>
+<a class="sourceLine" id="cb22-7" title="7"></a>
+<a class="sourceLine" id="cb22-8" title="8"></a>
+<a class="sourceLine" id="cb22-9" title="9">(fib <span class="dv">10</span>)</a></code></pre></div>
 <p>This example code evaluates to <code>55</code>.</p>
 <p>With this example we conclude the walk through of some fundamental language constructs that can be used in lispBM programs. From now on this text will be mostly about how these things are implemented.</p>
 <h2 id="heap-consisting-of-cons-cells">Heap Consisting of Cons cells</h2>
@@ -778,3 +778,4 @@ data-full-width-responsive="true"></ins></p>
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
 </HTML>
+

@@ -199,12 +199,12 @@ end mem_8bit_single_port;
 <pre><code>    type mem_array is array((2**ADDRESS_BITS)-1 downto 0) of 
         std_logic_vector(7 downto 0);
 </code></pre>
-<p>The number of elements in the array is decided by the number of address bits. We need a couple of signals internally in the architecture. These are <code>mem</code>, the actual instance of an object of type <code>mem_array</code> and we need a <em>kind of</em> intermediate signal that I call <code>data_out</code>. I ran into some problems here at first trying to implement this without the intermediate <code>data_out</code> signal but ran into problems.</p>
+<p>The number of elements in the array is decided by the number of address bits. We need a couple of signals internally in the architecture. These are <code>mem</code>, the actual instance of an object of type <code>mem_array</code> and we need a <em>kind of</em> intermediate signal that I call <code>data_out</code>. I ran into some problems here at first trying to implement the memory without the intermediate <code>data_out</code> signal.</p>
 <p>The problem I ran into is that you want to put the <code>data</code> signals into state <code>Z</code> whenever there is no <code>ce</code>. I thought it would be fine to this with a statement like this:</p>
 <pre><code>data &lt;= &quot;ZZZZZZZZ&quot;; 
 </code></pre>
 <p>in the architecture. The plan was then to, later, in a process override that setting with actual data if needed. But that is not possible it seems. The statement, as I understand it right now should mean something like data is always "ZZZ..." and what happens then if I later have a (inside a process) <code>data &lt;= the_actual_data</code> is that <code>data</code> is being driven from two places at once. So, do not do that...</p>
-<p>Here is what the statement looks like that seems to be better:</p>
+<p>Here is what a better statement looks like:</p>
 <pre><code>data &lt;= data_out when (ce = &#39;1&#39; and re =&#39;1&#39; and we = &#39;0&#39;) else &quot;ZZZZZZZZ&quot;;
 </code></pre>
 <p>and this is where the intermediate <code>data_out</code> signal comes in. The <code>data_out</code> signal is given a value within a process that is sensitive to the <code>clk</code> signal.</p>
@@ -440,3 +440,4 @@ end Behavioral;
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
 </HTML>
+
