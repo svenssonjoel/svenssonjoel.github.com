@@ -1,0 +1,733 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>More VGA with the FPGA </TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Display of image stored in a ROM using VGA">
+  <meta name="keywords" content="VGA FPGA NEXYS A7 Artix Artix-7 vivado vhdl ">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'UA-111281599-1');
+  </script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ9CPG3ZWG"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'G-DQ9CPG3ZWG');
+  </script>
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages/nexys-a7-vga-2/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="vga-on-the-fpga-part-2">VGA on the FPGA part 2</h1>
+<p>In the <a href="https://svenssonjoel.github.io/pages/nexys-a7-vga">last post</a> we got some life-signs from the FPGA onto the VGA display. The result was a display of some colored bars and a very fuzzy field of points.</p>
+<p>Here I am trying to set up a "ROM" memory (modeled in the FPGA) that holds an image. I thought it would be good to plot a picture that we know what it is supposed to look like in order to spot if anything is not working as it should. So I located a screenshot from the old Wolfenstein 3d game. The image was 640x480 though and the resolution I want to plot in (for sentimental reasons) is 320x200 indexed graphics with a one byte color index per pixel. The screenshot had to be converted...</p>
+<p>The FPGA board (Nexys A7-100T) has a 4 bit resistor ladder (DAC) per R,G and B channel for the VGA. This means that there are 16 different intensities possible for each color component or, in other words, 4096 colors possible in total. A one byte color index means that we can index 256 different colors from a palette made up of 256 color triplets of 4 bits (nibbles).</p>
+<p>I did not find any out of the box picture converter that would take the picture as input and out indexed color with nibble resolution per color. Gimp, however, lets you save an image as C source code! So that is what I did and then wrote a little it of C code to convert that "image as C source" to the format I wanted. Gimp took care of most of the work by outputting an indexed image of 256 indices but where each R,G and B intensity in the palette had 8 bit resolution. My C program, very naively, just reduced the 8 bits down to 4. If you look at the photos of my VGA monitor below, the conversion to 4 bit per color channel takes place after screenshot 10 and next (unnumbered) image has colors much more like the original. (of course given all this conversion (and even compressing file-formats involved intermediately, there are some artifacts in the final image).</p>
+<p>I would like to extend thanks to some friends (that I wont mention by name here in case they wouldn't like that). While working this I was posting intermediate pictures on FP and got lots of tips and feedback! Thanks guys (in case you stumble upon this and know who you are).</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">1</th>
+<th style="text-align: center;">2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/screen-1.jpg" alt="screenshot" /></td>
+<td style="text-align: center;"><img src="./media/screen-2.jpg" alt="screenshot" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">3</th>
+<th style="text-align: center;">4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/screen-3.jpg" alt="screenshot" /></td>
+<td style="text-align: center;"><img src="./media/screen-4.jpg" alt="screenshot" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">5</th>
+<th style="text-align: center;">6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/screen-5.jpg" alt="screenshot" /></td>
+<td style="text-align: center;"><img src="./media/screen-6.jpg" alt="screenshot" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">7</th>
+<th style="text-align: center;">8</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/screen-7.jpg" alt="screenshot" /></td>
+<td style="text-align: center;"><img src="./media/screen-8.jpg" alt="screenshot" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">9</th>
+<th style="text-align: center;">10</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/screen-9.jpg" alt="screenshot" /></td>
+<td style="text-align: center;"><img src="./media/screen-10.jpg" alt="screenshot" /></td>
+</tr>
+</tbody>
+</table>
+<p><img src="./media/screen-11.jpg" alt="screenshot" /></p>
+<p>This post will cover two VHDL modules. One of the modules implement the memory and the other the display logic. The display logic part is similar to the <a href="https://svenssonjoel.github.io/pages/nexys-a7-vga">previous post</a> but with tweaks!</p>
+<p>The memory module will be 64kb (64x1024 65536 bytes) and will store both the color indices of the picture and the nibbles that make up the palette. The interface to this memory will be an address, from 0 to 63999 and 3 output signals of 4 bits of R,G and B. So each access to memory will first look up the index, and than use that index to look up the appropriate nibbles to output onto the R,G and B channels.</p>
+<h2 id="about-the-pictures">About the pictures</h2>
+<p>The pictures represent different stages along the implementation. The first two images (1 and 2) results from being way of in the calculation of what to read from memory. In pictures 3 and 4 we can see that the correct area of memory is being accessed but clearly not in the correct way. There is quite a bit going on there as the picture is 320x200 and the displayed resolution is 640x400, how on earth I managed to get 4 copies horizontally and 5 vertically is a mystery ;)</p>
+<p>Eventually over a sequence of attempts the accesses and the scaling get better (with one out-lier picture 6, which was a clear mistake).</p>
+<p>Pictures 7, 8 and 9 are starting to look really good. The picture is recognizable but the colors are a way off, so this must be something about the lookup of the R,G and B intensities.</p>
+<p>The difference between picture 9 and 10 is interesting. In Pic 9 there are these vertical lines here and there and in 10 those are gone. The vertical lines disappeared when adding output "registers" for the R,G and B nibbles that will hold these values stable for the duration of a pixel-clock period.</p>
+<p>The last picture is using more or less the same VHDL implementation as picture 10, but the image source data has been converted to a palette with 16 intensity levels per R,G and B channel.</p>
+<h2 id="the-image-converter-written-in-c">The image converter written in C</h2>
+<p>The image converter C code includes a file called <code>wolf.h</code> which is generated using GIMP. The h-file defined two arrays, <code>header_data_cmap</code> (containing palette values) and <code>header_data</code> (containing the image as 8 bit indices).</p>
+<p>The problem is that the palette is stored using 8 bits per R,G and B intensity and we want only 4. I could not find an off-the-shelf tool that stores pictures as indexed (8 bit index) into palette of 256 4x4x4 colors.</p>
+<p>The C program does one more thing and that is to output the result after conversion as a string the binary representations of the values. This is a format that can be read into a memory in the VHDL code later.</p>
+<p>The output of running this program looks like this:</p>
+<pre><code>...
+11011101
+11111101
+10111111
+11011100
+11101110
+11011101
+11101111
+11101110
+11101111
+11110011
+11101110
+...
+</code></pre>
+<p>The palette conversion function updates the <code>header_data_cmap</code> array in place. by looping over each index, converting each of the R,G and B values (between 0 and 255) to a double that is then divided by 16, rounded and stored back again into the array.</p>
+<pre><code>void convert_palette(void) {
+  
+  for (int i = 0; i &lt; 256; i ++) {
+    for (int j = 0; j &lt; 3; j ++) {
+      double c = (double)(unsigned char)header_data_cmap[i][j];
+      c = c / 16.0;
+      header_data_cmap[i][j] = (unsigned char)c;
+    }
+  }
+}
+</code></pre>
+<p>There are two functions for printing as binary called <code>print_binary</code> and <code>print_binary4</code>. <code>print_binary</code> prints an 8 bit number and the "4" variant prints a nibble.</p>
+<pre><code>void print_binary(unsigned char a) {
+  
+  printf(&quot;%c%c%c%c%c%c%c%c\n&quot;,
+     (a &gt;&gt; 7) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 6) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 5) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 4) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 3) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 2) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 1) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a) &amp; 1 ? &#39;1&#39; : &#39;0&#39;);   
+}
+
+void print_binary4(unsigned char a) {
+  
+  printf(&quot;%c%c%c%c&quot;,
+     (a &gt;&gt; 3) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 2) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 1) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a) &amp; 1 ? &#39;1&#39; : &#39;0&#39;);   
+}
+</code></pre>
+<p>In the <code>main</code> function, the palette is converted then the image indices are printed out as binary followed by lastly printing out the nibbles making up the palette.</p>
+<pre><code>void main(void) {
+
+  convert_palette();
+  
+  
+  for (int i = 0; i &lt; 64000; i ++) {
+    print_binary(header_data[i]);
+  }
+
+  int o = 0; 
+  for (int i = 0; i &lt; 256; i ++) {
+    for (int j = 0; j &lt; 3; j ++) {
+      print_binary4(header_data_cmap[i][j]);
+      if (o == 1) {
+    printf(&quot;\n&quot;);
+    o = 0;
+      } else {
+    o += 1;
+      }
+    }
+  }
+}
+</code></pre>
+<p>The complete program listing looks like this:</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+#include &quot;wolf.h&quot;
+
+void convert_palette(void) {
+  
+  for (int i = 0; i &lt; 256; i ++) {
+    for (int j = 0; j &lt; 3; j ++) {
+      double c = (double)(unsigned char)header_data_cmap[i][j];
+      c = c / 16.0;
+      header_data_cmap[i][j] = (unsigned char)c;
+    }
+  }
+}
+
+void print_binary(unsigned char a) {
+  
+  printf(&quot;%c%c%c%c%c%c%c%c\n&quot;,
+     (a &gt;&gt; 7) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 6) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 5) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 4) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 3) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 2) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 1) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a) &amp; 1 ? &#39;1&#39; : &#39;0&#39;);   
+}
+
+void print_binary4(unsigned char a) {
+  
+  printf(&quot;%c%c%c%c&quot;,
+     (a &gt;&gt; 3) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 2) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a &gt;&gt; 1) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
+     (a) &amp; 1 ? &#39;1&#39; : &#39;0&#39;);   
+}
+
+void main(void) {
+
+  convert_palette();
+  
+  
+  for (int i = 0; i &lt; 64000; i ++) {
+    print_binary(header_data[i]);
+  }
+
+  int o = 0; 
+  for (int i = 0; i &lt; 256; i ++) {
+    for (int j = 0; j &lt; 3; j ++) {
+      print_binary4(header_data_cmap[i][j]);
+      if (o == 1) {
+    printf(&quot;\n&quot;);
+    o = 0;
+      } else {
+    o += 1;
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="implementation-of-the-memory">Implementation of the memory</h2>
+<p>The memory, here called <code>image_rom</code> has three output signals called <code>red</code>, <code>green</code> and <code>blue</code> each of 4 bits. The inputs are <code>clk</code> and <code>addr</code></p>
+<p>The thought behind the memory is that you provide a value between 0 and 63999 (inclusive) as the address. The values &lt; 64000 represent a valid pixel location on the screen such that values 0 - 319 is the topmost line of pixels, 320 - 639 is the next line and so on. So when a valid pixel "address" is provided, out comes its R,G and B intensities.</p>
+<pre><code>entity image_rom is
+  Port ( 
+    addr : in std_logic_vector (15 downto 0);
+    red : out std_logic_vector (3 downto 0);
+    green : out std_logic_vector (3 downto 0);
+    blue : out std_logic_vector (3 downto 0);
+    clk  : in std_logic
+  );
+end image_rom;
+</code></pre>
+<p>The memory type is defined to be an array of 64kb. This is more than enough room for the 64000 pixel indices and the 384 bytes (768 nibbles) of color intensity nibbles.</p>
+<pre><code>type MEM_ARRAY is ARRAY (0 to 65535) of std_logic_vector (7 downto 0);
+</code></pre>
+<p>The contents of memory is initialized from a file. see for example <a href="https://vhdlwhiz.com/initialize-ram-from-file/">this</a> for more info.</p>
+<pre><code>impure function init_memory(fn : in string) return MEM_ARRAY is 
+    file f : text open read_mode is fn;
+    variable ln : line; 
+    variable bv : bit_vector(7 downto 0);
+    variable tmp_mem : MEM_ARRAY;
+begin 
+    for i in MEM_ARRAY&#39;range loop
+        readline(f, ln);
+        read(ln, bv);
+        tmp_mem(i) := to_stdlogicvector(bv);
+    end loop;
+    return tmp_mem;
+end function;
+</code></pre>
+<p>Then the <code>mem</code> signal, the actual memory, can be declared as follows.</p>
+<pre><code>signal mem : MEM_ARRAY := init_memory(&quot;memory.img&quot;);
+</code></pre>
+<p>With that settled, we can take a look at the interesting part of the memory implementation, the <code>read</code> process. Here a lookup is done into memory using the address provided. The result of that lookup is an index into the palette which consist of nibble-triplets. The palette begins in memory on byte number 64000, or nibble number 128000, so this value is added to the index multiplied by 3. The index is multiplied by 3 because there is 3 nibbles per color.</p>
+<p>Each RGB triplet is spread out across two consecutive bytes in a way that looks like this:</p>
+<pre><code>byte +0 +1     nibbles
+0    rg br     0 - 3
+2    gb rg     4 - 7
+4    br gb     8 - 11
+6    rg br     12 - 15
+</code></pre>
+<p>The byte (bytes) to access for a particular index is obtained by <code>(index * 3) / 2</code> and <code>(index * 3) / 2 + 1</code>. Also note that depending on if the index is even or not you have two cases <code>rg br</code> if the LSB is <code>0</code> and <code>br gb</code> if the LSB is <code>1</code>.</p>
+<p>The result is code looking like this:</p>
+<pre><code>    read : process(clk)
+        variable nibble_ix : unsigned(16 downto 0);
+        variable b1 : std_logic_vector(7 downto 0); 
+        variable b2 : std_logic_vector(7 downto 0); 
+    begin
+        if rising_edge(clk) then
+            nibble_ix := to_unsigned(128000, 17) + unsigned(mem(to_integer(unsigned(addr))))*3; 
+            
+            b1 := mem(to_integer( shift_right(nibble_ix, 1)(15 downto 0)));
+            b2 := mem(to_integer( shift_right(nibble_ix, 1)(15 downto 0) + 1));
+            
+            -- 0 -&gt; 0 1  rg br 
+            -- 1 -&gt; 1 2  br gb
+            -- 2 -&gt; 3 4  rg br
+            -- 3 -&gt; 4 5  br gb
+            -- 4 -&gt; 6 7  rg br
+            
+            if (nibble_ix(0) = &#39;1&#39;) then 
+                red &lt;= b1(3 downto 0);
+                green &lt;= b2(7 downto 4);
+                blue &lt;= b2(3 downto 0);
+            else
+                red &lt;= b1(7 downto 4);
+                green &lt;= b1(3 downto 0);
+                blue &lt;= b2(7 downto 4);
+            end if;
+        end if;
+    end process;
+</code></pre>
+<p>I've added the complete listing for the memory implementation here:</p>
+<pre><code>library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use std.textio.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity image_rom is
+  Port ( 
+    addr : in std_logic_vector (15 downto 0);
+    red : out std_logic_vector (3 downto 0);
+    green : out std_logic_vector (3 downto 0);
+    blue : out std_logic_vector (3 downto 0);
+    clk  : in std_logic
+  );
+end image_rom;
+
+architecture Behavioral of image_rom is
+
+type MEM_ARRAY is ARRAY (0 to 65535) of std_logic_vector (7 downto 0);
+
+impure function init_memory(fn : in string) return MEM_ARRAY is 
+    file f : text open read_mode is fn;
+    variable ln : line; 
+    variable bv : bit_vector(7 downto 0);
+    variable tmp_mem : MEM_ARRAY;
+begin 
+    for i in MEM_ARRAY&#39;range loop
+        readline(f, ln);
+        read(ln, bv);
+        tmp_mem(i) := to_stdlogicvector(bv);
+    end loop;
+    return tmp_mem;
+end function;
+
+signal mem : MEM_ARRAY := init_memory(&quot;memory.img&quot;);
+
+begin
+    
+    read : process(clk)
+        variable nibble_ix : unsigned(16 downto 0);
+        variable b1 : std_logic_vector(7 downto 0); 
+        variable b2 : std_logic_vector(7 downto 0); 
+    begin
+        if rising_edge(clk) then
+            nibble_ix := to_unsigned(128000, 17) + unsigned(mem(to_integer(unsigned(addr))))*3; 
+            
+            b1 := mem(to_integer( shift_right(nibble_ix, 1)(15 downto 0)));
+            b2 := mem(to_integer( shift_right(nibble_ix, 1)(15 downto 0) + 1));
+            
+            -- 0 -&gt; 0 1  rg br 
+            -- 1 -&gt; 1 2  br gb
+            -- 2 -&gt; 3 4  rg br
+            -- 3 -&gt; 4 5  br gb
+            -- 4 -&gt; 6 7  rg br
+            
+            if (nibble_ix(0) = &#39;1&#39;) then 
+                red &lt;= b1(3 downto 0);
+                green &lt;= b2(7 downto 4);
+                blue &lt;= b2(3 downto 0);
+            else
+                red &lt;= b1(7 downto 4);
+                green &lt;= b1(3 downto 0);
+                blue &lt;= b2(7 downto 4);
+            end if;             
+        end if;
+    end process;
+end Behavioral;
+</code></pre>
+<h2 id="implementation-of-the-vga-driver">Implementation of the VGA driver</h2>
+<p>The <code>vga</code> entity is unchanged compared to the <a href="https://svenssonjoel.github.io/pages/nexys-a7-vga">last post</a></p>
+<pre><code>entity vga is
+    Port ( 
+        vga_r : out std_logic_vector(3 downto 0);
+        vga_g : out std_logic_vector(3 downto 0);
+        vga_b : out std_logic_vector(3 downto 0);
+        vga_hs : out std_logic;
+        vga_vs : out std_logic;
+        
+        clk : in std_logic;
+        reset : in std_logic
+        
+       -- clk_out : out std_logic;
+       -- hcnt : out unsigned(10 downto 0);
+       -- vcnt : out unsigned(10 downto 0)
+    );
+end vga;
+</code></pre>
+<p>When in comes to the architecture there are also a bunch of things that are unchanged compared to <a href="https://svenssonjoel.github.io/pages/nexys-a7-vga">last post</a>. Focus here will what is new, but the entire VHDL code listing will be included at the end.</p>
+<p>A new counter is added to keep track of which pixel value to fetch.</p>
+<pre><code>signal index_cnt : unsigned(15 downto 0);
+</code></pre>
+<p>Then a couple of signals are added that are going to be connected to the memory.</p>
+<pre><code>    signal r : std_logic_vector (3 downto 0);
+    signal g : std_logic_vector (3 downto 0); 
+    signal b : std_logic_vector (3 downto 0);
+    
+    signal img_addr : std_logic_vector (15 downto 0); 
+</code></pre>
+<p>The memory is instantiated:</p>
+<pre><code>    image_mem : entity work.image_rom port map (
+        addr =&gt; img_addr,
+        red =&gt; r,
+        green =&gt; g, 
+        blue =&gt; b,
+        clk =&gt; pix_clock
+    );
+</code></pre>
+<p>The clock division processes are exactly the same as in the <a href="https://svenssonjoel.github.io/pages/nexys-a7-vga">last post</a> and left out from here.</p>
+<p>The <code>index_cnt</code> signal is fed as address to the memory.</p>
+<pre><code>    img_addr &lt;= std_logic_vector(index_cnt);
+</code></pre>
+<p>Then there is a process for accessing the memory and keeping the R,G and B signals steady for a period of the clock. This is what fixed the vertical lines in the displayed image between picture 9 and 10 in the beginning of this text.</p>
+<pre><code>    output_reg : process(pix_clock) 
+    begin 
+        if rising_edge(pix_clock) then 
+            if (index_cnt &lt; 64000) then 
+                vga_r &lt;= r; 
+                vga_g &lt;= g;
+                vga_b &lt;= b;
+            else 
+                vga_r &lt;= &quot;0000&quot;;
+                vga_g &lt;= &quot;0000&quot;;
+                vga_b &lt;= &quot;0000&quot;;
+            end if;
+        end if;
+    end process; 
+</code></pre>
+<p>The rest of the timing logic takes place in a process called <code>cnt_proc</code>. This process cycles the <code>h_cnt</code> and <code>v_cnt</code> counters over their ranges and correspondingly also increments the <code>index_cnt</code> while in the valid display range of the <code>h_cnt</code> and <code>v_cnt</code> counters. Since the mode displayed is really 640x400 but the image resolution is 320x200, <code>index_cnt</code> is only incremented every other horizontal pixel and every other time we <code>v_cnt</code> we subtract an entire line from <code>index_cnt</code> leading to a duplication of pixel in H and V direction.</p>
+<pre><code>    cnt_proc : process(pix_clock, reset)
+    begin 
+        if (reset = &#39;1&#39;) then 
+            h_cnt &lt;= to_unsigned(0, h_cnt&#39;length);
+            v_cnt &lt;= to_unsigned(0, v_cnt&#39;length);
+            index_cnt &lt;= to_unsigned(0, index_cnt&#39;length);
+        elsif rising_edge(pix_clock) then
+            
+            if (h_cnt &lt; 800) then
+                h_cnt &lt;= h_cnt + 1;
+                if (h_cnt &lt; 640 and v_cnt &lt; 400 and h_cnt(0) = &#39;1&#39;) then
+                    index_cnt &lt;= index_cnt + 1;
+                end if;
+            else 
+                h_cnt &lt;= to_unsigned(0, h_cnt&#39;length);
+                if (v_cnt &lt; 449) then 
+                    v_cnt &lt;= v_cnt + 1;
+                    if (v_cnt &lt; 400 and v_cnt(0) = &#39;1&#39;) then 
+                        index_cnt &lt;= index_cnt - 320;
+                    end if;
+                else 
+                    v_cnt &lt;= to_unsigned(0, v_cnt&#39;length);
+                    index_cnt &lt;= to_unsigned(0, index_cnt&#39;length); 
+                end if;
+            end if;
+        end if;
+    end process; 
+</code></pre>
+<p>And that is it. The <code>cnt_proc</code> is quite messy and probably there are mistakes. One thing about getting visual feedback on stuff is that some bugs should have visible effects on the display. Say we were off by one in horizontal counting of the <code>index_cnt</code>, my guess is that this would lead to skewed image?!</p>
+<p>Lastly, the entire VHDL listing for the implementation of the VGA architecture.</p>
+<pre><code>architecture Behavioral of vga is
+
+    signal pix_clock : std_logic;
+    signal clk_2 : std_logic;
+    
+    signal h_cnt : unsigned(9 downto 0);
+    signal v_cnt : unsigned(9 downto 0);
+    signal index_cnt : unsigned(15 downto 0);
+    
+    signal r : std_logic_vector (3 downto 0);
+    signal g : std_logic_vector (3 downto 0); 
+    signal b : std_logic_vector (3 downto 0);
+    
+    signal img_addr : std_logic_vector (15 downto 0); 
+    
+begin
+
+    image_mem : entity work.image_rom port map (
+        addr =&gt; img_addr,
+        red =&gt; r,
+        green =&gt; g, 
+        blue =&gt; b,
+        clk =&gt; pix_clock
+    );
+
+    --clk_out &lt;= pix_clock;
+    --hcnt &lt;= h_cnt;
+    --vcnt &lt;= v_cnt;
+
+    clk_div_2: process(clk, reset)
+    begin
+        if rising_edge(clk) then 
+            clk_2 &lt;= not clk_2;
+        end if; 
+    end process;
+
+    pix_clk_gen: process(clk_2, reset)
+    begin 
+        if rising_edge(clk_2) then
+            pix_clock &lt;= not pix_clock;
+        end if;
+    end process;
+
+    vga_hs &lt;= &#39;0&#39; when h_cnt &gt; 656 and h_cnt &lt; 752 else &#39;1&#39;;
+    vga_vs &lt;= &#39;1&#39; when v_cnt = 412 or v_cnt = 413 else &#39;0&#39;;
+
+
+    img_addr &lt;= std_logic_vector(index_cnt);
+              
+                
+    output_reg : process(pix_clock) 
+    begin 
+        if rising_edge(pix_clock) then 
+            if (index_cnt &lt; 64000) then 
+                vga_r &lt;= r; 
+                vga_g &lt;= g;
+                vga_b &lt;= b;
+            else 
+                vga_r &lt;= &quot;0000&quot;;
+                vga_g &lt;= &quot;0000&quot;;
+                vga_b &lt;= &quot;0000&quot;;
+            end if;
+        end if;
+    end process; 
+    
+
+    cnt_proc : process(pix_clock, reset)
+    begin 
+        if (reset = &#39;1&#39;) then 
+            h_cnt &lt;= to_unsigned(0, h_cnt&#39;length);
+            v_cnt &lt;= to_unsigned(0, v_cnt&#39;length);
+            index_cnt &lt;= to_unsigned(0, index_cnt&#39;length);
+        elsif rising_edge(pix_clock) then
+            
+            if (h_cnt &lt; 800) then
+                h_cnt &lt;= h_cnt + 1;
+                if (h_cnt &lt; 640 and v_cnt &lt; 400 and h_cnt(0) = &#39;1&#39;) then
+                    index_cnt &lt;= index_cnt + 1;
+                end if;
+            else 
+                h_cnt &lt;= to_unsigned(0, h_cnt&#39;length);
+                if (v_cnt &lt; 449) then 
+                    v_cnt &lt;= v_cnt + 1;
+                    if (v_cnt &lt; 400 and v_cnt(0) = &#39;1&#39;) then 
+                        index_cnt &lt;= index_cnt - 320;
+                    end if;
+                else 
+                    v_cnt &lt;= to_unsigned(0, v_cnt&#39;length);
+                    index_cnt &lt;= to_unsigned(0, index_cnt&#39;length); 
+                end if;
+            end if;
+        end if;
+    end process; 
+    
+end Behavioral;
+</code></pre>
+<h2 id="conclusions">Conclusions</h2>
+<p>The 320x200 resolution is DOS-era nostalgia of course, the good old mode 13h. The "mode 13h" graphics mode was easy to work with as it had a linear 64000 bytes oh graphics memory. To write a pixel you just calculated how many bytes into this 64000 byte area the corresponding color index byte is located and change the value there. To set a pixel at pos (x,y) you computed (x * 320 + y) then added this to the base address, 0xA0000000, (the location in the address space where the VGA adapters memory was mapped to) and you had a pointer to your pixels color value.</p>
+<p>Working with nibbles is a bit messy. I think the next step will be to implement a dual-ported "nibble" memory so that one port would have an 8 bit data bus and the other a 4 bit data bus. When writing a byte to this memory on the 8bit data-bus the most significant 4 bits will be thrown away and only the low nibble stored. That memory does not need to be large, it only needs to hold 256 * 3 nibbles, that is 384 bytes. With a specialized memory for the nibbles of color channel info, the lookup of color channel data should be a lot easier. We'll see if that works out.</p>
+<p>Thanks for reading! If you have feedback, please send me an email or join the google group. I am not an FPGA expert and what I am writing about is my learning experience, so all hints and tips are much appreciated.</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
