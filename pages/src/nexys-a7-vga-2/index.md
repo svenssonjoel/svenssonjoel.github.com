@@ -10,7 +10,7 @@ Here I am trying to set up a "ROM" memory (modeled in the FPGA) that
 holds an image. I thought it would be good to plot a picture that 
 we know what it is supposed to look like in order to spot if anything 
 is not working as it should. So I located a screenshot from the old Wolfenstein 3d 
-game. The image was 640x480 though and the resolution I want to plot in 
+game. The image was 640x480 though, and the resolution I want to plot 
 (for sentimental reasons) is 320x200 indexed graphics with a one byte 
 color index per pixel. The screenshot had to be converted... 
 
@@ -18,25 +18,25 @@ The FPGA board (Nexys A7-100T) has a 4 bit resistor ladder (DAC) per
 R,G and B channel for the VGA. This means that there are 16 different
 intensities possible for each color component or, in other words, 4096
 colors possible in total. A one byte color index means that we can
-index 256 different colors from a palette made up of 256 color triplets 
-of 4 bits (nibbles). 
+index 256 different colors from a palette made up of 256
+color-intensity triplets of 4 bits (nibbles).
 
-I did not find any out of the box picture converter that would take 
-the picture as input and out indexed color with nibble resolution per color. 
+I did not find any out-of-the-box picture converter that would take 
+the picture as input and output indexed color with nibble resolution per color. 
 Gimp, however, lets you save an image as C source code! So that is what 
-I did and then wrote a little it of C code to convert that "image as C source" 
+I did and then wrote a little bit of C code to convert that "image as C source" 
 to the format I wanted. Gimp took care of most of the work by outputting 
 an indexed image of 256 indices but where each R,G and B intensity in the 
 palette had 8 bit resolution. My C program, very naively, just reduced 
 the 8 bits down to 4. If you look at the photos of my VGA monitor below, 
 the conversion to 4 bit per color channel takes place after
-screenshot 10 and next (unnumbered) image has colors much more like the 
+screenshot 10 and the next (unnumbered) image has colors much more like the 
 original. (of course given all this conversion (and even compressing file-formats 
 involved intermediately, there are some artifacts in the final image). 
 
 
 I would like to extend thanks to some friends (that I wont mention by
-name here in case they wouldn't like that). While working this I was
+name here in case they wouldn't like that). While working on this I was
 posting intermediate pictures on FP and got lots of tips and feedback!
 Thanks guys (in case you stumble upon this and know who you are).
 
@@ -73,7 +73,7 @@ with tweaks!
 The memory module will be 64kb (64x1024 65536 bytes) and will store 
 both the color indices of the picture and the nibbles that make up 
 the palette. The interface to this memory will be an address, 
-from 0 to 63999 and 3 output signals of 4 bits of R,G and B. 
+from 0 to 63999 and there will be 3 output signals of 4 bits each for R,G and B. 
 So each access to memory will first look up the index, and than use 
 that index to look up the appropriate nibbles to output onto the 
 R,G and B channels. 
