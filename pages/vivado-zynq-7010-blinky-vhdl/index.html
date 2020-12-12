@@ -1,0 +1,464 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Zynq 7010 VHDL Blinky </TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="How to get to blinky using Vivado, VHDL and a zynq 7010 (Zynqberry)">
+  <meta name="keywords" content="Zynq Zynq7000 7000 7010 Zynq7010 Zynqberry Vivado VHDL Blinky getting to blinky walkthrough tutorial RTL">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'UA-111281599-1');
+  </script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ9CPG3ZWG"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'G-DQ9CPG3ZWG');
+  </script>
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages/vivado-zynq-7010-blinky-vhdl/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="get-to-blinky-with-vhdl-on-the-zynq-7010-using-vivado-2020">Get to blinky with VHDL on the Zynq 7010 using Vivado 2020</h1>
+<p>This time I have taken a look at VHDL and the Zynq. I have used the Zynq on and off for a long time but then just using high level synthesis HLS (OpenCL or C). However, recently I have been playing with VHDL on the Nexys A7 platform and feel like it would be nice to do something in VHDL on the Zynq as well!</p>
+<p>The zynq boards I use are the <a href="https://shop.trenz-electronic.de/de/TE0726-03M-ZynqBerry-Modul-mit-Xilinx-Zynq-7010-in-Raspberry-Pi-Formfaktor">Trenz Zynqberry</a> boards. You can see two of my Zynqberries in the picture below. One of them is an early 128MB board and the one in currently in use is a newer TE0726-03 with 512MB of DRAM. These boards are very affordable compared to other Zynq-7000 development boards that I have seen, so they may be a good choice.</p>
+<p>This is not the first time I write about a VHDL blinky, see <a href="http://svenssonjoel.github.io/pages/vivado-nexys-a7-getting-started/index.html">blinky on Nexys A7</a>. I have even written about blinky on the zynq before, but then not implementing in VHDL, <a href="http://svenssonjoel.github.io/writing/blinkledzynq.pdf">blinky Zynq using no explicit VHDL</a>.</p>
+<p>If getting started with OpenCL on the Zynq sounds mode interesting you can jump over to <a href="http://svenssonjoel.github.io/pages/zynq_hls_opencl/index.html">this text</a>.</p>
+<p>The led to flash will be connected to the Zynqberry GPIO as shown in the picture below.</p>
+<p><img src="./media/blinky-zynq.jpg" alt="Blinky Zynq" /></p>
+<h2 id="some-prerequisites">Some prerequisites</h2>
+<p>If you are going to do this on a Zynqberry, you need to get board files for your Vivado installation. The board files I am using comes from <a href="https://shop.trenz-electronic.de/de/TE0726-03M-ZynqBerry-Modul-mit-Xilinx-Zynq-7010-in-Raspberry-Pi-Formfaktor?path=Trenz_Electronic/Modules_and_Module_Carriers/special/TE0726/Reference_Design/2019.2/test_board">this page</a>. You find the board files within the archive under "Reference design - Quellcode und Konfigurationsdateien (1 Dateien)" called <code>TE0726-test_board-vivado_2019.2-build_10_20200408185804.zip</code>. The archive file name seems to indicate it is meant for Vivado 2019.2 but seems to work just fine with Vivado 2020.</p>
+<p>Open up the argument and copy the contents of <code>&lt;archive-root&gt;/test_board/board_files/</code> into your Vivado install tree under <code>Xilinx/Vivado/2020.2/data/boards/board_files/</code>.</p>
+<p>It is also a good idea to get <a href="https://www.mouser.com/pdfDocs/TRM-TE0726-03.pdf">The Zynqberry ref. manual</a> as it has information about for example how gpio pins on the zynqberry are connected to the FPGA (what package pin they are associated with).</p>
+<h2 id="lets-get-coding">Let's get coding!</h2>
+<p>Start off by creating a new project in Vivado. I called mine <code>BlinkZynq</code>.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">New Project</th>
+<th style="text-align: center;">Project Name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-zynq1.png" alt="Project Type" /></td>
+<td style="text-align: center;"><img src="./media/vivado-zynq2.png" alt="Default Part" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Project type</th>
+<th style="text-align: center;">Select the FPGA board</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-zynq3.png" alt="Project Type" /></td>
+<td style="text-align: center;"><img src="./media/vivado-zynq4.png" alt="Default Part" /></td>
+</tr>
+</tbody>
+</table>
+<p><img src="./media/vivado-zynq5.png" alt="Project Type" /></p>
+<p>Selecting the correct board is, of course, important. A double click seems to be required. I have gone through that board selection screen a couple of times and highlighted my selection just to end up with some completely different board of part turning up in the summary. Something about that GUI is not intuitive to me.</p>
+<p>After going through the project creation Vivado starts up.</p>
+<p><img src="./media/vivado-zynq6.png" alt="Vivado" /></p>
+<p>Now click on <em>Create Block Design</em> in the flow navigator under <em>IP INTEGRATOR</em>. A dialog box appears, asking you to specify a name for the block design. The default is fine so OK.</p>
+<p>The GUI will now change appearance and look something like this.</p>
+<p><img src="./media/vivado-zynq7.png" alt="Block Design" /></p>
+<p>In the <em>Diagram</em> pane click on the plus symbol to add IP and in the search window that appears type "zynq" and select "Zynq7 Processing System". A representation of the processing system will now be added to the diagram. and the GUI should now look something like this.</p>
+<p><img src="./media/vivado-zynq8.png" alt="Block Design" /></p>
+<p>We wont actually use any AXI for this experiment so double click on the representation of the processing system to re-customize it. The following window should appear.</p>
+<p><img src="./media/vivado-zynq9.png" alt="Block Design" /></p>
+<p>Towards the bottom of the "Zynq Block Design" there is a green box with the text "32b GP AXI Master Ports", click on this to open up settings related to the AXI master ports.</p>
+<p>De-select the "M AXI GP0 interface" (that is, uncheck it) and then hit OK.</p>
+<p><img src="./media/vivado-zynq10.png" alt="Block Design" /></p>
+<p>Doing that should result in a block design looking something like this.</p>
+<p><img src="./media/vivado-zynq11.png" alt="Block Design" /></p>
+<p>Within the Diagram pane there is a green bar along the top with a link in it that says "Run Block Automation". Click this and a new dialog opens up.</p>
+<p><img src="./media/vivado-zynq12.png" alt="Block Design" /></p>
+<p>Going with the defaults there is just fine, so just click Ok. Now the block design looks as follows.</p>
+<p><img src="./media/vivado-zynq13.png" alt="Block Design" /></p>
+<p>in the <em>Sources</em> pane locate "design_1" and Right-click it. Select <em>Generate HDL Wrappers</em>. A dialog appears and you can let Vivado manage the wrappers.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Generate HDL Wrappers</th>
+<th style="text-align: center;">Let Vivado Manage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-zynq14.png" alt="Generate HDL Wrappers" /></td>
+<td style="text-align: center;"><img src="./media/vivado-zynq15.png" alt="Vivado will manage" /></td>
+</tr>
+</tbody>
+</table>
+<p>That's enough "Block Design" for the moment!</p>
+<h2 id="implement-blinky-in-vhdl">Implement blinky in VHDL</h2>
+<p>In the <em>Sources</em> pane, right click and select "Add Sources". Select that you want to add "Design Sources". On the next page, click on "Create File".</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Add Sources</th>
+<th style="text-align: center;">Add or Create Design Sources</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-zynq16.png" alt="Add Sources" /></td>
+<td style="text-align: center;"><img src="./media/vivado-zynq17.png" /></td>
+</tr>
+</tbody>
+</table>
+<p>When clicking on "Create File" a dialog appears where you can select a name for the file. I went with "blinky.vhd". Now click Finish.</p>
+<p>In the "Define Module" dialog that appears, just click Ok (and then Yes).</p>
+<p>Now our <code>blinky.vhd</code> file should be among the Design Sources in the Sources pane.</p>
+<p><img src="./media/vivado-zynq18.png" alt="Block Design" /></p>
+<p>Double click on <code>blinky.vhd</code> and a editor pane will appear.</p>
+<p>I use pretty much the same implementation of this VHD file as in the Nexys-A7 Blinky experiment. But with faster flashing of the led, well that depends on the clock freq we end up using.</p>
+<pre><code>library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity blinky is
+  Port ( 
+    clk : in std_logic;
+    led : out std_logic
+  );
+end blinky;
+
+architecture Behavioral of blinky is
+
+    signal counter : unsigned(21 downto 0);
+    
+    type state is (LED_ON, LED_OFF);
+    signal s : state; 
+
+begin
+    
+    blinky : process(clk) 
+    begin
+    if rising_edge(clk) then
+        case s is 
+            when LED_ON =&gt; 
+                led &lt;= &#39;1&#39;;
+            when LED_OFF =&gt; 
+                led &lt;= &#39;0&#39;;
+        end case; 
+         
+        if (counter &gt;= 3000000)then 
+            if (s = LED_ON) then 
+               s &lt;= LED_OFF;
+            else 
+               s &lt;= LED_ON; 
+            end if;
+            counter &lt;= to_unsigned(0,22);
+        else 
+            counter &lt;= counter + 1; 
+        end if;
+    end if;
+    end process;
+end Behavioral; 
+</code></pre>
+<p>Now we have a VHDL program typed in and the next thing to do is to integrate it with out block design.</p>
+<h2 id="back-to-the-block-design">Back to the block design</h2>
+<p>Open the block design either bt clicking on "Open Block Design" in the flow navigator or if you already find it open in a tab just select that.</p>
+<p>Right-click within the Diagram pane and select "Add Module". This opens a dialog window and you should be able to select the "blinky" module.</p>
+<p><img src="./media/vivado-zynq19.png" alt="Block Design" /></p>
+<p>If you cannot, check if Vivado is complaining about syntax errors in your VHDL.</p>
+<p>After adding the "blinky" module, the Diagram pane will now have the following contents.</p>
+<p><img src="./media/vivado-zynq20.png" alt="Block Design" /></p>
+<p>Look at that! we have another opportunity to click the "Run Connection Automation" link. Let's do that and then just go with the defaults. It will not do very much, just hooks up the clock signal to our blinky module.</p>
+<p><img src="./media/vivado-zynq21.png" alt="Block Design" /></p>
+<p>Now we need a port. Right-click in the Diagram pane and select "Create Port". Give the port a name ("LED") and set direction to be "output".</p>
+<p><img src="./media/vivado-zynq22.png" alt="Block Design" /></p>
+<p>The port will appear in the block design towards the right hand side. Outputs appear on the right and inputs on the left.</p>
+<p><img src="./media/vivado-zynq23.png" alt="Block Design" /></p>
+<p>Connect the "led" output on the blinky module to the "LED" port.</p>
+<p><img src="./media/vivado-zynq24.png" alt="Block Design" /></p>
+<p>We are getting close now but we also need to create a constraints file that tells Vivado how to hook up the "LED" port to the outside world.</p>
+<p>To add a constraints file, right click in the Sources pane and select "Add Sources". This time chose "Add or Create Constraints" and click next followed by "Create File". I gave the file the name <code>constraints</code>, then click Finish. If all is good then a file called <code>constraints.xdc</code> will now exist under "Constraints" in the Sources pane.</p>
+<p><img src="./media/vivado-zynq25.png" alt="Block Design" /></p>
+<p>Double click on the <code>constraints.xdc</code> file to open it up in an editor pane. Paste the following into the file:</p>
+<pre><code># Zynqberry GPIO
+set_property -dict {PACKAGE_PIN K15 IOSTANDARD LVCMOS33} [get_ports {LED}]
+#set_property -dict {PACKAGE_PIN J14 IOSTANDARD LVCMOS33} [get_ports {gpio3}]
+#set_property -dict {PACKAGE_PIN H12 IOSTANDARD LVCMOS33} [get_ports {gpio4}]
+#set_property -dict {PACKAGE_PIN N14 IOSTANDARD LVCMOS33} [get_ports {gpio5}]
+#set_property -dict {PACKAGE_PIN R15 IOSTANDARD LVCMOS33} [get_ports {gpio6}]
+#set_property -dict {PACKAGE_PIN L14 IOSTANDARD LVCMOS33} [get_ports {gpio7}]
+#set_property -dict {PACKAGE_PIN L15 IOSTANDARD LVCMOS33} [get_ports {gpio8}]
+#set_property -dict {PACKAGE_PIN J13 IOSTANDARD LVCMOS33} [get_ports {gpio9}]
+#set_property -dict {PACKAGE_PIN H14 IOSTANDARD LVCMOS33} [get_ports {gpio10}]
+#set_property -dict {PACKAGE_PIN J15 IOSTANDARD LVCMOS33} [get_ports {gpio11}]
+#set_property -dict {PACKAGE_PIN M15 IOSTANDARD LVCMOS33} [get_ports {gpio12}]
+#set_property -dict {PACKAGE_PIN R13 IOSTANDARD LVCMOS33} [get_ports {gpio13}]
+#set_property -dict {PACKAGE_PIN M12 IOSTANDARD LVCMOS33} [get_ports {gpio14}]
+#set_property -dict {PACKAGE_PIN N13 IOSTANDARD LVCMOS33} [get_ports {gpio15}]
+#set_property -dict {PACKAGE_PIN L13 IOSTANDARD LVCMOS33} [get_ports {gpio16}]
+#set_property -dict {PACKAGE_PIN G11 IOSTANDARD LVCMOS33} [get_ports {gpio17}]
+#set_property -dict {PACKAGE_PIN H11 IOSTANDARD LVCMOS33} [get_ports {gpio18}]
+#set_property -dict {PACKAGE_PIN R12 IOSTANDARD LVCMOS33} [get_ports {gpio19}]
+#set_property -dict {PACKAGE_PIN M14 IOSTANDARD LVCMOS33} [get_ports {gpio20}]
+#set_property -dict {PACKAGE_PIN P15 IOSTANDARD LVCMOS33} [get_ports {gpio21}]
+#set_property -dict {PACKAGE_PIN H13 IOSTANDARD LVCMOS33} [get_ports {gpio22}]
+#set_property -dict {PACKAGE_PIN J11 IOSTANDARD LVCMOS33} [get_ports {gpio23}]
+#set_property -dict {PACKAGE_PIN K11 IOSTANDARD LVCMOS33} [get_ports {gpio24}]
+#set_property -dict {PACKAGE_PIN K13 IOSTANDARD LVCMOS33} [get_ports {gpio25}]
+#set_property -dict {PACKAGE_PIN L12 IOSTANDARD LVCMOS33} [get_ports {gpio26}]
+#set_property -dict {PACKAGE_PIN G12 IOSTANDARD LVCMOS33} [get_ports {gpio27}]
+</code></pre>
+<p>Only one of these lines are active, the rest are comments. But there is one line for each of the GPIO on the Zynqberry here just in case you need more in the future.</p>
+<p>The line</p>
+<pre><code>set_property -dict {PACKAGE_PIN K15 IOSTANDARD LVCMOS33} [get_ports {LED}]
+</code></pre>
+<p>connects the port "LED" to the package pin "K15" which is Zynqberry GPIO2.</p>
+<p>Now we can try to synthesize, implement and generate a bitstream. We can initiate the entire flow by click on "Generate Bitstream" under "PROGRAM and DEBUG" in the flow navigator. A dialog appears where you can configure some parameters about the flow (like how much computer resources to use. Just going with the default should be fine.</p>
+<p>Vivado will now be working hard for a while. Sooner or later the process will finish (I hope successfully).</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Launch Runs</th>
+<th style="text-align: center;">Success!</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-zynq26.png" alt="Launch Runs" /></td>
+<td style="text-align: center;"><img src="./media/vivado-zynq27.png" alt="Success" /></td>
+</tr>
+</tbody>
+</table>
+<p>The the design run is finished just click Ok.</p>
+<p>This is where I thought we would be done but that seems to not be the case. If we open the hardware manager and connect to our board and program it, nothing happens. I thought that since this is a purely hardware design we wouldn't need to write any software for the ARM cores of the Zynq. I do not understand what is going on here, but my guess is that some kind of initialization needs to take place and that the processing system is in charge of this initialization.</p>
+<h2 id="hello-world-in-vitis-ide">Hello world in Vitis IDE</h2>
+<p>A few more steps are needed before the led starts to flash. Go to the "File" menu and "Export" and select "Export Hardware".</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Export Hardware</th>
+<th style="text-align: center;">Include Bitstream</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-zynq28.png" alt="Export Hardware" /></td>
+<td style="text-align: center;"><img src="./media/vivado-zynq29.png" alt="Include Bitstream" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Files</th>
+<th style="text-align: center;">Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-zynq30.png" alt="Files" /></td>
+<td style="text-align: center;"><img src="./media/vivado-zynq31.png" alt="Summary" /></td>
+</tr>
+</tbody>
+</table>
+<p>Include the bitstream in the export, apart from that going with defaults is fine.</p>
+<p>Now go to the "Tools" menu and select "Launch Vitis IDE". You will be prompted to select a location for a workspace (seems very Eclipse based).</p>
+<p>When Vitis starts up create a new application project.</p>
+<p>Select the "Create a new platform from hardware (XSA)" and locate the .xsa file in your project directory.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">New Application Project</th>
+<th style="text-align: center;">Platform</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-zynq32.png" alt="New application project" /></td>
+<td style="text-align: center;"><img src="./media/vivado-zynq33.png" alt="Platform" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Project Details</th>
+<th style="text-align: center;">Domain</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="./media/vivado-zynq34.png" alt="Project Details" /></td>
+<td style="text-align: center;"><img src="./media/vivado-zynq35.png" alt="Domain" /></td>
+</tr>
+</tbody>
+</table>
+<p><img src="./media/vivado-zynq36.png" alt="Template" /></p>
+<p>Most of the settings are can be left as they are by default. Of course come up with a suitable name for project ;) and when asked to pick a template, just go with the hello world template.</p>
+<p>The IDE should now start up and look something like this.</p>
+<p><img src="./media/vivado-zynq37.png" alt="Template" /></p>
+<p>Right-click on your project in the "Explorer" and select build. Which should be successful. Then locate the "Assistant" window:</p>
+<p><img src="./media/vivado-zynq38.png" alt="Template" /></p>
+<p>Right-click on "Debug" under your app and select "run" and "launch on hardware".</p>
+<p>Now the led should be flashing! You can see what my setup looks like in <a href="https://youtu.be/Mua2TCGxYK8">this</a> YouTube video.</p>
+<h2 id="conclusions">Conclusions</h2>
+<p>A few extra steps are required here compared to the Nexys A7 setup but it was all fun. As usual, if you have hints, tips or questions please contact me.</p>
+<p>Thank you for reading and have a great day!</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2020 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
