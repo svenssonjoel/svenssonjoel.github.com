@@ -21,7 +21,7 @@ This is not the first time I write about a VHDL blinky, see
 I have even written about blinky on the zynq before, but then not implementing 
 in VHDL, [blinky Zynq using no explicit VHDL](http://svenssonjoel.github.io/writing/blinkledzynq.pdf).
 
-If getting started with OpenCL on the Zynq sounds mode interesting you 
+If getting started with OpenCL on the Zynq sounds more interesting, you 
 can jump over to [this text](http://svenssonjoel.github.io/pages/zynq_hls_opencl/index.html). 
 
 
