@@ -226,13 +226,115 @@ int main(void) {
 
 ```
 
-The `main` "thread" also runs forever, but in this case all it does is to repeatedly render 
-a string into the buffer. 
+The `main` "thread" also runs forever, but in this case all it does is
+to repeatedly render a string into the buffer.
+
+
+I paste the complete code listing here: 
+
+```
+#include "ch.h"
+#include "hal.h"
+#include "string.h"
+
+#include "font8x8_basic.h"
+
+void render_character(char *buff, int c, int x, int y) {
+
+  if (x <= -8 || y <= -8 || y >= 8 || x >= 8) return;
+
+  int cx = 0;
+  int cy = 0;
+  
+  for (int i = x; i < 8; i ++) {
+    for (int j = y; j < 8; j ++) {
+
+      if (font8x8_basic[c][cy] & (1<<cx)) {
+        buff[j] |= 1 << i;
+      }
+      cy++;
+    }
+    cy = 0;
+    cx++;
+  }
+} 
+
+char buffer[8];
+
+void render_string(char *buf, char *str) {
+  
+  size_t len = strlen(str);
+  int len_bits = len * 8;
+
+  int pos = 0;
+
+  while (pos > -len_bits) {
+
+    /* Clear buffer */
+    for (unsigned int i = 0; i < 8; i ++) buf[i] = 0;
+
+    /* render all characters */
+    int char_pos = pos;
+    for (unsigned int a = 0; a < len; a ++) {
+      
+      render_character(buf, str[a], char_pos, 0);
+      char_pos += 8; 
+    }
+    chThdSleepMilliseconds(50);
+    pos--;
+  }
+}
+
+static THD_WORKING_AREA(update_area, 2048);
+
+static THD_FUNCTION(update, arg) {
+
+  (void) arg;
+
+  while(true) { 
+    /* plot buffer */
+    for (int i = 0; i < 8; i ++) {
+      palWriteGroup(GPIOA, PAL_GROUP_MASK(8),0,(1 << i));
+      palWriteGroup(GPIOD, PAL_GROUP_MASK(8),0,~buffer[i]);
+      chThdSleepMicroseconds(100);
+    }
+  }
+}
+
+
+
+
+int main(void) {
+  halInit();
+  chSysInit();
+    
+  palSetGroupMode(GPIOA, PAL_GROUP_MASK(8), 0, PAL_MODE_OUTPUT_PUSHPULL);
+  palSetGroupMode(GPIOD, PAL_GROUP_MASK(8), 0, PAL_MODE_OUTPUT_PUSHPULL);
+
+  palWriteGroup(GPIOA, PAL_GROUP_MASK(8), 0, 0);
+  palWriteGroup(GPIOD, PAL_GROUP_MASK(8), 0, 0);
+  
+
+  (void)chThdCreateStatic(update_area,
+              sizeof(update_area),
+              NORMALPRIO,
+              update, NULL);
+  
+  while(true) {
+    render_string(buffer, "8x8 LED MATRIX CONTROLLED BY STM32F407G-DISC1 ___ SVENSSONJOEL.GITHUB.COM ___ ");
+    
+  }
+
+  return 0; //unreachable
+}
+```
+
+
 
 ## Conclusion
 
-Thank you for reading. If you have any questions or feedback you can always send an 
-email or join the google group. 
+Thank you for reading. If you have any questions or feedback you can
+always send an email or join the google group.
 
 Have a good day!
 
