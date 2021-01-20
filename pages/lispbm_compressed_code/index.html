@@ -320,20 +320,6 @@ char *codes[NUM_CODES][2] = {
 </code></pre>
 <p>Now, There wont actually be an optimal sequence of codes when using this approach at all since the codes are not based on statistics from the currently compressed program. But given that all the codes here contain fewer bits than the corresponding characters would (as 8bit chars), this approach will make most programs somewhat smaller. since string literals are not compressed and the compressed data contains the size in bits of the data, stored in the first 4 bytes, it is possible to come up with obscure programs that are larger after compressing them. For example the program consisting only of the expression <code>"hello world"</code>, would be larger compressed than not.</p>
 <hr />
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <h2 id="compression">Compression</h2>
 <p>Since the keys can be one or more characters long, the longest matching key must be found. The function below takes a string and looks at the beginning of it and compares to all the keys in the key-code mapping array. The index of the longest match is returned. This function is later used in the compression routine to find the code that matches the longest matching key.</p>
 <pre><code>int match_longest_key(char *string) {
@@ -545,20 +531,6 @@ data-full-width-responsive="true"></ins></p>
 }
 </code></pre>
 <p>After the special case of <code>string_mode</code> handling and comment-eating, the actual piece of code that does compression is performed. Here the index of the longest matching key is found and the corresponding code is emited.</p>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <h2 id="decompression">Decompression</h2>
 <p>One goal of the decompression algorithm is that it should be possible to extract data from the compressed buffer in an incremental way using only a small buffer of storage. The idea is that the decompression should slot into the stream abstraction used in the tokenizer and parser in <code>tokpar.c</code>. The <code>peek</code> operation used in the tokenizer however can lead to a situation where the compressed data has to be decompressed more than once as the small buffer is filled up. This is a trade-off between memory usage and compute resources.</p>
 <p>Decompression is performed by reading bits out from a buffer of compressed data while trying to match with the longest code word in the <code>codes</code> array. The <code>match_longest_code</code> function performs this matching and returns the index within the <code>codes</code> array of the longest match starting from position <code>start_bit</code> while not overshooting <code>total_bits</code> (which is the total length in bits of the compressed data).</p>
@@ -703,20 +675,6 @@ data-full-width-responsive="true"></ins></p>
   return true;
 }
 </code></pre>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <h2 id="parsing-compressed-code">Parsing Compressed Code</h2>
 <p>To implement the parser on compressed code one needs to provide implementations of the <code>more</code>, <code>get</code>, <code>peek</code> and <code>drop</code> functions in the <code>tokenizer_char_stream</code> interface. A tokenizer state with additional information is also needed. For example, this tokenizer state contains a <code>decomp_state</code>, a decompression buffer, number of bytes in the decompression buffer and the position in the buffer that the next <code>get</code> operation should return.</p>
 <pre><code>#define DECOMP_BUFF_SIZE 32
@@ -803,20 +761,6 @@ typedef struct {
   return parse_program(str);
 }
 </code></pre>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>

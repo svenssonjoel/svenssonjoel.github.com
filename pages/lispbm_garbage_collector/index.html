@@ -147,20 +147,6 @@
 <p>Garbage collection is an area I would like to learn more about. The GC implemented in lispBM is most likely quite naive and definitely not optimized! I wrote it before having access to the book <a href="https://www.amazon.com/Garbage-Collection-Algorithms-Automatic-Management/dp/0471941484?tag=uuid10-20">Garbage Collection: Algorithms for Automatic Dynamic Memory Management</a>. When improvements are applied to the GC (If I get time to more than just skim the book), I will write about that as it happens.</p>
 <p>Even though this is not a very polished piece of code, I think it may be good to document it here. All the earlier texts I've written on the lispBM implementation made me see things that could be improved or fixed! So writing it down was valuable to me, I hope it also of value to someone else.</p>
 <p>The GC is tightly connected to the heap so in the lispBM implementation the GC code is located in the files <code>heap.h</code> and <code>heap.c</code>. For more information about the heap in lispBM read the earlier text <a href="../lispbm_current_status/index.html">Another Lisp for Microcontrollers</a>.</p>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <h2 id="mark-and-sweep-garbage-collection">Mark and Sweep Garbage Collection</h2>
 <p>In lispBM the heap is made up from cons-cells, which each is a pair of 32bit words. Each cons-cell has a mark bit. The purpose of this mark bit was hinted at in <a href="../lispbm_current_status/index.html">Another Lisp for Microcontrollers</a> but all the details of GC were left out. The <code>free_list</code>, which is a linked list of all non-used cons-cells, was also mentioned in that first text on lispBM. In this text I will try to go into all the details.</p>
 <p>It is up to the garbage collector to add cons-cells that are no-longer <em>reachable</em> to the free list. This is where the mark bits come in. The idea is that if an object on the heap cannot be reached by following a pointer that the program <em>knows about</em> then that object can be freed and its cons-cells can be moved to the free list. It is, however, much easier to figure out what can be reached rather than what cannot so the approach is to traverse the current environment and mark everything that can be reached from there as "in-use".</p>
@@ -361,20 +347,6 @@ data-full-width-responsive="true"></ins></p>
 <p>The sweep also clears the mark bit of all cells as it traverses the heap so that things are set up properly for the next round of marking.</p>
 <p>Wow. Looking back at this now is interesting. This code was such a struggle to produce at one time and then I haven't really even looked at it again for quite a while. Now it seems like there is almost nothing to it! However, with this kind of code it is all in the details. Getting the details right when also learning about the "big picture" is something to not take lightly.</p>
 <p>If you have questions about this or tips on how I can make it more accessible or suggestions of improvements, I would be very happy.</p>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>

@@ -274,20 +274,6 @@ int inputline(char *buffer, int size) {
 }
 ``` 
 
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- horizontal unit -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-6663189426712847"
-     data-ad-slot="2225439322"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
-
 ## Setting up Communication and Implementing the REPL
 
 The `main` function starts out exactly like the CDC ACM example that
@@ -433,19 +419,6 @@ and the result of that parsing (a heap structure) is evaluated.
 
 If the evaluation is successful, the result is printed and the loop is
 executed again.
-
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- horizontal unit -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-6663189426712847"
-     data-ad-slot="2225439322"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
 
 ## Building Zephyr OS
 
@@ -627,19 +600,6 @@ openocd -f interface/stlink.cfg -f target/nrf52.cfg  -c "init" -c "program repl-
 
 If instead you are using the nrf52480-PCA10056 I think it should be as easy as
 running `make flash` after successfully running `make`.
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- horizontal unit -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-6663189426712847"
-     data-ad-slot="2225439322"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 
 ___
 

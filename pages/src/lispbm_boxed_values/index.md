@@ -53,17 +53,6 @@ allocated using `malloc`. When garbage collection frees a cons cell
 with the special symbol `DEF_REPR_ARRAY_TYPE`, it also calls `free` on
 the pointer in the `car` position.
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- horizontal unit -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-6663189426712847"
-     data-ad-slot="2225439322"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
 ___
 
 [HOME](https://svenssonjoel.github.io)

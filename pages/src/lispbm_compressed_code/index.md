@@ -272,20 +272,6 @@ expression `"hello world"`, would be larger compressed than not.
 -----
 
 
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- horizontal unit -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-6663189426712847"
-     data-ad-slot="2225439322"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
-
 ## Compression 
 
 Since the keys can be one or more characters long, the longest
@@ -569,18 +555,6 @@ the actual piece of code that does compression is performed. Here the
 index of the longest matching key is found and the corresponding code
 is emited.
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- horizontal unit -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-6663189426712847"
-     data-ad-slot="2225439322"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 ## Decompression
 
 One goal of the decompression algorithm is that it should be possible
@@ -802,19 +776,6 @@ bool compression_decompress(char *dest, uint32_t dest_n, char *src) {
   return true;
 }
 ```
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- horizontal unit -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-6663189426712847"
-     data-ad-slot="2225439322"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 ## Parsing Compressed Code 
 
 To implement the parser on compressed code one needs to provide
@@ -944,19 +905,6 @@ VALUE tokpar_parse_compressed(char *bytes) {
   return parse_program(str);
 }
 ```
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- horizontal unit -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-6663189426712847"
-     data-ad-slot="2225439322"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 ___
 
 [HOME](https://svenssonjoel.github.io)

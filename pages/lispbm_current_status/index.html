@@ -158,20 +158,6 @@
 <p>I'm sure there are more examples! please let me know what you are working on.</p>
 <p>If you want to see lispBM in action, check out the video <a href="https://youtu.be/OeQ161G_Kgs">LISPBM on NRF52</a> or the video that goes over what went into porting it to NRF52 <a href="https://youtu.be/cXSavxC3th0">LISPBM Porting to NRF52</a>.</p>
 <p>LispBM is written in C, compiles with -std=c11 flag, for 32bit platforms. So far it has been tried out on x86 (with -m32 flag and depending on something like multilib if you are on a 64bit platform), ARM Cortex M4 (the STM32F4 MCU), ARM Cortex M4 (the NRF52 MCU) and ARM Cortex A9 (The Xilinx Zynq 7000). When deploying lispBM on an MCU it helps a lot to have access to a <em>Hardware Abstraction Layer</em>, HAL. So far lispBM has been compiled into code based on <a href="http://chibios.org/dokuwiki/doku.php">ChibiOs</a> and <a href="https://www.zephyrproject.org/">ZephyrOs</a> both providing a lot of HAL functionality. LispBM has also been tried on the ARM A9 core of the Xilinx Zynq 7000 here depending on the HAL that is provided with the Xilinx toolchain.</p>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <h2 id="a-few-thoughts-on-lisp">A Few Thoughts on Lisp</h2>
 <p>The series of MIT video lectures showed a simple elegance and really made me want to try making some kind of a Lisp. If you just get over the strange "prefix" notation where <code>(+ 1 2)</code> means <code>(1 + 2)</code> and instead focus on the really cool part that <code>(+ 1 2)</code> is actually exactly what the expression looks like loaded into memory (the Lisp heap) and that it extends to <em>N</em> arguments <code>(+ 1 2 3 4)</code>. When I say that <code>(+ 1 2)</code> is exactly what it looks like in memory, what I mean is that it is stored as a linked list where the first element is the <em>symbol</em> <code>+</code> and the second and third elements of the list are the <em>values</em> <code>1</code> and <code>2</code>. The elements and pointers to the next cell are stored in what is called <em>cons cells</em>. a cons cell consists of enough bytes of memory to hold two pointers or two values or some two element permutation of pointer and value (many of the details of this as implemented in lispBM can be found later in this text). In more detail then, the expression <code>(+ 1 2)</code> will in memory be made up out of a first cons cell containing <code>+</code> in its first position (or car) and a pointer to the next cell in its second (cdr) position. Likewise, the next cell contains the <code>1</code> in the car position and a pointer to the next cell in the cdr. The last cell in the linked up structure of cons cells contains a <code>2</code> in car and a special symbol called <code>nil</code> in the cdr position to terminate the list.</p>
 <p><img src="./media/cons_cell.png" title="Cons cell" alt="Cons cell" /></p>
@@ -731,20 +717,6 @@ VALUE env_build_params_args(VALUE params, VALUE args, VALUE env0);
 <li>Extensions (<code>extensions.c</code> and <code>extensions.h</code>).</li>
 </ol>
 <p>I hope to write about these aspects of lispBM at a later time.</p>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>

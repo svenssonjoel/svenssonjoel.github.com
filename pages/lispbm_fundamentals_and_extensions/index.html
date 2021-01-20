@@ -147,20 +147,6 @@
 <p>So when it comes to the things that are expected to be quite different between different platforms, these are implemented as user defined <em>extensions</em>. An example of this could be a <code>print</code> function for outputting text. This text could for example be sent over UART or some USB connection, or even Bluetooth as in the NRF52. It is better to just leave this choice open until the specifics of the target platform are known.</p>
 <p>Fundamental operations and extensons are quite similar in many ways. They are both identified by a symbol and both expect that all the arguments they operate on are pushed onto the continuation stack such that argument 1 is furthest down in the stack.</p>
 <p>The symbol used to identify fundamental operations are given a fixed value in the range of <em>special</em> symbols. This means that they are numbers of the form <code>0xXYZFFFF</code> in hexadecimal notation. The extension symbols however are allocated on the symbol representation table when the extension is added to the system.</p>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <h2 id="fundamental-operations">Fundamental Operations</h2>
 <p>The code that is involved in the execution of fundamental operations are located in <code>fundamental.h</code> and <code>fundamental.c</code>. This subsystem needs no initialization and provide only one external function called <code>fundamental_exec</code>.</p>
 <p>The <code>fundamental_exec</code> function takes a pointer to the first argument (that is, a pointer into the stack at the position of the first argument), the number of arguments and lastly the Symbol value that represents which fundamental operation that should be run.</p>
@@ -310,20 +296,6 @@ extern void extensions_del(void);
 </code></pre>
 <p>When you add an extension using <code>extensions_add</code> the function pointer and the symbol are added to a linked list. This list is then searched when doing an <code>extension_lookup</code>. Looking up with a symbol that does not correspont to an extension returns <code>NULL</code>.</p>
 <p>Just like fundamental operations all extensions take a pointer to the first argument and the number of arguments as input. But here you are in full control of what you want your extensions to do with these values. For example a possible extension would be to take an ID representing a GPIO pin as input and then toggle that pin in the implementation.</p>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>

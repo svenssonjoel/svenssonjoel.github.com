@@ -301,20 +301,6 @@ struct ring_buf out_ringbuf;
   return 0; // Filled up buffer without reading a linebreak
 }
 </code></pre>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <h2 id="setting-up-communication-and-implementing-the-repl">Setting up Communication and Implementing the REPL</h2>
 <p>The <code>main</code> function starts out exactly like the CDC ACM example that comes with Zephyr. This example code can be found within your Zephyr directory <code>zephyr/samples/subsys/usb/cdc_acm/src/main.c</code></p>
 <p>Here the device is created, ringbuffers initialized, the uart configured and the <code>interrupt_handler</code> function is set to be called upon an uart interrupt.</p>
@@ -431,20 +417,6 @@ data-full-width-responsive="true"></ins></p>
 }
 </code></pre>
 <p>If the evaluation is successful, the result is printed and the loop is executed again.</p>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <h2 id="building-zephyr-os">Building Zephyr OS</h2>
 <p>The code and <em>other files</em> are stored in a directory structure that looks as follows.</p>
 <pre><code>repl-zephyr
@@ -535,20 +507,6 @@ source ../zephyrproject/zephyr/zephyr-env.sh
 <pre><code>openocd -f interface/stlink.cfg -f target/nrf52.cfg  -c &quot;init&quot; -c &quot;program repl-zephyr_build/zephyr/zephyr.hex verify reset exit&quot;
 </code></pre>
 <p>If instead you are using the nrf52480-PCA10056 I think it should be as easy as running <code>make flash</code> after successfully running <code>make</code>.</p>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>

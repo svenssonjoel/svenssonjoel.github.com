@@ -157,20 +157,6 @@
 <p>I'm sure there are many more and if you are the author of a page that I missed and you can tell from the contents here that I am influenced by your work, please point it out and I will add this acknowledgment.</p>
 <p>Below is a picture of my little robot (and cat) equipped with the neato. The robot controller used is my hobby project the <a href="https://www.github.com/svenssonjoel/FMRC">FMRC</a>. If this seems fun there are a bunch of videos on youtube on the development and redesigns of the FMRC. <a href="https://www.youtube.com/playlist?list=PLtf_3TaqZoDM_xsXJHJVC7ktZzplqYM2Z">FMRC YouTube videos</a></p>
 <p><img src="./media/neato1.jpg" alt="Neato Lidar" /></p>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<!-- horizontal unit -->
-
-<p><ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-6663189426712847"
-data-ad-slot="2225439322"
-data-ad-format="auto"
-data-full-width-responsive="true"></ins></p>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 <h2 id="a-little-bit-about-the-setup">A little bit about the setup</h2>
 <p>The FMRC (Four Motor Robot Controller) can independently control 4 different DC motors using 2 DRV8833 or on the newer version DRV8847 chips. It has two MCUs, an stm32f4 and an NRF52. When it comes to connectivity it has USB, UART, Bluetooth and a CAN Transceiver.</p>
 <p>To interface with the Neato lidar, the UART connector is used for data and one of the motor drive channels is used to control the RPM of the motor that spins the lidar. The never version of the PCB has two additional motor drive outputs that are not full H-Bridges but rather just a mosfet that can be pwmed, on this version all 4 motor drive channels would remain free even when equipped with lidar.</p>
