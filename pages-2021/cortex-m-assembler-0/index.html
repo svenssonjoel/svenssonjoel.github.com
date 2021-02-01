@@ -1,0 +1,631 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Assembler programming of ARM Cortex-M microcontrollers - Part 0 - Tools and basics</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Assembler programming of ARM Cortex-M microcontrollers ">
+  <meta name="keywords" content="tools, basics, assembler, arm, cortex-m, cortex, cortex-m4, stm32, stm32f4, discovery, stm32f4-discovery">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'UA-111281599-1');
+  </script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ9CPG3ZWG"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'G-DQ9CPG3ZWG');
+  </script>
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="programming-of-arm-cortex-m-microcontrollers---part-0---tools-and-basics">programming of ARM Cortex-M microcontrollers - Part 0 - Tools and basics</h1>
+<p>I think it may be pretty hard to justify picking up assembly language at this time unless if for learning or for fun. I'm going to have a go at it for both of those reasons. As usual, I will share the process with you here. Do not hesitate to interact over email or via the google group. Together we can learn more!</p>
+<p>Assembler programming should give opportunity to learn more about some (for a high-level programmer) perhaps mysterious things. In this first text we will look at some assembler code, tools (such as assembler, linker, gdb and OpenOCD) and the linker script.</p>
+<p>The platform I will target is ARM Cortex-M4. There are many different development boards with MCUs of this architecture. Mine are from <a href="https://www.st.com">ST</a>. So while experimenting with this I will target stm32F4 of the various kinds I have access to (STM32F411E-DISC0, STM32F407G-DISC1, Various home-made STM32F405RGT6 based boards).</p>
+<p>There are great tutorials on Cortex-M programming. One that is definitely worth looking at can be found here: <a href="https://vivonomicon.com/2018/04/02/bare-metal-stm32-programming-part-1-hello-arm/">https://vivonomicon.com</a>.</p>
+<h2 id="the-tools">The tools</h2>
+<p>I like open source software, so of course I am doing this work on a Linux machine. If you are not using Linux, then I think that you should. Go here and get <a href="https://ubuntu.com/">Ubuntu</a> for example.</p>
+<p>The development tools needed for ARM Cortex-M cross compilation (and assembling) can be found here: <a href="https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads">arm-none-eabi- cross compilation tools</a>. Unpack this <code>tar.bz2</code> archive somewhere and add the <code>bin</code> directory to the PATH variable.</p>
+<p>OpenOCD, the open on-chip debugger, that can be used to "flash" (program) the boards and for debugging can be found here: <a href="https://sourceforge.net/p/openocd/code/ci/master/tree/">OpenOCD</a>.</p>
+<p>That should be more or less what is needed to get started. Some other tools will be useful, like the "make" tool. This is something that should be available on most Linux systems more or less per default. On a fresh Ubuntu install one may need to <code>sudo apt-get install build-essential</code> to get <code>make</code>.</p>
+<h2 id="baremetal-microcontroller-programming">Baremetal microcontroller programming</h2>
+<p>The purpose here is to get up and running with some kind of first little program and get it to run on a development board. Even for such a humble goal there are a lot of details to look at though.</p>
+<p>The microcontroller has flash memory (1024KiB), think of this as read-only memory once it has been flashed. In the flash memory we will store the program. The program will not be loaded from the flash into ram at startup, rather it will be executed directly from flash. The MCU of course has RAM as well. 192KiB in the case of the microcontrollers I use. The ram will be used for storage of variables that the program use. The ram is split into two different categories. There is a 128K RAM and a 64K core-coupled ram. What this core-coupled ram is about is left as thing to look at in the future.</p>
+<p>The <a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf">reference manual</a> contains information about the memory map of the system. Here you can find information on where in the 32bit address space you find RAM, FLASH and memory mapped peripheral devices and so on. What we need to know right now is that flash starts at address <code>0x08000000</code> and that RAM starts at address <code>0x20000000</code>.</p>
+<h2 id="the-linker-script">The linker script</h2>
+<p>Using the information above, we can construct a linker script. The linker script is used during the linking phase that combines some number of object files into a single <code>elf</code> file. The linker script holds information about the memory of the system and of where in memory to place different things. The code should be placed in flash, variables that are initialized should have their initial values in flash but be copied into ram at startup. So, that is the kind of info that goes in the linker script.</p>
+<p>We can also define various "symbols" in the linker script that we can later access from out assembly program. Let's talk about those when we get to them.</p>
+<p>First of all, the linker script holds a description of the memory of the system</p>
+<pre><code>MEMORY
+{
+FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 1024K
+CCRAM (xrw) : ORIGIN = 0x10000000, LENGTH = 64K
+RAM (xrw)   : ORIGIN = 0x20000000, LENGTH = 128K
+}
+</code></pre>
+<p>This just names some memory areas, here "FLASH", "CCRAM" and "RAM". "CCRAM" is something we wont use and it could have been left out from the script.</p>
+<p>Each memory is followed by some attributes that specify if they are <code>r</code> read, <code>x</code> executable and <code>w</code> writable. Then there is an starting address of the memory range, declared using the <code>ORIGIN =</code> syntax followed by the length of the memory (size in bytes).</p>
+<p>Next the linker script specifies sections. Two sections so far. The first is called <code>.text</code> and will hold the code and another called <code>.data</code> for variables.</p>
+<pre><code>SECTIONS
+{
+
+.text : {   
+      *(.text)
+}&gt;FLASH
+
+_flash_dstart = .;
+
+.data :  {
+      _dstart = .;
+      *(.data)
+      _dend = .; 
+}&gt;RAM AT&gt; FLASH  /* Load into FLASH, but live in RAM */
+
+} /* SECTIONS END */ 
+</code></pre>
+<p>The syntax below (as I understand it) says that there should be a text section in the output binary after linking and that it will contain <code>*(.text)</code> everything from all text sections in the files that are linked together.</p>
+<pre><code>.text : {   
+      *(.text)
+}&gt;FLASH
+</code></pre>
+<p>The <code>&gt;FLASH</code> part means that this should be located in the flash memory.</p>
+<p>For the <code>.data</code> section this part looks like this:</p>
+<pre><code>&gt;RAM AT&gt; FLASH  /* Load into FLASH, but live in RAM */
+</code></pre>
+<p>and as I understand it that means that it should be written to flash, but at runtime the address to access these "data" will be in RAM. So, that means that we have to move this data from the flash to the RAM as part of starting up the system later.</p>
+<p>There are also a couple of symbols defined in the linker script <code>_estack</code>, <code>_flash_dstart</code>, <code>_dstart</code> and <code>_dend</code>. Those are all defined using the <code>.</code> which means "current location". The linker will keep a location counted while processing the script and the <code>.</code> is the way to access the current value of that counter. It is essentially an address into the binary where we are currently at.</p>
+<p>The symbols that are defined in the linker script can be accessed in the assembly code. The <code>_dstart</code> and <code>_dend</code> values will be used to compute how many bytes to copy from flash to ram at startup in order to move the <code>.data</code> section to ram. <code>_flash_dstart</code> is the address in flash where the <code>.data</code> section is initially stored and <code>_dstart</code> is the address in RAM where it will end up after copy.</p>
+<p>Below is the linker script in full. These files are usually given the <code>.ld</code> file extension.</p>
+<pre><code>_estack = 0x20020000;
+
+MEMORY
+{
+FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 1024K
+CCRAM (xrw) : ORIGIN = 0x10000000, LENGTH = 64K
+RAM (xrw)   : ORIGIN = 0x20000000, LENGTH = 128K
+}
+
+
+SECTIONS
+{
+
+.text : {   
+      *(.text)
+}&gt;FLASH
+
+_flash_dstart = .;
+
+.data :  {
+      _dstart = .;
+      *(.data)
+      _dend = .; 
+}&gt;RAM AT&gt; FLASH  /* Load into FLASH, but live in RAM */
+
+} /* SECTIONS END */ 
+</code></pre>
+<h2 id="assembler-code">Assembler code</h2>
+<p>There are a number of different syntactic constructs in an assembler source file. Directives for the assembler start with a <code>.</code>, for example <code>.syntax unified</code>. <code>syntax unified</code> seems to be about ARM vs Thumb instruction syntax, and "unified" fits both into one style. I am not sure about the details about this yet.</p>
+<p>Thumb vs ARM is interesting in general. As I understand it the Cortex-M4 only runs Thumb (Thumb2 to be precise) while other non-cortex-M architectures can run both Thumb and ARM instructions. This whole Thumb, Thumb2 and ARM instruction set business is quite confusing!</p>
+<p>In the assembler source you will also find labels that are strings ending in a <code>:</code> and left justified. These provide a name to the address of the directly following instruction.</p>
+<p>The assembler file starts out with some directives followed by the definition of a vector table (part of a vector table).</p>
+<pre><code>    .syntax unified
+
+    .section .text 
+    
+    .global vtable
+    .global reset_handler
+
+vtable:
+    .word _estack
+    .word reset_handler
+    .size vtable, .-vtable
+</code></pre>
+<p>The vector table (or interrupt vector table of ISR table) is a collection of function pointers which are invoked by the MCU on interrupts. My knowledge about this is very thin and the <code>vtable</code> is definitely something to investigate in more detail later. The <a href="https://www.st.com/content/ccc/resource/technical/document/programming_manual/6c/3a/cb/e7/e4/ea/44/9b/DM00046982.pdf/files/DM00046982.pdf/jcr:content/translations/en.DM00046982.pdf">STM32 Cortex®-M4 MCUs and MPUs programming manual</a> seems like a good source of information about this table.</p>
+<p>For now I think it is enough to assume that when the MCU is reset, the first thing it does is jump to the <code>reset_handler</code> stored in the <code>vtable</code>.</p>
+<p>The reset handler loads the <code>_estack</code> value into the <code>sp</code> register (stack pointer register). It then loads the start and end of the data section into registers to calculate the number of bytes of variable data. Then a loop copies data from flash to RAM.</p>
+<pre><code>reset_handler:
+    ldr r0, =_estack
+    mov sp, r0
+
+    ldr r0, =_dstart
+    ldr r1, =_dend
+
+    sub r2,r1,r0
+
+    ldr r1, =_flash_dstart
+    
+cpy_loop:
+    ldrb r3, [r1]
+    strb r3, [r0] 
+
+    add r1, r1, #1
+    add r0, r0, #1
+    
+    sub r2, r2, #1
+    cmp r2, #0
+    bne cpy_loop
+</code></pre>
+<p>After completing the loop execution falls through into the code below.</p>
+<pre><code>main:
+    ldr r9, =apa
+    ldr r9, [r9]
+
+    ldr r7, =0xF00DF00D
+    ldr r8, =0x1337BEEF
+</code></pre>
+<p>The code above, loads some easily recognizable values into registers so that it is easy to see what is going on when later running the program. The <code>=apa</code> that is loaded into <code>r9</code> is interesting. This is a variable in the data section that we will see below.</p>
+<p>After setting those registers the program goes into an infinite loop.</p>
+<pre><code>done:   
+    b done
+</code></pre>
+<p>Next comes the data section with the declaration of the <code>apa</code>.</p>
+<pre><code>    .section .data 
+
+apa:    
+    .word 0xFEEBDAED
+
+</code></pre>
+<p>This text is not really about understanding the details of that assembler program. Rather it is about getting something to run and laying a foundation that we can build further experiments and understanding on top of.</p>
+<p>Below you see he complete assembly listing</p>
+<pre><code>    .syntax unified
+
+    .section .text 
+    
+    .global vtable
+    .global reset_handler
+
+vtable:
+    .word _estack
+    .word reset_handler
+    .size vtable, .-vtable
+
+reset_handler:
+    ldr r0, =_estack
+    mov sp, r0
+
+    ldr r0, =_dstart
+    ldr r1, =_dend
+
+    sub r2,r1,r0
+
+    ldr r1, =_flash_dstart
+    
+cpy_loop:
+    ldrb r3, [r1]
+    strb r3, [r0] 
+
+    add r1, r1, #1
+    add r0, r0, #1
+    
+    sub r2, r2, #1
+    cmp r2, #0
+    bne cpy_loop
+    
+
+main:
+    ldr r9, =apa
+    ldr r9, [r9]
+
+    ldr r7, =0xF00DF00D
+    ldr r8, =0x1337BEEF
+
+done:   
+    b done
+
+    .section .data 
+
+apa:    .word 0xFEEBDAED
+</code></pre>
+<h2 id="assembling">Assembling</h2>
+<p>I stored the assembler code in a file called <code>session0.s</code> and to assemble that file and produce an object file one issues the following command.</p>
+<pre><code>arm-none-eabi-as -g -mcpu=cortex-m4 -mthumb session0.s -o session0.o
+</code></pre>
+<p>This uses the gnu assembler with the flags <code>-g</code> for debug info, <code>-mcpu=cortex-m4</code> for the target architecture and <code>-mthumb</code>.... I wonder if <code>-mthumb</code> is really needed as the cortex-m4 don't execute anything but thumb. oh well. Then the input file is specified and after the <code>-o</code> the output file.</p>
+<h2 id="linking">Linking</h2>
+<p>Linking takes a linker script and some number of <code>.o</code> files (in this case only one <code>.o</code> file) and outputs an elf file.</p>
+<p>Now, there is a bit of mystique in this area as well. The <code>.o</code> files are really also ELF files and what the linker does is combining some number such into a target ELF. But it also takes the information from within the linker script in consideration and performs relocation.</p>
+<p>Let's look at the command for linking and then take a look at how <code>.o</code> file is different from the <code>.elf</code> file.</p>
+<pre><code>arm-none-eabi-ld session0.o -T ./session0.ld -o session0.elf
+</code></pre>
+<p>After the assembly step and the linking step we should have a file called <code>session0.o</code> and one called <code>session0.elf</code>.</p>
+<p>To checkout the contents of these files in a format that makes any sense at all, we can use the <code>objdump</code> program. For example like this.</p>
+<pre><code>arm-none-eabi-objdump -s -d  session0.o
+</code></pre>
+<p>The <code>-s</code> means "display the full contents of all sections requested" and the <code>-d</code> means "perform disassembly".</p>
+<p><strong>session0.o</strong></p>
+<pre><code>session0.o:     file format elf32-littlearm
+
+Contents of section .text:
+ 0000 00000000 00000000 0c488546 0c480d49  .........H.F.H.I
+ 0010 a1eb0002 0c490b78 037001f1 010100f1  .....I.x.p......
+ 0020 0100a2f1 0102002a f5d1dff8 2090d9f8  .......*.... ...
+ 0030 0090074f dff81c80 fee70000 00000000  ...O............
+ 0040 00000000 00000000 00000000 00000000  ................
+ 0050 0df00df0 efbe3713                    ......7.        
+Contents of section .data:
+ 0000 eddaebfe                             ....            
+Contents of section .ARM.attributes:
+ 0000 41200000 00616561 62690001 16000000  A ...aeabi......
+ 0010 05436f72 7465782d 4d340006 0d074d09  .Cortex-M4....M.
+ 0020 02                                   .               
+
+Disassembly of section .text:
+
+00000000 &lt;vtable&gt;:
+    ...
+
+00000008 &lt;reset_handler&gt;:
+   8:   480c        ldr r0, [pc, #48]   ; (3c &lt;done+0x4&gt;)
+   a:   4685        mov sp, r0
+   c:   480c        ldr r0, [pc, #48]   ; (40 &lt;done+0x8&gt;)
+   e:   490d        ldr r1, [pc, #52]   ; (44 &lt;done+0xc&gt;)
+  10:   eba1 0200   sub.w   r2, r1, r0
+  14:   490c        ldr r1, [pc, #48]   ; (48 &lt;done+0x10&gt;)
+
+00000016 &lt;cpy_loop&gt;:
+  16:   780b        ldrb    r3, [r1, #0]
+  18:   7003        strb    r3, [r0, #0]
+  1a:   f101 0101   add.w   r1, r1, #1
+  1e:   f100 0001   add.w   r0, r0, #1
+  22:   f1a2 0201   sub.w   r2, r2, #1
+  26:   2a00        cmp r2, #0
+  28:   d1f5        bne.n   16 &lt;cpy_loop&gt;
+
+0000002a &lt;main&gt;:
+  2a:   f8df 9020   ldr.w   r9, [pc, #32]   ; 4c &lt;done+0x14&gt;
+  2e:   f8d9 9000   ldr.w   r9, [r9]
+  32:   4f07        ldr r7, [pc, #28]   ; (50 &lt;done+0x18&gt;)
+  34:   f8df 801c   ldr.w   r8, [pc, #28]   ; 54 &lt;done+0x1c&gt;
+
+00000038 &lt;done&gt;:
+  38:   e7fe        b.n 38 &lt;done&gt;
+    ...
+  4e:   0000        .short  0x0000
+  50:   f00df00d    .word   0xf00df00d
+  54:   1337beef    .word   0x1337beef
+</code></pre>
+<p><strong>session0.elf</strong></p>
+<pre><code>session0.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ 8000000 00000220 08000008 0c488546 0c480d49  ... .....H.F.H.I
+ 8000010 a1eb0002 0c490b78 037001f1 010100f1  .....I.x.p......
+ 8000020 0100a2f1 0102002a f5d1dff8 2090d9f8  .......*.... ...
+ 8000030 0090074f dff81c80 fee70000 00000220  ...O........... 
+ 8000040 00000020 04000020 58000008 00000020  ... ... X...... 
+ 8000050 0df00df0 efbe3713                    ......7.        
+Contents of section .data:
+ 20000000 eddaebfe                             ....            
+Contents of section .ARM.attributes:
+ 0000 41200000 00616561 62690001 16000000  A ...aeabi......
+ 0010 05436f72 7465782d 4d340006 0d074d09  .Cortex-M4....M.
+ 0020 02                                   .               
+
+Disassembly of section .text:
+
+08000000 &lt;vtable&gt;:
+ 8000000:   20020000    .word   0x20020000
+ 8000004:   08000008    .word   0x08000008
+
+08000008 &lt;reset_handler&gt;:
+ 8000008:   480c        ldr r0, [pc, #48]   ; (800003c &lt;done+0x4&gt;)
+ 800000a:   4685        mov sp, r0
+ 800000c:   480c        ldr r0, [pc, #48]   ; (8000040 &lt;done+0x8&gt;)
+ 800000e:   490d        ldr r1, [pc, #52]   ; (8000044 &lt;done+0xc&gt;)
+ 8000010:   eba1 0200   sub.w   r2, r1, r0
+ 8000014:   490c        ldr r1, [pc, #48]   ; (8000048 &lt;done+0x10&gt;)
+
+08000016 &lt;cpy_loop&gt;:
+ 8000016:   780b        ldrb    r3, [r1, #0]
+ 8000018:   7003        strb    r3, [r0, #0]
+ 800001a:   f101 0101   add.w   r1, r1, #1
+ 800001e:   f100 0001   add.w   r0, r0, #1
+ 8000022:   f1a2 0201   sub.w   r2, r2, #1
+ 8000026:   2a00        cmp r2, #0
+ 8000028:   d1f5        bne.n   8000016 &lt;cpy_loop&gt;
+
+0800002a &lt;main&gt;:
+ 800002a:   f8df 9020   ldr.w   r9, [pc, #32]   ; 800004c &lt;done+0x14&gt;
+ 800002e:   f8d9 9000   ldr.w   r9, [r9]
+ 8000032:   4f07        ldr r7, [pc, #28]   ; (8000050 &lt;done+0x18&gt;)
+ 8000034:   f8df 801c   ldr.w   r8, [pc, #28]   ; 8000054 &lt;done+0x1c&gt;
+
+08000038 &lt;done&gt;:
+ 8000038:   e7fe        b.n 8000038 &lt;done&gt;
+ 800003a:   0000        .short  0x0000
+ 800003c:   20020000    .word   0x20020000
+ 8000040:   20000000    .word   0x20000000
+ 8000044:   20000004    .word   0x20000004
+</code></pre>
+<p>The two files are quite similar. The addresses along the left hand side of the disassembly are different though. In the <code>.elf</code> file these addresses are changed to match the "constraints" (or what to call it) that we imposed via the linker script.</p>
+<h2 id="creating-a-hex-file-for-flashing">Creating a <code>.hex</code> file for flashing</h2>
+<p>There is one more file we can create, a <code>.hex</code> file for flashing of the MCU. As I understand these, they are just a compact representation of the <code>.elf</code> file generated above. The <code>.hex</code> file is created using the following command.</p>
+<pre><code>arm-none-eabi-objcopy -O ihex session0.elf session0.hex
+</code></pre>
+<p>openocd -f interface/stlink.cfg -f target/stm32f4x.cfg</p>
+<h2 id="flashing-and-debugging-using-openocd">Flashing and debugging using OpenOCD</h2>
+<p>To flash the mcu with the <code>.hex</code> file, issue this command.</p>
+<pre><code>openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c &quot;init&quot; -c &quot;program session0.hex verify reset exit&quot;
+</code></pre>
+<p>This call to <code>openocd</code> performs a number of commands against the MCU, the commands are what follows the <code>-c</code>. Init the board and then program.</p>
+<p>We can also launch <code>openocd</code> without these "commands", like this.</p>
+<pre><code>openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
+</code></pre>
+<p>What happens now is that OpenOCD connects to the boards and stays running. OpenOCD is running a telnet server that we can log onto and then manually enter the commands for programming, for example. To connect to OpenOCD using telnet enter.</p>
+<pre><code>telnet localhost 4444
+</code></pre>
+<h2 id="stepping-through-the-program-using-gdb">Stepping through the program using GDB</h2>
+<p>When launching OpenOCD like this:</p>
+<pre><code>openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
+</code></pre>
+<p>it is also running a GDB server that we can connect to and interact with the program.</p>
+<p>So, run the <code>openocd</code> command above in one terminal and then in another start <code>gdb</code> like this.</p>
+<pre><code>arm-none-eabi-gdb
+</code></pre>
+<p>When GDB has started it will give you a <code>(gdb)</code> prompt. Then enter:</p>
+<pre><code>target extended-remote :3333
+</code></pre>
+<p>GDB may then output something like this.</p>
+<pre><code>0x490d480c in ?? ()
+(gdb) 
+</code></pre>
+<p>Enter:</p>
+<pre><code>load session0.elf
+</code></pre>
+<p>GDB replies:</p>
+<pre><code>Loading section .text, size 0x58 lma 0x8000000
+Loading section .data, size 0x4 lma 0x8000058
+Start address 0x8000000, load size 92
+Transfer rate: 201 bytes/sec, 46 bytes/write.
+(gdb) 
+</code></pre>
+<p>I am not sure why this is, but it seems that I also must run the command <code>file session.elf</code> for things to behave properly, such as stepping through programs. I wish to understand this better so if you have info, please share it with me!</p>
+<p>Now you can look at the contents of the registers by typing the <code>info register</code> command. It should print something like this:</p>
+<pre><code>r0             0x0                 0
+r1             0x0                 0
+r2             0x0                 0
+r3             0x0                 0
+r4             0x0                 0
+r5             0x0                 0
+r6             0x0                 0
+r7             0x0                 0
+r8             0x0                 0
+r9             0x0                 0
+r10            0x0                 0
+r11            0x0                 0
+r12            0x0                 0
+sp             0x2001ffe0          0x2001ffe0
+lr             0xfffffff9          -7
+pc             0x8000000           0x8000000
+xPSR           0x1000003           16777219
+fpscr          0x0                 0
+msp            0x20020000          0x20020000
+psp            0x0                 0x0
+primask        0x0                 0
+basepri        0x0                 0
+faultmask      0x0                 0
+control        0x0                 0
+</code></pre>
+<p>Ok. At this point it works to step through the program using <code>step</code>. and after going through all the operations I end up with the following register state (which seems to make sense).</p>
+<pre><code>(gdb) info register
+r0             0x20000004          536870916
+r1             0x800005c           134217820
+r2             0x0                 0
+r3             0xfe                254
+r4             0x0                 0
+r5             0x0                 0
+r6             0x0                 0
+r7             0xf00df00d          -267522035
+r8             0x1337beef          322420463
+r9             0xfeebdaed          -18097427
+r10            0x0                 0
+r11            0x0                 0
+r12            0x0                 0
+sp             0x20020000          0x20020000
+lr             0xffffffff          -1
+pc             0x8000038           0x8000038 &lt;done&gt;
+xPSR           0x61000003          1627389955
+fpscr          0x0                 0
+msp            0x20020000          0x20020000
+psp            0x0                 0x0
+primask        0x0                 0
+basepri        0x0                 0
+faultmask      0x0                 0
+control        0x0                 0
+</code></pre>
+<p>The key registers are <code>r7</code>, <code>r8</code> and <code>f9</code> containing "FOODFOOD", "LEETBEEF" and backwards "DEADBEEF", just as planned.</p>
+<h2 id="putting-it-all-together-in-a-makefile">Putting it all together in a Makefile</h2>
+<pre><code>all: session0.hex
+
+session0.o: session0.s
+    arm-none-eabi-as -g -mcpu=cortex-m4 -mthumb session0.s -o session0.o
+
+session0.elf: session0.o session0.ld
+    arm-none-eabi-ld session0.o -T ./session0.ld -o session0.elf
+
+session0.hex: session0.elf
+    arm-none-eabi-objcopy -O ihex session0.elf session0.hex
+
+clean:
+    rm *.hex
+    rm *.o
+    rm *.elf
+
+flash: session0.hex
+    openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c &quot;init&quot; -c &quot;program session0.hex verify reset exit&quot;
+
+debug:
+    openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
+
+disas: session0.elf
+    arm-none-eabi-objdump -s -d session0.elf
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>Lots of learning to do here and as you can tell I am quite confused at some parts. I hope to improve in understanding about these concepts over time and issue corrections here as needed. Any help, feedback, hints, tips and so on are very much welcome.</p>
+<p>Have a good day!</p>
+<h2 id="additional-resources">Additional resources</h2>
+<ol>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf">STM32F405/415 (407/417) (427/437) (429/439) reference manual</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/9b/53/39/1c/f7/01/4a/79/DM00119316.pdf/files/DM00119316.pdf/jcr:content/translations/en.DM00119316.pdf">STM32F412xG/E reference manual</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/ef/92/76/6d/bb/c2/4f/f7/DM00037051.pdf/files/DM00037051.pdf/jcr:content/translations/en.DM00037051.pdf">STM32F405xx STM32F407xx datasheet</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/b3/a5/46/3b/b4/e5/4c/85/DM00115249.pdf/files/DM00115249.pdf/jcr:content/translations/en.DM00115249.pdf">STM32F411xC STM32F411xE</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/programming_manual/6c/3a/cb/e7/e4/ea/44/9b/DM00046982.pdf/files/DM00046982.pdf/jcr:content/translations/en.DM00046982.pdf">STM32 Cortex®-M4 MCUs and MPUs programming manual</a></li>
+<li><a href="https://vivonomicon.com/2018/04/02/bare-metal-stm32-programming-part-1-hello-arm/">vivonomicon</a></li>
+</ol>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2021 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
