@@ -1,5 +1,5 @@
 
-#  programming of ARM Cortex-M microcontrollers - Part 0 - Tools and basics
+#  Programming of ARM Cortex-M microcontrollers - Part 0 - Tools and basics
 
 I think it may be pretty hard to justify picking up assembly language
 at this time unless if for learning or for fun. I'm going to have a go
