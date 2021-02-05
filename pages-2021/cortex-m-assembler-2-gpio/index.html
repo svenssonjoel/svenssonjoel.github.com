@@ -1,0 +1,349 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Assembler programming of ARM Cortex-M microcontrollers - Part 1 - Some more GPIO</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Input from buttons and output to LEDs.">
+  <meta name="keywords" content="STM32, STM32F4, buttons, gpio, LED, assembler, discovery, cortex, cortex-m, cortex-m4">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script data-ad-client="ca-pub-6663189426712847" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111281599-1"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'UA-111281599-1');
+  </script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ9CPG3ZWG"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    gtag('config', 'G-DQ9CPG3ZWG');
+  </script>
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-2-gpio/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="assembler-programming-of-arm-cortex-m-microcontrollers---part-1---some-more-gpio">Assembler programming of ARM Cortex-M microcontrollers - Part 1 - Some more GPIO</h1>
+<p>This text expands a little bit on the example in the <a href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-1-hardfault/index.html">previous</a> post by connecting a set of buttons onto PD0 - PD3 to control the LEDs connected to PA0 - PA3.</p>
+<p>The pictures below show how I have connected buttons and LEDs to my stm32f4-discovery board.</p>
+<table>
+<thead>
+<tr class="header">
+<th>LEDs and buttons 0</th>
+<th>LEDs and buttons 1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img src="./media/buttonled0.jpg" alt="LEDs and buttons 0" /></td>
+<td><img src="./media/buttonled1.jpg" alt="Leda and buttons 1" /></td>
+</tr>
+</tbody>
+</table>
+<p>And here is a <a href="https://youtu.be/dvhl-cGmEdY">video</a> showing the setup in action.</p>
+<p>The buttons, when closed, pull the PDx pin high. The closing of the button also lights a yellow LED, just to see that everything is hooked up properly.</p>
+<p>The code runs an infinite loop that, in every iteration, reads the PD pins and then copies their state to the corresponding PA pins where the blue LEDs are connected.</p>
+<h2 id="the-code">The code</h2>
+<p>Much of the code today is indentical to the code written last time but there are additions of course.</p>
+<p>let's take a look at the code labeled "main" piecewise.</p>
+<pre><code>main:
+    ldr r1, =0x40023830     @ AHB1ENR
+    ldr r0, [r1]
+    orr r0, 0x1             @ Turn on GPIO A    
+    orr r0, 0x8             @ Turn on GPIO D
+    str r0, [r1]
+</code></pre>
+<p>This part loads the address of the <code>AHB1ENR</code> register into <code>r1</code> then it loads the contents of the register into <code>r0</code>. A few bits are set to turn on GPIO A and D and then the value is written back to the AHB1ENR register. Details about this register can be found in the reference manual that I will link to at the bottom of this post.</p>
+<pre><code>    ldr r1, =0x40020000     @ Pointer to PA MODER
+    ldr r0, [r1]            @ Value of PA MODER
+    ldr r2, =0xFFFFFF00
+    and r0, r0, r2
+    orr r0, r0, 0x55        @ PA0 - PA3 output, 
+        str r0, [r1]            @ Write back PA MODER
+</code></pre>
+<p>As last time, PA0 - PA3 are set to outputs.</p>
+<pre><code>    ldr r1, =0x40020C00     @ Pointer to PD MODER
+    ldr r0, [r1]            @ Value of PD MODER
+    ldr r2, =0xFFFFFF00
+    and r0, r0, r2
+        str r0, [r1]            @ Write back PC MODER
+</code></pre>
+<p>Here PD0 - PD3 is set to be inputs. This is done by clearing 8 bits in the <code>PD MODER</code> register located at address <code>0x40020C00</code>.</p>
+<pre><code>    ldr r1, =0x40020C0C     @ Pointer to PD PUPDR
+    ldr r0, [r1]            @ Value of PD PUPDR
+    ldr r2, =0xFFFFFF00
+    and r0, r0, r2
+    orr r0, r0, 0xAA        @ PD 0 - PD 3 pull down
+        str r0, [r1]            @ Write back PC PUPDR
+</code></pre>
+<p>The code above modifies the <code>PD PUPDR</code> register. <code>PUPDR</code> stands for <code>PULL UP, PULL DOWN Register</code>. This register is used to configure how the PD pins behave "electronically" and how to configure this will depend on what kind of electronics you have connected to the pin. In this case I have a button that when it is open means that the GPIO pin is connected to "nothing" but when the button is closed the GPIO pin is connected to +3V (via a resistor). When a pin is connected to "nothing" like that it is said to be "floating".</p>
+<p>The code above, configures the PD0 - PD3 pins to be PULL DOWN pins. this means that internally in the "chip" some switches (transistors) will be configured in such a way that the pins are connected to ground via a large resistor. With this configuration the pin will never be in a floating state as it is either pulled to +3V by the button or pulled to ground internally in the chip.</p>
+<p>The next thing that happens is that we enter into an infinite loop.</p>
+<pre><code>forever:
+    ldr r1, =0x40020C10     @ PD input data register
+    ldr r0, [r1]
+    and r0, r0, 0xF         @ Only care about 4 LSB 
+    ldr r2, =0x40020014     @ PA output data register
+    ldr r1, [r2]            @ Load state of PA
+    ldr r3, =0xFFFFFF00     
+    and r1, r1, r3          @ Clear PA0 - PA3
+    orr r1, r1, r0          @ Turn on leds corresponding to buttons
+    str r1, [r2]
+    b forever
+</code></pre>
+<p>This loop reads the PD input data register, looks at the 4 bits that corresponds to PD0 - PD3 and copies their state over to the PA output data register. There is some masking going on so that only the bits of interest are updated.</p>
+<p>The complete assembly code listing is available below:</p>
+<pre><code>    .syntax unified
+    .cpu cortex-m4
+    .thumb
+    
+    .global vtable
+    .global reset_handler
+
+    .section .text
+    
+vtable:
+    .word _estack
+    .word reset_handler
+    .word 0
+    .word hard_fault_handler
+
+.thumb_func 
+hard_fault_handler:
+    b hard_fault_handler
+
+.thumb_func 
+reset_handler:
+    ldr r0, =_estack
+    mov sp, r0
+        
+    ldr r0, =_dstart
+    ldr r1, =_dend
+
+    sub r2,r1,r0
+    cmp r2, #0
+    beq main
+
+    ldr r1, =_flash_dstart
+        
+cpy_loop:
+    ldrb r3, [r1]
+    strb r3, [r0] 
+
+    add r1, r1, #1
+    add r0, r0, #1
+    
+    sub r2, r2, #1
+    cmp r2, #0
+    bne cpy_loop
+    
+
+main:
+    ldr r1, =0x40023830     @ AHB1ENR
+    ldr r0, [r1]
+    orr r0, 0x1             @ Turn on GPIO A    
+    orr r0, 0x8             @ Turn on GPIO D
+    str r0, [r1]
+
+    ldr r1, =0x40020000     @ Pointer to PA MODER
+    ldr r0, [r1]            @ Value of PA MODER
+    ldr r2, =0xFFFFFF00
+    and r0, r0, r2
+    orr r0, r0, 0x55        @ PA0 - PA 3 output, 
+        str r0, [r1]            @ Write back PA MODER   
+
+    ldr r1, =0x40020C00     @ Pointer to PD MODER
+    ldr r0, [r1]            @ Value of PD MODER
+    ldr r2, =0xFFFFFF00
+    and r0, r0, r2
+        str r0, [r1]            @ Write back PC MODER   
+
+
+    ldr r1, =0x40020C0C     @ Pointer to PD PUPDR
+    ldr r0, [r1]            @ Value of PD PUPDR
+    ldr r2, =0xFFFFFF00
+    and r0, r0, r2
+    orr r0, r0, 0xAA        @ PD 0 - PD 3 pull down
+        str r0, [r1]            @ Write back PC PUPDR   
+
+forever:
+    ldr r1, =0x40020C10     @ PD input data register
+    ldr r0, [r1]
+    and r0, r0, 0xF         @ Only care about 4 LSB 
+    ldr r2, =0x40020014     @ PA output data register
+    ldr r1, [r2]            @ Load state of PA
+    ldr r3, =0xFFFFFF00     
+    and r1, r1, r3          @ Clear PA0 - PA3
+    orr r1, r1, r0          @ Turn on leds corresponding to buttons
+    str r1, [r2]
+    b forever
+
+    .section .data 
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>Ah! that was another one about GPIO. Seems to work fine. This sets a good foundation for future exploration, I think. I want to take a few steps back now and take a look at the assembler, the directives, the instruction set and such things. The code written for <a href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index">session0</a>, <a href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-1-hardfault/index.html">session1</a> and this current post is a bit ad-hoc, so going back and learning some of the basics sounds like a good idea. We can then revisit things like GPIO and maybe improve on the code by using more features of the assembly later.</p>
+<p>As usual all feedback is very welcome. So do not hesitate to poke me about anything.</p>
+<p>Oh I should add! The code for this sequence of posts is available at <a href="https://github.com/svenssonjoel/Learning-ARM-Cortex-M-Assembly">github</a>.</p>
+<p>Have a good day!</p>
+<h2 id="additional-resources">Additional resources</h2>
+<ol>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf">STM32F405/415 (407/417) (427/437) (429/439) reference manual</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/9b/53/39/1c/f7/01/4a/79/DM00119316.pdf/files/DM00119316.pdf/jcr:content/translations/en.DM00119316.pdf">STM32F412xG/E reference manual</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/ef/92/76/6d/bb/c2/4f/f7/DM00037051.pdf/files/DM00037051.pdf/jcr:content/translations/en.DM00037051.pdf">STM32F405xx STM32F407xx datasheet</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/b3/a5/46/3b/b4/e5/4c/85/DM00115249.pdf/files/DM00115249.pdf/jcr:content/translations/en.DM00115249.pdf">STM32F411xC STM32F411xE</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/programming_manual/6c/3a/cb/e7/e4/ea/44/9b/DM00046982.pdf/files/DM00046982.pdf/jcr:content/translations/en.DM00046982.pdf">STM32 Cortex®-M4 MCUs and MPUs programming manual</a></li>
+<li><a href="https://vivonomicon.com/2018/04/02/bare-metal-stm32-programming-part-1-hello-arm/">vivonomicon</a></li>
+</ol>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2021 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
+
