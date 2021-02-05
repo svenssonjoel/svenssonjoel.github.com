@@ -222,7 +222,7 @@
         str r0, [r1]            @ Write back PC PUPDR
 </code></pre>
 <p>The code above modifies the <code>PD PUPDR</code> register. <code>PUPDR</code> stands for <code>PULL UP, PULL DOWN Register</code>. This register is used to configure how the PD pins behave "electronically" and how to configure this will depend on what kind of electronics you have connected to the pin. In this case I have a button that when it is open means that the GPIO pin is connected to "nothing" but when the button is closed the GPIO pin is connected to +3V (via a resistor). When a pin is connected to "nothing" like that it is said to be "floating".</p>
-<p>The code above, configures the PD0 - PD3 pins to be PULL DOWN pins. this means that internally in the "chip" some switches (transistors) will be configured in such a way that the pins are connected to ground via a large resistor. With this configuration the pin will never be in a floating state as it is either pulled to +3V by the button or pulled to ground internally in the chip.</p>
+<p>The code above, configures the PD0 - PD3 pins to be PULL DOWN pins. This means that internally in the "chip", some switches (transistors) will be configured in such a way that the pins are connected to ground via a large resistor. With this configuration the pin will never be in a floating state as it is either pulled to +3V by the button or pulled to ground internally in the chip.</p>
 <p>The next thing that happens is that we enter into an infinite loop.</p>
 <pre><code>forever:
         ldr r1, =0x40020C10     @ PD input data register

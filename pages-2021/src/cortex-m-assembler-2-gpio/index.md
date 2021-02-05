@@ -87,7 +87,7 @@ connected to +3V (via a resistor). When a pin is connected to "nothing" like tha
 it is said to be "floating".
 
 The code above, configures the PD0 - PD3 pins to be PULL DOWN pins.
-this means that internally in the "chip" some switches (transistors)
+This means that internally in the "chip", some switches (transistors)
 will be configured in such a way that the pins are connected to ground
 via a large resistor. With this configuration the pin will never be in
 a floating state as it is either pulled to +3V by the button or pulled
