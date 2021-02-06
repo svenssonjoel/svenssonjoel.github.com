@@ -168,7 +168,7 @@
 
 <!-- BODY IS INTENTIONALY LEFT OPEN --> 
 
-<h1 id="programming-of-arm-cortex-m-microcontrollers---part-0---hard-fault-on-reset-and-some-gpio">Programming of ARM Cortex-M microcontrollers - Part 0 - Hard-fault on reset and some GPIO</h1>
+<h1 id="programming-of-arm-cortex-m-microcontrollers---part-1---hard-fault-on-reset-and-some-gpio">Programming of ARM Cortex-M microcontrollers - Part 1 - Hard-fault on reset and some GPIO</h1>
 <p>In the <a href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html">previous</a> post I tried to get some code written in assembly to run on my STM32F4-Discovery. Now, this confuses me a lot, but I was able to run that code in a GDB session against the board but after a reset the MCU kept ending up in a "hard-fault".</p>
 <p>The fix of this problem is what is really confusing me. To make it work the <code>reset_handler</code> should have a <code>.thumb_func</code> directive before it. Like this:</p>
 <pre><code>.thumb_func 

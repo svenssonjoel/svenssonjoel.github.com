@@ -1,6 +1,6 @@
 
 
-# Assembler programming of ARM Cortex-M microcontrollers - Part 1 - Some more GPIO
+# Assembler programming of ARM Cortex-M microcontrollers - Part 2 - Some more GPIO
 
 
 This text expands a little bit on the example in the

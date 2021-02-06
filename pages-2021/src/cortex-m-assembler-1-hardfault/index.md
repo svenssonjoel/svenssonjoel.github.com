@@ -1,6 +1,6 @@
 
 
-# Programming of ARM Cortex-M microcontrollers - Part 0 - Hard-fault on reset and some GPIO
+# Programming of ARM Cortex-M microcontrollers - Part 1 - Hard-fault on reset and some GPIO
 
 In the
 [previous](https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html)
