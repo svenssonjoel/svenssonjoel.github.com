@@ -1,0 +1,341 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Assembler programming of ARM Cortex-M microcontrollers - Part 3 - Loops, arrays and functions</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Loop over a set of values and output them to a set LEDs. Will also implement a basic delay function.">
+  <meta name="keywords" content="STM32, STM32F4, buttons, gpio, LED, assembler, discovery, cortex, cortex-m, cortex-m4, loops, arrays, functions ">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-3-loops-arrays-functions/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="assembler-programming-of-arm-cortex-m-microcontrollers---part-3---loops-arrays-and-functions">Assembler programming of ARM Cortex-M microcontrollers - Part 3 - Loops, arrays and functions</h1>
+<p>This coding example cycles through some patterns stored in an array and display these on 4 LEDs. The program will loop over the array of patterns and for each iteration change what is output onto PA0 - PA3. To slow down the switching between patterns a basic delay function is implemented and called in each iteration of the loop.</p>
+<p>The code written here will have a lot in common with the <a href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-2-gpio/index.html">previous</a> post. There wont be any input from the user though, no buttons.</p>
+<p>A video of the result of the code shown here can be found on <a href="https://youtu.be/U5KB64owiP0">youtube</a>.</p>
+<p>Let's start by looking at the delay function which is implemented as a loop that just spins around for some number of iterations.</p>
+<pre><code>delay:
+        ldr r0,=1000000         @ Duration of delay in iterations
+delay_loop:     
+        cmp r0, #0              @ Are we done yet?
+        beq delay_done          @ If so, jump out
+        sub r0,r0, #1           @ Otherwise, dec counter
+        b delay_loop            @ and do another iteration
+delay_done:     
+        bx lr                   @ Return from function call 
+</code></pre>
+<p>A "large" number is loaded into <code>r0</code> giving the number of iterations to perform. We then enter into the body of the loop which checks if <code>r0</code> is 0. If <code>r0</code> is 0 we should break out of the loop and return. If <code>r0</code> is larger than 0 then subtract 1 from <code>r0</code> and run the loop body one more time.</p>
+<p>When the control jumps to <code>delay_done</code>, when <code>r0</code> hits 0, <code>bx lr</code> returns from the function call.</p>
+<p>The value to use as a delay was decided by trial and error. I really don't know how fast the MCU is executing right now (what MHz it is running at). I understand that there is some really tricky "clock configuration" stuff one should do. I don't know anything about how that works yet! We should definitely look at it in the future.</p>
+<p>So that's how to implement a function. A simple function. To call this function you do:</p>
+<pre><code>        bl delay
+</code></pre>
+<p><code>bl</code> is the branch and link operation. This instruction jumps to the delay function but also stores away the return address into the <code>lr</code> register. So, the <code>bx lr</code> instruction at the end of the function, restores the address from <code>lr</code> into the program counter. This approach to function calls does not use any stack so how to do functions that call functions in a nested way is something to look at in the future.</p>
+<p>Now, let's look at the array of patterns.</p>
+<pre><code>        .section .data 
+
+led_states:     .byte 0x1, 0x2, 0x4, 0x8, 0xF, 0x0
+        @ led_states could have been stored in flash as it is constant. 
+led_states_end:
+</code></pre>
+<p>In this case the array is placed in the <code>.data</code> section. This is the section that we wrote some startup code for, to get it copied from flash into RAM. The program will not try to modify this array, so it could just as well have been a constant array remaining in flash only. To get that effect, just define the array in the <code>.text</code> section instead.</p>
+<p>The <code>led_states:</code> symbol refers to the address where the array starts and <code>led_states_end</code> refers to the first byte after any of the defined bytes that are part of the array.</p>
+<p>The data itself is just listed after the <code>.byte</code> directive.</p>
+<p>Now we can jump to the <code>main:</code> label and look at that part of the code piece by piece.</p>
+<pre><code>main:
+        ldr r1, =0x40023830     @ Load address of AHB1ENR
+        ldr r0, [r1]            @ Load contents of AHB1ENR
+        orr r0, 0x1             @ Turn on GPIO A        
+        str r0, [r1]            @ Store back modified AHB1ENR
+
+        ldr r1, =0x40020000     @ Pointer to PA MODER
+        ldr r0, [r1]            @ Value of PA MODER
+        ldr r2, =0xFFFFFF00
+        and r0, r0, r2
+        orr r0, r0, 0x55        @ PA0 - PA 3 output, 
+        str r0, [r1]            @ Write back PA MODER   
+</code></pre>
+<p>The code starts out similarly to previous texts. The GPIO A (PA) is turned on and then 4 of the PA pins are set to be output pins.</p>
+<p>Next we should go into an infinite loop that updates the PA0 - PA3 pins. A few preparatory instructions before looping though:</p>
+<pre><code>        ldr r2,=led_states      @ Load led_states array address
+        ldr r6,=led_states_end  @ Load led_states array end address
+        ldr r3,=0x40020014      @ PA output data register
+        ldr r5,=0xFFFFFF00      @ Clear-mask for bits of interest
+</code></pre>
+<p>Here the registers <code>r2</code>,<code>r6</code>,<code>r3</code> and <code>r5</code> are set to their initial values for the loop. Actually, only <code>r2</code> will be changed over the course of the loop and the other will be kept constant. <code>r2</code> will initially point at the start of the patterns array. <code>r6</code> will always point at the "end" of the patterns array. Lastly <code>r3</code> and <code>r5</code> will hold the PA output data register address and the mask we use for clearing the outputs that we are toggling.</p>
+<pre><code>forever:
+        ldrb r1, [r2], #1       @ Load a byte from array and increment address
+        ldr r4, [r3]            @ Load state of PA output data register
+        and r4, r4, r5          @ Clear some bits
+        orr r4, r4, r1          @ Turn some bits on based on led_states value
+        str r4, [r3]            @ Write to PA output data register
+</code></pre>
+<p>The loop starts out by loading a byte from the <code>led_states</code> array from address stored in <code>r2</code>. The address in <code>r2</code> is incremented in the same instruction there, <code>ldrb r1, [r2], #1</code>. The rest of that code chunk is familiar, it is the code that sets some of the PA0-PA3 pins high and thus turns on LEDs.</p>
+<p>Next we need to check if we have cycled through all the patterns and need to restart from the beginning.</p>
+<pre><code>        cmp r2, r6              @ Did we reach end of array?
+        blt forever_cont
+        ldr r2,=led_states      @ Reset r2 to start of led_states
+forever_cont:
+        
+        bl delay
+        b forever
+</code></pre>
+<p>If <code>r2</code> which keeps track of where we are in the array becomes equal to (or greater than) the value in <code>r6</code> (<code>let_states_end</code>), then we should reset <code>r2</code> back to pointing at the start of the <code>led_states</code> array. The logic is a bit backwards there as it rather checks if <code>r2</code> is less than <code>r6</code> and if it is less it skips over the instructions that performs the reset of <code>r2</code>.</p>
+<p>In either case, the code end ups at <code>bl delay</code> which calls the delay routine. Then the <code>forever</code> loop is run once more.</p>
+<h2 id="the-complete-assembly-listing">The complete assembly listing</h2>
+<pre><code>        .syntax unified
+        .cpu cortex-m4
+        .thumb
+        
+        .global vtable
+        .global reset_handler
+
+        .section .text
+        
+vtable:
+        .word _estack
+        .word reset_handler
+        .word 0
+        .word hard_fault_handler
+
+
+        .thumb_func
+delay:
+        ldr r0,=1000000         @ Duration of delay in iterations
+delay_loop:     
+        cmp r0, #0              @ Are we done yet?
+        beq delay_done          @ If so, jump out
+        sub r0,r0, #1           @ Otherwise, dec counter
+        b delay_loop            @ and do another iteration
+delay_done:     
+        bx lr                   @ Return from function call 
+        
+        .thumb_func     
+hard_fault_handler:
+        b hard_fault_handler
+
+        .thumb_func     
+reset_handler:
+        ldr r0, =_estack
+        mov sp, r0
+                
+        ldr r0, =_dstart
+        ldr r1, =_dend
+
+        sub r2,r1,r0
+        cmp r2, #0
+        beq main
+
+        ldr r1, =_flash_dstart
+        
+cpy_loop:
+        ldrb r3, [r1]
+        strb r3, [r0] 
+
+        add r1, r1, #1
+        add r0, r0, #1
+        
+        sub r2, r2, #1
+        cmp r2, #0
+        bne cpy_loop
+        
+
+main:
+        ldr r1, =0x40023830     @ Load address of AHB1ENR
+        ldr r0, [r1]            @ Load contents of AHB1ENR
+        orr r0, 0x1             @ Turn on GPIO A        
+        str r0, [r1]            @ Store back modified AHB1ENR
+
+        ldr r1, =0x40020000     @ Pointer to PA MODER
+        ldr r0, [r1]            @ Value of PA MODER
+        ldr r2, =0xFFFFFF00
+        and r0, r0, r2
+        orr r0, r0, 0x55        @ PA0 - PA 3 output, 
+        str r0, [r1]            @ Write back PA MODER   
+                
+
+        
+        ldr r2,=led_states      @ Load led_states array address
+        ldr r6,=led_states_end  @ Load led_states array end address
+        ldr r3,=0x40020014      @ PA output data register
+        ldr r5,=0xFFFFFF00      @ Clear-mask for bits of interest
+forever:
+        ldrb r1, [r2], #1       @ Load a byte from array and increment address
+        ldr r4, [r3]            @ Load state of PA output data register
+        and r4, r4, r5          @ Clear some bits
+        orr r4, r4, r1          @ Turn some bits on based on led_states value
+        str r4, [r3]            @ Write to PA output data register
+
+        cmp r2, r6              @ Did we reach end of array?
+        blt forever_cont
+        ldr r2,=led_states      @ Reset r2 to start of led_states
+forever_cont:    
+        
+        bl delay
+        b forever
+
+        .section .data 
+
+led_states:     .byte 0x1, 0x2, 0x4, 0x8, 0xF, 0x0
+        @ led_states could have been stored in flash as it is constant. 
+led_states_end: 
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>Ah, that was one more GPIO intensive text but at least it was getting into some interesting concepts... loops, arrays, simple functions. I hope to dig deeper into that as time goes by.</p>
+<p>Some other interesting things to append to the todo-list are:</p>
+<ol>
+<li>Nested function calls.</li>
+<li>Clock configuration.</li>
+<li>More ways of writing more "principled" or "structured" assembler.</li>
+</ol>
+<p>I would love feedback if you spot bugs or things that you would do differently. Any kind of hints and tips are very much appreciated. So do not hesitate to poke.</p>
+<h2 id="additional-resources">Additional resources</h2>
+<ol>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf">STM32F405/415 (407/417) (427/437) (429/439) reference manual</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/9b/53/39/1c/f7/01/4a/79/DM00119316.pdf/files/DM00119316.pdf/jcr:content/translations/en.DM00119316.pdf">STM32F412xG/E reference manual</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/ef/92/76/6d/bb/c2/4f/f7/DM00037051.pdf/files/DM00037051.pdf/jcr:content/translations/en.DM00037051.pdf">STM32F405xx STM32F407xx datasheet</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/b3/a5/46/3b/b4/e5/4c/85/DM00115249.pdf/files/DM00115249.pdf/jcr:content/translations/en.DM00115249.pdf">STM32F411xC STM32F411xE</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/programming_manual/6c/3a/cb/e7/e4/ea/44/9b/DM00046982.pdf/files/DM00046982.pdf/jcr:content/translations/en.DM00046982.pdf">STM32 Cortex®-M4 MCUs and MPUs programming manual</a></li>
+<li><a href="https://vivonomicon.com/2018/04/02/bare-metal-stm32-programming-part-1-hello-arm/">vivonomicon</a></li>
+</ol>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2021 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
+
