@@ -31,6 +31,18 @@
     <loc>https://svenssonjoel.github.io/pages/neato_lidar_stm32/index.html</loc>
   </url>
   <url>
+    <loc>https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-3-loops-arrays-functions/index.html</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-2-gpio/index.html</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-1-hardfault/index.html</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html</loc>
+  </url>
+  <url>
     <loc>https://svenssonjoel.github.io/pages/hil_test_stm32/index.html</loc>
   </url>
   <url>
@@ -142,49 +154,49 @@
     <loc>https://svenssonjoel.github.io/slides/lecture1.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/Harbb.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/AlmostFreePresentation.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/AlmostFreePresentation.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/Harbb.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/shadowmapping.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/ifl2008_obsidian.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/licpres.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/licpres.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/ifl2008_obsidian.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/obsidian_090514.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/dcc2008_obsidian.pdf</loc>
-  </url>
-  <url>
     <loc>https://svenssonjoel.github.io/writing/zynqreduce.pdf</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/slides/masterpres.pdf</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/writing/ZynqBandwidth.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/thesis/thesis.pdf</loc>
   </url>
   <url>
+    <loc>https://svenssonjoel.github.io/writing/ZynqBandwidth.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/slides/masterpres.pdf</loc>
+  </url>
+  <url>
     <loc>https://svenssonjoel.github.io/writing/lic.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/slides/dcc2008_obsidian.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/jslic.bib</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/fhpc16-preprint.pdf</loc>
+    <loc>https://svenssonjoel.github.io/writing/GPGPU_tech.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/GPGPU_tech.pdf</loc>
+    <loc>https://svenssonjoel.github.io/writing/fhpc16-preprint.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/pldi16-crossmod.pdf</loc>
@@ -217,13 +229,10 @@
     <loc>https://svenssonjoel.github.io/writing/faspp2011_haskell_arbb.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/obsidian_ifl2008.pdf</loc>
-  </url>
-  <url>
     <loc>https://svenssonjoel.github.io/writing/dccpaper_obsidian.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/GPUFL.pdf</loc>
+    <loc>https://svenssonjoel.github.io/writing/obsidian_ifl2008.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/csort.html</loc>
@@ -232,10 +241,10 @@
     <loc>https://svenssonjoel.github.io/writing/fossi_chalmers.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-1-hardfault/</loc>
+    <loc>https://svenssonjoel.github.io/writing/GPUFL.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/</loc>
+    <loc>https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/pages/lispbm_compilation_1/</loc>
@@ -250,19 +259,16 @@
     <loc>http://svenssonjoel.github.io/pages/vivado-nexys-a7-getting-started/index.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html</loc>
+    <loc>http://svenssonjoel.github.io/pages/zynq_hls_opencl/index.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/pages/zynq_hls_opencl/index.html</loc>
+    <loc>http://svenssonjoel.github.io/writing/blinkledzynq.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/pages/nexys-a7-vga/</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/index.html</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/writing/blinkledzynq.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/research.html</loc>
@@ -287,6 +293,18 @@
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/pages/neato_lidar_stm32/index.html</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/pages-2021/cortex-m-assembler-3-loops-arrays-functions/index.html</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/pages-2021/cortex-m-assembler-2-gpio/index.html</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/pages-2021/cortex-m-assembler-1-hardfault/index.html</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/pages/hil_test_stm32/index.html</loc>
@@ -328,10 +346,10 @@
     <loc>http://svenssonjoel.github.io/pages/lispbm_chibios_repl/index.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/pages/lispbm_fundamentals_and_extensions/index.html</loc>
+    <loc>http://svenssonjoel.github.io/pages/lispbm_parsing_expressions/index.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/pages/lispbm_parsing_expressions/index.html</loc>
+    <loc>http://svenssonjoel.github.io/pages/lispbm_fundamentals_and_extensions/index.html</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/pages/lispbm_boxed_values/index.html</loc>
@@ -382,16 +400,16 @@
     <loc>http://svenssonjoel.github.io/pages/behavioral-simulation-in-vivado/index.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/slides/lecture2.pdf</loc>
-  </url>
-  <url>
     <loc>http://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/slides/lecture1.pdf</loc>
+    <loc>http://svenssonjoel.github.io/slides/lecture2.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/slides/AlmostFreePresentation.pdf</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/slides/lecture1.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/slides/Harbb.pdf</loc>
@@ -400,13 +418,16 @@
     <loc>http://svenssonjoel.github.io/slides/shadowmapping.pdf</loc>
   </url>
   <url>
+    <loc>http://svenssonjoel.github.io/slides/ifl2008_obsidian.pdf</loc>
+  </url>
+  <url>
     <loc>http://svenssonjoel.github.io/slides/licpres.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/slides/obsidian_090514.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/slides/ifl2008_obsidian.pdf</loc>
+    <loc>http://svenssonjoel.github.io/slides/masterpres.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/slides/dcc2008_obsidian.pdf</loc>
@@ -415,34 +436,31 @@
     <loc>http://svenssonjoel.github.io/writing/zynqreduce.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/slides/masterpres.pdf</loc>
-  </url>
-  <url>
     <loc>http://svenssonjoel.github.io/writing/ZynqBandwidth.pdf</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/thesis/thesis.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/jslic.bib</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/writing/lic.pdf</loc>
+    <loc>http://svenssonjoel.github.io/thesis/thesis.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/writing/fhpc16-preprint.pdf</loc>
+    <loc>http://svenssonjoel.github.io/writing/lic.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/GPGPU_tech.pdf</loc>
   </url>
   <url>
+    <loc>http://svenssonjoel.github.io/writing/fhpc16-preprint.pdf</loc>
+  </url>
+  <url>
     <loc>http://svenssonjoel.github.io/writing/pldi16-crossmod.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/writing/multidev.pdf</loc>
+    <loc>http://svenssonjoel.github.io/writing/MetaAuto.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/writing/MetaAuto.pdf</loc>
+    <loc>http://svenssonjoel.github.io/writing/multidev.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/defuncEmb.pdf</loc>
@@ -454,13 +472,13 @@
     <loc>http://svenssonjoel.github.io/writing/csort.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/writing/almost_free.pdf</loc>
-  </url>
-  <url>
     <loc>http://svenssonjoel.github.io/writing/expressive.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/expressive.html</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/writing/almost_free.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/faspp2011_haskell_arbb.pdf</loc>
@@ -472,19 +490,13 @@
     <loc>http://svenssonjoel.github.io/writing/obsidian_ifl2008.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/writing/GPUFL.pdf</loc>
-  </url>
-  <url>
     <loc>http://svenssonjoel.github.io/csort.html</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/fossi_chalmers.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/pages-2021/cortex-m-assembler-1-hardfault/</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/</loc>
+    <loc>http://svenssonjoel.github.io/writing/GPUFL.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/pages/lispbm_compilation_1/</loc>
