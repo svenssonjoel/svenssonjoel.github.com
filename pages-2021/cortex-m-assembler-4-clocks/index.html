@@ -257,7 +257,8 @@
         orr r1, r1, r2          @ 5 wait states
         str r1, [r0]
 </code></pre>
-<p>Just like "the plan" stated we start out by tweaking the FLASH settings. The code above sets the bits 0 - 3 to the value 5 (5 wait states) and the bits 8, 9 and 10 are each set to one, this corresponds to the value <code>0x705</code> loaded into r2 above. The reference manual claims that the "reset value" of the FLASH_ACR register is 0 (that is, all zeroes) as I understand it. As this code is the first thing we do to FLASH_ACR I assume it to be zero and there is no need to clear any bits before <code>or</code>ing in the new values.</p>
+<p>Just like "the plan" stated we start out by tweaking the FLASH settings. The code above sets the bits 0 - 3 to the value 5 (5 wait states) and the bits 8, 9 and 10 are each set to one, this corresponds to the value <code>0x705</code> loaded into r2 above. Bits 8,9 and 10 enables instruction cache, data cache and prefetch.</p>
+<p>The reference manual claims that the "reset value" of the FLASH_ACR register is 0 (that is, all zeroes) as I understand it. As this code is the first thing we do to FLASH_ACR I assume it to be zero and there is no need to clear any bits before <code>or</code>ing in the new values.</p>
 <p>Next we load the address of RCC_CFGR into r0 and starts to build a value in r2 that we can or into that register.</p>
 <pre><code>        @ RCC_CFGR
         ldr r0, =RCC_CFGR 

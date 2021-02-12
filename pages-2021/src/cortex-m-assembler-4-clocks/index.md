@@ -237,7 +237,10 @@ reset_continue:
 Just like "the plan" stated we start out by tweaking the FLASH
 settings. The code above sets the bits 0 - 3 to the value 5 (5 wait
 states) and the bits 8, 9 and 10 are each set to one, this corresponds
-to the value `0x705` loaded into r2 above.  The reference manual
+to the value `0x705` loaded into r2 above. Bits 8,9 and 10 enables
+instruction cache, data cache and prefetch.
+
+The reference manual
 claims that the "reset value" of the FLASH_ACR register is 0 (that is,
 all zeroes) as I understand it. As this code is the first thing we do
 to FLASH_ACR I assume it to be zero and there is no need to clear any
