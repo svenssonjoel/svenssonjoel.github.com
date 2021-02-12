@@ -1,0 +1,622 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Assembler programming of ARM Cortex-M microcontrollers - Part 4 - Clock configuration</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Configuring the stm32f4 to run at 168MHz">
+  <meta name="keywords" content="STM32, STM32F4, buttons, gpio, LED, assembler, discovery, cortex, cortex-m, cortex-m4, loops, arrays, functions, baremetal, bare metal, bare-metal">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-4-clocks/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="assembler-programming-of-arm-cortex-m-microcontrollers---part-4---clock-configuration">Assembler programming of ARM Cortex-M microcontrollers - Part 4 - Clock configuration</h1>
+<p>When starting up the STM32F4-Discovery board (bare metal), it will not be configured to run at full potential. So in this post we will try to configure the MCU to run at 168MHz, which is what the STMF32F407 should be capable of. I noticed that the STM32F411 on the other hand maxes out at 100MHz, this is the MCU on my other discovery board. So, it is good to know if one has a STM32F407G-DISC1 or a STM32F411E-DISC0. I guess most of what we do here today will be in essence the same on all STM32F4 but the various speeds one can configure differ, so the details will be different on different boards.</p>
+<p>I think that knowing the speed of MCU may be an important thing going onwards. Say for example we want to talk to some external device and there is a timing aspect to that interface. To handle such things we need to be able to set up some ways to perform delays of a known duration or perhaps to measure time. Anyway! this post will just be about that attempt on configuring the clock, saving the rest for later.</p>
+<p>Now, a bit of a disclaimer, I am not an expert and you should not follow this as "THE WAY" to do things. This statement holds true for all my posts. I am just an enthusiast that experiments and shares my experiences in doing so.</p>
+<p>The "research" used as a base for the code produced in this post comes from A <strong>LOT</strong> of reading in the reference manual together with <strong>LOADS</strong> of googling. Clock configuration seems to be a concept surrounded by a mist of mystique and there is a lot of confusing information out there. It feels like there is a lot of "the blind leading the blind" going on and unfortunately this post is no different. So please if you are an expert in this and you see a way to improve the presentation, all you hints tips and feedback is much appreciated. If you are noob, like me, and trying this out on a board of your own, please share your experience as well. Together we learn more.</p>
+<h2 id="some-background-info">Some background info</h2>
+<p>Page 260 of the <a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf">reference manual</a> shows the clock tree of the STM32F4. This picture shows generated clocks pointing towards the right side of the picture and <em>more-of-like</em> "IO" functionality along the left edge. The middle is full of MUXes and logic. It is this middle area that we are going to be configuring.</p>
+<p>The code we will write is concerned mostly will the following concepts from the clock tree:</p>
+<ol>
+<li>HSE oscillator. You find this along the left edge of the clock tree picture and it has an OSC IN and an OSC OUT signal. This is the clock signal generated by an external oscillator on the board.</li>
+<li>HSI oscillator. Is a 16MHz clock integrated into the MCU. This is what clocks the system after a reset until the clock tree is reconfigured.</li>
+<li>PLL. The PLL or "phase locked loop", is a box also towards the left in the picture. The PLL is used to transform an input clock signal in different ways. For example, there is the multiplicative factor <code>N</code> and <code>P</code>, <code>Q</code> and <code>R</code> divisors. There is also a divisor on the input to the PLL, called <code>M</code>. The input to the PLL is either <code>HSI</code> or <code>HSE</code>.</li>
+<li>The MUX in the middle controlled by <code>SW</code></li>
+<li>The AHB and the APB1 and APB2 prescalers.</li>
+<li>SYSCLK. Right between the <code>SW</code>-MUX and the AHB prescaler there the note "SYSCLK".</li>
+</ol>
+<p>Non-essential, but very helpful for debugging, is to also look at the following concept.</p>
+<ol start="7">
+<li>MCO2 is connected to a MUX that can be used to select a clock signal. One of the signals that can be selected is SYSCLK. MCO2 is connected to GPIO PC9 and provides a way to measure the clock frequency of the system using an oscilloscope. The GPIO cannot really handle 168MHz though (and neither can my oscilloscope), so the MCO2 unit will also apply a division to the frequency before feeding it out. The photos below show the setup for measuring the MCO2 signal.</li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th>probed discovery board</th>
+<th>Oscilloscope showing MCO2 signal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img src="./media/probed_discovery.jpg" alt="Probed discovery board" /></td>
+<td><img src="./media/oscilloscope.jpg" alt="Oscilloscope" /></td>
+</tr>
+</tbody>
+</table>
+<p>So the goal here is to get the PLL to generate a 168MHz clock and to use the external crystal (HSE) as the input clock. A goal on the side is to also generate a 48Mhz clock (the PLL48CK in the clock tree picture as I understand it). This 48MHz clock is needed for USB for example. My understanding of those aspects is quite vague at the moment and we probably wont try to use USB anytime soon.</p>
+<p>Involved in configuring this clock setup are the registered listed below.</p>
+<ol>
+<li>RCC_CR: RCC clock control register is described on page 224 of the reference manual.</li>
+<li>RCC_CFGR: RCC clock configuration register is described on page 165.</li>
+<li>RCC_PLLCFGR: RCC PLL configuration register is described on page 226.</li>
+</ol>
+<p>We will also make use of registers:</p>
+<ol start="4">
+<li>FLASH_ACR: FLASH access control register. Need to tweak this to set a wait-states number. As we run the CPU faster an access to the flash will take more clock cycles.</li>
+<li>RCC_AHB1ENR: AHB1 peripheral control register. Use this to active GPIO C.</li>
+<li>GPIOC_AFRH: GPIOC alternate function high register. Used to configure alternate function of PC9.</li>
+</ol>
+<p>RCC_CR is used to turn HSE and PLL on and also to poll their state. RCC_CFGR holds configuration information related to the AHB, APB1 and APB2 prescalers as well MCO configuration and status and control signals for the MUX controlled by the <code>SW</code> signals. RCC_PLLCFGR is where you can set the multiplier and divisor ratios for the PLL as well as selecting the input source of the PLL. To make all these registers a bit easier to work with let's define some constants.</p>
+<h2 id="the-equ-directive-and-some-equates">The <code>.equ</code> directive and some equates</h2>
+<p>The <code>.equ</code> directive is used to define a name for a constant that you can later refer to in the assembler code. In earlier posts in this series we have seen code such as this:</p>
+<pre><code>        ldr r0, =0x40020000
+</code></pre>
+<p>with an <code>.equ</code> we can make code like that much more readable.</p>
+<pre><code>        .equ GPIOA_MODER, 0x40020000
+
+        ...
+
+        ldr r0, =GPIOA_MODER
+</code></pre>
+<p>The memory footpring and the cost of executing the two programs above are exactly the same. The benefit, however, is that the code is slightly more readable and somewhat self-documenting.</p>
+<p>So to start out the following <code>.equ</code> declarations can be used to set up nice names for all the registers we will access.</p>
+<pre><code>        @ Register addresses 
+        .equ FLASH_ACR,   0x40023c00      @ FLASH Access Control Register
+        .equ RCC_CR,      0x40023800      @ Clock Control Register
+        .equ RCC_CFGR,    0x40023808      @ Clock Configuration Register        
+        .equ RCC_PLLCFGR, 0x40023804      @ PLL Configuration Register
+
+        .equ RCC_AHB1ENR, 0x40023830      @ AHB1 Peripheral Clock Enable Register
+
+        .equ GPIOA_MODER, 0x40020000      @ PA Mode Register
+        .equ GPIOA_OUT,   0x40020014      @ PA Output Data Register
+        .equ GPIOC_MODER, 0x40020800      @ PC Mode Register
+        .equ GPIOC_AFRH,  0x40020824      @ GPIOC Alternate function register (high)
+</code></pre>
+<p>I also set up a bunch of <code>.equ</code>s for some bit positions and a bit mask that will be used.</p>
+<pre><code>        @ Bits and Masks 
+        .equ RCC_PLLCFGR_RESET_KEEP_MASK, 0xF0BC8000     @ Bits that should be kept at reset value 
+
+        .equ RCC_CR_PLL_ENABLE_BIT, 0x01000000     @ PLL enable bit
+        .equ RCC_CR_PLL_RDY_BIT,    0x02000000     @ PLL rdy bit
+
+        .equ RCC_CR_HSE_ON_BIT,     0x00010000     @ HSE_ON bit
+        .equ RCC_CR_HSE_RDY_BIT,    0x00020000     @ HSE_RDY flag
+
+        @ Constants
+        .equ DELAY_LOOP_ITERATIONS, 20000000
+</code></pre>
+<p>The reference manual states that in the RCC_PLLCFGR there are a bunch of "reserved" bits that should not be altered. The <code>RCC_PLLCFGR_RESET_KEEP_MASK</code> has a 1-bit on all of the locations of those "reserved" bits. This mask can be used to clear all the bits that we are allowed to change in the RCC_PLLCFGR register.</p>
+<p>Then there are some <code>.equ</code>s with a 1-bit at the location of an enable or ready bit in the RCC_CR register. These will be used to turn on HSE, PLL and to poll for their respective ready state.</p>
+<p>Lastly an <code>.equ</code> that defines a name for the otherwise magical number representing the number of cycles to spend in a delay loop.</p>
+<h2 id="the-plan">The plan</h2>
+<ol>
+<li>Configure the FLASH_ACR to introduce wait-states on the flash accesses.</li>
+<li>Configure the RCC_CFGR to output SYSCLK onto the MCO2 (so we can measure it using an oscilloscope).</li>
+<li>Set the AHB, APB1 and APB2 prescalars. My understanding is that what we set these to have no impact on the SYSCLK at all. So I have not looked very deeply into what it is they are for. It seems various peripherals may depend on these but we can look at that as they become interesting. For now I am going to set AHB prescaler to "do not divide", APB1 to divide by 4 and APB1 to divide by 2. These are number I have seen used when googling this topic.</li>
+<li>Turn on the HSE and wait for it to report it is RDY.</li>
+<li>Configure the PLL for 168MHz PLL and 48MHz PLL48CK and set the HSE as source.</li>
+<li>Enable PLL and wait for it to report it is RDY.</li>
+<li>Make PLL source for the SYSCLK and wait for that setting to take effect.</li>
+</ol>
+<p>Step 5, to configure the PLL for 168MHz and PLL48CK for 48MHz is done by setting values N, M, Q and P. M divides the input clock signal and the reference manual states that the input the PLL should be 1 - 2MHz. The external crystal on the discovery board is 8MHz, so to get 1MHz we should divide by 8. So let's do M = 8. The next interesting bit is that P divides the output from the PLL and this P value can only be set to 2,4,6 or 8. That is, there is no option to not divide the output. This means that the N value must be set to 336 to get a 168MHz clock out of the PLL with input div M = 8. So this sets up the PLL clock signal frequency as (8 / 8) * 336 / 2 = 168MHz. The PLL48CK clock, now, has to be derived from that 336MHz, this can be done by a division by 7 so PLLQ will be set to 7.</p>
+<p>Another way to set the up the PLL would be like this, (8 / 4) * 168 / 2 = 168MHz but then there would be no way to obtain the PLL48CK clock since 168 / 48 = 3.5. The reference manual states that it would be better to have an input frequency of 2MHz to the PLL, but with that input clock it is not possible to run the SYSCLK at 168MHz and the PLL48CK at 48MHz.</p>
+<p>Now I think we should jump in the code!</p>
+<h2 id="the-code">The CODE</h2>
+<p>As usual a lot of the code is similar to the code written in the previous post in the series. So let's jump directly to the point where the new stuff happens. Also, the complete source code will be given in full further down. Assume that we have all the <code>.equ</code>s from the previous section.</p>
+<p>The clock configuration code is run in the reset_handler right after a label called <code>reset_continue</code>.</p>
+<pre><code>reset_continue: 
+        @ Try some clock stuff
+
+        ldr r0, =FLASH_ACR     
+        ldr r1, [r0]            @ should be zeroes after reset
+        ldr r2, =0x705
+        orr r1, r1, r2          @ 5 wait states
+        str r1, [r0]
+</code></pre>
+<p>Just like "the plan" stated we start out by tweaking the FLASH settings. The code above sets the bits 0 - 3 to the value 5 (5 wait states) and the bits 8, 9 and 10 are each set to one, this corresponds to the value <code>0x705</code> loaded into r2 above. The reference manual claims that the "reset value" of the FLASH_ACR register is 0 (that is, all zeroes) as I understand it. As this code is the first thing we do to FLASH_ACR I assume it to be zero and there is no need to clear any bits before <code>or</code>ing in the new values.</p>
+<p>Next we load the address of RCC_CFGR into r0 and starts to build a value in r2 that we can or into that register.</p>
+<pre><code>        @ RCC_CFGR
+        ldr r0, =RCC_CFGR 
+        mov r1, 0
+
+    @ Output sysclk onto PC9 (MCO2) for debugging
+        mov r2, 0x7             @ Divide by 5 
+        lsl r2, r2, 27          @ MCO2
+        orr r1, r1, r2
+</code></pre>
+<p>The first part sets the MCO2 settings to output SYSCLK / 5. The shift left by 27 bits comes from the reference manual and points out where the bits of the RCC_CFGR that correspond to MCO2 are.</p>
+<pre><code>        mov r2, 0x5             @ PPRE1 (DIV 4)
+        lsl r2, 10
+        orr r1, r1, r2
+
+        mov r2, 0x4             @ PPRE0 (DIV 2)
+        lsl r2, 13
+        orr r1, r1, r2
+
+        str r1, [r0]
+</code></pre>
+<p>Then PPRE0 and PPRE1 configuration values are set. These are those prescalers related to APB1 and APB2 we talked about earlier.</p>
+<p>The AHB prescaler will be set to 0x0, that is we wont put any value at all into RCC_CFGR related to that and thus there is no code above to deal with that aspect.</p>
+<p>The <code>str r1, [r0]</code> instruction writes the settings we have created in r1 back into the RCC_CFGR register.</p>
+<p>By now we have performed also step 2 and 3 of "the plan".</p>
+<p>Next in line is to turn on the HSE and this is done by writing a bit into the RCC_CR register.</p>
+<p>After writing the HSE_ON bit we should wait until a HSE_RDY flag turns on.</p>
+<pre><code>        @ RCC_CR ** TURN on HSE 
+        ldr r0, =RCC_CR
+        ldr r1, [r0]
+        
+        ldr r2, =RCC_CR_HSE_ON_BIT
+        orr r1, r1, r2
+        str r1, [r0]
+
+        @ Wait for HSE_RDY to be set 
+        ldr r2, =RCC_CR_HSE_RDY_BIT
+wait_hse_rdy:
+        ldr r1, [r0]            @ poll RCC_RC
+        and r1, r1, r2
+        cmp r1, r2              
+        bne wait_hse_rdy        @ loop if not rdy
+</code></pre>
+<p>The code above loads the contents of RCC_CR into r1 and then turns HSE on (sets a bit) and then writes r1 back to RCC_CR. Then a loop executes that poll the HSE_RDY bit in every iteration until it is set.</p>
+<p>That concludes step 4.</p>
+<p>So now it is time for step 5 where we actually set up for our 168MHz clock! This step starts out by loading RCC_PLLCFGR into r1 and then clears all bits that are not in the RESET_KEEP_MASK that we defined in the <code>.equ</code> section.</p>
+<pre><code>        @ PLLCFGR 
+        ldr r0, =RCC_PLLCFGR
+        ldr r1, [r0]
+
+        ldr r2, =RCC_PLLCFGR_RESET_KEEP_MASK
+        and r1, r1, r2          @ Clear everything else
+        
+        mov r2, 336             @ multiplication factor
+        lsl r2, r2, 6           @ PLLN 
+        orr r1, r1, r2
+        
+        mov r2, 8               @ division on input (PLLM)
+        orr r1, r1, r2          
+
+        mov r2, 7               @ Division factor usb 
+        lsl r2, r2, 24          @ PLLQ
+        orr r1, r1, r2
+        
+        mov r2, 1
+        lsl r2, r2, 22          @ HSE source for pll
+        orr r1, r1, r2
+
+        str r1, [r0]
+</code></pre>
+<p>The code above set the N, M, Q and P factors as derived in "the plan" section. The P factor is going to be set to 0, so there is no code for that explicitly here. Those P bits are already cleared as a result of the initial clearing of all non-keep bits. The shift values used (<code>lsl</code> instructions) can all be found in the reference manual.</p>
+<p>In the code above the HSE is also set as the source for the PLL, just before storing the new configuration back into the RCC_PLLCFGR register.</p>
+<p>That is the end of step 5.</p>
+<p>The next step should enable the PLL in a process very similar to how we started the HSE.</p>
+<pre><code>        ldr r0, =RCC_CR
+        ldr r1, [r0]
+
+        ldr r2, =RCC_CR_PLL_ENABLE_BIT
+        orr r1, r1, r2
+        str r1, [r0]
+
+        @ Wait for PLL_RDY flag to be set
+        ldr r2, =RCC_CR_PLL_RDY_BIT
+wait_pll_rdy:
+        ldr r1, [r0]
+        and r1, r1, r2
+        cmp r1, r2
+        bne wait_pll_rdy
+</code></pre>
+<p>The code above loads the RCC_CR into r1 and then sets the bit that enables the PLL. After setting the enable pin we go into loop that polls the PLL_RDY bit.</p>
+<p>That finishes off step 6.</p>
+<p>Last step. In RCC_CFGR there are two bits that sets what to use the source of the SYSCLK. This is that very central MUX of the clock tree, the one with the <code>SW</code> control input. After setting a value on the <code>SW</code> control we should wait until that pattern is duplicated on another pair of pins and that is what the code below should be doing.</p>
+<pre><code>        @ Set PLL as source for sysclk  
+        ldr r0, =RCC_CFGR
+        ldr r1, [r0]
+        orr r1, r1, 0x2         @ PLL as source for SYSCLK
+        str r1, [r0]
+
+        @ Wait for sw flags to indicate PLL is used for SYSCLK
+wait_use_pll:
+        ldr r1, [r0]
+        and r1, r1, 0xC         @ System clock switch status bits
+        cmp r1, 0x8             @ Is PLL used as SYSCLK?
+        bne wait_use_pll
+</code></pre>
+<p>Phew! Very obscure but there it is. At least my understanding of "it", is there.</p>
+<p>Below you can find the complete assembly code listing:</p>
+<pre><code>        .syntax unified
+        .cpu cortex-m4
+        .thumb
+        
+        .global vtable
+        .global reset_handler
+
+        .section .text
+
+        @ Register addresses 
+        .equ FLASH_ACR,   0x40023c00      @ FLASH Access Control Register
+        .equ RCC_CR,      0x40023800      @ Clock Control Register
+        .equ RCC_CFGR,    0x40023808      @ Clock Configuration Register        
+        .equ RCC_PLLCFGR, 0x40023804      @ PLL Configuration Register
+
+        .equ RCC_AHB1ENR, 0x40023830      @ AHB1 Peripheral Clock Enable Register
+
+        .equ GPIOA_MODER, 0x40020000      @ PA Mode Register
+        .equ GPIOA_OUT,   0x40020014      @ PA Output Data Register
+        .equ GPIOC_MODER, 0x40020800      @ PC Mode Register
+        .equ GPIOC_AFRH,  0x40020824      @ GPIOC Alternate function register (high)
+
+        @ Bits and Masks 
+        .equ RCC_PLLCFGR_RESET_KEEP_MASK, 0xF0BC8000     @ Bits that should be kept at reset value 
+
+        .equ RCC_CR_PLL_ENABLE_BIT, 0x01000000     @ PLL enable bit
+        .equ RCC_CR_PLL_RDY_BIT,    0x02000000     @ PLL rdy bit
+
+        .equ RCC_CR_HSE_ON_BIT,     0x00010000     @ HSE_ON bit
+        .equ RCC_CR_HSE_RDY_BIT,    0x00020000     @ HSE_RDY flag
+
+        @ Constants
+        .equ DELAY_LOOP_ITERATIONS, 20000000
+    
+        
+vtable:
+        .word _estack
+        .word reset_handler
+        .word 0
+        .word hard_fault_handler
+
+
+        .thumb_func
+delay:
+        ldr r0,=DELAY_LOOP_ITERATIONS
+delay_loop:     
+        cmp r0, 0
+        beq delay_done
+        sub r0,r0, 1
+        b delay_loop
+delay_done:     
+        bx lr
+        
+        .thumb_func     
+hard_fault_handler:
+        b hard_fault_handler
+
+        .thumb_func     
+reset_handler:
+        ldr r0, =_estack
+        mov sp, r0
+                
+        ldr r0, =_dstart        @ Address to copy to
+        ldr r1, =_dend
+
+        sub r2,r1,r0
+        cmp r2, 0
+        beq reset_continue 
+
+        ldr r1, =_flash_dstart  @ Address to copy from
+        
+cpy_loop:
+        ldrb r3, [r1]
+        strb r3, [r0] 
+
+        add r1, r1, 1
+        add r0, r0, 1
+        
+        sub r2, r2, 1
+        cmp r2, 0
+        bne cpy_loop
+
+
+reset_continue: 
+        @ Try some clock stuff
+
+        ldr r0, =FLASH_ACR     
+        ldr r1, [r0]            @ should be zeroes after reset
+        ldr r2, =0x105
+        orr r1, r1, r2          @ 5 wait states
+        str r1, [r0]
+
+        @ RCC_CFGR
+        ldr r0, =RCC_CFGR 
+        mov r1, 0
+
+    @ Output sysclk onto PC9 (MCO2) for debugging
+        mov r2, 0x7             @ Divide by 5 
+        lsl r2, r2, 27          @ MCO2
+        orr r1, r1, r2         
+
+        mov r2, 0x5             @ PPRE1 (DIV 4)
+        lsl r2, 10
+        orr r1, r1, r2
+
+        mov r2, 0x4             @ PPRE0 (DIV 2)
+        lsl r2, 13
+        orr r1, r1, r2
+
+        str r1, [r0]            
+        
+        @ RCC_CR ** TURN on HSE 
+        ldr r0, =RCC_CR
+        ldr r1, [r0]
+        
+        ldr r2, =RCC_CR_HSE_ON_BIT
+        orr r1, r1, r2
+        str r1, [r0]
+
+        @ Wait for HSE_RDY to be set 
+        ldr r2, =RCC_CR_HSE_RDY_BIT
+wait_hse_rdy:
+        ldr r1, [r0]            @ poll RCC_RC
+        and r1, r1, r2
+        cmp r1, r2              
+        bne wait_hse_rdy        @ loop if not rdy
+
+
+        @ PLLCFGR 
+        ldr r0, =RCC_PLLCFGR
+        ldr r1, [r0]
+
+        ldr r2, =RCC_PLLCFGR_RESET_KEEP_MASK
+        and r1, r1, r2          @ Clear everything else
+        
+        mov r2, 336             @ multiplication factor
+        lsl r2, r2, 6           @ PLLN 
+        orr r1, r1, r2
+        
+        mov r2, 8               @ division on input (PLLM)
+        orr r1, r1, r2          
+
+        mov r2, 7               @ Division factor usb 
+        lsl r2, r2, 24          @ PLLQ
+        orr r1, r1, r2
+
+        @ PLLP  (set to 00 gives div by 2)
+        @ldr r2, =0xFFFCFFFF
+        @and r1, r1, r2
+        
+        mov r2, 1
+        lsl r2, r2, 22          @ HSE source for pll
+        orr r1, r1, r2
+
+        str r1, [r0]                    
+
+        ldr r0, =RCC_CR
+        ldr r1, [r0]
+
+        ldr r2, =RCC_CR_PLL_ENABLE_BIT
+        orr r1, r1, r2
+        str r1, [r0]
+
+        @ Wait for PLL_RDY flag to be set
+        ldr r2, =RCC_CR_PLL_RDY_BIT
+wait_pll_rdy:
+        ldr r1, [r0]
+        and r1, r1, r2
+        cmp r1, r2
+        bne wait_pll_rdy
+
+        @ Set PLL as source for sysclk  
+        ldr r0, =RCC_CFGR
+        ldr r1, [r0]
+        orr r1, r1, 0x2         @ PLL as source for SYSCLK
+        str r1, [r0]
+
+        @ Wait for sw flags to indicate PLL is used for SYSCLK
+wait_use_pll:
+        ldr r1, [r0]
+        and r1, r1, 0xC         @ System clock switch status bits
+        cmp r1, 0x8             @ Is PLL used as SYSCLK?
+        bne wait_use_pll
+                
+
+main:
+        ldr r1, =RCC_AHB1ENR
+        ldr r0, [r1]
+        orr r0, 0x1             @ Turn on GPIO A
+        orr r0, 0x4             @ Turn on GPIO C
+        str r0, [r1]            @ Make it happen
+
+        
+        ldr r0, =GPIOC_MODER    @ PC9 alternative function mode
+        ldr r1, [r0]
+        ldr r2, =0xFFF3FFFF
+        and r1, r1, r2
+        mov r2, 2
+        lsl r2, 18
+        orr r1, r1 ,r2
+        str r1, [r0]
+
+        ldr r0, =GPIOC_AFRH     @ PC9 alternative function 0
+        ldr r1, [r0]
+        ldr r2, =0xFFFFFFF0F
+        and r1, r1, r2
+        str r1, [r0]
+        
+        ldr r1, =GPIOA_MODER
+        ldr r0, [r1]            @ Value of PA MODER
+        ldr r2, =0xFFFFFF00
+        and r0, r0, r2
+        orr r0, r0, 0x55        @ PA0 - PA 3 output, 
+        str r0, [r1]            @ Write back PA MODER   
+                
+
+        ldr r3,=GPIOA_OUT
+        ldr r5,=0xFFFFFF00      @ Clear-mask for bits of interest
+
+        mov r1, 0xF
+        mov r2, 0x0
+forever:
+        bl delay                        
+        str r2, [r3]
+        bl delay                
+        str r1, [r3]
+        b forever
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>Fun stuff! I am pretty sure my MCU now runs at 168 MHz given that the oscilloscope output reads 33.6Mhz and 33.6 * 5 = 168. Remember that the MCO2 divisor was set to 5. Of course, the AHB, APB1 and APB2 are still a bit mysterious but once we need to understand that I am sure we can make it happen.</p>
+<p>Writing assembly is quite annoying, very error prone and very tedious. So, I hope to look at the following things soon so that we can build some abstractions.</p>
+<ol>
+<li>Macros</li>
+<li>Functions that nest</li>
+<li>Function call conventions</li>
+</ol>
+<p>Now that we know how fast our MCU is going it would also be nice to try to come up with some more clever ways of doing delays. Would also be fun to see if we can set up a regularly occurring interrupt and fire off some interesting code every N time units.</p>
+<p>Thanks a lot for reading. I hope you are well and have a good day. As usual I would love to hear feedback, hints, tips, your experience... yeah anything. Be well!</p>
+<h2 id="additional-resources">Additional resources</h2>
+<ol>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf">STM32F405/415 (407/417) (427/437) (429/439) reference manual</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/9b/53/39/1c/f7/01/4a/79/DM00119316.pdf/files/DM00119316.pdf/jcr:content/translations/en.DM00119316.pdf">STM32F412xG/E reference manual</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/ef/92/76/6d/bb/c2/4f/f7/DM00037051.pdf/files/DM00037051.pdf/jcr:content/translations/en.DM00037051.pdf">STM32F405xx STM32F407xx datasheet</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/b3/a5/46/3b/b4/e5/4c/85/DM00115249.pdf/files/DM00115249.pdf/jcr:content/translations/en.DM00115249.pdf">STM32F411xC STM32F411xE</a></li>
+<li><a href="https://www.st.com/content/ccc/resource/technical/document/programming_manual/6c/3a/cb/e7/e4/ea/44/9b/DM00046982.pdf/files/DM00046982.pdf/jcr:content/translations/en.DM00046982.pdf">STM32 Cortex®-M4 MCUs and MPUs programming manual</a></li>
+<li><a href="https://vivonomicon.com/2018/04/02/bare-metal-stm32-programming-part-1-hello-arm/">vivonomicon</a></li>
+</ol>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2021 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
+
