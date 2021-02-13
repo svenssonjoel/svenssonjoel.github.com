@@ -146,7 +146,7 @@
 <p>When starting up the STM32F4-Discovery board (bare metal), it will not be configured to run at full potential. So in this post we will try to configure the MCU to run at 168MHz, which is what the STMF32F407 should be capable of. I noticed that the STM32F411 on the other hand maxes out at 100MHz, this is the MCU on my other discovery board. So, it is good to know if one has a STM32F407G-DISC1 or a STM32F411E-DISC0. I guess most of what we do here today will be in essence the same on all STM32F4 but the various speeds one can configure differ, so the details will be different on different boards.</p>
 <p>I think that knowing the speed of MCU may be an important thing going onwards. Say for example we want to talk to some external device and there is a timing aspect to that interface. To handle such things we need to be able to set up some ways to perform delays of a known duration or perhaps to measure time. Anyway! this post will just be about that attempt on configuring the clock, saving the rest for later.</p>
 <p>Now, a bit of a disclaimer, I am not an expert and you should not follow this as "THE WAY" to do things. This statement holds true for all my posts. I am just an enthusiast that experiments and shares my experiences in doing so.</p>
-<p>The "research" used as a base for the code produced in this post comes from A <strong>LOT</strong> of reading in the reference manual together with <strong>LOADS</strong> of googling. Clock configuration seems to be a concept surrounded by a mist of mystique and there is a lot of confusing information out there. It feels like there is a lot of "the blind leading the blind" going on and unfortunately this post is no different. So please if you are an expert in this and you see a way to improve the presentation, all you hints tips and feedback is much appreciated. If you are noob, like me, and trying this out on a board of your own, please share your experience as well. Together we learn more.</p>
+<p>The "research" used as a base for the code produced in this post comes from A <strong>LOT</strong> of reading in the reference manual together with <strong>LOADS</strong> of googling. Clock configuration seems to be a concept surrounded by a mist of mystique and there is a lot of confusing information out there. It feels like there is a lot of "the blind leading the blind" going on and unfortunately this post is no different. So please if you are an expert in this and you see a way to improve the presentation, all your hints tips and feedback will be much appreciated. If you are noob, like me, and trying this out on a board of your own, please share your experience as well. Together we learn more.</p>
 <h2 id="some-background-info">Some background info</h2>
 <p>Page 260 of the <a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf">reference manual</a> shows the clock tree of the STM32F4. This picture shows generated clocks pointing towards the right side of the picture and <em>more-of-like</em> "IO" functionality along the left edge. The middle is full of MUXes and logic. It is this middle area that we are going to be configuring.</p>
 <p>The code we will write is concerned mostly will the following concepts from the clock tree:</p>
@@ -165,7 +165,7 @@
 <table>
 <thead>
 <tr class="header">
-<th>probed discovery board</th>
+<th>Probed discovery board</th>
 <th>Oscilloscope showing MCO2 signal</th>
 </tr>
 </thead>
@@ -201,8 +201,8 @@
 
         ldr r0, =GPIOA_MODER
 </code></pre>
-<p>The memory footpring and the cost of executing the two programs above are exactly the same. The benefit, however, is that the code is slightly more readable and somewhat self-documenting.</p>
-<p>So to start out the following <code>.equ</code> declarations can be used to set up nice names for all the registers we will access.</p>
+<p>The memory footprint and the cost of executing the two programs above are exactly the same. The benefit, however, is that the code is slightly more readable and somewhat self-documenting.</p>
+<p>So to start out, the following <code>.equ</code> declarations can be used to set up nice names for all the registers we will access.</p>
 <pre><code>        @ Register addresses 
         .equ FLASH_ACR,   0x40023c00      @ FLASH Access Control Register
         .equ RCC_CR,      0x40023800      @ Clock Control Register
@@ -231,7 +231,7 @@
 </code></pre>
 <p>The reference manual states that in the RCC_PLLCFGR there are a bunch of "reserved" bits that should not be altered. The <code>RCC_PLLCFGR_RESET_KEEP_MASK</code> has a 1-bit on all of the locations of those "reserved" bits. This mask can be used to clear all the bits that we are allowed to change in the RCC_PLLCFGR register.</p>
 <p>Then there are some <code>.equ</code>s with a 1-bit at the location of an enable or ready bit in the RCC_CR register. These will be used to turn on HSE, PLL and to poll for their respective ready state.</p>
-<p>Lastly an <code>.equ</code> that defines a name for the otherwise magical number representing the number of cycles to spend in a delay loop.</p>
+<p>Lastly an <code>.equ</code> that defines a name for the otherwise magical number representing the number of cycles to spend in a delay loop. The delay loop is only used in the code to blink a set of LEDs, it is not essential to the clock configuration.</p>
 <h2 id="the-plan">The plan</h2>
 <ol>
 <li>Configure the FLASH_ACR to introduce wait-states on the flash accesses.</li>
@@ -365,6 +365,30 @@ wait_use_pll:
         bne wait_use_pll
 </code></pre>
 <p>Phew! Very obscure but there it is. At least my understanding of "it", is there.</p>
+<p>Lastly, we should also configure PC 9 to use alternative function 0. This is done by first enabling GPIO C in the RCC_AHB1ENR register then setting up the GPIOC_MODER register so that PC9 is set to use alternatice function. Following that one should make sure that the GPIOC_AFRH is set so that PC9 is configured for alternative function 0. The alternative function is described using 4 bits, this is why there is a LOW and a HIGH alternative function register, just because a single 32bit register cannot hold 4 configuration bits for all 16 of GPIOC pins.</p>
+<pre><code>main:
+        ldr r1, =RCC_AHB1ENR
+        ldr r0, [r1]
+        orr r0, 0x1             @ Turn on GPIO A
+        orr r0, 0x4             @ Turn on GPIO C
+        str r0, [r1]            @ Make it happen
+        
+        ldr r0, =GPIOC_MODER    @ PC9 alternative function mode
+        ldr r1, [r0]
+        ldr r2, =0xFFF3FFFF
+        and r1, r1, r2
+        mov r2, 2
+        lsl r2, 18
+        orr r1, r1 ,r2
+        str r1, [r0]
+
+        ldr r0, =GPIOC_AFRH     @ PC9 alternative function 0
+        ldr r1, [r0]
+        ldr r2, =0xFFFFFFF0F
+        and r1, r1, r2
+        str r1, [r0]
+</code></pre>
+<p>I placed this configuration of GPIOC following the "main" label.</p>
 <p>Below you can find the complete assembly code listing:</p>
 <pre><code>        .syntax unified
         .cpu cortex-m4
@@ -603,6 +627,7 @@ forever:
 <li>Function call conventions</li>
 </ol>
 <p>Now that we know how fast our MCU is going it would also be nice to try to come up with some more clever ways of doing delays. Would also be fun to see if we can set up a regularly occurring interrupt and fire off some interesting code every N time units.</p>
+<p>The code is available at <a href="https://github.com/svenssonjoel/Learning-ARM-Cortex-M-Assembly">GitHub</a>.</p>
 <p>Thanks a lot for reading. I hope you are well and have a good day. As usual I would love to hear feedback, hints, tips, your experience... yeah anything. Be well!</p>
 <h2 id="additional-resources">Additional resources</h2>
 <ol>

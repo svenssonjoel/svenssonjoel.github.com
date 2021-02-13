@@ -33,7 +33,7 @@ surrounded by a mist of mystique and there is a lot of confusing
 information out there.  It feels like there is a lot of "the blind
 leading the blind" going on and unfortunately this post is no
 different. So please if you are an expert in this and you see a way to
-improve the presentation, all you hints tips and feedback is much
+improve the presentation, all your hints tips and feedback will be much
 appreciated. If you are noob, like me, and trying this out on a board
 of your own, please share your experience as well. Together we learn
 more.
@@ -78,15 +78,16 @@ handle 168MHz though (and neither can my oscilloscope), so the MCO2
 unit will also apply a division to the frequency before feeding it
 out. The photos below show the setup for measuring the MCO2 signal.
 
-| probed discovery board | Oscilloscope showing MCO2 signal | 
+| Probed discovery board | Oscilloscope showing MCO2 signal | 
 | ---- | ---- |
 | ![Probed discovery board](./media/probed_discovery.jpg) | ![Oscilloscope](./media/oscilloscope.jpg) |
 
 So the goal here is to get the PLL to generate a 168MHz clock and to
-use the external crystal (HSE) as the input clock. A goal on the side is to
-also generate a 48Mhz clock (the PLL48CK in the clock tree picture as I understand it).
-This 48MHz clock is needed for USB for example. My understanding of those aspects is
-quite vague at the moment and we probably wont try to use USB anytime soon.
+use the external crystal (HSE) as the input clock. A goal on the side
+is to also generate a 48Mhz clock (the PLL48CK in the clock tree
+picture as I understand it).  This 48MHz clock is needed for USB for
+example. My understanding of those aspects is quite vague at the
+moment and we probably wont try to use USB anytime soon.
 
 Involved in configuring this clock setup are the registered listed below.
 
@@ -110,9 +111,9 @@ registers a bit easier to work with let's define some constants.
 
 ## The `.equ` directive and some equates
 
-The `.equ` directive is used to define a name for a constant that you can later refer
-to in the assembler code. In earlier posts in this series we have seen code
-such as this: 
+The `.equ` directive is used to define a name for a constant that you
+can later refer to in the assembler code. In earlier posts in this
+series we have seen code such as this:
 
 ```
         ldr r0, =0x40020000
@@ -128,12 +129,12 @@ with an `.equ` we can make code like that much more readable.
         ldr r0, =GPIOA_MODER
 ```
 
-The memory footpring and the cost of executing the two programs above
+The memory footprint and the cost of executing the two programs above
 are exactly the same. The benefit, however, is that the code is slightly
 more readable and somewhat self-documenting. 
 
 
-So to start out the following `.equ` declarations can be used to set up nice
+So to start out, the following `.equ` declarations can be used to set up nice
 names for all the registers we will access. 
 
 ```
@@ -177,7 +178,8 @@ the RCC_CR register. These will be used to turn on HSE, PLL and to poll for thei
 ready state.
 
 Lastly an `.equ` that defines a name for the otherwise magical number representing the number
-of cycles to spend in a delay loop. 
+of cycles to spend in a delay loop. The delay loop is only used in the code
+to  blink a set of LEDs, it is not essential to the clock configuration.
 
 ## The plan
 
@@ -400,6 +402,43 @@ wait_use_pll:
 ``` 
 
 Phew! Very obscure but there it is. At least my understanding of "it", is there. 
+
+Lastly, we should also configure PC 9 to use alternative function
+0. This is done by first enabling GPIO C in the RCC_AHB1ENR register
+then setting up the GPIOC_MODER register so that PC9 is set to use
+alternatice function.  Following that one should make sure that the
+GPIOC_AFRH is set so that PC9 is configured for alternative function
+0. The alternative function is described using 4 bits, this is why
+there is a LOW and a HIGH alternative function register, just because
+a single 32bit register cannot hold 4 configuration bits for all 16 of
+GPIOC pins.
+
+```
+main:
+        ldr r1, =RCC_AHB1ENR
+        ldr r0, [r1]
+        orr r0, 0x1             @ Turn on GPIO A
+        orr r0, 0x4             @ Turn on GPIO C
+        str r0, [r1]            @ Make it happen
+        
+        ldr r0, =GPIOC_MODER    @ PC9 alternative function mode
+        ldr r1, [r0]
+        ldr r2, =0xFFF3FFFF
+        and r1, r1, r2
+        mov r2, 2
+        lsl r2, 18
+        orr r1, r1 ,r2
+        str r1, [r0]
+
+        ldr r0, =GPIOC_AFRH     @ PC9 alternative function 0
+        ldr r1, [r0]
+        ldr r2, =0xFFFFFFF0F
+        and r1, r1, r2
+        str r1, [r0]
+```
+
+I placed this configuration of GPIOC following the "main" label. 
+
 
 Below you can find the complete assembly code listing: 
 
@@ -652,6 +691,8 @@ look at the following things soon so that we can build some abstractions.
 Now that we know how fast our MCU is going it would also be nice to try to come up with some
 more clever ways of doing delays. Would also be fun to see if we can set up a regularly occurring
 interrupt and fire off some interesting code every N time units.
+
+The code is available at [GitHub](https://github.com/svenssonjoel/Learning-ARM-Cortex-M-Assembly).
 
 Thanks a lot for reading. I hope you are well and have a good day. As usual I would love
 to hear feedback, hints, tips, your experience... yeah anything. Be well! 
