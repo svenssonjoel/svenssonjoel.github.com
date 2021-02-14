@@ -1,0 +1,341 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Experimentation with Lava</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Experimentation with Chalmers Lava 2000">
+  <meta name="keywords" content="Hardware description, HDL, VHDL, LAVA, Haskell">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages-2021/haskell-lava-0/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="experimentation-with-lava">Experimentation with Lava</h1>
+<p>Lava is an embedded domain specific language for hardware description implemented in Haskell. Playing with an FPGA is a lot of fun and I have been doing that for a while now using VHDL. So, the plan here is to experiment a bit with Lava and try to (in time) get to the point where we can run some Lava-generated hardware on an FPGA.</p>
+<p>The FPGA candidates will the the Artix-7 on the Nexys A7 board as well as the Zynq 7000 platform.</p>
+<p>Now! There are lots of Lavas. I found 4 of them on <a href="https://hackage.haskell.org/">Hackage</a>.</p>
+<ol>
+<li><a href="https://hackage.haskell.org/package/york-lava-0.2/docs/Lava.html">York Lava</a></li>
+<li><a href="https://hackage.haskell.org/package/chalmers-lava2000">Chalmers Lava 2000</a></li>
+<li><a href="https://hackage.haskell.org/package/xilinx-lava">Xilinx Lava</a></li>
+<li><a href="https://hackage.haskell.org/package/kansas-lava">Kansas Lava</a></li>
+</ol>
+<p>I want to peek at all of these over the course of this experimentation but the one that is closest to my heart is the Chalmers Lava. This Lava I have used briefly before when taking a hardware description course at Chalmers (and used again later when being teaching assistant in that same course).</p>
+<p>My feeling is that Chalmers-Lava-2000 is not immediately useable as a VHDL generator for the current state of tools for the FPGAs I have access to (Vivado and such). Also my feeling is that it will be important to try to, somehow, use components not described in Lava such as a block ram on the FPGA or an AXI interface. So some modifications will be needed and that is what this text is about. Well about some first steps in that general direction at least.</p>
+<p>I expect modifying the existing Lava-2000 will take quite a while and that seeing to fruits of this labor (something running on an FPGA) is quite distant. My Haskell is also quite rusty as I have not been using that language very much for quite a while! So (as usual with my posts) I would love hints, tips and feedback if someone with good Haskell happens to read.</p>
+<p>Chalmers-Lava-2000 comes with all this very cool interfacing to various systems for proving properties of circuits. It would be nice to leave that functionality as intact as possible. Not sure how that will work out though. I don't feel like the right person to integrate new functionality with these provers.</p>
+<p>My Lava experimentation can be found at <a href="https://github.com/svenssonjoel/lava-experimentation">Github</a>.</p>
+<h2 id="the-heart-of-chalmers-lava-2000">The heart of Chalmers-Lava-2000</h2>
+<p>Very central to the Lava EDSL is a tree type called <code>S</code> with a parameter <code>s</code>.</p>
+<pre><code>data S s
+  = Bool      Bool
+  | Inv       s
+  | And       [s]
+  | Or        [s]
+  | Xor       [s]
+  | VarBool   String
+  | DelayBool s s
+  
+  | Int      Int
+  | Neg      s
+  | Div      s s
+  | Mod      s s
+  | Plus     [s]
+  | Times    [s]
+  | Gte      s s
+  | Equal    [s]
+  | If       s s s
+  | VarInt   String
+  | DelayInt s s
+</code></pre>
+<p>The Lava implementation uses the <code>unsafePerfomIO</code> and <code>Ref</code> approach for discovery of sharing in the tree. This is why this <code>s</code> parameter is needed and the data type declaration becomes rather obscure. Anyway, I am not going to try to change that at all.</p>
+<p>The symbol type introduces the reference. A symbol is a reference to an object of type <code>S Symbol</code>.</p>
+<pre><code>newtype Symbol
+  = Symbol (Ref (S Symbol))
+</code></pre>
+<p>So that is how the tree is described in a bit of a roundabout way.</p>
+<p>The type the Lava programmer very often sees is called <code>Signal</code> and it represents either a boolean or a integer "wire" in the circuit.</p>
+<pre><code>newtype Signal a
+  = Signal Symbol
+</code></pre>
+<p>The <code>a</code> parameter to <code>Signal</code> is a so-called phantom type (a phantom as there is no value with type <code>a</code> associated with the <code>signal</code> type). It is expected that a True/False signal will be a <code>Signal Bool</code> but it is entirely up to the library implementation to enforce that property.</p>
+<h2 id="attempting-to-modify-the-s-type-some">Attempting to modify the <code>S</code> type some</h2>
+<p>From the <code>S</code> type we can see that all Lava hardware will be constructed using boolean constants, <code>Inv</code> (inversion of a signal), <code>And</code>, <code>Or</code>, <code>Xor</code>, variables and Delay elements (and similarly for integer signals). But there is no "foreign operation" constructor that we could use to build a BRAM or whatever we may want that would be inefficient to describe in logic primitives. This may be because the FPGA provides special built in functional units to perform that operation we are interested in or that it is just to complicated and we want to use some existing library, macro or code generating tool to build those for us.</p>
+<p>So, something we want to add is a "component" constructor that represents <code>N</code>-inputs <code>M</code>-outputs blocks whose implementation is specified elsewhere.</p>
+<p>It feels like when one adds components like those mentioned, the signal count may also run quite large! To deal with that we want some kind of vector-of-signals abstraction. I guess one could really use lists of lists of signals to represent the interfaces to components but the problem with using Haskell lists for this is that as the embedded program is evaluated we loose that structural information and I think that we would want to carry some kind of grouping of signals information with us all the way to the VHDL generation step.</p>
+<p>A side effect of adding a signal-grouping primitive is that having <code>Int</code> signals become a bit redundant. So the constructors in <code>S</code> that are related to integer signals will be removed.</p>
+<p>The modified <code>S</code> datatype starts out similarly to the old one.</p>
+<pre><code>data S s
+  = Bool      Bool
+  | Inv       s
+  | And       [s]
+  | Or        [s]
+  | Xor       [s]
+  | VarBool   String
+  | DelayBool s s
+
+  | If       s s s
+</code></pre>
+<p>But then we add an attempt at a component abstraction.</p>
+<pre><code>  | Component
+    String           -- name
+    [s]              -- inputs
+</code></pre>
+<p>Currently the component is just a <code>String</code> that represents some kind of an implementation of the desired functionality. This implementation will be looked up later while doing VHDL generation. There is also a list of inputs. The list of inputs may need to be expended upon a bit, I'll get back to that.</p>
+<p>Now, a component is just one <code>S</code> node, traditionally meaning it is a one output thing. Some way around this is needed as we want a component to be able to have multiple outputs. I am a bit unsure if the attempt of that that is implemented below will work out.</p>
+<pre><code>  | ComponentOutput
+    CompOut          -- A specific output bit
+    s                -- Component producing output
+</code></pre>
+<p>The idea is that the constructor above represents a specific output of a component. <code>CompOut</code> is a structure that identifies a specific output bit. I will get back to this as well after introducing Vectors.</p>
+<p>A vector is a grouping of some signals and represented in the tree as.</p>
+<pre><code>  | Vec -- A vector of signals
+    Int -- Number of elements
+    [s] -- Values
+</code></pre>
+<p>With this constructor you can grab any set of signals you have access to and bunch them together in one node of the tree. To access a specific signal from that vector there is another constructor.</p>
+<pre><code>  | VecIndex Int s 
+</code></pre>
+<p>With these two vector related constructors we can implement functions for packing and unpacking signals into a vector.</p>
+<pre><code>packVec :: Elt a =&gt; [a] -&gt; Vector a
+unpackVec :: Elt a =&gt; Vector a -&gt; [a]
+</code></pre>
+<p><code>packVec</code> creates a <code>Vec</code> node and <code>unpackVec</code> creates a list of <code>VecIndex</code> nodes.</p>
+<p>The <code>ComponentOutput</code> node works in a similar way but I imagine that a component output could have more structure to it than just a vector and this is why it is not enough with just an index to identify the output bit.</p>
+<pre><code>data CompOut
+  = BitOutput  
+  | VecOutput   Int Int CompOut
+  | TupleOutput Int Int [CompOut]
+</code></pre>
+<p>With the <code>CompOut</code> structure we can have components that output Tuples for example. There is a discrepancy here between the structures possible in the output and the input to components. I am not going to worry to much about that for now, there are so many loose ends to tie together anyway ;). Later if need be, we can add more structure to the input as well.</p>
+<h2 id="some-more-about-vectors">Some more about Vectors</h2>
+<p>There is a type called <code>Vector</code> that should be visible to the Lava-programmer. It is implemented like this:</p>
+<pre><code>data Vector a = Vector Symbol
+</code></pre>
+<p>Which is exactly the same way a <code>signal</code> is implemented.</p>
+<p>A vector is created using <code>mkVec</code>:</p>
+<pre><code>mkVec :: Elt a =&gt; [a] -&gt; Vector a
+mkVec sigs = genericLift0 (Vec n (map unwrapElt sigs))
+ where n = length sigs
+</code></pre>
+<p>Which makes use of something called <code>genericLift0</code> and <code>unwrapElt</code> and it creates a <code>Vec</code> node. <code>genericLift0</code> is the following:</p>
+<pre><code>genericLift0 :: Elt a =&gt; S Symbol -&gt; a
+genericLift0 oper = wrapElt (symbol oper) 
+</code></pre>
+<p>which uses <code>wrapElt</code>. So unwrap and wrap of <code>Elt</code>s is what it comes down to. These operations are part of a class:</p>
+<p>`` class Elt a where unwrapElt :: a -&gt; Symbol wrapElt :: Symbol -&gt; a</p>
+<pre><code>
+and there must be an instance of this class for everything that can be
+put into vectors.  Currently there are two instances.
+
+</code></pre>
+<p>instance Elt (Signal a) where unwrapElt (Signal s) = s wrapElt s = Signal s</p>
+<p>instance Elt (Vector a) where unwrapElt (Vector s) = s wrapElt s = Vector s</p>
+<pre><code>
+So, `packVec` and `unpackVec` currently looks like this.
+
+</code></pre>
+<p>packVec :: Elt a =&gt; [a] -&gt; Vector a packVec sigs = mkVec sigs</p>
+<p>unpackVec :: Elt a =&gt; Vector a -&gt; [a] unpackVec (Vector s) = case unsymbol s of Vec n sigs -&gt; [genericLift0 (VecIndex i s) | i &lt;- [0..n-1]] _ -&gt; wrong Lava.Error.NotAVec</p>
+<pre><code>
+The main point of these vectors that I can think of now is to use
+as input to and output from components. But they could also be of a
+little benefit when generating VHDL where a single variable and
+assignment could be used for assigning a large number of signals for example.
+
+## Some more about Components
+
+I did try to implement some simple components for bitwise `neg`, `and`
+and a full adder.  These are currently not very pretty but I imagine
+that this can be cleaned up quite a bit later with some appropriate
+type classes and functions.
+
+</code></pre>
+<p>bitwiseNeg :: Vector (Signal Bool) -&gt; Vector (Signal Bool) bitwiseNeg vec = packVec outs<br />
+where n = lengthVec vec output i = VecOutput n i BitOutput</p>
+<pre><code>outs = [(wrapElt (symbol (ComponentOutput (output i) c))) :: Signal Bool| i &lt;- [0..n-1]]
+
+-- Want just one unique symbol per component instantiation.
+-- Each output node will refer to the same component symbol.
+c = symbol (Component &quot;bitwiseNeg&quot; [unVec vec])
+</code></pre>
+<pre><code>
+`bitwiseNeg` takes a vector of boolean signals and outputs a vector of
+boolean signals. The `c` represents the component named &quot;bitwiseNeg&quot; that
+takes the signals `unVec vec` as input. `unVec` does not &quot;unpack&quot; the vector, it rather just
+unWraps the &quot;symbol&quot;. So no structure is lost there.  
+
+</code></pre>
+<p>unVec :: Elt a =&gt; Vector a -&gt; Symbol unVec (Vector s) = s</p>
+<pre><code>
+The output is a vector created using `packVec` on the Haskell list called `outs`. Each
+element of the `outs` list is a `ComponentOutput`. In this case these Component node, each
+of them, hold a representation of the output shape of the component.  
+
+
+The `fullAdder` is just an attempt to build a `ComponentOutput` that is a tuple
+
+</code></pre>
+<p>fullAdder :: Signal Bool -&gt; Signal Bool -&gt; Signal Bool -&gt; (Signal Bool, Signal Bool) fullAdder a b cin = (o, sum) where o = lift0 (ComponentOutput (output 0) c) sum = lift0 (ComponentOutput (output 1) c) output i = TupleOutput 2 i [BitOutput, BitOutput] c = symbol (Component "fullAdder" (map unsignal [a,b,cin]))</p>
+<pre><code>
+
+## TODOs and Conclusion
+
+I really feel like I am on thin ice here! I&#39;ve made a lot of strange
+changes and I am not really sure they are all that sound. Will proceed
+and try to see what happens as a Lava program is reified into a graph
+(via the sharing detection) and then see if what pops out at the other
+end is something suitable for VHDL generation.
+
+Please let me know if you think this is fun or if you have feedback or ideas.
+Maybe you want to jump in and help out? ;)
+
+Thanks and have a great day!
+
+___
+
+[HOME](https://svenssonjoel.github.io)
+
+Please contact me with questions, suggestions or feedback at blog
+(dot) joel (dot) svensson (at) gmail (dot) com or join the
+&lt;a href=https://groups.google.com/g/svenssonjoelgithubio&gt; google group &lt;/a&gt;. 
+
+&amp;copy; Copyright 2021 Bo Joel Svensson
+
+This page was generated using &lt;a href=https://pandoc.org/&gt; Pandoc&lt;/a&gt;.
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+
+</code></pre>
