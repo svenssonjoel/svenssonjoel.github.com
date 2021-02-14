@@ -255,87 +255,70 @@ mkVec sigs = genericLift0 (Vec n (map unwrapElt sigs))
 genericLift0 oper = wrapElt (symbol oper) 
 </code></pre>
 <p>which uses <code>wrapElt</code>. So unwrap and wrap of <code>Elt</code>s is what it comes down to. These operations are part of a class:</p>
-<p>`` class Elt a where unwrapElt :: a -&gt; Symbol wrapElt :: Symbol -&gt; a</p>
-<pre><code>
-and there must be an instance of this class for everything that can be
-put into vectors.  Currently there are two instances.
+<pre><code>class Elt a where
+  unwrapElt :: a -&gt; Symbol
+  wrapElt   :: Symbol -&gt; a
+</code></pre>
+<p>and there must be an instance of this class for everything that can be put into vectors. Currently there are two instances.</p>
+<pre><code>instance Elt (Signal a) where
+  unwrapElt (Signal s) = s
+  wrapElt s = Signal s
+  
+instance Elt (Vector a) where
+  unwrapElt (Vector s) = s
+  wrapElt s = Vector s
+</code></pre>
+<p>So, <code>packVec</code> and <code>unpackVec</code> currently looks like this.</p>
+<pre><code>packVec :: Elt a =&gt; [a] -&gt; Vector a
+packVec sigs = mkVec sigs
+
+unpackVec :: Elt a =&gt; Vector a -&gt; [a]
+unpackVec (Vector s) = case unsymbol s of
+                         Vec n sigs -&gt; [genericLift0
+                                         (VecIndex i s) 
+                                       | i &lt;- [0..n-1]]
+                         _ -&gt; wrong Lava.Error.NotAVec
 
 </code></pre>
-<p>instance Elt (Signal a) where unwrapElt (Signal s) = s wrapElt s = Signal s</p>
-<p>instance Elt (Vector a) where unwrapElt (Vector s) = s wrapElt s = Vector s</p>
-<pre><code>
-So, `packVec` and `unpackVec` currently looks like this.
+<p>The main point of these vectors that I can think of now is to use as input to and output from components. But they could also be of a little benefit when generating VHDL where a single variable and assignment could be used for assigning a large number of signals for example.</p>
+<h2 id="some-more-about-components">Some more about Components</h2>
+<p>I did try to implement some simple components for bitwise <code>neg</code>, <code>and</code> and a full adder. These are currently not very pretty but I imagine that this can be cleaned up quite a bit later with some appropriate type classes and functions.</p>
+<pre><code>bitwiseNeg :: Vector (Signal Bool) -&gt; Vector (Signal Bool)
+bitwiseNeg vec = packVec outs  
+  where
+    n = lengthVec vec
+    output i = VecOutput n i BitOutput
+  
+    outs = [(wrapElt (symbol (ComponentOutput (output i) c))) :: Signal Bool| i &lt;- [0..n-1]]
+    
+    -- Want just one unique symbol per component instantiation.
+    -- Each output node will refer to the same component symbol.
+    c = symbol (Component &quot;bitwiseNeg&quot; [unVec vec])
+</code></pre>
+<p><code>bitwiseNeg</code> takes a vector of boolean signals and outputs a vector of boolean signals. The <code>c</code> represents the component named "bitwiseNeg" that takes the signals <code>unVec vec</code> as input. <code>unVec</code> does not "unpack" the vector, it rather just unWraps the "symbol". So no structure is lost there.</p>
+<pre><code>unVec :: Elt a =&gt; Vector a -&gt; Symbol
+unVec (Vector s) = s
 
 </code></pre>
-<p>packVec :: Elt a =&gt; [a] -&gt; Vector a packVec sigs = mkVec sigs</p>
-<p>unpackVec :: Elt a =&gt; Vector a -&gt; [a] unpackVec (Vector s) = case unsymbol s of Vec n sigs -&gt; [genericLift0 (VecIndex i s) | i &lt;- [0..n-1]] _ -&gt; wrong Lava.Error.NotAVec</p>
-<pre><code>
-The main point of these vectors that I can think of now is to use
-as input to and output from components. But they could also be of a
-little benefit when generating VHDL where a single variable and
-assignment could be used for assigning a large number of signals for example.
-
-## Some more about Components
-
-I did try to implement some simple components for bitwise `neg`, `and`
-and a full adder.  These are currently not very pretty but I imagine
-that this can be cleaned up quite a bit later with some appropriate
-type classes and functions.
-
+<p>The output is a vector created using <code>packVec</code> on the Haskell list called <code>outs</code>. Each element of the <code>outs</code> list is a <code>ComponentOutput</code>. In this case these Component node, each of them, hold a representation of the output shape of the component.</p>
+<p>The <code>fullAdder</code> is just an attempt to build a <code>ComponentOutput</code> that is a tuple</p>
+<pre><code>fullAdder :: Signal Bool -&gt; Signal Bool -&gt; Signal Bool -&gt; (Signal Bool, Signal Bool)
+fullAdder a b cin = (o, sum) 
+  where
+    o = lift0 (ComponentOutput (output 0) c)
+    sum = lift0 (ComponentOutput (output 1) c)
+    output i = TupleOutput 2 i [BitOutput, BitOutput]
+    c = symbol (Component &quot;fullAdder&quot; (map unsignal [a,b,cin]))
 </code></pre>
-<p>bitwiseNeg :: Vector (Signal Bool) -&gt; Vector (Signal Bool) bitwiseNeg vec = packVec outs<br />
-where n = lengthVec vec output i = VecOutput n i BitOutput</p>
-<pre><code>outs = [(wrapElt (symbol (ComponentOutput (output i) c))) :: Signal Bool| i &lt;- [0..n-1]]
+<h2 id="todos-and-conclusion">TODOs and Conclusion</h2>
+<p>I really feel like I am on thin ice here! I've made a lot of strange changes and I am not really sure they are all that sound. Will proceed and try to see what happens as a Lava program is reified into a graph (via the sharing detection) and then see if what pops out at the other end is something suitable for VHDL generation.</p>
+<p>Please let me know if you think this is fun or if you have feedback or ideas. Maybe you want to jump in and help out? ;)</p>
+<p>Thanks and have a great day!</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2021 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
 
--- Want just one unique symbol per component instantiation.
--- Each output node will refer to the same component symbol.
-c = symbol (Component &quot;bitwiseNeg&quot; [unVec vec])
-</code></pre>
-<pre><code>
-`bitwiseNeg` takes a vector of boolean signals and outputs a vector of
-boolean signals. The `c` represents the component named &quot;bitwiseNeg&quot; that
-takes the signals `unVec vec` as input. `unVec` does not &quot;unpack&quot; the vector, it rather just
-unWraps the &quot;symbol&quot;. So no structure is lost there.  
-
-</code></pre>
-<p>unVec :: Elt a =&gt; Vector a -&gt; Symbol unVec (Vector s) = s</p>
-<pre><code>
-The output is a vector created using `packVec` on the Haskell list called `outs`. Each
-element of the `outs` list is a `ComponentOutput`. In this case these Component node, each
-of them, hold a representation of the output shape of the component.  
-
-
-The `fullAdder` is just an attempt to build a `ComponentOutput` that is a tuple
-
-</code></pre>
-<p>fullAdder :: Signal Bool -&gt; Signal Bool -&gt; Signal Bool -&gt; (Signal Bool, Signal Bool) fullAdder a b cin = (o, sum) where o = lift0 (ComponentOutput (output 0) c) sum = lift0 (ComponentOutput (output 1) c) output i = TupleOutput 2 i [BitOutput, BitOutput] c = symbol (Component "fullAdder" (map unsignal [a,b,cin]))</p>
-<pre><code>
-
-## TODOs and Conclusion
-
-I really feel like I am on thin ice here! I&#39;ve made a lot of strange
-changes and I am not really sure they are all that sound. Will proceed
-and try to see what happens as a Lava program is reified into a graph
-(via the sharing detection) and then see if what pops out at the other
-end is something suitable for VHDL generation.
-
-Please let me know if you think this is fun or if you have feedback or ideas.
-Maybe you want to jump in and help out? ;)
-
-Thanks and have a great day!
-
-___
-
-[HOME](https://svenssonjoel.github.io)
-
-Please contact me with questions, suggestions or feedback at blog
-(dot) joel (dot) svensson (at) gmail (dot) com or join the
-&lt;a href=https://groups.google.com/g/svenssonjoelgithubio&gt; google group &lt;/a&gt;. 
-
-&amp;copy; Copyright 2021 Bo Joel Svensson
-
-This page was generated using &lt;a href=https://pandoc.org/&gt; Pandoc&lt;/a&gt;.
-&lt;/BODY&gt;
-&lt;/HTML&gt;
-
-</code></pre>

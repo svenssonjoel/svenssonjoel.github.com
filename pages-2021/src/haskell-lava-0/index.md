@@ -247,7 +247,7 @@ genericLift0 oper = wrapElt (symbol oper)
 which uses `wrapElt`. So unwrap and wrap of `Elt`s is what it comes down to.
 These operations are part of a class:
 
-``
+```
 class Elt a where
   unwrapElt :: a -> Symbol
   wrapElt   :: Symbol -> a
