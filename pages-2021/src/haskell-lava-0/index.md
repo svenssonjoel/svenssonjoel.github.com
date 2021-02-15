@@ -8,7 +8,7 @@ been doing that for a while now using VHDL. So, the plan here is to experiment
 a bit with Lava and try to (in time) get to the point where we can run some
 Lava-generated hardware on an FPGA.
 
-The FPGA candidates will the the Artix-7 on the Nexys A7 board as well as
+The FPGA candidates will be the Artix-7 on the Nexys A7 board as well as
 the Zynq 7000 platform. 
 
 Now! There are lots of Lavas. I found 4 of them on [Hackage](https://hackage.haskell.org/). 
