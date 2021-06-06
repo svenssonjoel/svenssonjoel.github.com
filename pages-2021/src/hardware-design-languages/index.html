@@ -1,0 +1,262 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Hardware Design Languages</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="Hardware design languages">
+  <meta name="keywords" content="Hardware design, VHDL, HLS, VERILOG">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages-2021/hardware-design-languages/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="hardware-design-languages">Hardware Design Languages</h1>
+<h2 id="history-of-hardware-design-languages">History of hardware design languages</h2>
+<h3 id="early-havent-found-date-yet">Early, haven't found date yet</h3>
+<ol>
+<li>PALASM</li>
+</ol>
+<h3 id="1970s">1970s</h3>
+<ol>
+<li>(1974) AHPL (A Hardware Programming Language) Frederick j. Hill</li>
+</ol>
+<h3 id="1980s">1980s</h3>
+<ol>
+<li>(1983) ABEL (Advanced Boolean Expression Language) - Data IO Corporation.</li>
+<li>(1983) CUPL (Compiler for Universal Programmable Logic)</li>
+<li>(1984) Verilog.</li>
+<li>(1986) Ruby (hardware description language) - Mary Sheeran.</li>
+<li>(1986) Ella - Royal Signals and Radar Establishment</li>
+<li>(1987) VHDL (VHSIC Hardware Description Language). Standardized 1987 (IEEE Std 1076).</li>
+</ol>
+<h3 id="1990s">1990s</h3>
+<ol>
+<li>AHDL (Altera Hardware Description Language).</li>
+<li>(1993) HML (Hardware ML) - JohnO'Leary, MarkLinderman, MiriamLeeser, MarkAagaard</li>
+<li>(1993) KARL (KAiserslautern Register Language) (check KARL AND ABL)</li>
+<li>(1995) Lola - ETH Zurich</li>
+<li>(1996) Handel-C - Oxford University Computing Laboratory</li>
+</ol>
+<h3 id="2000s">2000s</h3>
+<ol>
+<li>Bluespec - Lennart Augustsson.</li>
+<li>Bluespec SystemVerilog.</li>
+<li>Clash.</li>
+<li>Confluence - Tom Hawkins.</li>
+<li>(1999,2000) SystemC - IEEE 1666-2011.</li>
+<li>(2001) Lava.</li>
+<li>(2002) Hardware Join Java.</li>
+<li>(2002) SystemVerilog - IEEE 1800-2017.</li>
+<li>(2003) MyHDL.</li>
+<li>(2003) Impulse C - Impulse Accelerated Technologies.</li>
+<li>(2005) ROCCC (Riverside Optimizing Compiler for Configurable Computing) (maybe earlier than 2005).</li>
+<li>(2006) RHDL (maybe earlier than 2005).</li>
+<li>(2006) JHDL (Just Another Hardware Description Language).</li>
+<li>(2009) ESys.net. Port of SystemC framework for C++ to .net.</li>
+</ol>
+<h3 id="2010s">2010s</h3>
+<ol>
+<li>Chisel.</li>
+<li>(2011) HHDL (Haskell HDL) - Serguey Zefirov.</li>
+<li>(2011) THDL++.</li>
+<li>(2014) PyMTL - Cornell, computer systems laboratory.</li>
+<li>(2014) PyRTL - University of California, Santa Barbara.</li>
+<li>(2015) SpinalHDL.</li>
+<li>(2018) Hardcaml - janestreet.</li>
+<li>(2018) nMigen - m-labs.</li>
+<li>(2018) TL-Verilog.</li>
+</ol>
+<h3 id="hard-to-find-understandable-information-about">Hard to find understandable information about</h3>
+<ul>
+<li>C-to-Verilog.</li>
+<li>COLAMO.</li>
+<li>CoWareC.</li>
+<li>Hydra.</li>
+<li>ISPS.</li>
+<li>ParC (Parallel C++).</li>
+<li>M (Mentor graphics HDL).</li>
+<li>SystemTCL HDL based on Tcl.</li>
+</ul>
+<h3 id="intermediate-representations">Intermediate Representations</h3>
+<ul>
+<li>EDIF: Electronic Design Interchange Format.</li>
+<li>(2007) AHIR "A Hardware Intermediate Representation for Hardware Generation from High-level Programs".</li>
+<li>(2019) LNAST "A Language Neutral Intermediate Representationfor Hardware Description Languages"</li>
+<li>(2020) LLHD "a multi-level intermediate representation for hardware description languages".</li>
+<li>IROHA "Intermediate Representation Of Hardware Abstraction"</li>
+<li>A Compiler Intermediate Representationfor Reconfigurable Fabrics - Zhi Guo et'al</li>
+</ul>
+<h3 id="to-look-into">To look into</h3>
+<ul>
+<li>KARUTA hdl</li>
+</ul>
+<h2 id="why-so-many-languages">Why So Many Languages?</h2>
+<p>What is wrong with VHDL and Verilog?</p>
+<ol>
+<li><p>VHDL is poorly suited for formal verification <a href="https://dl.acm.org/doi/pdf/10.1145/291251.289440">citation</a>.</p></li>
+<li><p>VHDL is a simulation language retrofitted for synthesis <a href="https://dl.acm.org/doi/pdf/10.1145/291251.289440">citation</a>.</p></li>
+<li><p>VHDL lacks a clearly defined synthesis semantics <a href="https://books.google.se/books?hl=en&amp;lr=&amp;id=rJ_wBwAAQBAJ&amp;oi=fnd&amp;pg=PA116&amp;ots=-N_8j52lXl&amp;sig=JBYmXr08Xkmpb42CxbuyUvvgEpQ&amp;redir_esc=y#v=onepage&amp;q&amp;f=false">citation</a> The synthesis language is a subset of the simulation language yet one would want the synthesized hardware to be an exact implementation of what was synthesised. There may be details to this:</p>
+<ol>
+<li>You can simulate function, energy consumption, timing. But these take place on different stages of elaboration of the hardware design (which makes sense).</li>
+</ol></li>
+<li><p>Poor "help" with concurrent programming <a href="https://www.cl.cam.ac.uk/teaching/0910/P35/obj3.2/page14.html">citation</a> (TODO: Look into Handel-C)</p></li>
+<li><p>Hard to write behavioural style code in Verilog <a href="https://www.cl.cam.ac.uk/teaching/0910/P35/obj3.2/page14.html">citation</a></p></li>
+<li><p>Difficult to understand dataflow model. Lots of concurrent statements and signals. Very low abstraction level. This gives rise to higher level programming styles within VHDL, such as the Gaisler 2-process method <a href="https://www.gaisler.com/doc/vhdl2proc.pdf">citation</a>. However, programmer discipline is required to reap the benefits. You can draw a parallel to writing object oriented or functional code in C, sure you can, but the C compiler wont help you do it correctly in any way.</p></li>
+</ol>
+<p><strong>Thoughts</strong></p>
+<p>Should one even expect that the moving towards higher level abstractions within hardware design should be similar to the one of software. Many of the <em>alternative</em> hardware description languages are based on functional programming. Why is that so? Does that feel natural?</p>
+<p>Functional programming languages are often very dynamic in terms of their memory use. Closures are made up on the fly and passed around as objects (higher order functions). Hardware is very static (more dynamic in the future perhaps). So what aspect of functional programming is it that make (so many) people thing, "hardware design should be functional programming".</p>
+<p>The paragraph directly above is not entirely true. Some functional hardware description system I know of use a functional language as a hardware modeling language, so you use a functional language to describe the hardware while the hardware described is not functional. A very static hardware netlist is generated from the description written in the functional language. Also there is hardware that is purely functional, these are called combinational blocks and these are very efficiently expressed in something like Lava.</p>
+<p>Combinational hardware blocks are not clocked and this may be why it seems like clocks are nowhere to be found in functional approaches. (TODO: Check some functional languages for hardware design and see how many of them totally abstract out the clock).</p>
+<h3 id="high-level-and-low-level-programming-in-hardware-and-software">High-level and low-level programming in hardware and software</h3>
+<p>Hardware designs are becoming increasingly complex so it is natural to want higher level abstractions. This mirrors what has been happening in software: Assembler -&gt; C -&gt; C ++ -&gt; C#/Java. See for example <a href="https://dl.acm.org/doi/pdf/10.1145/1363686.1364037">citation</a>.</p>
+<p>On the software side there were incredibly abstract programming models popping up very early, Lisp for example. Also in hardware, people were experimenting with formal and highly abstracted models for hardware design at the same time as Verilog and VHDL appeared. Something drove the popularity of the C -&gt; C++ and VHDL/Verilog from the beginning.</p>
+<p>In the 70s, from the Intel 4004 to the Motorola 68000, the number of transistors went from 2250 to 68000. this was before VHDL and Verilog and maybe we can consider the 70s the Assembler era of hardware design?</p>
+<p>In the 80s the number of transistors lept from 68000 on the motorola 68K in 1979 to 1180235 (over a million) with the Intel 486. On the 486 die there was room for over 500 Intel 4004s, wow.</p>
+<h2 id="a-closer-look-at">A Closer Look At</h2>
+<h3 id="ruby">Ruby</h3>
+<h3 id="bluespec">Bluespec</h3>
+<h3 id="clash">Clash</h3>
+<h3 id="chisel">Chisel</h3>
+<h3 id="pymtl">PyMTL</h3>
+<h3 id="pyrtl">PyRTL</h3>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2021 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
+
