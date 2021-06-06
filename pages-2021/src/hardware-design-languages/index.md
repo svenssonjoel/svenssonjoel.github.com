@@ -91,8 +91,8 @@ What is wrong with VHDL and Verilog?
    
 4. Poor "help" with concurrent programming [citation](https://www.cl.cam.ac.uk/teaching/0910/P35/obj3.2/page14.html)
    (TODO: Look into Handel-C) 
-5. Hard to write behavioural style code in Verilog [citation](https://www.cl.cam.ac.uk/teaching/0910/P35/obj3.2/page14.html)
-6. Difficult to understand dataflow model. Lots of concurrent statements and signals.
+5. Hard to write behavioral style code in Verilog [citation](https://www.cl.cam.ac.uk/teaching/0910/P35/obj3.2/page14.html)
+6. Difficult to understand data-flow model. Lots of concurrent statements and signals.
    Very low abstraction level. This gives rise to higher level programming styles
    within VHDL, such as the Gaisler 2-process method [citation](https://www.gaisler.com/doc/vhdl2proc.pdf).
    However, programmer discipline is required to reap the benefits.
@@ -111,22 +111,25 @@ Functional programming languages are often very dynamic in terms of
 their memory use. Closures are made up on the fly and passed around as
 objects (higher order functions). Hardware is very static (more
 dynamic in the future perhaps). So what aspect of functional programming
-is it that make (so many) people thing, "hardware design should be functional 
+is it that make (so many) people think, "hardware design should be functional 
 programming".
 
 The paragraph directly above is not entirely true. Some functional
 hardware description system I know of use a functional language as a
-hardware modeling language, so you use a functional language to
-describe the hardware while the hardware described is not
-functional. A very static hardware netlist is generated from the
+hardware *generation* language, so you use a functional language to
+describe hardware generators while the hardware described is not
+functional. A very static hardware net-list is generated from the
 description written in the functional language. Also there is hardware
 that is purely functional, these are called combinational blocks and
-these are very efficiently expressed in something like Lava.
+these are very efficiently expressed in something like Lava (Chalmers). 
 
-Combinational hardware blocks are not clocked and this may be why it seems
-like clocks are nowhere to be found in functional approaches.
+Combinational hardware blocks are not clocked and this may be why it
+seems like clocks are nowhere to be found in functional approaches.
 (TODO: Check some functional languages for hardware design and see how
-many of them totally abstract out the clock). 
+many of them totally abstract out the clock). Lava has a single,
+implicitly clocked, delay abstraction that can be used to describe
+registers, latches. The delay abstraction takes a signal as input
+and has a signal output which is the input one clock cycle delayed. 
 
 
 
