@@ -4,7 +4,7 @@ MD = $(wildcard *.md)
 HTML = $(patsubst %.md,%.html,$(MD))
 
 DIR   = $(notdir $(CURDIR))
-TITLE = Absolute time interrupts, mailboxes and memorypools in chibios
+TITLE = Absolute time interrupts, mailboxes and memorypools in ChibiOS
 DESCRIPTION = An experiment with chibios and timer interrupt at an absolutely specified count. 
 KEYWORDS =  Chibios, STM32F4, Counter, Timer, Interrupt, Memorypool, Mailbox
 YEAR  = 2021

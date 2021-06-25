@@ -1,0 +1,452 @@
+<HTML>
+
+<HEAD>  
+
+  <TITLE>Absolute time interrupts, mailboxes and memorypools in ChibiOS</TITLE>
+
+  <meta charset="UTF-8">
+  <meta name="description" content="An experiment with chibios and timer interrupt at an absolutely specified count. ">
+  <meta name="keywords" content="Chibios, STM32F4, Counter, Timer, Interrupt, Memorypool, Mailbox">
+  <meta name="author" content="Bo Joel Svensson">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="canonical" href="https://svenssonjoel.github.io/pages-2021/chibios-absolute-time-interrupts/index.html" />
+
+</HEAD> 
+
+<style type="text/css">
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  }
+  
+  
+  .topnav {
+  overflow: auto;
+  white-space: nowrap;
+  background-color: #333;
+  }
+  
+  .topnav a {
+  display: inline-block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  .topnav a:hover {
+  background-color: #ddd;
+  color: black;
+  }
+  
+  .topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+  }
+  
+  
+  .hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../images/nerd.jpg");
+  height: 50%;  
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  }
+
+  /* Place text in the middle of the image */
+  .hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  }
+  
+  
+  
+  body, html {
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: large;
+  zoom-level: 150%;
+  }
+  
+  pre {
+  background-color: white;
+  word-wrap: normal;
+  overflow-x: auto;
+  white-space: pre;
+  margin-left: 2%;
+  margin-right: 2%;
+  }
+
+  img {
+  max-width:100%;
+  height:auto;
+  }
+
+  embed {
+  max-width:100%;
+  width:100%;
+  min-height:350px;
+  height:auto;
+  }
+ 
+  .yt-link {
+  text-align: center;
+  }
+  
+  .yt-link img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%
+  }
+
+  tr:hover {background-color: #8abd8a;}
+  
+
+  th {
+  background-color: #333;
+  color: white;
+  }
+  
+</style>
+
+<BODY bgcolor=#C0C0C0>
+
+<div class="hero-image">
+ <div class="hero-text">
+   <h1>BLOG</h1>
+ </div>
+</div>   
+
+<div class="topnav">
+  <a href="../../index.html"> Home </a>
+  <a href="../../index.html#BLOG"> Blog </a>
+  <a href="../../index.html#VIDEOS"> Videos </a>   
+  <a href="../../research.html"> Research </a>
+  <a href="../../about.html"> About </a>
+  <a href="../../privacy_policy.html">Privacy Policy</a>
+</div>
+
+<font size="+2">
+  <i> Bo Joel Svensson </i> <br>
+  <i> blog (dot) joel (dot) svensson (at) gmail (dot) com </i> <br>
+</font>
+
+<!-- BODY IS INTENTIONALY LEFT OPEN --> 
+
+<h1 id="absolute-time-interrupts-mailboxes-and-memory-pools-in-chibios">Absolute time interrupts, mailboxes and memory-pools in ChibiOS</h1>
+<p>In this text I share the results of a recent experiment with some ChibiOS concepts (mailbox and memory-pool) as well as some "custom" configuration of a TIM timer. ChibiOs provides GPT drivers and as I understand it you can use those to set relative time interrupt either recurring or one-shot. However, I wanted one-shot absolute time interrupt, that is an interrupt that fires at a specific count value of the counter.</p>
+<p>I am told there may be benefits to absolute count interrupts compared to relative. Of course, in an application where you have interrupts that recur every n ticks of the ticks, setting a recurring GPT should be just fine. So the use-case for this setup is slightly different, imagine having a set of things to do at specific times relative the starting the time of the application. If you can only set an interrupt relative to the current time (such as 500ticks into the future from now), then the computing and setting of these relative offsets may introduce some jitter and potentially an accumulating drift of your schedule. This is because the timer keeps counting while you are handling the interrupt, so the time you compute for the next interrupt becomes dependent on when you read out the counter value.</p>
+<p>So, the plan is to implement an absolute time interrupt that sends a message (allocated on a memory-pool) to a mailbox. A thread will wait (block) on the mailbox until there is a message.</p>
+<h2 id="configure-tim5-for-absolute-time-interrupts">Configure TIM5 for absolute time interrupts</h2>
+<p>To begin with, let's configure TIM5 (one of the 32bit counters of the STM32) into compare mode. My guess is that the ChibiOS GPT drivers will do pretty much the same, but then only (as far as I can tell) expose an API for setting relative interrupts. Since we are not using the GPTs, we will do this configuration using a lower level API supplied by ChibiOS.</p>
+<p>We need to include two files.</p>
+<pre><code>#include &quot;stm32_tim.h&quot; 
+#include &quot;stm32_rcc.h&quot;
+</code></pre>
+<p>One thing that the <code>stm32_tim.h</code> header provides is a struct that maps onto the register structure for configuration of the TIM, very helpful! I show this <code>struct</code> below augmented with some comments.</p>
+<pre><code>typedef struct {
+volatile uint32_t     CR1;      // Control register 1
+volatile uint32_t     CR2;      // Control register 2
+volatile uint32_t     SMCR;     // Slave mode control register
+volatile uint32_t     DIER;     // DMA/Interrupt enable register
+volatile uint32_t     SR;       // Status register
+volatile uint32_t     EGR;      // Event generation register
+volatile uint32_t     CCMR1;    // Capture/Compare mode register 1
+volatile uint32_t     CCMR2;    // Capture/Compare mode register 2
+volatile uint32_t     CCER;     // Capture/Compare enable register
+volatile uint32_t     CNT;      // Count register.
+volatile uint32_t     PSC;      // Prescaler (1 - 65535).
+volatile uint32_t     ARR;      // Auto reload register.
+volatile uint32_t     RCR;      
+volatile uint32_t     CCR[4];   // Compare/Capture registers.
+volatile uint32_t     BDTR;
+volatile uint32_t     DCR;      // DMA control register
+volatile uint32_t     DMAR;     // DMA Address for full transfer
+volatile uint32_t     OR;       // Option register.
+volatile uint32_t     CCMR3;    // Capture/compare mode register 3 
+volatile uint32_t     CCXR[2];
+} stm32_tim_t;
+
+</code></pre>
+<p>The <code>RCC</code> stands for "Reset and Clock Control". There are two registers in the <code>RCC</code> group that are involved in the TIM configuration, these are called <code>RCC_APB1ENR</code> and <code>RCC_APB1RSTR</code>. The <code>RCC_APB1ENR</code> register has enable bits for the TIMs and the <code>RCC_APB1RSTR</code> has reset bits. We wont deal with these registers immediately as ChibiOS provides the functions <code>rccEnableTIM5</code> and <code>rccResetTIM5</code> that performs the appropriate interaction with the RCC.</p>
+<p>The TIM5 counter configuration will follow this plan:</p>
+<ol>
+<li>Enable and reset TIM5.</li>
+<li>Enable the interrupt vector associated with TIM5 in the nvic.</li>
+<li>Get a handle to the TIM5 registers.</li>
+<li>Configure the TIM5 Prescaler (a factor to divide down the input clock by).</li>
+<li>Configure the TIM5 reload registers (the maximum number).</li>
+<li>Activate "compare"</li>
+<li>Activate interrupt</li>
+<li>Init, update and start.</li>
+</ol>
+<p>There are 4 different <code>CCR</code>, compare/capture registers where a value can be set and used to trigger an interrupt if interrupts are activated on that channel. This application will only use of those.</p>
+<p>The TIM <code>CR1</code> register configures if the counter is up- or down-counting and is also used to start the counter. There are 9 configurable bits in the CR1 register and we are going to set all of these to zero (to start with). At the end, bit 0 of <code>CR1</code> is set to one to start enable the TIM.</p>
+<p>The TIM <code>EGR</code> register has an "update generation" bit. It seems that after making changes to the other TIM registers, this "update generation" bit should be set to make the updates stick immediately.</p>
+<p>Below you find the <code>setup_timer</code> function that I use with comments. I also define a global <code>tim5</code> pointer as the low level interface to set new "alarms" (set new interrupt time).</p>
+<pre><code>stm32_tim_t *tim5 = NULL;
+
+void setup_timer(void) {
+
+  
+  rccEnableTIM5(true);
+  rccResetTIM5();
+  
+  nvicEnableVector(STM32_TIM5_NUMBER, STM32_GPT_TIM5_IRQ_PRIORITY); /* use GPT level prio */
+
+  
+  tim5 = STM32_TIM5;  /* gives direct access to the tim5 registers */
+
+  tim5-&gt;PSC = 0xFFFF;     /* counter rate is input_clock / (0xFFFF+1) */
+  tim5-&gt;ARR = 0xFFFFFFFF; /* Value when counter should flip to zero. */
+
+  tim5-&gt;CCR[0] = 0xFFFFFFFF; /* init compare values */ 
+  tim5-&gt;CCR[1] = 0xFFFFFFFF; /* CCR[1] - CCR[3] are irrelevant */
+  tim5-&gt;CCR[2] = 0xFFFFFFFF;
+  tim5-&gt;CCR[3] = 0xFFFFFFFF;
+
+  tim5-&gt;CCER |= 0x1; /* activate compare on ccr channel 1 */
+  tim5-&gt;DIER |= 0x2; /* interrupt enable register */
+  
+  tim5-&gt;CR1 &amp;= ~0x1FF; /* zero out the low 9 bits */
+  tim5-&gt;CNT = 0;       /* initialize counter value to 0 */
+  tim5-&gt;EGR |= 0x1; /* Update event (Makes all the configurations stick) */
+  tim5-&gt;CR1 |= 0x1; /* enable */
+
+}
+</code></pre>
+<p>Implementation of the interrupt service routine for the TIM will come later. There is a bit of plumbing to sort out first (mailbox and memory-pool).</p>
+<h2 id="set-an-absolute-time-interrupt">Set an absolute time interrupt</h2>
+<p>To set a new absolute time for an interrupt use <code>set_ccr_tim5</code>. This function just sets a new value in the <code>tim5-&gt;CCR</code> register.</p>
+<pre><code>void set_ccr_tim5(int ix, uint32_t c_value) {
+  if (ix &gt;= 0 &amp;&amp; ix &lt;= 3) {
+    tim5-&gt;CCR[ix] = c_value;
+  }
+}
+</code></pre>
+<p>To handle the case where no alarm at all is set better, maybe one should disable interrupts in the <code>tim5-&gt;DIER</code> in those cases.</p>
+<h2 id="configure-mailbox-and-memory-pool">Configure mailbox and memory-pool</h2>
+<p>The mailbox in ChibiOS can receive messages that are as large as a pointer. So, we can send any 32 bit value without the need of a memory-pool to hold messages if that is what we want. You can also send a message to a mailbox which is a pointer to a chunk of memory and this is the case that will be implemented here.</p>
+<p>The messages we send to the mailbox will just be the current value of the counter as a starting point. I imagine that in the future we may want to send additional information in this message to tell what kind of interrupt was fired. Maybe we will want to use all 4 <code>CCR</code> registers for example and then need to be able to encode into the message which one went off.</p>
+<p>The messages sent will be of the following type:</p>
+<pre><code>typedef struct {  /* message type */ 
+  uint32_t tick;
+}timer_tick_t;
+</code></pre>
+<p>Below I use the ChibiOS macros for defining a static mailbox and memory-pool. There are more dynamic interfaces as well.</p>
+<pre><code>#define MAX_MESSAGES 64
+
+msg_t box_contents[MAX_MESSAGES]; /* mailbox storage */
+MAILBOX_DECL(mb, box_contents, MAX_MESSAGES);
+
+
+timer_tick_t tick_storage[MAX_MESSAGES];
+MEMORYPOOL_DECL(tick_pool,MAX_MESSAGES, PORT_NATURAL_ALIGN, NULL);
+</code></pre>
+<p>The mailbox can hold 64 messages that are all of type <code>msg_t</code> (which is large enough to hold a pointer).</p>
+<p>The memory-pool, called <code>tick_pool</code> is backed up by an array of 64 <code>timer_tick_t</code>. <code>MEMORYPOOL_DECL</code> takes the following arguments:</p>
+<ol>
+<li>Memory-pool name.</li>
+<li>Number of chunks of memory available to the pool.</li>
+<li>Alignment of chunks of memory.</li>
+<li>A memory allocation function in case the pool can grow (as I understand it). <code>NULL</code> in this case.</li>
+</ol>
+<h2 id="sending-and-receiving-mail">Sending and receiving mail</h2>
+<p>To send a mail to the mailbox, a <code>timer_tick_t</code> object is allocated from the <code>tick_pool</code>. If this allocation succeeds, the address of that object is sent to the mailbox using <code>chMBPostI</code>. If sending the mail fails, the <code>timer_tick_t</code> object is returned to the memory-pool using <code>chPoolFree</code>.</p>
+<pre><code>static bool send_mail(timer_tick_t t) {
+ 
+  /* will be called from inside of the timer interrupt */
+  
+  bool r = true; /*success*/
+  timer_tick_t *m = (timer_tick_t*)chPoolAllocI(&amp;tick_pool);
+  
+  if (m) { 
+    *m = t;
+    
+    msg_t msg_val = chMBPostI(&amp;mb, (msg_t)m);
+    if (msg_val != MSG_OK) {  /* failed to send */
+      chPoolFree(&amp;tick_pool, m);
+      r = false;
+    }
+  }
+ 
+  return r;
+}
+</code></pre>
+<p>The <code>send_mail</code> function will later be called from within the interrupt handler for the timer. So it is important to use variants of the pool allocation function and mailbox post function that can be called from an ISR. As I understand it the functions postfixed with an <code>I</code> fall in this category.</p>
+<p>The function that receives mail is called <code>block_mail</code> because it is a blocking receive. To make a non-blocking variant the timeout on <code>chMBFetchTimeout</code> should be something else than <code>TIME_INFINITE</code>.</p>
+<pre><code>static bool block_mail(timer_tick_t *t) {
+
+  bool r = true;
+  msg_t msg_val;
+
+  int m = chMBFetchTimeout(&amp;mb, &amp;msg_val, TIME_INFINITE);
+
+  if (m == MSG_OK) {
+    *t = *(timer_tick_t*)msg_val;
+
+    chPoolFree(&amp;tick_pool, msg_val); /* free the pool allocated pointer */
+  } else {
+    r = false;
+  }
+  return r;
+}
+</code></pre>
+<p><code>block_mail</code> tries to fetch a mail from the box. If this is successful, the message received is a pointer to a <code>timer_tick_t</code> object. The contents of this <code>timer_tick_t</code> object is copied into a local copy and then the message pointer is returned to the memory-pool.</p>
+<h2 id="the-interrupt-service-routine">The interrupt service routine</h2>
+<p>Now all the plumbing is in place and we can implement the interrupt service routine!</p>
+<pre><code>OSAL_IRQ_HANDLER(STM32_TIM5_HANDLER) {
+  OSAL_IRQ_PROLOGUE();
+  
+  uint32_t sr = tim5-&gt;SR;
+  sr &amp;= tim5-&gt;DIER &amp; STM32_TIM_DIER_IRQ_MASK;
+  tim5-&gt;SR = ~sr;  
+
+  timer_tick_t t; 
+  t.tick = tim5-&gt;CNT;
+
+  osalSysLockFromISR();
+  send_mail(t);
+  osalSysUnlockFromISR();
+  
+  OSAL_IRQ_EPILOGUE();
+}
+</code></pre>
+<p>The interrupt service routine does three main things. To start with the routine isolates the bit in the <code>SR</code> (Status Register) corresponding to the interrupt we enabled in the <code>DIER</code> and clears this bit. My understanding of this is a bit vague, I assume that the interrupt raises a bit in the SR to indicate which kind of interrupt happened and that we can use this to discriminate between different kinds. Clearing the bit that was set may be done simply so that we wont confuse ourselves the next time we get an interrupt (that is if we had more than one CCR activated for example).</p>
+<pre><code>  uint32_t sr = tim5-&gt;SR;
+  sr &amp;= tim5-&gt;DIER &amp; STM32_TIM_DIER_IRQ_MASK;
+  tim5-&gt;SR = ~sr;  
+</code></pre>
+<p>Next the current count of the counter is read out and stored in a <code>timer_tick_t</code></p>
+<pre><code> timer_tick_t t; 
+  t.tick = tim5-&gt;CNT;
+</code></pre>
+<p>This <code>timer_tick_t</code> is sent to the mailbox.</p>
+<pre><code>  osalSysLockFromISR();
+  send_mail(t);
+  osalSysUnlockFromISR();
+</code></pre>
+<p><code>send_mail</code> has to be wrapped in <code>osalSys(Un)LockFromIsr</code> even if the <code>I</code> postfix is present!</p>
+<h2 id="mail-receiving-thread">Mail receiving thread</h2>
+<p>The thread that receives mail just implements a little demo. An array of 5 alarm-times is used to schedule absolute time interrupts.</p>
+<pre><code>uint32_t alarms[5] = { 1357, 2596, 5679, 8000, 10101 };
+</code></pre>
+<p>The idea is that when the first mail arrives, we process it and then we schedule the next timer interrupt.</p>
+<p>In ChibiOS you create a thread by creating a "thread working area" and a <code>thread_t</code> object.</p>
+<pre><code>static THD_WORKING_AREA(thread_wa, 1024); 
+static thread_t *thread;
+</code></pre>
+<p>Then using the <code>THD_FUNCTION</code> macro to declare the function which is the entry point to the thread.</p>
+<pre><code>static THD_FUNCTION(tick_thread, arg) {
+ chRegSetThreadName(&quot;tick&quot;);
+ (void) arg;
+
+ int current_alarm = 0;
+
+ chprintf((BaseSequentialStream *)&amp;SDU1, &quot;Entering tick_thread\r\n&quot;); 
+
+ setup_timer();  /* setup timer for continuous runing compare mode */
+ set_ccr_tim5(0, alarms[current_alarm]); /* set the first alarm */
+ current_alarm ++;
+ 
+ while (1) {
+   chprintf((BaseSequentialStream *)&amp;SDU1, &quot;Waiting for mail\r\n&quot;); 
+   timer_tick_t t;
+   bool r = block_mail(&amp;t);
+   if (r) { 
+     chprintf((BaseSequentialStream *)&amp;SDU1, &quot;Got mail: %u\r\n&quot;, t.tick);
+   } else {
+     chprintf((BaseSequentialStream *)&amp;SDU1, &quot;Got mail: Error\r\n&quot;);
+   }
+
+   if (current_alarm &lt; 5) {
+     set_ccr_tim5(0, alarms[current_alarm++]);
+   }
+ }
+}
+
+</code></pre>
+<p>This thread starts out by giving itself a name (not relevant or required). Then it runs <code>setup_timer</code> and <code>set_ccr_tim5</code> to schedule the first alarm. The thread then goes into an infinite loop that waits for mail by the mailbox. When mail arrives it prints a message depending on the success or failure of the mail delivery and then schedules the next alarm (if there are any more alarms to schedule).</p>
+<h2 id="main">Main</h2>
+<p>The <code>main</code> function in this case just does some setup. and then goes into an infinite loop that prints "hello world" twice per second. It also prints the current value of the counter each time it prints "hello world", just for fun.</p>
+<p>There are two relevant pieces of initialization in the <code>main</code> function:</p>
+<pre><code>  /* Initialize the memory-pool for tick messages */
+  chPoolLoadArray(&amp;tick_pool, tick_storage, MAX_MESSAGES);
+  
+  /* initialize mailbox */
+  chMBObjectInit(&amp;mb, box_contents, MAX_MESSAGES);
+</code></pre>
+<p>The <code>chPoolLoadArray</code> function, as I understand it, adds all the objects of the <code>tick_storage</code> array to a kind of "free list" managed by the pool.</p>
+<p>And then there's an initialization routine for the mailbox, <code>chMBObjectInit</code>.</p>
+<p>There are comments within the function to deal with the rest.</p>
+<pre><code>int main(void) {
+  halInit();
+  chSysInit();
+  
+  sduObjectInit(&amp;SDU1);
+  sduStart(&amp;SDU1, &amp;serusbcfg);
+
+  /*
+   * Activates the USB driver and then the USB bus pull-up on D+.
+   * Note, a delay is inserted in order to not have to disconnect the cable
+   * after a reset.
+   */
+  usbDisconnectBus(serusbcfg.usbp);
+  chThdSleepMilliseconds(1500);
+  usbStart(serusbcfg.usbp, &amp;usbcfg);
+  usbConnectBus(serusbcfg.usbp);
+  chThdSleepMilliseconds(500);
+
+  /* Initialize the memory-pool for tick messages */
+  chPoolLoadArray(&amp;tick_pool, tick_storage, MAX_MESSAGES);
+  
+  /* initialize mailbox */
+  chMBObjectInit(&amp;mb, box_contents, MAX_MESSAGES);
+
+
+  /* Give the user some time to hook up a usb cable 
+     or to connect a terminal */ 
+  chThdSleepMilliseconds(2000);
+
+  
+  /* start the ssm tick thread */
+  thread = chThdCreateStatic(&amp;thread_wa, sizeof(thread_wa), /* working area */
+                 (tprio_t)(NORMALPRIO-20),     /* priority */
+                 tick_thread,                  /* thread function */
+                 NULL);                        /* argument */
+  
+  while(true) {
+
+    chprintf((BaseSequentialStream *)&amp;SDU1, &quot;Hello world: %u \r\n&quot;, tim5-&gt;CNT); 
+    chThdSleepMilliseconds(500);
+  }
+
+  return 0; //unreachable
+}
+</code></pre>
+<h2 id="todos">TODOs</h2>
+<p>Things to figure out as future work:</p>
+<ol>
+<li>Is it also possible to set an interrupt when the counter wraps around? If that is possible, how can we tell the difference between a "normal" (the set alarm time) and this overflow interrupt?</li>
+<li>Different capture/compare modes, can we compare for <code>&gt;=</code> instead of just <code>=</code>. I think this is the case, but more reading of the STM32F4 reference manual is needed.</li>
+</ol>
+<h2 id="the-end">The end</h2>
+<p>Thanks for reading, I hope you found something interesting. The full source code is <a href="https://github.com/svenssonjoel/HACKSTUGAN/tree/master/stm32/chibios-abs-timer">available on github</a>. If you have questions or comments I would be very happy to hear them.</p>
+<p>Have a great day!</p>
+<hr />
+<p><a href="https://svenssonjoel.github.io">HOME</a></p>
+<p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>
+<p>© Copyright 2021 Bo Joel Svensson</p>
+<p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
+</BODY>
+</HTML>
+
