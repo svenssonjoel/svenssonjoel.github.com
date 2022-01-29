@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -149,8 +150,7 @@
 <p>The first example program spawns 3 new tasks that each will run a program that performs a little arithmetic.</p>
 <pre><code>(spawn ((+ 1 2 3))
        ((+ 4 5 6))
-       ((+ 7 8 9)))
-</code></pre>
+       ((+ 7 8 9)))</code></pre>
 <p>When entered into the REPL it produces the following result.</p>
 <pre><code># (spawn ((+ 1 2 3)) ((+ 4 5 6)) ((+ 7 8 9)))
 started ctx: 2
@@ -158,14 +158,12 @@ started ctx: 2
 # &lt;&lt; Context 3 finished with value 6 &gt;&gt;
 # &lt;&lt; Context 4 finished with value 15 &gt;&gt;
 # &lt;&lt; Context 5 finished with value 24 &gt;&gt;
-# 
-</code></pre>
+# </code></pre>
 <p>The task that performs the spawning gets context id 2 and we can see that this task finishes with the result <code>(5 4 3)</code>, these are the context ids for the three sub-tasks. Then the sub-tasks finish with results <code>6</code>, <code>15</code> and <code>24</code>.</p>
 <p>Another fun thing to try, but hard to show that it works in text, is to spawn tasks that go to sleep for a while.</p>
 <pre><code>(spawn ((yield 500000))
        ((yield 1000000))
-       ((yield 2000000)))
-</code></pre>
+       ((yield 2000000)))</code></pre>
 <p>This programs starts one task that sleeps for half a second, another that sleeps for one second and a third that sleeps for 2 seconds. The result of running this in the REPL is as follows.</p>
 <pre><code># (spawn ((yield 500000)) ((yield 1000000)) ((yield 2000000)))
 started ctx: 6
@@ -173,20 +171,17 @@ started ctx: 6
 # &lt;&lt; Context 7 finished with value t &gt;&gt;
 # &lt;&lt; Context 8 finished with value t &gt;&gt;
 # &lt;&lt; Context 9 finished with value t &gt;&gt;
-# 
-</code></pre>
+# </code></pre>
 <p>Of course, the interesting aspect of this program is the timing. The sub-tasks should finish half a second, one second and two seconds after being started. <a href="https://youtu.be/-hYnFBsvCS0">This video</a> shows a what running this program looks like.</p>
 <p>The last example then, here the parent task spawns a sub-task that performs a bit of arithmetic. The parent waits for the sub-task to finish.</p>
 <pre><code>(let ((cids (spawn ((+ 1 2 3)))))
-  (wait (car cids)))
-</code></pre>
+  (wait (car cids)))</code></pre>
 <p>Typed into the REPL, results in this:</p>
 <pre><code># (let ((cids (spawn ((+ 1 2 3))))) (wait (car cids)))
 started ctx: 6
 # &lt;&lt; Context 7 finished with value 6 &gt;&gt;
 # &lt;&lt; Context 6 finished with value 6 &gt;&gt;
-# 
-</code></pre>
+# </code></pre>
 <p>Contexts 6 and 7 both finish with value 6. The <code>wait</code> operation results in the value computed by the task with the context id that it is waiting for.</p>
 <h2 id="implementation">Implementation</h2>
 <p>The <code>spawn</code> operation is added as a special form while the <code>wait</code> operation is treated similarly to a fundamental operation. Special forms and fundamental operations are both a kind of built-in function in lispBM but they differ a bit. A fundamental operation is treated as a regular function application and thus its arguments will be evaluated before the application. When adding a special form I am much more free in how to deal with its evaluation and treatment of arguments. So, both are "built-in" only difference is how deeply so ;)</p>
@@ -209,8 +204,7 @@ started ctx: 6
       ctx-&gt;r = cid_list; 
       ctx-&gt;app_cont = true;
       continue;
-    }
-</code></pre>
+    }</code></pre>
 <p>The <code>SPAWN</code> and <code>SPAWN_ALL</code> setup are very similar to how <code>PROGN</code> and <code>PROGN_REST</code> are implemented, but an important difference here is that in <code>PROGN</code> only the result of the last expression to evaluate is kept.</p>
 <p>In <code>apply_continuation</code> a case is added for <code>SPAWN_ALL</code>.</p>
 <pre><code>  case SPAWN_ALL: {
@@ -240,12 +234,11 @@ started ctx: 6
     ctx-&gt;r = cid_list;
     ctx-&gt;app_cont = true;
     return;
-  }
-</code></pre>
+  }</code></pre>
 <p><code>SPAWN_ALL</code>, simply put, takes the head from the list of programs and calls <code>create_ctx</code> for that program. It then pushes a new instance of the <code>SPAWN_ALL</code> continuation onto the continuation stack. While it is doing this it is accumulating generated context ids</p>
 <p>Now, implementing <code>SPAWN_ALL</code> was actually quite tricky. There is a subtle detail in the interplay of evaluation and garbage collection that causes a bit of extra work here. And it comes from the construction of the list of context ids.</p>
 <p>So the reason for appending a new context id onto the list <strong>before</strong> actually creating the context is that, if you swapped the order, it could happen that:</p>
-<ol>
+<ol type="1">
 <li>Creation of context was successful and returned cid N</li>
 <li>appending N to the result list fails because heap is full.</li>
 </ol>
@@ -266,8 +259,7 @@ started ctx: 6
       error_ctx(enc_sym(symrepr_eerror()));
     }
     return;
-  }
-</code></pre>
+  }</code></pre>
 <p><code>wait</code> expects a single integer argument that holds a context id. It then creates a continuation called <code>WAIT</code> that expects the context id to wait for on the continuation stack. The result of the current context is set to <code>true</code> and then the current context yields for 0.5 seconds (hard coded so far). When this context eventually wakes up again, it will be set up to apply its continuation (since <code>app_cont</code> was set to <code>true</code>), and control will jump to the <code>apply_continuation</code> function and case <code>WAIT</code>.</p>
 <pre><code> case WAIT: {
 
@@ -287,15 +279,14 @@ started ctx: 6
       yield_ctx(50000);
     }
     return;
-  }
-</code></pre>
+  }</code></pre>
 <p>The <code>WAIT</code> continuation pops the context id to wait for from the stack, then calls <code>eval_cps_remove_done_ctx</code> to scan through the list of finished contexts. If this is successful the result stored in that waiting context is returned. Otherwise a second sound of <code>WAIT</code> continuation is set up.</p>
 <h2 id="some-thoughts-on-the-current-implementation">Some Thoughts on the Current Implementation</h2>
 <p>All of this is very experimental and hacky. If it turns out to be a fun approach in the end, this code will need a big cleanup.</p>
 <p>One aspect that I am currently unsure of is if <code>spawn</code> should instead require the arguments to be quoted? If we chose to change it so that <code>spawn</code> expects quoted programs, then <code>spawn</code> does not need to be a special form anymore and could be treated in a similar way to <code>wait</code>. I think it may feel more lispy that the arguments to <code>spawn</code> are quoted. We'll see how it ends up!</p>
 <h2 id="future-work">Future Work</h2>
 <p>in <a href="../lispbm_towards_concurrency/index.html">the earlier text</a> I outlined some future work. The current text addresses points 2 and 3 from this list, so I mark those as <strong>(DONE)</strong>. Now, I am quite sure problems with the current implementation will pop up and tweaks will be needed, so maybe it is more like "done" than <strong>(DONE)</strong>.</p>
-<ol>
+<ol type="1">
 <li><p>More testing! The heaviest load I've started is 8 instances of the example program that sleeps and prints hello. More and more diverse test programs are needed.</p></li>
 <li><p><strong>(DONE)</strong> Add <code>wait</code> functionality. Calling <code>(wait cid)</code> should cause the task that called <code>wait</code> to stop until the task with context-id <code>cid</code> finishes. The result of <code>(wait cid)</code> should be the result computed by the task with context-id <code>cid</code>. Finished contexts are stored on a list called <code>ctx_done</code>, so one way to implement wait is wake up a waiting task periodically and perform a search over the <code>ctx_done</code> list. If the <code>cid</code> is not present in the list then the waiting task can go back to sleep for a while.</p></li>
 <li><p><strong>(DONE)</strong> Some way to create tasks "programmatically". Currently a new task is created for each expression entered using the repl. I don't have any idea of how the details of this will work out, but imagine that there should be some kind of <code>spawn</code> or <code>fork</code> function.</p></li>

@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -148,12 +149,10 @@
 <p>I got a really out-of-character urge today to see if I could implement a full-adder in Haskell types. From what I can tell it seems to work.</p>
 <p>Two extensions are used for this experiment, <code>TypeFamilies</code> and <code>UndecidableInstances</code>. <code>UndecidableInstances</code> sounds really menacing, it apparently makes it possible end up with a non-terminating type-check. The <code>TypeFamilies</code> extension, as far as I understand, allows a limited form of function definition on the type-level.</p>
 <pre><code>{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE UndecidableInstances #-}
-</code></pre>
+{-# LANGUAGE UndecidableInstances #-}</code></pre>
 <p>The data types <code>One</code> and <code>Zero</code> are the values that a "bit" can hold.</p>
 <pre><code>data One
-data Zero
-</code></pre>
+data Zero</code></pre>
 <p>Two type level functions <code>And</code> and <code>Or</code> implement the truth tables for the these operations over tuples of bits.</p>
 <pre><code>type family And a
 type instance And (Zero,  One) = Zero
@@ -165,32 +164,26 @@ type family Xor a
 type instance Xor (Zero,  One) = One
 type instance Xor (One,  Zero) = One
 type instance Xor (One,   One) = Zero
-type instance Xor (Zero, Zero) = Zero
-</code></pre>
+type instance Xor (Zero, Zero) = Zero</code></pre>
 <p>A full-adder can be constructed by combining two so-called half adders. So the <code>HalfAdder</code> function implements this operation. To make sense, it should be applied to a tuple of bits (are there any ways of enforcing this nicely?) and it computes the sum of these bits and also computes a carry value. <code>Xor a</code> is the sum part and <code>And a</code> is the carry part.</p>
 <pre><code>type family HalfAdder a
-type instance HalfAdder a = (Xor a, And a)
-</code></pre>
+type instance HalfAdder a = (Xor a, And a)</code></pre>
 <p>So that part fell into place without to much trouble. So the next step is to combine two half adders and a bit of extra logic to form the full adder. Here I got very stuck. And the thing causing trouble is that you cannot partially apply the type family based type level functions (as I understand it) or pass them around unapplied. This <a href="https://stackoverflow.com/questions/50494228/type-family-as-argument-to-type-synonym">answer on stackoverflow</a> provided a way through this obstacle though.</p>
 <p>A full adder takes three bits as input, call them a, b and carry-in, and outputs two bits called sum and carry-out. This way, many full adders can connected together to form multi-bit adders, so called ripple carry adders. For the full adder, two half adders and a single or gate is needed.</p>
 <p>I started out with something like this. There needs to be half adder somewhere in there to compute the sum of <code>a</code> and <code>b</code>.</p>
 <pre><code>type family FullAdder a
-type instance FullAdder ((a,b),c) = ... (HalfAdder (a, b)) ... 
-</code></pre>
+type instance FullAdder ((a,b),c) = ... (HalfAdder (a, b)) ... </code></pre>
 <p>But after that it gets messy. Now one of the outputs of the half adder should be fed to another half adder together with <code>c</code>. So either the result of <code>HalfAdder (a, b)</code> should be "untupled" in some way and then one of the elements in that tuple should be "retupled" with <code>c</code> and fed to half adder number 2. This doesn't work!</p>
 <p>So instead I thought it may be possible to express some operations over the result tuples..</p>
 <pre><code>type family AppFst (f :: * -&gt; *) p
-type instance AppFst f ((a, b), c) = (f (c, a), b)
-</code></pre>
+type instance AppFst f ((a, b), c) = (f (c, a), b)</code></pre>
 <p>Then change the full adder like this:</p>
 <pre><code>type family FullAdder a
-type instance FullAdder ((a,b),c) = ... AppFst HalfAdder ((HalfAdder (a,b)), c)
-</code></pre>
+type instance FullAdder ((a,b),c) = ... AppFst HalfAdder ((HalfAdder (a,b)), c)</code></pre>
 <p>That doesn't work at all!</p>
 <pre><code> error:
     • The type family ‘HalfAdder’ should have 1 argument, but has been given none
-    • In the type instance declaration for ‘FullAdder’
-</code></pre>
+    • In the type instance declaration for ‘FullAdder’</code></pre>
 <p>This is where the fix from <a href="https://stackoverflow.com/questions/50494228/type-family-as-argument-to-type-synonym">stackoverflow</a> comes in. It seems to not be possible to have <code>HalfAdder</code> unapplied in there like that, but it is possible to have a "tag" representing the half adder in there together with an extra <code>App</code> (for apply) type family that represents the application of one of these "tags".</p>
 <pre><code>type family App (token :: *) a
 
@@ -198,33 +191,26 @@ data TokHalfAdd
 data TokOr
 
 type instance App TokHalfAdd a = HalfAdder a
-type instance App TokOr a = Or a
-</code></pre>
+type instance App TokOr a = Or a</code></pre>
 <p>The code above implements application of tags and the tags needed for the half adder and the or gate. The two type instances are a kind of evaluator for the tags.</p>
 <p>Now the <code>AppFST</code> combinator can be restated like this:</p>
 <pre><code>type family AppFST (f :: *) p
-type instance AppFST f ((a, b), c) = (App f (c,a), b)
-</code></pre>
+type instance AppFST f ((a, b), c) = (App f (c,a), b)</code></pre>
 <p>And a bit of progress can be made on the full adder.</p>
 <pre><code>type family FullAdder a
-type instance FullAdder ((a, b),c) = ... (AppFST TokHalfAdd ((HalfAdder (a,b)),c))
-</code></pre>
+type instance FullAdder ((a, b),c) = ... (AppFST TokHalfAdd ((HalfAdder (a,b)),c))</code></pre>
 <p>The last step is to or together the two carry bits and this means adding a <code>AppSND</code> combinator.</p>
 <pre><code>type family AppSND (f :: *) p
-type instance AppSND f ((a, b),c) = (a, App f (c,b))
-</code></pre>
+type instance AppSND f ((a, b),c) = (a, App f (c,b))</code></pre>
 <p>And the full adder can be completed.</p>
 <pre><code>type family FullAdder a
-type instance FullAdder ((a, b),c) = AppSND TokOr (AppFST TokHalfAdd ((HalfAdder (a,b)),c))
-</code></pre>
+type instance FullAdder ((a, b),c) = AppSND TokOr (AppFST TokHalfAdd ((HalfAdder (a,b)),c))</code></pre>
 <p>Now, this seems to make it possible to "simulate" full adders in the Haskell type-checker. for example</p>
 <pre><code>a1 :: FullAdder ((Zero, Zero), Zero)
-a1 = undefined
-</code></pre>
+a1 = undefined</code></pre>
 <p>The result of this addition should be (Zero, Zero), so let's ask GHCI.</p>
 <pre><code>*Main&gt; :t a1
-a1 :: (Zero, Zero)
-</code></pre>
+a1 :: (Zero, Zero)</code></pre>
 <p>Good, but not very interesting. Let's try some more:</p>
 <pre><code>-- (One, Zero)
 a2 :: FullAdder ((Zero, Zero), One)
@@ -248,8 +234,7 @@ a6 = undefined
 
 -- (One, One)
 a7 :: FullAdder ((One, One), One)
-a7 = undefined 
-</code></pre>
+a7 = undefined </code></pre>
 <p>And ask GHCI about these.</p>
 <pre><code>*Main&gt; :t a2
 a2 :: (One, Zero)
@@ -262,8 +247,7 @@ a5 :: (One, Zero)
 *Main&gt; :t a6
 a6 :: (Zero, One)
 *Main&gt; :t a7
-a7 :: (One, One)
-</code></pre>
+a7 :: (One, One)</code></pre>
 <h2 id="conclusion">Conclusion</h2>
 <p>Help! Does any of this make any sense?</p>
 <p>This was lots of fun though! So I thought I'd share it ;)</p>

@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -152,29 +153,25 @@
 <p>The approach taken depends on having an area of memory for a bitmap that contains memory usage information and another area of memory for data. For each 4 bytes within the data area there are 2 bits in the bitmap for storage information. This means that If a data-storage area of 8KB is desired, an extra 512Bytes of data are required for the bitmap.</p>
 <hr />
 <pre><code>8KB / 4B per Word = 2KWords 
-2K  / 4Bitpatterns per Byte = 512B
-</code></pre>
+2K  / 4Bitpatterns per Byte = 512B</code></pre>
 <hr />
 <p>The 2 bit patterns in the bitmap have the following meanings:</p>
 <pre><code>00 - Free or used word of memory 
 01 - End of a range of allocated words
 10 - Start of a range of allocated words 
-11 - Starting and endpoint of a range of allocated words (1 allocated word)
-</code></pre>
+11 - Starting and endpoint of a range of allocated words (1 allocated word)</code></pre>
 <p>These are defined as follows in the source code:</p>
 <pre><code>/* Status bit patterns */
 #define FREE_OR_USED  0  //00b
 #define END           1  //01b
 #define START         2  //10b
-#define START_END     3  //11b
-</code></pre>
+#define START_END     3  //11b</code></pre>
 <p>The state needed for the memory subsystem is defined as follows.</p>
 <pre><code>uint32_t *bitmap = NULL;
 uint32_t *memory = NULL;
 uint32_t memory_size;  // in 4 byte words
 uint32_t bitmap_size;  // in 4 byte words
-unsigned int memory_base_address = 0;
-</code></pre>
+unsigned int memory_base_address = 0;</code></pre>
 <p>The state variables are initialized using <code>memory_init</code> defined in <code>memory.c</code>.</p>
 <pre><code>int memory_init(unsigned char *data, uint32_t data_size,
                 unsigned char *bits, uint32_t bits_size) {
@@ -200,8 +197,7 @@ unsigned int memory_base_address = 0;
   memory_base_address = (unsigned int)data;
 
   return 1;
-}
-</code></pre>
+}</code></pre>
 <p><code>memory_init</code> starts out by checking that the pointers passed in for the start of the data-storage area and bitmap are aligned to a multiple of 4 bytes and that their size is a multiple of 4 bytes. Those restrictions make it a lot easier to write the rest of the code. A 4 byte bitmap contains information about 16 x 4 byte data-words (that is 64 bytes). There is also a check that the size of the bitmap is not 0 and that data-storage is 16 times the size of the bitmap (in bytes).</p>
 <p>Next, the state is set and the bitmap memory is cleared.</p>
 <p>To convert from an address within the data-storage area and an index into the bitmap and the other way around, two functions are defined.<br />
@@ -212,8 +208,7 @@ To convert an address to a bitmap index the <code>memory_base_address</code> is 
 
 static inline uint32_t *bitmap_ix_to_address(unsigned int ix) {
   return (uint32_t*)(memory_base_address + (ix &lt;&lt; 2));
-}
-</code></pre>
+}</code></pre>
 <p>Conversion in the other direction is then done by multiplying the bitmap index by 2 and adding the <code>memory_base_address</code>.</p>
 <p>There are two functions for checking and setting the status of a word in the bitmap. The function that looks up the status is called <code>status</code> and the setter is called <code>set_status</code>. The <code>status</code> function takes an index to a bit-pair in the bitmap and returns the status code those bits represent. Likewise, <code>set_status</code> takes a bitmap index and a status code to set at that index. Given the requirements on alignment on the bitmap and the data-storage area these functions end up being quite small.</p>
 <pre><code>static inline unsigned int status(unsigned int i) {
@@ -235,8 +230,7 @@ static inline void set_status(unsigned int i, uint32_t status) {
   uint32_t mask = status &lt;&lt; bit_ix;
   bitmap[word_ix] &amp;= clr_mask;
   bitmap[word_ix] |= mask;
-}
-</code></pre>
+}</code></pre>
 <p>Given an index into the bitmap the actual bit-position of the first bit in that bit-pair is obtained by multiplying the index by 2. Then to figure out which 32Bit word that bit-pair sits in, the bit-position is divided by 32. How far into that 32Bit word that the bit-pair is located can be found as the remainder of a division by 32. Here, all these operations are expressed using bitwise logic.</p>
 <p>After computing which 32bit word of the bitmap is of interest, a mask is applied to obtain only the bits of interest.</p>
 <p>The function for allocating memory in the data-area is called <code>memory_allocate</code> and takes a single parameter indicating the number of 4 byte words. This function is a state machine performing a search over the bitmap.</p>
@@ -245,8 +239,7 @@ static inline void set_status(unsigned int i, uint32_t status) {
 #define FREE_LENGTH_CHECK    1
 #define SKIP                 2
 #define ALLOC_DONE           0xF00DF00D
-#define ALLOC_FAILED         0xDEADBEAF
-</code></pre>
+#define ALLOC_FAILED         0xDEADBEAF</code></pre>
 <p>The <code>memory_allocate</code> function loops over the bitmap checking the status at each index as it moves along. In case a <code>FREE_OR_USED</code> is found, the current state of the search is checked. If in the <code>INIT</code> state the <code>FREE_OR_USED</code> word is actually free and a potential starting index candidate is set. The state is changed to <code>FREE_LENGTH_CHECK</code> and the loop continues.</p>
 <p>When in the <code>FREE_LENGTH_CHECK</code> state, a <code>FREE_OR_USED</code> status also indicates that the current word is free and the variable keeping track of the current length is incremented. If the length is as long as the requested number of words the search is done.</p>
 <p>The rest of the state transitions are easier. If <code>START</code> is found state goes to <code>SKIP</code> and an <code>END</code> transitions to state <code>INIT</code> for example. Really there should be some checks here for unexpected states when discovering any given status to be a bit more robust against a corrupt bitmap.</p>
@@ -311,8 +304,7 @@ static inline void set_status(unsigned int i, uint32_t status) {
     return bitmap_ix_to_address(start_ix);
   }
   return NULL;
-}
-</code></pre>
+}</code></pre>
 <p>To free an allocated chunk of memory, the address of the chunk is turned into a bitmap index. The status at this index should be either <code>START</code> or <code>START_END</code> depending on if it is a multi-word chunk or just a single word. The <code>START_END</code> case is the easier one, in this case the <code>START_END</code> status is just overwritten with <code>FREE_OR_USED</code>. The case for the status <code>START</code> needs to scan forwards in the bitmap until the next status of <code>END</code> is found. Then both the <code>START</code> and the <code>END</code> is overwritten with <code>FREE_OR_USED</code>.</p>
 <pre><code>int memory_free(uint32_t *ptr) {
   unsigned int ix = address_to_bitmap_ix(ptr);
@@ -332,8 +324,7 @@ static inline void set_status(unsigned int i, uint32_t status) {
   }
 
   return 0;
-}
-</code></pre>
+}</code></pre>
 <h2 id="future-work">Future work</h2>
 <p>Currently, figuring out memory usage is what is on the table. Future work involves trying to place the symbol table and all continuation stacks on a memory area managed by <code>memory_allocate</code> (or something similar if this turns out to be a dead-end). While doing the rewrite of the symbol table code that is needed for this, it would also be nice to try to place constant symbols on flash memory rather than ram.</p>
 <p>Having a granularity of 4 bytes as the smallest allocatable memory area size means that there will be some waste when space for strings are allocated. For now this waste is fine by me ;)</p>

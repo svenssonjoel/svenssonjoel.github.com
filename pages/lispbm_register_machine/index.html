@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -203,12 +204,10 @@
   VALUE fun;
 
   stack S;
-} register_machine_t;
-</code></pre>
+} register_machine_t;</code></pre>
 <p>The state that is manipulated as the register machine is "running" is shown below. it consists of one set of registers and a global environment.</p>
 <pre><code>register_machine_t rm_state;
 VALUE ec_eval_global_env;
-
 </code></pre>
 <p>lispBM has a global environment that can be extended using <code>define</code>. The global environment feels very useful when working with a REPL as it remembers definitions between the expressions entered.</p>
 <h2 id="more-preliminaries">More preliminaries</h2>
@@ -230,8 +229,7 @@ VALUE ec_eval_global_env;
   EXP_LET,
   EXP_AND,
   EXP_OR
-} exp_kind;
-</code></pre>
+} exp_kind;</code></pre>
 <p>The <code>kind_of</code> function takes an expressions and returns the appropriate <code>exp_kind</code></p>
 <pre><code>exp_kind kind_of(VALUE exp) {
 
@@ -278,8 +276,7 @@ VALUE ec_eval_global_env;
   } // end case PTR_TYPE_CONS:
   }
   return EXP_KIND_ERROR;
-}
-</code></pre>
+}</code></pre>
 <p>Really, all that this does is make it possible write the body of <code>ec_eval</code> in a little bit cleaner way (fewer levels of nested conditionals).</p>
 <h3 id="garbage-collection-in-the-register-machine-setting">Garbage collection in the register machine setting</h3>
 <p>Together with the global environment and the so-called freelist, the contents of the registers specify exactly what has to be kept alive past a run of the garbage collector. So, the <code>gc</code> function starts a mark phase from the contents of each register.</p>
@@ -301,20 +298,17 @@ VALUE ec_eval_global_env;
 
   return gc_sweep_phase();
 }
-
 </code></pre>
 <p>This <code>gc</code> routine is called, if necessary, from the evaluator at any point where a cons cell is allocated. If the allocation of a cons-cell results in the memory_error symbol. <code>gc</code> is initiated. When <code>gc</code> completes another attempts at allocating a cons-cell is performed. This is shown in more detail as it appears when later describing the evaluator.</p>
 <h3 id="predicates-used-throughout">Predicates used throughout</h3>
 <p>A few helpful predicates are used to make the code a bit shorter and easier to read.</p>
 <pre><code>static inline bool is_symbol(VALUE exp) {
   return (type_of(exp) == VAL_TYPE_SYMBOL);
-}
-</code></pre>
+}</code></pre>
 <p>The <code>is_symbol</code> returns <code>true</code> if <code>exp</code> is a symbol.</p>
 <pre><code>static inline bool is_symbol_nil(VALUE exp) {
   return (is_symbol(exp) &amp;&amp; dec_sym(exp) == symrepr_nil());
-}
-</code></pre>
+}</code></pre>
 <p>The <code>is_symbol_nil</code> returns <code>true</code> only for the specific symbol that represents <code>nil</code>. Likewise, <code>is_symbol_eval</code> and <code>is_symbol_merror</code> return true only for the eval symbol and the memory error symbol.</p>
 <pre><code>static inline bool is_symbol_eval(VALUE exp) {
   return (is_symbol(exp) &amp;&amp; dec_sym(exp) == symrepr_eval());
@@ -322,13 +316,11 @@ VALUE ec_eval_global_env;
 
 static inline bool is_symbol_merror(VALUE exp) {
   return (is_symbol(exp) &amp;&amp; dec_sym(exp) == symrepr_merror());
-}
-</code></pre>
+}</code></pre>
 <p><code>last_operand</code> checks if there is exactly one element in a list.</p>
 <pre><code>static inline bool last_operand(VALUE exp) {
   return is_symbol_nil(cdr(exp));
-}
-</code></pre>
+}</code></pre>
 <h2 id="the-dispatcher">The dispatcher</h2>
 <p>The function that is called from the REPL to evaluate a program is called <code>ec_eval_program</code> and takes just a program as a single argument. This function sets up the register machine in an initial state, allocates a stack and then calls <code>ec_eval</code> that is doing the real work. When <code>ec_eval</code> is finished control returns to <code>ec_eval_program</code> that frees the stack and returns the contents of the val register to the user.</p>
 <pre><code>VALUE ec_eval_program(VALUE prg) {
@@ -345,16 +337,14 @@ static inline bool is_symbol_merror(VALUE exp) {
 
   stack_free(&amp;rm_state.S);
   return rm_state.val;
-}
-</code></pre>
+}</code></pre>
 <p>The only really important detail within <code>ec_eval_program</code> is that the cont register is set to <code>CONT_DONE</code>. When the <code>CONT_DONE</code> continuation is "run", after the evaluation of an expression, either evaluation steps to the next expression in the program or if there are no more expressions, evaluation finishes.</p>
 <p>The evaluator, <code>ec_eval</code> can be in one of three states called <code>EVAL_DISPATCH</code>, <code>EVAL_CONTINUATION</code> and <code>EVAL_APPLY_DISPATCH</code>. This will become more clear later, but in the <code>EVAL_DISPATCH</code> state the control will branch away depending on what kind of expression is residing in the exp register. In the <code>EVAL_CONTINUATION</code> state, control branches depending on the contents of the cont register instead. Finally, in state <code>EVAL_APPLY_DISPATCH</code> the branching depends on what kind of function resides in the fun register.</p>
 <pre><code>typedef enum {
   EVAL_DISPATCH,
   EVAL_CONTINUATION,
   EVAL_APPLY_DISPATCH
-} eval_state;
-</code></pre>
+} eval_state;</code></pre>
 <p>There are a number of different continuations that can be indicated within the cont register. The continuations are listed below and their use will become clear as we look at where they are "created" within the implementation.</p>
 <pre><code>typedef enum {
   CONT_DONE,
@@ -369,7 +359,6 @@ static inline bool is_symbol_merror(VALUE exp) {
   CONT_AND,
   CONT_OR
 } continuation;
-
 </code></pre>
 <p>With that in place, the <code>ec_eval</code> function is just a big switch wrapped in a while loop. The loop will repeat until a <code>done</code> flag is set to true. This flag is set to <code>true</code> within the <code>CONT_DONE</code> continuation in case there are no more expressions to evaluate.</p>
 <p>Depending on the state stored in <code>es</code>, <code>ec_eval</code> either dispatches based on the kind of expression within register exp, or the continuation stored within register cont, or finally depending on kind of function application. Function application dispatch is handled by a function called <code>eval_apply_dispatch</code> that we will look at further down.</p>
@@ -417,16 +406,14 @@ static inline bool is_symbol_merror(VALUE exp) {
     case EVAL_APPLY_DISPATCH:  eval_apply_dispatch(&amp;es); break;
     }
   }
-}
-</code></pre>
+}</code></pre>
 <p>So, <code>ec_eval</code> really delegates all the work to a collection of functions depending on the state. The sections below will go through these function in groups of "eval" and "cont" functions that depend on each other.</p>
 <h2 id="evaluation-of-self-evaluating-expressions">Evaluation of self-evaluating expressions</h2>
 <p>Some expressions evaluate to them self. Examples of such expressions are, a value such as 42 or a string like "hello world". When these are encountered, the exp register is copied to the val register and the <code>ec_eval</code> state is set to <code>EVAL_CONTINUATION</code>.</p>
 <pre><code>static inline void eval_self_evaluating(eval_state *es) {
   rm_state.val = rm_state.exp;
   *es = EVAL_CONTINUATION;
-}
-</code></pre>
+}</code></pre>
 <p>This means that in the next iteration of the loop in <code>ec_eval</code> the dispatch will be based on the contents of the cont register.</p>
 <p>If for example this particular self evaluating expression was the 42 in <code>(+ 1 42)</code>, the continuation would now proceed to apply the fundamental operation <code>+</code> to the now evaluated arguments.</p>
 <h2 id="evaluation-of-variables">Evaluation of variables</h2>
@@ -442,16 +429,14 @@ static inline bool is_symbol_merror(VALUE exp) {
     rm_state.val = env_lookup(rm_state.exp, ec_eval_global_env);
   }
   *es = EVAL_CONTINUATION;
-}
-</code></pre>
+}</code></pre>
 <h2 id="evaluation-of-quoted-expressions">Evaluation of quoted expressions</h2>
 <p>Evaluation of a quoted expression such as <code>(quote apa)</code> or equivalently <code>'apa</code> is done by putting the quoted expression directly into the val register.</p>
 <p>Internally a quoted expression is a list with the symbol <code>quote</code> at the head (or car) position followed by the argument expression to return unevaluated. So this second element or the car(cdr(qouted_exp)) is result of the evaluation.</p>
 <pre><code>static inline void eval_quoted(eval_state *es) {
   rm_state.val = car(cdr(rm_state.exp));
   *es = EVAL_CONTINUATION;
-}
-</code></pre>
+}</code></pre>
 <h2 id="evaluation-of-define-expressions">Evaluation of define expressions</h2>
 <p>Evaluation of a define expression is the first of the examples that will create a continuation. a define expression has the form <code>(define variable expression)</code> that is a list with three elements where we are interested in element 2 and 3. Element 3, should be evaluated and then stored into the environment together with the key in element 2. But element 3 is not yet evaluated and this is where the continuation comes in.</p>
 <p>The key is placed in the unev register, because we will need it later, and the expression to evaluate and bind to the key is stored in the exp register.</p>
@@ -467,8 +452,7 @@ static inline bool is_symbol_merror(VALUE exp) {
              rm_state.cont);
   rm_state.cont = enc_u(CONT_DEFINE);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p>The <code>cont_define</code> function really has quite a simple task. It needs to associate the key and evaluated result of the expression (now in the val register) in the environment. The code however gets a little bit complicated because of the use of <code>cons</code> that allocates a heap cons-cell. This allocation can fail which means that the garbage collector should be run. After running the garbage collector another attempt to allocate the cons-cell is performed. If the second attempt also fails to allocate a cell, the computation should be aborted since we are clearly without any recoverable memory.</p>
 <p>The continuation and the unev contents that we pushed are first restored. The unev register now contains the key and the val register the value.</p>
 <p>Then <code>env_set</code> is called (which internally uses cons) to add the new association to the global environment.</p>
@@ -493,8 +477,7 @@ static inline bool is_symbol_merror(VALUE exp) {
   ec_eval_global_env = new_env;
   rm_state.val = rm_state.unev;
   *es = EVAL_CONTINUATION;
-}
-</code></pre>
+}</code></pre>
 <p>If the extension of the environment is successful, the val register is set to the key and the <code>es</code> state is set to signal that it is time to apply a continuation.</p>
 <h2 id="evaluation-of-lambda-expressions">Evaluation of lambda expressions</h2>
 <p>Evaluation of lambda is another example that is really quite simple but made more complicated because of allocation of cons-cells.</p>
@@ -502,8 +485,7 @@ static inline bool is_symbol_merror(VALUE exp) {
 <pre><code>static inline void eval_lambda(eval_state *es) {
    rm_state.val = mkClosure();
   *es = EVAL_CONTINUATION;
-}
-</code></pre>
+}</code></pre>
 <p>So to create a closure, the list representing the lambda is broken up and then the constituents are re-composed together with an environment into a closure.</p>
 <p>It then goes through the same process of checking if all the conses were successful and possibly a retry before either succeeding or failing.</p>
 <pre><code>static inline VALUE mkClosure(void) {
@@ -528,8 +510,7 @@ static inline bool is_symbol_merror(VALUE exp) {
     rm_state.cont = enc_u(CONT_DONE);
   }
   return closure;
-}
-</code></pre>
+}</code></pre>
 <p>In the end, the closure ends up in the val register.</p>
 <h2 id="evaluate-progn-sequences-of-expressions">Evaluate progn sequences of expressions</h2>
 <p>In lispBM you can evaluate a sequence of expression using the <code>progn</code> facility. The result of evaluating the sequence is the value that the last expression in the sequence evaluates to. For example <code>(progn 1 2 3)</code> evaluates to 3.</p>
@@ -537,8 +518,7 @@ static inline bool is_symbol_merror(VALUE exp) {
   push_u32(&amp;rm_state.S, rm_state.cont);
   rm_state.unev = cdr(rm_state.exp);
   eval_sequence(es);
-}
-</code></pre>
+}</code></pre>
 <p>Here, the unev register is set to the expressions to evaluate and the continuation is pushed since we will overwrite that register. <code>eval_progn</code> then calls a function called <code>eval_sequence</code>.</p>
 <p><code>eval_sequence</code> is part of a loop that also involves a continuation called <code>cont_sequence</code>. These two will take turns running for as long as there are expressions in the sequence left to evaluate.</p>
 <p><code>eval_sequence</code> sets up the exp register for evaluation of the head of the sequence of expressions. Then, either we have exhausted the list or we need to iterate via <code>cont_sequence</code>.</p>
@@ -554,15 +534,13 @@ static inline bool is_symbol_merror(VALUE exp) {
   push_u32(&amp;rm_state.S, rm_state.unev);
   rm_state.cont = enc_u(CONT_SEQUENCE);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p><code>cont_sequence</code> restores unev and sets up for evaluation of the next element in the sequence.</p>
 <pre><code>static inline void cont_sequence(eval_state *es) {
   pop_u32(&amp;rm_state.S, &amp;rm_state.unev);
   rm_state.unev = cdr(rm_state.unev);
   eval_sequence(es);
-}
-</code></pre>
+}</code></pre>
 <hr />
 <p><strong>Edited 2020-05-23 (BugFix)</strong></p>
 <p>When evaluating a sequence of expressions (such as a progn construct), the original environment also has to be stored on the heap and restored before before evaluation of each of the expressions in the sequence.</p>
@@ -571,8 +549,7 @@ static inline bool is_symbol_merror(VALUE exp) {
   push_u32_2(&amp;rm_state.S, rm_state.cont, rm_state.env);
   rm_state.unev = cdr(rm_state.exp);
   eval_sequence(es);
-}
-</code></pre>
+}</code></pre>
 <p><code>eval_sequence</code> pops the environment then takes one of two branches depending if there is only one expression left in the sequence or more. It is important to treat the last expression in the sequence in a special way to allow <code>progn</code> to be used to construct a tail-recursive function.</p>
 <p>If there are more than one expression in the sequence, the environment is pushed on the stack again for safekeeping. While if it is the last expression nothing should be pushed onto the stack at all.</p>
 <pre><code>static inline void eval_sequence(eval_state *es) {
@@ -589,8 +566,7 @@ static inline bool is_symbol_merror(VALUE exp) {
   push_u32_2(&amp;rm_state.S, rm_state.env, rm_state.unev);
   rm_state.cont = enc_u(CONT_SEQUENCE);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p>Storing and restoing the environment before and after each expression in the sequence is important if the expression itself modifies the environment. This would have an effect on the following expressions that would no longer be evaluated in the intended environment which may cause incorrect results or errors.</p>
 <h2 id="evaluation-of-conditionals">Evaluation of conditionals</h2>
 <p>Conditionals are handled by another evaluator-continuation pair. The evaluator sets up for evaluation of the branching condition and the continuation then either sets up the then or the else branch for evaluation.</p>
@@ -610,8 +586,7 @@ static inline void cont_branch(eval_state *es) {
     rm_state.exp = car(rm_state.unev);
   }
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <h2 id="evaluation-of-let-expressions">Evaluation of let expressions</h2>
 <p>The implementation of evaluation of let expressions gets a bit complicated as let should allow for the definition of mutually recursive functions. This means that a closure defined that is bound early in the sequence of variable binding may, in its enclosed environment, need to have a binding for a variable that is not yet set or evaluated. To get around this a kind of ghost-bindings are created for all of the variables to be bound in the let expression, before evaluating any of the "right hand sides". This gets a bit further complicated by the fact that the binding associations are created using cons-cells and the usual checks and potential run of the garbage collector are needed.</p>
 <pre><code>static inline void eval_let(eval_state *es) {
@@ -647,8 +622,7 @@ static inline void cont_branch(eval_state *es) {
 
   rm_state.env = new_env;
   eval_let_loop(es);
-}
-</code></pre>
+}</code></pre>
 <p>If <code>eval_let</code> manages to set up the ghost-bindings it will go into a loop similar to the case for <code>progn</code>, where a continuation and an evaluator will take turns to run for each of the key-expression pair to be evaluated and bound.</p>
 <pre><code>static inline void eval_let_loop(eval_state *es) {
   if (is_symbol_nil(rm_state.unev)) {
@@ -661,16 +635,14 @@ static inline void cont_branch(eval_state *es) {
   push_u32_2(&amp;rm_state.S, rm_state.env, rm_state.unev);
   rm_state.cont = enc_u(CONT_BIND_VAR);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p>When a "right hand side" has been evaluated it is bound to one of the already existing ghost-bindings by a call to <code>env_modify_binding</code>.</p>
 <pre><code>static inline void cont_bind_var(eval_state *es) {
   pop_u32_2(&amp;rm_state.S,&amp;rm_state.unev, &amp;rm_state.env);
   env_modify_binding(rm_state.env, car(car(rm_state.unev)), rm_state.val);
   rm_state.unev = cdr(rm_state.unev);
   eval_let_loop(es);
-}
-</code></pre>
+}</code></pre>
 <h2 id="evaluation-of-short-circuit-capable-logic-operators">Evaluation of short-circuit capable logic operators</h2>
 <p>Since we want short-circuit capable logical operators <code>and</code>, and <code>or</code>, we cannot implement these as a regular built in fundamental operation. The default way to apply built in fundamentals are by evaluating all the arguments before the application and this would make short-circuit impossible.</p>
 <p>The <code>and</code> and <code>or</code> operators in lispBM can take an arbitrary number of arguments. If the number of arguments are zero, <code>and</code> should return <code>t</code> and <code>or</code> should return <code>nil</code>. If there are more than one arguments, <code>and</code> should return either the last non-false value or <code>nil</code> while <code>or</code> should return the first true value or <code>nil</code>.</p>
@@ -685,8 +657,7 @@ static inline void cont_branch(eval_state *es) {
   rm_state.exp = car(cdr(rm_state.exp));
   rm_state.cont = enc_u(CONT_AND);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p>Once the first argument is evaluated, the continuation will run and check whether it is a true value or a <code>nil</code> before potentially continuing with the next value in unev.</p>
 <pre><code>static inline void cont_and(eval_state *es) {
   pop_u32(&amp;rm_state.S, &amp;rm_state.unev);
@@ -705,8 +676,7 @@ static inline void cont_branch(eval_state *es) {
   push_u32(&amp;rm_state.S, rm_state.unev);
   rm_state.cont = enc_u(CONT_AND);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p><code>or</code> is similar to the <code>and</code> case, except for in how the decision to evaluate yet another expression or not is taken.</p>
 <pre><code>static inline void eval_or(eval_state *es) {
   if (is_symbol_nil(cdr(rm_state.exp))) {
@@ -737,8 +707,7 @@ static inline void cont_or(eval_state *es) {
   push_u32(&amp;rm_state.S, rm_state.unev);
   rm_state.cont = enc_u(CONT_OR);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <h2 id="the-done-continuation">The done continuation</h2>
 <p>the <code>done</code> continuation is reached whenever a "top-level" expression has been fully evaluated. This means that either should there be more expressions left in the program (the prg register) or computation is done. If the computation is done, the done flag is set and we return to the dispatcher that will not terminate the loop and finish up.</p>
 <pre><code>static inline void cont_done(eval_state *es, bool *done) {
@@ -756,8 +725,7 @@ static inline void cont_or(eval_state *es) {
   stack_clear(&amp;rm_state.S);
   *done = false;
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p>If there are more expressions to evaluate, the registers are set up for another round and the cont register set to <code>CONT_DONE</code>. <code>EVAL_DISPATCH</code> then proceeds as usual.</p>
 <h2 id="evaluation-of-function-application">Evaluation of function application</h2>
 <p>Evaluation of function applications is a bit complicated as it involves looping over and evaluating arguments, closures, fundamental operations and extensions.</p>
@@ -777,8 +745,7 @@ static inline void cont_setup_no_arg_apply(eval_state *es) {
   rm_state.fun = rm_state.val;
   rm_state.argl = enc_sym(symrepr_nil());
   *es = EVAL_APPLY_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p><code>cont_setup_no_arg_apply</code> moves val to fun, so now fun contains the evaluated function-object. This is what is needed in preparation for going to dispatcher again and this time in <code>EVAL_APPLY_DISPATCH</code> mode that depending on the contents of the fun register picks the how to branch off next.</p>
 <h3 id="function-application-the-general-case">Function application the general case</h3>
 <p>In general a function application (one with arguments) will be directed to the <code>eval_application</code> function.</p>
@@ -788,8 +755,7 @@ static inline void cont_setup_no_arg_apply(eval_state *es) {
   push_u32_3(&amp;rm_state.S, rm_state.cont, rm_state.env, rm_state.unev);
   rm_state.cont = enc_u(CONT_EVAL_ARGS);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p><code>eval_application</code> puts the function-expression into the exp register and the arguments into unev and sets up for running of <code>CONT_EVAL_ARGS</code> once the function-expression has been evaluated.</p>
 <p>When the continuation is later run, it moves val into fun and sets up for a loop to evaluate all the arguments. argl is set to <code>nil</code>, here all the evaluated arguments will be accumulated as the loop iterates.</p>
 <pre><code>static inline void cont_eval_args(eval_state *es) {
@@ -798,8 +764,7 @@ static inline void cont_setup_no_arg_apply(eval_state *es) {
   push_u32(&amp;rm_state.S,rm_state.fun);
   rm_state.argl = enc_sym(symrepr_nil());
   eval_arg_loop(es);
-}
-</code></pre>
+}</code></pre>
 <p>The <code>eval_arg_loop</code> either notices that there is only one argument left to evaluate and it sets up for evaluation of the last argument. Evaluation of the last argument is special because directly after doing that the function application can be performed. So there is a special evaluator and continuation for that case that sets up for a run of the function application dispatcher.</p>
 <pre><code>static inline void eval_arg_loop(eval_state *es) {
   push_u32(&amp;rm_state.S, rm_state.argl);
@@ -816,8 +781,7 @@ static inline void cont_setup_no_arg_apply(eval_state *es) {
 static inline void eval_last_arg(eval_state *es) {
   rm_state.cont = enc_u(CONT_ACCUMULATE_LAST_ARG);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p>The other option is that there are more than just one argument left and the evaluator will set up a generic <code>CONT_ACCUMULATE_ARG</code>.</p>
 <p>When <code>cont_accumulate_arg</code> is launched, the value in the val register should be consed onto the argl list. This means that it is again time for one of those checks to see if garbage collection is needed and a possible retry.</p>
 <pre><code>static inline void cont_accumulate_arg(eval_state *es) {
@@ -838,8 +802,7 @@ static inline void eval_last_arg(eval_state *es) {
   rm_state.argl = argl;
   rm_state.unev = cdr(rm_state.unev);
   eval_arg_loop(es);
-}
-</code></pre>
+}</code></pre>
 <p><code>cont_accumulate_arg</code> then continues the looping behaviour.</p>
 <p><code>cont_accumulate_last_arg</code> is very similar, but instead of looping in the end it sets up for the function application dispatcher to run.</p>
 <p>Here reversal of the argument list is also performed as the arguments have been accumulating in argl in reverse order. So, even more checks for garbage collection in this variant of the continuation.</p>
@@ -873,8 +836,7 @@ static inline void eval_last_arg(eval_state *es) {
   rm_state.argl = rev_args;
   pop_u32(&amp;rm_state.S, &amp;rm_state.fun);
   *es = EVAL_APPLY_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <h3 id="the-function-application-dispatcher">The function application dispatcher</h3>
 <p>Below is the implementation of the application dispatcher. It recognises four different kinds of application, where one is a bit of a special case. This is the case for the eval function. This <code>eval_eval</code> case implements the eval function that can be called to evaluate for example quoted expressions.</p>
 <p>Anyway, this is just a dispatcher, it checks what kind of function is in the fun register and branches depending.</p>
@@ -887,8 +849,7 @@ static inline void eval_last_arg(eval_state *es) {
     rm_state.cont = enc_u(CONT_DONE);
     *es = EVAL_CONTINUATION;
   }
-}
-</code></pre>
+}</code></pre>
 <h3 id="application-of-a-closure">Application of a closure</h3>
 <p>Puh! Application of functions is quite brushy but now we should have everything set up in the fun and argl registers to apply the function.</p>
 <p>If the function application dispatcher notices that the function in the fun register is a closure, we will end up in the <code>eval_apply_closure</code> function.</p>
@@ -913,8 +874,7 @@ static inline void eval_last_arg(eval_state *es) {
   rm_state.exp = car(cdr(cdr(rm_state.fun)));
   pop_u32(&amp;rm_state.S, &amp;rm_state.cont);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <p>If everything goes well with construction of the local environment, the exp register is set to the body from the closure and then we loop back to <code>EVAL_DISPATCH</code> that will evaluate the body in the local environment.</p>
 <h3 id="application-of-a-fundamental-operation">Application of a fundamental operation</h3>
 <p>If the function application dispatcher finds out that the fun register is holding a fundamental operation we end up in <code>eval_apply_fundamental</code>. These fundamental operations are implemented in C and expect an array of arguments and an argument count. The array of arguments is obtained by pushing the contents of argl onto the stack. A pointer to the first argument on the stack is then passed to the fundamental operation.</p>
@@ -948,7 +908,6 @@ static inline void eval_last_arg(eval_state *es) {
 
 If successful, the result of the fundamental operation will be in the val register
 and the state is set up for evaluation of a continuation. 
-
 </code></pre>
 <h3 id="application-of-an-extension">Application of an extension</h3>
 <p>Extensions are very similar to fundamentals. They both expect arguments in array form and are called via a C function pointer.</p>
@@ -971,16 +930,14 @@ and the state is set up for evaluation of a continuation.
   stack_drop(&amp;rm_state.S, count);
   pop_u32(&amp;rm_state.S, &amp;rm_state.cont);
   *es = EVAL_CONTINUATION;
-}
-</code></pre>
+}</code></pre>
 <h3 id="application-of-the-eval-function">Application of the eval function</h3>
 <p>In the case of eval, argl will contain a single expression that should be evaluated. So this case just sets up for another round of evaluation, now with the head of argl moved into the exp register.</p>
 <pre><code>static inline void eval_eval(eval_state *es) {
   rm_state.exp = car(rm_state.argl);
   pop_u32(&amp;rm_state.S, &amp;rm_state.cont);
   *es = EVAL_DISPATCH;
-}
-</code></pre>
+}</code></pre>
 <h2 id="some-thoughts">Some thoughts</h2>
 <p>Now after reading about the explicit control evaluator in SICP and having tried to implement it, I think I start to see that the older implementation of evaluation in lispBM, called <a href="../lispbm_evaluation_function/index.html"><code>eval_cps</code></a> is actually quite similar. It seems to me that <code>eval_cps</code> is a much less principled (more MacGyvered) implementation of the same ideas. There are not as many registers in <code>eval_cps</code>, and as a result the stack is used much more. Either way, this is a much needed cleanup of the code that performs evaluation.</p>
 <p>In a sense, <code>eval_cps</code> implements a four registers machine. There is a program-, current exp-, current env- and r-register with very similar functionality to the exp-, env-, prg-, and val-register described here. Lists of arguments and such are allocated on the stack rather than an argl register.</p>

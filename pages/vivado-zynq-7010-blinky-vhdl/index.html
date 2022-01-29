@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -283,8 +284,7 @@ begin
         end if;
     end if;
     end process;
-end Behavioral; 
-</code></pre>
+end Behavioral; </code></pre>
 <p>Now we have a VHDL program typed in and the next thing to do is to integrate it with out block design.</p>
 <h2 id="back-to-the-block-design">Back to the block design</h2>
 <p>Open the block design either bt clicking on "Open Block Design" in the flow navigator or if you already find it open in a tab just select that.</p>
@@ -331,12 +331,10 @@ set_property -dict {PACKAGE_PIN K15 IOSTANDARD LVCMOS33} [get_ports {LED}]
 #set_property -dict {PACKAGE_PIN K11 IOSTANDARD LVCMOS33} [get_ports {gpio24}]
 #set_property -dict {PACKAGE_PIN K13 IOSTANDARD LVCMOS33} [get_ports {gpio25}]
 #set_property -dict {PACKAGE_PIN L12 IOSTANDARD LVCMOS33} [get_ports {gpio26}]
-#set_property -dict {PACKAGE_PIN G12 IOSTANDARD LVCMOS33} [get_ports {gpio27}]
-</code></pre>
+#set_property -dict {PACKAGE_PIN G12 IOSTANDARD LVCMOS33} [get_ports {gpio27}]</code></pre>
 <p>Only one of these lines are active, the rest are comments. But there is one line for each of the GPIO on the Zynqberry here just in case you need more in the future.</p>
 <p>The line</p>
-<pre><code>set_property -dict {PACKAGE_PIN K15 IOSTANDARD LVCMOS33} [get_ports {LED}]
-</code></pre>
+<pre><code>set_property -dict {PACKAGE_PIN K15 IOSTANDARD LVCMOS33} [get_ports {LED}]</code></pre>
 <p>connects the port "LED" to the package pin "K15" which is Zynqberry GPIO2.</p>
 <p>Now we can try to synthesize, implement and generate a bitstream. We can initiate the entire flow by click on "Generate Bitstream" under "PROGRAM and DEBUG" in the flow navigator. A dialog appears where you can configure some parameters about the flow (like how much computer resources to use. Just going with the default should be fine.</p>
 <p>Vivado will now be working hard for a while. Sooner or later the process will finish (I hope successfully).</p>

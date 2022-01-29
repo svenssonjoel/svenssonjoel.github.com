@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -164,8 +165,7 @@
 
 #define LISPBM_HEAP_SIZE 2048
 #define LISPBM_OUTPUT_BUFFER_SIZE 4096
-#define LISPBM_INPUT_BUFFER_SIZE 1024
-</code></pre>
+#define LISPBM_INPUT_BUFFER_SIZE 1024</code></pre>
 <p>The code starts out including the parts needed form Zephyr OS. <code>device</code> and <code>uart</code> are involved in the low level aspects of communication, the <code>ring_buffer</code> is used to store data received and buffered to be sent over the uart.</p>
 <p>The the header files from lispBM are also included and some sizes that are going to be used further down are defined. The heap size is measured in number of cons-cells (so size in bytes is <code>8 * LISPBM_HEAP_SIZE</code>) while the input and output (used for text interaction with the user) buffer sizes are in bytes.</p>
 <h2 id="input-and-output-over-usb-on-the-nrf52">Input and Output over USB on the NRF52</h2>
@@ -177,8 +177,7 @@ u8_t out_ring_buffer[RING_BUF_SIZE];
 struct device *dev;
 
 struct ring_buf in_ringbuf;
-struct ring_buf out_ringbuf;
-</code></pre>
+struct ring_buf out_ringbuf;</code></pre>
 <p>The <code>in_ring_buffer</code> and <code>out_ring_buffer</code> is the data storage arrays for input and output data and the rest of the state that is needed for ringbuffer functionality is in the struct <code>ring_buf</code>. This ringbuffer implementation is a part of the Zephyr OS.</p>
 <p>Above, a device is also declared. These <code>device</code> structs are how Zephyr handles perpiherals (even down to a single GPIO pin seems to need one of these device structs declared). This device will represent the USB peripheral.</p>
 <p>The <code>interrupt_handler</code> defined below runs for as long as there are uart interrupts pending and for each pending interrupt there is a check to see if there is data to read or to send.</p>
@@ -214,8 +213,7 @@ struct ring_buf out_ringbuf;
       send_len = uart_fifo_fill(dev, buffer, rb_len);
     }
   }
-}
-</code></pre>
+}</code></pre>
 <p>If I remember correcly, the interrupt routine above is just a tiny tweak of code from the CDC ACM example provided with Zephyr.</p>
 <p>Now, <code>get_char</code>. This function returns an integer which is <code>-1</code> on failure to get a character, otherwise the result is the character read. In this function interrupts are postponed while interacting with the ringbuffer, I'm not sure this is actually required (since we are operating at a single byte at a time). The function tries to read one byte from the input ringbuffer and if that is successful, the byte is returned as result.</p>
 <pre><code>int get_char() {
@@ -229,8 +227,7 @@ struct ring_buf out_ringbuf;
     return c;
   }
   return -1;
-}
-</code></pre>
+}</code></pre>
 <p>The <code>put_char</code> function takes an integer as input (not a <code>char</code>) this is so that it can be directly hooked up to <code>get_char</code> if one would like (<code>put_char(get_char())</code>). So <code>putchar</code> checks if the int represents a character and in that case adds it to the output ringbuffer. The same postponing of interrupts occur here.</p>
 <pre><code>void put_char(int i) {
   if (i &gt;= 0 &amp;&amp; i &lt; 256) {
@@ -241,8 +238,7 @@ struct ring_buf out_ringbuf;
     uart_irq_tx_enable(dev);
     irq_unlock(key);
   }
-}
-</code></pre>
+}</code></pre>
 <p>A <code>printf</code>-like function is always useful! Here it is called <code>usb_printf</code>. One idea would be to implement this using <code>put_char</code>, but it feels more efficient to implement it by writing a whole bunch of bytes into the output ringbuffer at a time instead. The <code>print_buffer</code> used internally in this function can hold up to at 4096 bytes, which is more than the rinbuffers can hold at once. Because of this there is a loop that in each iteration adds chunks from the <code>print_buffer</code> to the ringbuffer (as many bytes as it can), and then triggers the interrupt that should free up new space in the ringbuffer.</p>
 <pre><code>void usb_printf(char *format, ...) {
 
@@ -264,8 +260,7 @@ struct ring_buf out_ringbuf;
     irq_unlock(key);
     uart_irq_tx_enable(dev);
   }
-}
-</code></pre>
+}</code></pre>
 <p>To read lines of text from the user an <code>inputline</code> function is used. This function should be more or less identical to the same function shown in <a href="../lispbm_chibios_repl/index.html">the ChibiOS REPL</a>. So I wont go into any detail of this here.</p>
 <pre><code>int inputline(char *buffer, int size) {
   int n = 0;
@@ -299,8 +294,7 @@ struct ring_buf out_ringbuf;
   }
   buffer[size - 1] = 0;
   return 0; // Filled up buffer without reading a linebreak
-}
-</code></pre>
+}</code></pre>
 <h2 id="setting-up-communication-and-implementing-the-repl">Setting up Communication and Implementing the REPL</h2>
 <p>The <code>main</code> function starts out exactly like the CDC ACM example that comes with Zephyr. This example code can be found within your Zephyr directory <code>zephyr/samples/subsys/usb/cdc_acm/src/main.c</code></p>
 <p>Here the device is created, ringbuffers initialized, the uart configured and the <code>interrupt_handler</code> function is set to be called upon an uart interrupt.</p>
@@ -335,8 +329,7 @@ struct ring_buf out_ringbuf;
   
   uart_irq_callback_set(dev, interrupt_handler);
   
-  uart_irq_rx_enable(dev);
-</code></pre>
+  uart_irq_rx_enable(dev);</code></pre>
 <p>In this example the REPL will run in the main thread, unlike the ChibiOS example where a second thread was created.</p>
 <p>After allocating space for input and output of text exchanged with the user, the lispBM subsystems are started up.</p>
 <pre><code>  usb_printf(&quot;Allocating input/output buffers\n\r&quot;);
@@ -370,8 +363,7 @@ struct ring_buf out_ringbuf;
   }
     
   VALUE prelude = prelude_load();
-  eval_cps_program(prelude);
-</code></pre>
+  eval_cps_program(prelude);</code></pre>
 <p>At the end here a small library is loaded, called the prelude, and evaluated. The prelude consists of a series of definitions of functions and evaluating this prelude primes the environment with this set of functions.</p>
 <p>After this setup, the REPL loop begins. It prints a prompt. Clears input and output buffers and then reads a line from the user. If the line read is a command for the REPL, <code>:info</code> or <code>quit</code> those are processed otherwise the input is parsed by the <code>tokpar_parse</code> function and the result of that parsing (a heap structure) is evaluated.</p>
 <pre><code>  usb_printf(&quot;Lisp REPL started (ZephyrOS)!\n\r&quot;);
@@ -414,8 +406,7 @@ struct ring_buf out_ringbuf;
 
   symrepr_del();
   heap_del();
-}
-</code></pre>
+}</code></pre>
 <p>If the evaluation is successful, the result is printed and the loop is executed again.</p>
 <h2 id="building-zephyr-os">Building Zephyr OS</h2>
 <p>The code and <em>other files</em> are stored in a directory structure that looks as follows.</p>
@@ -424,8 +415,7 @@ struct ring_buf out_ringbuf;
 ├── Kconfig
 ├── prj.conf
 └── src
-    └── main.c
-</code></pre>
+    └── main.c</code></pre>
 <p>We will now look at those files that have been altered for this example. The Kconfig file is unchanged from the CDC ACM example from Zephyr.</p>
 <p>Starting with the <code>CMakeLists.txt</code> file that has been altered to also pull in and build the source files from lispBM. The <code>repl-zephyr</code> directory is located inside of the lispBM source tree directly under its root so when the <code>CMakeLists.txt</code> file refers to lispBM those paths start out with <code>../</code>. The <code>CMakeLists.txt</code> is used by cmake to create a traditional <code>Makefile</code> that can be processed with the command <code>make</code>. The contents of the <code>CMakeLists.txt</code> file is shown below.</p>
 <pre><code>cmake_minimum_required(VERSION 3.13.1)
@@ -446,8 +436,7 @@ target_sources(app PRIVATE ${app_sources}
                    PRIVATE ${lisp_sources}
                    PRIVATE ../src/prelude.xxd)
 target_include_directories(app PRIVATE ../include
-                               PRIVATE ../src)
-</code></pre>
+                               PRIVATE ../src)</code></pre>
 <p>The <code>add_definitions</code> command means the generated <code>Makefile</code> should when building c source use the flags <code>-D_32_BIT_</code>, <code>-D_PRELUDE</code> and <code>-DTINY_SYMTAB</code>. This needs some polishing I see as the naming convention here is not that uniform. Also, the <code>_32_BIT_</code> flag is pretty pointless as I have now decided that I will not put any effort into making it compatible with architectures that are not 32bit. However, the remaining defines mean that the prelude library will be built into the binary and that the tiny version of the symbol table will be used. See this <a href="../lispbm_current_status/index.html">blog post</a> for more information on the symbol representation table.</p>
 <p>To build the prelude into the binary, the lispBM source code of the library is "compiled" into a C array of bytes in the file <code>prelude.xxd</code> that will be baked into the executable and later parsed when starting up the REPL. This slightly special compilation step is added in the <code>CMakeLists.txt</code> file as a custom command that will be executed as part of the make procedure.</p>
 <p>The <code>CMakeLists.txt</code> file is also told where the additional source and header files can be found from the lispBM source tree. This is done with the <code>target_include_directories</code> command for headers and the <code>target_sources</code> for source code.</p>
@@ -477,8 +466,7 @@ CONFIG_SETTINGS_FCB=y
 # Settings needed for custom PCB based on RIGADO BMD-340
 CONFIG_CLOCK_CONTROL_NRF_K32SRC_XTAL=n
 CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=y
-CONFIG_GPIO_AS_PINRESET=n
-</code></pre>
+CONFIG_GPIO_AS_PINRESET=n</code></pre>
 <p>Towards the last lines of the <code>prj.conf</code> file contains some clock configuration information. If using a development board like the nrf52480-PCA10056 these can be commented out. If you use a custom board, perhaps based on the BMD340 module, these are needed. The difference is that on the latter boards there wont be any external clock source and an internal clock source should be used. The <code>GPIO_AS_PINRESET</code> option is related to how I flash these custom boards using SWD and openocd and don't have access to any on board j-link programmer as on the vendor provided development boards.</p>
 <p>To help with building of Zephyr I use some scripts. The first one, below, I call <code>set_fw_build.sh</code>. This is from the lispBM directory. Running the script creates a build directory and runs <code>cmake</code> on the source tree (that contains the <code>CMakeLists.txt</code> file. This run of <code>cmake</code> populates the build directory with (among other things) a Makefile.</p>
 <pre><code>#!/bin/bash
@@ -489,8 +477,7 @@ else
     mkdir repl-zephyr_build
     cd repl-zephyr_build
     cmake -G &quot;Eclipse CDT4 - Unix Makefiles&quot; -DBOARD=nrf52840_pca10056 ../repl-zephyr
-fi    
-</code></pre>
+fi    </code></pre>
 <p>Before jumping into the build directory and running <code>make</code>, some additional setup may be needed (depending on how you have configured your system for Zephyr). Zephyr needs to now a bit more about our intentions. For example, we are going to use the arm-none-eabi gcc compiler suite for cross-compilation to out target platform.</p>
 <p>There is another file, called <code>zephyr-source-me.sh</code>, that is meant to be sourced (<code>source zephyr-source-me</code>) to include it's settings into the currently running bash shells environment. So, in this file, the <code>ZEPHYR_TOOLCHAIN_VARIANT</code> is set to <code>cross-compile</code> and the <code>CROSS_COMPILE</code> variable is set to the prefix that should be used for all calls to different tools (such as <code>gcc</code>).</p>
 <p>It also sources another file of settings from the Zephyr directory tree called <code>zephyr-env.sh</code></p>
@@ -500,12 +487,10 @@ fi
 export ZEPHYR_TOOLCHAIN_VARIANT=cross-compile
 export CROSS_COMPILE=$HOME/opt/gcc-arm-none-eabi-9-2019-q4-major/bin/arm-none-eabi-
 
-source ../zephyrproject/zephyr/zephyr-env.sh 
-</code></pre>
+source ../zephyrproject/zephyr/zephyr-env.sh </code></pre>
 <p>After these last bits of setup, it is time to go into the build directory and run make, hopefully successfully.</p>
 <p>If the build is successful, the resulting binary can be flashed onto a custom board using an ST-Link and OpenOCD by issuing the following command.</p>
-<pre><code>openocd -f interface/stlink.cfg -f target/nrf52.cfg  -c &quot;init&quot; -c &quot;program repl-zephyr_build/zephyr/zephyr.hex verify reset exit&quot;
-</code></pre>
+<pre><code>openocd -f interface/stlink.cfg -f target/nrf52.cfg  -c &quot;init&quot; -c &quot;program repl-zephyr_build/zephyr/zephyr.hex verify reset exit&quot;</code></pre>
 <p>If instead you are using the nrf52480-PCA10056 I think it should be as easy as running <code>make flash</code> after successfully running <code>make</code>.</p>
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>

@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -154,14 +155,12 @@
              (yield 500000)
              (print &quot;hello &quot; x \#newline)
              (f (+ x 1))))))
-  (f 0))
-</code></pre>
+  (f 0))</code></pre>
 <p>The lispBM program above is conceptually similar to the C program below.</p>
 <pre><code>while (true) {
   usleep(500000);
   printf(&quot;hello %d\n&quot;, x++);
-}
-</code></pre>
+}</code></pre>
 <p>The screenshots below show what is output to the screen with one or two instances of this example program running. In the <code>Two instances</code> case, the second instance was started when the first one had reached a count of about 229.</p>
 <table>
 <thead>
@@ -194,15 +193,13 @@
   /* List structure */ 
   struct eval_context_s *prev;
   struct eval_context_s *next;
-} eval_context_t;
-</code></pre>
+} eval_context_t;</code></pre>
 <p>Now, <code>eval_context_t</code> also contains a block of <em>Process control</em> values. The <code>timestamp</code> and the <code>sleep_us</code> that are used to know when it is time to wake up a sleeping task. The <code>id</code> is an identification number for the task. The <code>eval_context_t</code> now also have a <code>prev</code> and <code>next</code> pointer to allow forming a doubly linked list. The list structure of contexts, will be used to implement a queue of tasks later.</p>
 <p>Apart from these task/process management fields, the <code>done</code> and <code>app_cont</code> flags have moved into the context. This is because it is necessary to maintain this information on a per task basis now. Before, the RTS only ever dealt with one task at a time and those flags could be globals.</p>
 <pre><code>static eval_context_t *ctx_queue = NULL;
 static eval_context_t *ctx_queue_last = NULL;
 static eval_context_t *ctx_done = NULL;
-static eval_context_t *ctx_running = NULL;
-</code></pre>
+static eval_context_t *ctx_running = NULL;</code></pre>
 <p>There is a <code>ctx_queue</code> that contains contexts that wait for their turn to be run. A pointer to the first element and last element of this queue is maintained so that new tasks can be easily added to the end of the queue. If no context is currently running, the <code>ctx_queue</code> is scanned from the front in a search for a context with a timestamp and sleep time that indicates it should be set as the running context. More details about this later.</p>
 <p>The <code>ctx_running</code> pointer points to the currently executing context.</p>
 <p>Contexts that terminate, either because of an error or because of running all the way through their programs, are moved to the <code>ctx_done</code> queue.</p>
@@ -224,8 +221,7 @@ void eval_cps_set_timestamp_us_callback(uint32_t (*fptr)(void)) {
 
 void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
   ctx_done_callback = fptr;
-}
-</code></pre>
+}</code></pre>
 <h2 id="enqueueing-dequeueing-and-context-creation-functions">Enqueueing, Dequeueing and Context Creation Functions</h2>
 <p>The enqueueing and dequeueing functions, together, implement the scheduling strategy. The <code>enqueue_ctx</code> function places a context at the end of the <code>ctx_queue</code> queue and the <code>dequeue_ctx</code> function searches for a context to run from the front of the <code>ctx_queue</code>. This should mean that contexts that have been in the queue the longest have priority over recently enqueued ones.</p>
 <p>The <code>enqueue_ctx</code> function just adds a context to the <code>ctx_queue</code>. So if the queue is empty, <code>ctx_queue</code> and <code>ctx_queue_last</code> will point to the newly added context. Otherwise, the new context is added after <code>ctx_queue_last</code> and <code>ctx_queue_last</code> is updated.</p>
@@ -242,8 +238,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
     ctx_queue_last-&gt;next = ctx;
     ctx_queue_last = ctx;
   }
-}
-</code></pre>
+}</code></pre>
 <p>The <code>dequeue_ctx</code> function, performs a search from the front of the <code>ctx_queue</code> and uses the <code>timestamp</code> and <code>sleep_us</code> fields of the context to see if there is a context that should be dequeued at this time. If there is no context to run at this time, either a default sleep period or the smallest <code>sleep_us</code> found when traversing the queue, whichever is smaller, is provided to the caller. This means that there is a maximum sleep period that is returned by the dequeue operation.</p>
 <pre><code>eval_context_t *dequeue_ctx(uint32_t *us) {
   uint32_t min_us = DEFAULT_SLEEP_US;
@@ -295,8 +290,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
 
   *us = min_us;
   return NULL;
-}
-</code></pre>
+}</code></pre>
 <p>A context can only reach completion when it is the currently running context, <code>ctx_running</code>. The <code>finish_ctx</code> function puts the <code>ctx_running</code> on the <code>ctx_done</code> list and calls the <code>ctx_done_callback</code>. The currently running context is set to NULL. This function is called from <code>advance_ctx</code> that is explained below.</p>
 <pre><code>void finish_ctx(void) {
   if (ctx_done == NULL) {
@@ -316,8 +310,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
     ctx_done_callback(ctx_done);
   }
   ctx_running = NULL;
-}
-</code></pre>
+}</code></pre>
 <p>The <code>remove_done_ctx</code> removes a context with id <code>cid</code> from the <code>ctx_done</code> list. The idea is that this should be used in the implementation of some kind of <code>wait</code> functionality later, the details of that needs to be worked out.</p>
 <pre><code>void remove_done_ctx(uint32_t cid) {
 
@@ -338,8 +331,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
     }
     curr = curr-&gt;next;
   }
-}
-</code></pre>
+}</code></pre>
 <hr />
 <p><strong>EDIT 2020-04-09</strong></p>
 <p><code>remove_done_ctx</code> is flawed for the case when the context to remove is the first in the <code>ctx_done</code> list. I hope the following is a fix. Here, special cases are added for an empty list of done contexts as well as a case for a list of length one. Code got a bit bulky now, in general <code>eval_cps.c</code> is in need of some refactoring.</p>
@@ -377,7 +369,6 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
   }
   return false;
 }
-
 </code></pre>
 <hr />
 <p>A new context is created and enqueued on the <code>ctx_queue</code> using the <code>create_ctx</code> function. This function takes a program, a stack size and a flag indicating if the stack should be reallocated when full, as arguments. Here, a context is allocated, a stack allocated, and then the context is enqueued. This function also assigned context ids, which are currently just increasing numbers with no recycling schema.</p>
@@ -410,13 +401,11 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
   enqueue_ctx(ctx);
 
   return ctx-&gt;id;
-}
-</code></pre>
+}</code></pre>
 <p>Lastly a small helper function that is called from the REPL to easily add a new context to the queue.</p>
 <pre><code>CID eval_cps_program(VALUE lisp) {
   return create_ctx(lisp, 256, false);
-}
-</code></pre>
+}</code></pre>
 <h2 id="scheduling-and-the-evaluator-thread-function">Scheduling and the Evaluator Thread Function</h2>
 <p>Earlier,<code>eval_cps.c</code> contained a static function (local to that file) called <code>run_eval</code>. Now evaluation should run continuously in a separate thread, but how to create that thread differs depending on platform. Therefore the new variant of <code>run_eval</code>, called <code>eval_cps_run_eval</code> is an extern function that should be wrapped in a thread.</p>
 <p>The new <code>eval_cps_run_eval</code> function contains an infinite loop, <code>while (eval_running)</code>, that in each iteration checks if there is a currently running context. If there is no currently running context, it attempts to dequeue one. Dequeueing either provides a context or a sleep period that can be used to go to sleep for a while before trying to dequeue again.</p>
@@ -440,7 +429,6 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
     }
 
     ...
-
 </code></pre>
 <h2 id="yielding">Yielding</h2>
 <p>Yielding is the only way that a context (that is not done executing) can be removed from being the currently running context. That is, there is no preemption currently. There is a symbol <code>yield</code> that can be used like a function application in a lispBM program. It takes one argument which is a sleep time. When <code>yield</code> is evaluated the function <code>yield_ctx</code> is executed.</p>
@@ -458,8 +446,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
   ctx_running-&gt;app_cont = true;
   enqueue_ctx(ctx_running);
   ctx_running = NULL;
-}
-</code></pre>
+}</code></pre>
 <p>Handling of the <code>yield</code> application is very similar to how <a href=".pages/lispbm_fundamentals_and_extensions/index.html">fundamental operations</a> are applied. In the <code>apply_continuation</code> function and the <code>APPLICATION</code> case, there is a check to see if what is being applied is the <code>yield</code> function. in that case the <code>yield_ctx</code> function is applied.</p>
 <pre><code>  ...
 
@@ -474,8 +461,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
     return;
   }
 
-  ...
-</code></pre>
+  ...</code></pre>
 <h2 id="advancing-program-execution-and-finishing-tasks">Advancing Program Execution and Finishing Tasks</h2>
 <p>A program is a list of expressions to be evaluated one after the other. The context keeps track of which expression is the currently executing one and also what expressions are left to evaluate within the program. When evaluation of one expression within a program is done, the next expression should be set as the current one. This operation is performed by the <code>advance_ctx</code> function.</p>
 <p>If there are no further expressions to evaluate as part of the program, the <code>finish_ctx</code> function is run and the context is moved to the done list.</p>
@@ -492,8 +478,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
     ctx_running-&gt;done = true;
     finish_ctx();
   }
-}
-</code></pre>
+}</code></pre>
 <p>The evaluator knows that it is done with an expression when a <code>DONE</code> continuation is encountered on the continuation stack. In this case the <code>advance_ctx</code> function is called.</p>
 <pre><code>void apply_continuation(eval_context_t *ctx, bool *perform_gc){
 
@@ -509,8 +494,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
     advance_ctx(ctx);
     return;
   ...
-  
-</code></pre>
+  </code></pre>
 <h2 id="garbage-collection">Garbage Collection</h2>
 <p>A small change is needed in how garbage collection is performed. Now that there are multiple contexts in flight, it is important to remember that all of them need to be considered when marking.</p>
 <p>The <code>gc</code> function below loops over all contexts that are runnable (the <code>ctx_queue</code>) and performs a marking phase on each of their environments, expressions, programs and so on. The currently running context is treated the same way.</p>
@@ -552,8 +536,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
 #endif
 
   return gc_sweep_phase();
-}
-</code></pre>
+}</code></pre>
 <h2 id="the-repl">The REPL</h2>
 <p>The REPL example makes use of PThreads and runs the <code>eval_cps_run_eval</code> function in a separate thread. A small wrapper is needed around that function to make it compatible with the type that PThreads assumes for a thread function.</p>
 <pre><code>void *eval_thd_wrapper(void *v) {
@@ -561,8 +544,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
   eval_cps_run_eval();
   
   return NULL;
-}
-</code></pre>
+}</code></pre>
 <p>The callbacks that are used in the REPL implementation are shown below. The <code>done_callback</code> outputs some information every time a context ends up on the done list.</p>
 <pre><code>void done_callback(eval_context_t *ctx) {
 
@@ -580,15 +562,13 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
     printf(&quot;&lt;&lt; Context %d finished with value %s &gt;&gt;\n# &quot;, cid, error);
   }
   fflush(stdout);
-}
-</code></pre>
+}</code></pre>
 <p>The <code>timestamp_callback</code> uses <code>gettimeofday</code> to generate a timestamp in number of microseconds.</p>
 <pre><code>uint32_t timestamp_callback() {
   struct timeval tv;
   gettimeofday(&amp;tv,NULL);
   return (uint32_t)(tv.tv_sec * 1000000 + tv.tv_usec);
-}
-</code></pre>
+}</code></pre>
 <p>The <code>sleep_callback</code> uses <code>nanosleep</code> to put the calling thread to sleep for a while.</p>
 <pre><code>void sleep_callback(uint32_t us) {
   struct timespec s;
@@ -596,23 +576,20 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
   s.tv_sec = 0;
   s.tv_nsec = (long)us * 1000;
   nanosleep(&amp;s, &amp;r);
-}
-</code></pre>
+}</code></pre>
 <p>Then the callbacks are registered with the evaluator.</p>
 <pre><code>  eval_cps_set_ctx_done_callback(done_callback);
   eval_cps_set_timestamp_us_callback(timestamp_callback);
-  eval_cps_set_usleep_callback(sleep_callback);
-</code></pre>
+  eval_cps_set_usleep_callback(sleep_callback);</code></pre>
 <p>And just for completeness, how to start the PThread is shown below.</p>
 <pre><code> /* Start evaluator thread */
   if (pthread_create(&amp;lispbm_thd, NULL, eval_thd_wrapper, NULL)) {
     printf(&quot;Error creating evaluation thread\n&quot;);
     return 1;
-  }
-</code></pre>
+  }</code></pre>
 <p>For a more complete picture of how the REPL is put together see <a href="https://github.com/svenssonjoel/lispBM/blob/concurrent/repl-cps/repl.c">the code</a>.</p>
 <h2 id="future-work">Future work</h2>
-<ol>
+<ol type="1">
 <li><p>More testing! The heaviest load I've started is 8 instances of the example program that sleeps and prints hello. More and more diverse test programs are needed.</p></li>
 <li><p>Add <code>wait</code> functionality. Calling <code>(wait cid)</code> should cause the task that called <code>wait</code> to stop until the task with context-id <code>cid</code> finishes. The result of <code>(wait cid)</code> should be the result computed by the task with context-id <code>cid</code>. Finished contexts are stored on a list called <code>ctx_done</code>, so one way to implement wait is wake up a waiting task periodically and perform a search over the <code>ctx_done</code> list. If the <code>cid</code> is not present in the list then the waiting task can go back to sleep for a while.</p></li>
 <li><p>Some way to create tasks "programmatically". Currently a new task is created for each expression entered using the repl. I don't have any idea of how the details of this will work out, but imagine that there should be some kind of <code>spawn</code> or <code>fork</code> function.</p></li>
@@ -624,7 +601,7 @@ void eval_cps_set_ctx_done_callback(void (*fptr)(eval_context_t *)) {
 <li><p>What about events from the outside, such as a button press or data arriving over some communication channel? These things are sometimes handled using an interrupt. Some way of dealing with these "external" events are needed. There may be more suitable abstractions for these kinds of interruptions to apply to this system. Streams/queues of events? where the underlying enqueueing of events is performed by the RTS.</p></li>
 </ol>
 <h2 id="notes">Notes</h2>
-<ol>
+<ol type="1">
 <li>If all memory is depleted, there is no way for the RTS to recover. This means that the heap is not dimensioned appropriately for the job at hand and there is no use in trying to to recover. The system recognizes this kind of failure by there being two consecutive runs of the garbage collectors with no useful work being performed in between.</li>
 </ol>
 <h2 id="thanks">Thanks</h2>

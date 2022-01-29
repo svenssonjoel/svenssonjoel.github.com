@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -181,8 +182,7 @@
 #define STM32_ADC_IRQ_PRIORITY              6
 #define STM32_ADC_ADC1_DMA_IRQ_PRIORITY     6
 #define STM32_ADC_ADC2_DMA_IRQ_PRIORITY     6
-#define STM32_ADC_ADC3_DMA_IRQ_PRIORITY     6
-</code></pre>
+#define STM32_ADC_ADC3_DMA_IRQ_PRIORITY     6</code></pre>
 <p>In another configuration file called <code>halconf.h</code>, the ADC subsystem must be turned active by defining <code>HAL_USE_ADC</code> to <code>TRUE</code>.</p>
 <pre><code>/**
  * @brief   Enables the ADC subsystem.
@@ -190,17 +190,14 @@
 #if !defined(HAL_USE_ADC) || defined(__DOXYGEN__)
 #define HAL_USE_ADC                         TRUE
 #endif
-
 </code></pre>
 <p>And that is all we need to do to tell ChibiOS we want to use ADC 1. Note that by setting <code>STM32_ADC_USE_ADC1</code> to true, a global variable called <code>ADCD1</code> will be available to use in our code. If we had used ADC 2 instead, a variable called <code>ADCD2</code> would be available. These variables are of type <code>ADCDriver</code> and there is one of these for each ADC in the system.</p>
 <h2 id="the-code">The code</h2>
 <p>The plan here is to perform the sampling using just one ADC and 4 channels. The samples will be stored in a buffer large enough to hold one sample per channel.</p>
 <pre><code>#define NUM_CH 4
-#define NUM_SAMPLES 1
-</code></pre>
+#define NUM_SAMPLES 1</code></pre>
 <p>The buffer for samples hold values of type <code>adcsample_t</code> which is really just a 16 bit unsigned integer. Only 12 bits per value will be used.</p>
-<pre><code>static adcsample_t sample_buff[NUM_CH * NUM_SAMPLES];
-</code></pre>
+<pre><code>static adcsample_t sample_buff[NUM_CH * NUM_SAMPLES];</code></pre>
 <p>Next we specify an <code>ADCConversionGroup</code> which describe details about how the digital to analog conversion is to be performed by the hardware. I will try to explain each of the fields of this structure below, as I understand them (which may not be entirely accurate).</p>
 <pre><code>static const ADCConversionGroup ADC_conversion_group = {
   FALSE,                                /*NOT CIRCULAR*/
@@ -222,9 +219,8 @@
   ADC_SQR3_SQ3_N(ADC_CHANNEL_IN14) |
   ADC_SQR3_SQ4_N(ADC_CHANNEL_IN15)    /* SQR3 */
   
-};
-</code></pre>
-<ol>
+};</code></pre>
+<ol type="1">
 <li>Circular buffer mode.</li>
 <li>Number of channels to perform conversion on.</li>
 <li>Callback.</li>
@@ -251,8 +247,7 @@ static THD_FUNCTION(ADCThread, arg) {
     adcConvert(&amp;ADCD1, &amp;ADC_conversion_group, sample_buff, NUM_SAMPLES);
     chThdSleepMilliseconds(500);
   }
-}
-</code></pre>
+}</code></pre>
 <p>The arguments to <code>adcConvert</code> specify which ADC driver to use, out conversion group and sample buffer and its length. Now, I am guessing that this means that each time adcConvert is called the fields of the conversion group are written to the corresponding registers (CR, SMPR, SQR), which does not seem very efficient. There are other modes to set up ADC sampling in that probably are more efficient. Will save looking into that for the future.</p>
 <p>The function below, called <code>adc_init</code> performs the last bits of configuration and then starts the ADC subsystem and creates the <code>ADCThread</code>.</p>
 <pre><code>void adc_init(void) {
@@ -265,15 +260,13 @@ static THD_FUNCTION(ADCThread, arg) {
   adcStart(&amp;ADCD1, NULL);
 
   chThdCreateFromHeap(NULL, ADC_WA_SIZE, &quot;ADC&quot;, NORMALPRIO + 1, ADCThread, NULL);
-}
-</code></pre>
+}</code></pre>
 <p>In <code>adc_init</code> the GPIOs we are going to use are set into an alternate mode, analog input.</p>
 <p>To access the values sampled use the <code>adc_value</code> function defined below. It just returns the value at a given index within the sample buffer. Nothing fancy, just an example.</p>
 <pre><code>uint16_t adc_value(int ix) {
   if (ix &lt; 0 || ix &gt;= 4) return 0;
   return (int16_t)sample_buff[ix];
-}
-</code></pre>
+}</code></pre>
 <h2 id="an-example-main-function">An example main function</h2>
 <p>To tie it all together, here is an example main function. Here ChibiOS is initialized, ADC initialized, USB is set up (to get feedback to a computer connected via for example miniterm).</p>
 <pre><code>int main(void) {
@@ -298,8 +291,7 @@ static THD_FUNCTION(ADCThread, arg) {
     }    
     chThdSleepMilliseconds(500);
   }
-}
-</code></pre>
+}</code></pre>
 <p>Main then goes into a loop that forever prints the contents of the sample buffer and outputs the following:</p>
 <pre><code>0: 2091 
 1: 0 
@@ -321,8 +313,7 @@ static THD_FUNCTION(ADCThread, arg) {
 1: 1 
 2: 724 
 3: 192 
-...
-</code></pre>
+...</code></pre>
 <p>If you read this and see places where my understanding of this is falling short, please help me improve by pointing me in the correct direction. I am still quite a beginner when it comes to ChibiOS and embedded in general. I am writing these things down, just as much to share the information (and perhaps occasional useful insights) as to improve my own knowledge of the concepts.</p>
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>

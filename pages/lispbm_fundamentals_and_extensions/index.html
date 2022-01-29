@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -150,8 +151,7 @@
 <h2 id="fundamental-operations">Fundamental Operations</h2>
 <p>The code that is involved in the execution of fundamental operations are located in <code>fundamental.h</code> and <code>fundamental.c</code>. This subsystem needs no initialization and provide only one external function called <code>fundamental_exec</code>.</p>
 <p>The <code>fundamental_exec</code> function takes a pointer to the first argument (that is, a pointer into the stack at the position of the first argument), the number of arguments and lastly the Symbol value that represents which fundamental operation that should be run.</p>
-<pre><code>extern VALUE fundamental_exec(VALUE* args, UINT nargs, VALUE op);
-</code></pre>
+<pre><code>extern VALUE fundamental_exec(VALUE* args, UINT nargs, VALUE op);</code></pre>
 <p>The <code>fundamental_exec</code> function is called from deep within the <code>apply_continuation</code> in the evaluator. For a look at the entire <code>apply_continuation</code> function, see <a href="../lispbm_evaluation_function/index.html">A Closer Look at LispBM's Evaluation Function</a>.</p>
 <pre><code>VALUE apply_continuation(eval_context_t *ctx, VALUE arg, bool *done, bool *perform_gc, bool *app_cont){
 
@@ -196,7 +196,6 @@
     ...
 
 }
-
 </code></pre>
 <p>First there is a check to see if symbol <code>fun</code> represents a fundamental operation. If the symbol represents a fundamental <code>fundamental_exec</code> is called and provided a pointer to the arguments and number of arguments along with the <code>fun</code> symbol.</p>
 <p>This call could potentially fail with a memory error (out of heap). In this case the stack is restored (the count and the <code>APPLICATION</code> continuation is pushed back onto the stack) and the <code>perform_gc</code> and <code>app_cont</code> flags are set. This means that after GC has been run the next thing the evaluator does is call the continuation again and we should arrive at the exact same case, but now with some freed up heap.</p>
@@ -209,8 +208,7 @@
 &gt; 1
 
 # (cdr &#39;(1 2 3 4) &#39;apa &#39;kurt &#39;bertil)
-&gt; (2 (3 (4 nil)))
-</code></pre>
+&gt; (2 (3 (4 nil)))</code></pre>
 <p>Other fundamental operation take an arbitrary number of argumens. Of course the size of stack is a limiting factor so stay reasonable. Examples of this kind of functions are <code>list</code> and <code>+</code>.</p>
 <pre><code># (list)
 &gt; nil
@@ -228,8 +226,7 @@
 # (+ 1 2)
 &gt; 3
 # (+ 1 2 3)
-&gt; 6
-</code></pre>
+&gt; 6</code></pre>
 <p>The <code>fundamental_exec</code> function that perform all these fundamental operations are implemented as a huge switch statement on the function symbol. Here I will just show a few representative cases of how these are implemented.</p>
 <p><code>cons</code> takes 2 arguments. It asks the heap for a cons cell and then it sticks the first argument in the <code>car</code> position and the second argument in the <code>cdr</code> position of this cell.</p>
 <pre><code>  case SYM_CONS: {
@@ -237,8 +234,7 @@
     UINT b = args[1];
     result = cons(a,b);
     break;
-  }
-</code></pre>
+  }</code></pre>
 <p>The C functions that performs the actual "consing" is defined in <code>heap.c</code>. For the fundamental operations <code>car</code> and <code>cdr</code> it is the same, they are also implemented using C function with exactly the same name, defined in <code>heap.c</code>.</p>
 <pre><code> case SYM_CAR: {
     result = car(args[0]);
@@ -247,8 +243,7 @@
   case SYM_CDR: {
     result = cdr(args[0]);
     break;
-  }
-</code></pre>
+  }</code></pre>
 <p>The <code>list</code> fundamental, that takes an arbitrary number of arguments, loops over the arguments while it generates a list structure from cons cells. Since the arguments are in order from first to last in the argument array, it iterates over the arguments backwards to start off with consing the last element to <code>nil</code>.</p>
 <pre><code>  case SYM_ADD: {
     UINT sum = args[0];
@@ -260,8 +255,7 @@
     }
     result = sum;
     break;
-  }
-</code></pre>
+  }</code></pre>
 <p>Likewise the <code>+</code> fundamental loops over the arguments, but here in forwards order (doesn't matter in this case).</p>
 <pre><code>  case SYM_ADD: {
     UINT sum = args[0];
@@ -273,17 +267,14 @@
     }
     result = sum;
     break;
-  }
-</code></pre>
+  }</code></pre>
 <p>The case <code>SYM_ADD</code> that implements addition contains an <code>add2</code> function. The reason it is not just using the C <code>+</code> operator is because the arguments passed to the <code>+</code> fundamental can be anything (well any number type) for example:</p>
 <pre><code># (+ 1 8.4)
-&gt; {9.400000}
-</code></pre>
+&gt; {9.400000}</code></pre>
 <p>Here <code>1</code> will be parsed as a 28bit integer and <code>8.4</code> will be parsed into a boxed 32bit floating point value. So <code>+</code> has to convert the <code>1</code> "upwards" to a floating point value as well before adding them together. The curly brackets surrounding <code>9.4</code> is how lispBM prints boxed values.</p>
 <p>Another example:</p>
 <pre><code>(+ 1u32 1u28 7.5)
-&gt; {9.500000}
-</code></pre>
+&gt; {9.500000}</code></pre>
 <p>Here the boxed 32bit number <code>1</code> is added to the unboxed <code>1</code> and the boxed float <code>7.5</code>. All of this conversion of types of numbers are handled within the <code>add2</code> function.</p>
 <h2 id="extensions">Extensions</h2>
 <p>Extensions are very similar to fundamentals but are created by the implementor of a REPL (or any other form of interpreter) for a specific platform. Here, a symbol is allocated and used as an identity attached to a function pointer provided by the programmer.</p>
@@ -292,8 +283,7 @@
 
 extern extension_fptr extensions_lookup(UINT sym);
 extern bool extensions_add(char *sym_str, extension_fptr ext);
-extern void extensions_del(void);
-</code></pre>
+extern void extensions_del(void);</code></pre>
 <p>When you add an extension using <code>extensions_add</code> the function pointer and the symbol are added to a linked list. This list is then searched when doing an <code>extension_lookup</code>. Looking up with a symbol that does not correspont to an extension returns <code>NULL</code>.</p>
 <p>Just like fundamental operations all extensions take a pointer to the first argument and the number of arguments as input. But here you are in full control of what you want your extensions to do with these values. For example a possible extension would be to take an ID representing a GPIO pin as input and then toggle that pin in the implementation.</p>
 <hr />

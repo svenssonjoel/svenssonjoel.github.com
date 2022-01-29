@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -155,8 +156,7 @@
 <h2 id="starting-vivado-and-creating-a-project">Starting Vivado and creating a project</h2>
 <p>Start up Vivado. If you use command line, it would be something like this:</p>
 <pre><code>&gt; source ~/opt/Xilinx/Vivado/2019.2/settings64.sh
-&gt; vivado &amp;
-</code></pre>
+&gt; vivado &amp;</code></pre>
 <p>and if you do not, then just double click your Vivado icon on the desktop.</p>
 <p>After a while (everything takes a while, quite a while, when using Vivado) you will be greeted by the following screen:</p>
 <p><img src="./media/vivado-screen-1.png" alt="Vivado quick start" /></p>
@@ -232,23 +232,20 @@ architecture Behavioral of blinky is
 begin
 
 
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <p>So, you get a skeleton of a module. In the next section I will try to fill that with some code. Keep in mind that I am a bit of a beginner at VHDL (feedback much appreciated).</p>
 <h2 id="the-vhdl-code">The VHDL code</h2>
 <p>Let's start with the entity declaration.</p>
 <pre><code>entity blinky is
 --  Port ( );
-end blinky;
-</code></pre>
+end blinky;</code></pre>
 <p>We are going to need a clock input signal and at least one output signal to drive an LED with. So add these to the Port list.</p>
 <pre><code>entity blinky is
     Port ( 
         clk : in std_logic;
         led : out std_logic
          );
-end blinky;
-</code></pre>
+end blinky;</code></pre>
 <p>For the architecture (implementation of the entity) with my limited experience, I have a feeling it would work with a state machine that either is in a <em>Led is on</em> or <em>Led is off</em> state and that it remains in these states for some number of clock ticks. So, we need a way to maintain state and a way to count ticks. For the counter I will use an <em>unsigned</em>, so using <code>IEEE.NUMERIC_STD</code> will be needed.</p>
 <pre><code>architecture Behavioral of blinky is
     type state is (LED_On, LED_Off);
@@ -257,8 +254,7 @@ end blinky;
 begin
 
 
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <p>So, now there are two states <em>LED_On</em> and <em>LED_Off</em> the <code>s</code> signal can be set to one of these states and a counter that can count all the way up to some high number above 33 million. Don't know yet for how long the LED must be in on and off state (number of ticks) for it to visibly blink.</p>
 <p>What we want to implement now is hardware that sets the <code>led</code> signal to one when in the <em>On</em> State and zero when in <em>Off</em>, we also want to increment a counter each clock tick and check if the counter goes over some large number. When the counter goes above the large number we reset it to zero and also switch state.</p>
 <pre><code>architecture Behavioral of blinky is
@@ -289,8 +285,7 @@ begin
         end if;
     end process;
 
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <p>This code is a bit odd, for example it does not start from any known state when it comes to <code>s</code> or <code>counter</code>. What could be added is a reset signal<br />
 and some logic associated with the reset that sets <code>s</code> to for example the <em>Off</em> state and sets <code>counter</code> to 0. My feeling is that it wont matter much in this case, as no matter what <code>s</code> and <code>counter</code> is initially it will sort itself out in a moment. This is of course no assumption you can make in general!</p>
 <p>Here is the complete VHDL code listing that will be used:</p>
@@ -333,8 +328,7 @@ begin
         end if;
     end process;
 
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <h2 id="setting-some-constraints">Setting some constraints</h2>
 <p>We have VHDL code with signals <code>clk</code> and <code>led</code> but nothing that tells vivado how those signals relate to clock generation or IO on the FPGA. To fix this we must create a <em>constraints file</em> that makes these connections from VHDL concepts to corresponding functionality on the FPGA.</p>
 <p><strong>Task:</strong> In the <em>Sources</em> pane of the <em>Project Manager</em> right click and select <em>Add Sources</em>. Check the <em>Add or create constraints</em> radio-button. and click next. Now click the <em>Create File</em> button and a dialog pops up that asks you to provide a name for a file of type <code>.XDC</code>. I just call the file <code>constraints</code> and click ok. Then click <em>Finish</em> in the <em>Add or Create Constraints</em> dialog.</p>
@@ -358,8 +352,7 @@ end Behavioral;
 set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { clk }];
 
 
-set_property -dict { PACKAGE_PIN H17    IOSTANDARD LVCMOS33 } [get_ports { led }];
-</code></pre>
+set_property -dict { PACKAGE_PIN H17    IOSTANDARD LVCMOS33 } [get_ports { led }];</code></pre>
 <p>The first line sets a timing constraints that tells the system we want the design to run at 100MHz (period 10ns). You can also tweak the clocks duty cycle and phase by adjusting the <em>waveform</em> parameters.</p>
 <p>The next line states that something called <em>package pin</em> <code>E3</code> should be connected to the VHDL signal <code>clk</code>. The package pins and their meaning can be found in the <a href="https://reference.digilentinc.com/reference/programmable-logic/nexys-a7/reference-manual">reference manual</a> provided by the board manufacturer. In this case E3 is associated with clocking resources.</p>
 <p>Lastly the <code>led</code> signal is connected to <code>H17</code> which is a pin on the FPGA connected to an LED on the board. The LED is located at the bottom right of the board, right above a switch.</p>

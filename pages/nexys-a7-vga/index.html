@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -169,8 +170,7 @@
        -- hcnt : out unsigned(10 downto 0);
        -- vcnt : out unsigned(10 downto 0)
     );
-end vga;
-</code></pre>
+end vga;</code></pre>
 <p>I have a few lines that are commented out in the entity declaration. These are signals that I enabled when doing simulation to be able to look inside of the module and see what goes on with otherwise internal signals.</p>
 <p>If we look at <a href="http://tinyvga.com/vga-timing/640x400@70Hz">this page</a> we can see that we need a 25.175 MHz pixel-clock. I will gamble that 25MHz is roughly ok as that can be derived from the 100MHz clock that I will try to synthesize for by dividing the clock frequency by 4. All the other timing information is then derived from this pixel-clock in given number of ticks.</p>
 <p>The Horizontal timing for example consists of 640 clock ticks of visible data output, 16 ticks that should output blackness, followed by 96 ticks with the horizontal synch signal active, then another 48 ticks of blackness. That is a total of 800 ticks that then repeat over and over again.</p>
@@ -194,20 +194,17 @@ end vga;
         elsif rising_edge(clk_2) then
             pix_clock &lt;= not pix_clock;
         end if;
-    end process;
-</code></pre>
+    end process;</code></pre>
 <p>The <code>clk_2</code> and the <code>pix_clock</code> signals are internal to the architecture and will represent a 50MHz and a 25MHz clock. I am actually not sure if there should be any reset for these processes, I almost assume it will work without any reset.</p>
 <h3 id="counters-for-horizontal-and-vertical-timing">Counters for horizontal and vertical timing</h3>
 <p>Two counters are used to keep track of the timing.</p>
 <pre><code>    signal h_cnt : unsigned(9 downto 0);
-    signal v_cnt : unsigned(9 downto 0);
-</code></pre>
+    signal v_cnt : unsigned(9 downto 0);</code></pre>
 <p>These counter will be updated in a control process and <code>h_cnt</code> will take on the values from 0 to and including 799. The <code>v_cnt</code> signal will take on the values from 0 to and including 448.</p>
 <h3 id="generation-of-hsynch-and-vsynch">Generation of HSYNCH and VSYNCH</h3>
 <p>The HSYNCH and VSYNCH signals are generated outside of any process</p>
 <pre><code>    vga_hs &lt;= &#39;0&#39; when h_cnt &gt;= 656 and h_cnt &lt; 752 else &#39;1&#39;;
-    vga_vs &lt;= &#39;1&#39; when v_cnt = 412 or v_cnt = 413 else &#39;0&#39;;
-</code></pre>
+    vga_vs &lt;= &#39;1&#39; when v_cnt = 412 or v_cnt = 413 else &#39;0&#39;;</code></pre>
 <p>The value ranges used here are again found <a href="http://tinyvga.com/vga-timing/640x400@70Hz">here</a>. we can also see that the vertical sync signal is active high while the horizontal one is active low. I hope I got those right. This actually seems to vary between the different display modes! Some modes have vertical sync active high, other low and likewise horizontal sync may vary.</p>
 <h3 id="the-control-process">The control process</h3>
 <p>The control process is in charge of updating the <code>h_cnt</code> and <code>v_cnt</code> counters. For this test program, the color data is also output from this process. So if the <code>h_cnt</code> is less than 640 and the <code>v_cnt</code> is less then 400, then color data is fed to the pins.</p>
@@ -252,8 +249,7 @@ end vga;
                 end if;
             end if;
         end if;
-    end process;
-</code></pre>
+    end process;</code></pre>
 <h2 id="the-complete-code-listing">The complete code listing</h2>
 <pre><code>library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -355,8 +351,7 @@ begin
         end if;
     end process;
     
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <h2 id="the-constraints-file">The constraints file</h2>
 <p><strong>Edit Dec 1 2020</strong></p>
 <p>One thing I forgot to include here originally is the constraints file that connects the various signals the the VGA interface of the nexys a7 board.</p>
@@ -380,8 +375,7 @@ set_property -dict { PACKAGE_PIN C7    IOSTANDARD LVCMOS33 } [get_ports { vga_b[
 set_property -dict { PACKAGE_PIN D7    IOSTANDARD LVCMOS33 } [get_ports { vga_b[2] }]; #IO_L6N_T0_VREF_35 Sch=vga_b[2]
 set_property -dict { PACKAGE_PIN D8    IOSTANDARD LVCMOS33 } [get_ports { vga_b[3] }]; #IO_L4P_T0_35 Sch=vga_b[3]
 set_property -dict { PACKAGE_PIN B11   IOSTANDARD LVCMOS33 } [get_ports { vga_hs }]; #IO_L4P_T0_15 Sch=vga_hs
-set_property -dict { PACKAGE_PIN B12   IOSTANDARD LVCMOS33 } [get_ports { vga_vs }]; #IO_L3N_T0_DQS_AD1N_15 Sch=vga_vs
-</code></pre>
+set_property -dict { PACKAGE_PIN B12   IOSTANDARD LVCMOS33 } [get_ports { vga_vs }]; #IO_L3N_T0_DQS_AD1N_15 Sch=vga_vs</code></pre>
 <p>Sorry about that.</p>
 <p>This file sets the desired clock to 100MHz which when divided by 4 will give the 25MHz pixel-clock. Then it connects up the various VGA signals to the correct pins on the package. The template for this comes from the "master" constraints file provided by the board manufacturer.</p>
 <h1 id="conclusion">Conclusion</h1>

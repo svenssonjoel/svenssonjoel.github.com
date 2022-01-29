@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -154,12 +155,10 @@ t
 # (and &#39;t &#39;t)
 t
 # (and &#39;t &#39;t &#39;nil)
-nil
-</code></pre>
+nil</code></pre>
 <p>And the property of not evaluating further arguments if not needed can be illustrated like this.</p>
 <pre><code># (and &#39;t &#39;nil (print &quot;hello&quot;))
-nil
-</code></pre>
+nil</code></pre>
 <p>Notice that <code>hello</code> is not printed.</p>
 <h2 id="adding-symbols-for-the-boolean-operators">Adding Symbols for the Boolean Operators</h2>
 <p>The first step in adding more built in fundamental operations to lispBM is to add new symbols that can be used to identify them.</p>
@@ -169,13 +168,11 @@ nil
 #define SYM_NOT                 0x112FFFF
 
 static inline UINT symrepr_and(void)         { return SYM_AND; }
-static inline UINT symrepr_or(void)          { return SYM_OR; }
-</code></pre>
+static inline UINT symrepr_or(void)          { return SYM_OR; }</code></pre>
 <p>And the following is added to the <code>add_default_symbols</code> function in <code>symrepr.c</code> to associate a textual name with each of the symbols.</p>
 <pre><code>  res = res &amp;&amp; symrepr_addspecial(&quot;and&quot;, SYM_AND);
   res = res &amp;&amp; symrepr_addspecial(&quot;or&quot;, SYM_OR);
   res = res &amp;&amp; symrepr_addspecial(&quot;not&quot;, SYM_NOT);
-
 </code></pre>
 <p>The not operator is implemented just as all other fundamental operations as a case in <code>fundamental.c</code>. It takes one argument and if that argument is <code>nil</code> it returns <code>t</code> otherwise it returns <code>nil</code>. Actually all of these boolean operations are implemented to treat <code>nil</code> as false and anything else as true. So <code>(not 5)</code> evaluates to <code>nil</code> and <code>(and 2 3)</code> evaluates to <code>t</code>.</p>
 <p>The <code>and</code> and <code>or</code> operators will need some special attention to be able to get the short-circuiting behavior.</p>
@@ -189,8 +186,7 @@ static inline UINT symrepr_or(void)          { return SYM_OR; }
 #define APPLICATION       6
 #define APPLICATION_ARGS  7
 #define AND               8
-#define OR                9
-</code></pre>
+#define OR                9</code></pre>
 <p>In the entry point function for evaluation, the <code>run_eval</code>function, the case that deals with function application is left unchanged. Currently this case looks as follows:</p>
 <pre><code>    FATAL_ON_FAIL(done,
             push_u32_4(&amp;ctx-&gt;K,
@@ -200,8 +196,7 @@ static inline UINT symrepr_or(void)          { return SYM_OR; }
                    enc_u(APPLICATION_ARGS)));
 
       ctx-&gt;curr_exp = head; // evaluate the function
-      continue;
-</code></pre>
+      continue;</code></pre>
 <p>It sets the <code>curr_exp</code> up to evaluate the function. For example, in the case of a <code>lambda</code> this means that the next thing to do for the evaluator is to turn the <code>lambda</code>into a closure. But before that a continuation is pushed that describes what to do with the arguments, this is the <code>APPLICATION_ARGS</code> continuation.</p>
 <p>I chose to leave this code unchanged and instead differentiate between short-circuitable operators and non, inside of the <code>APPLICATION_ARGS</code> function.</p>
 <p>Inside of the <code>apply_continuation</code> function and the <code>APPLICATION_ARGS</code> case there, we check if the function (with is now evaluated or at least looked up), is one of the short-circuitable function <code>and</code> or <code>or</code>. If that is a case a new continuation is created to deal with the arguments, in the case of an <code>and</code> operator the <code>AND</code> continuation is pushed onto the stack and the first argument is set up to be evaluated next. Likewise in the <code>or</code> case, the <code>OR</code> continuation is pushed and the next thing to evaluate is the first element.</p>
@@ -232,8 +227,7 @@ static inline UINT symrepr_or(void)          { return SYM_OR; }
     ctx-&gt;curr_env = env;
     return NONSENSE;
       }
-    }
-</code></pre>
+    }</code></pre>
 <p>The above code means that if we are processing the arguments to a short-circuitable operator we will jump over and continue along the <code>AND</code> or <code>OR</code> continuations instead.</p>
 <p>In the case of <code>AND</code>, arguments should be evaluated as long as they result in something considered <em>true</em>.</p>
 <pre><code>  case AND: {
@@ -255,8 +249,7 @@ static inline UINT symrepr_or(void)          { return SYM_OR; }
       ctx-&gt;curr_env = env;
       return NONSENSE;
     }
-  }
-</code></pre>
+  }</code></pre>
 <p>For the <code>OR</code>case, we evaluate arguments as long as they result in false. The first argument to result in <em>true</em> terminates the continued evaluation of arguments and we can treat the result as true. If we run out of arguments without encountering true, the result is false.</p>
 <pre><code>  case OR: {
     VALUE env;
@@ -277,8 +270,7 @@ static inline UINT symrepr_or(void)          { return SYM_OR; }
       ctx-&gt;curr_env = env;
       return NONSENSE;
     }
-  }
-</code></pre>
+  }</code></pre>
 <p>And that's it, the next section holds an example that would be awkward to write without access to <code>or</code>.</p>
 <h2 id="sumtree-example">Sumtree Example</h2>
 <p>It is nice to finally be able to write some slightly more substantial lispBM programs such as <code>sumtree</code> below. I have noticed that as soon as wiring a slightly more <em>involved</em> program, new bug surface. Which is a lot of fun. One of the main reason for tormenting oneself with trying to implement this is that it is an never ending source problems to solve and that they are all right on the boundary of what I can handle when it comes to difficulty and complexity.</p>
@@ -302,8 +294,7 @@ static inline UINT symrepr_or(void)          { return SYM_OR; }
         (let ((a (sumtree (car x)))
               (b (sumtree (cdr x))))
           (+ a b)
-          )))))
-</code></pre>
+          )))))</code></pre>
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>

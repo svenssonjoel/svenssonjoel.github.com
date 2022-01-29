@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -158,21 +159,17 @@ apa
 (+ 1 2)
 
 # `(+ 1 2)
-(+ 1 2)
-</code></pre>
+(+ 1 2)</code></pre>
 <p>It is when <code>`</code> is used together with <code>,</code> that it gets more interesting. The <code>,</code> can be used within an expression that is quoted using <code>`</code> to indicate that the expression <em>tagged</em> with the <code>,</code> should be evaluated.</p>
 <pre><code># `(+ 1 ,(+ 1 1))
-(+ 1 2)
-</code></pre>
+(+ 1 2)</code></pre>
 <p>The <code>,@</code> tag, is similar to the <code>,</code> except that the expression that follows the <code>,@</code> should evaluate to a list and the items of that list are <em>spliced</em> into the result. The example below illustrates this use of <code>,@</code> by splicing the result of a call to the library function <code>iota</code> into the argument list in an application of the function <code>list</code>.</p>
 <pre><code># `(list 1 2 3 ,@(iota 10) 3 2 1)
-(list 1 2 3 0 1 2 3 4 5 6 7 8 9 10 3 2 1)
-</code></pre>
+(list 1 2 3 0 1 2 3 4 5 6 7 8 9 10 3 2 1)</code></pre>
 <p>The operators <code>`</code> (back-quote), <code>,</code> (unquote) and <code>,@</code> (splice) are shorthand notation for certain usages of other list creating and manipulating functions as well as the quote <code>'</code> operator. So, occurrences of these quasiquotation related operators can be expanded into programs based on <code>list</code>, <code>cons</code>, <code>append</code> and <code>'</code> for example. In other words, the addition of these operations is just for convenience and makes writing programs that generate programs easier. Another benefit is that a program that generates a program now looks very similar to the program it generates, there are just some extra ticks/tags here and there. <code>(+ 1 2)</code> is a program that adds up <code>1</code> and <code>2</code>, <code>`(+ 1 2)</code> is a program that generates a program that adds up <code>1</code> and <code>2</code>.</p>
 <p>To see what something like <code>`(+ 1 2)</code> is expanded into it can be preceded with a <code>'</code>.</p>
 <pre><code># &#39;`(+ 1 2)
-(append (list +) (append (list 1) (append (list 2) (quote nil))))
-</code></pre>
+(append (list +) (append (list 1) (append (list 2) (quote nil))))</code></pre>
 <h2 id="implementation">Implementation</h2>
 <p>The algorithm for expanding quasiquotations as it is expressed in Bawden's paper operates on an s-expression where sub-expressions are tagged with back-quote, unquote and splice tags. The Algorithm operates in a top down fashion which means that, in the case of nested quasiquotation, further back-quotes can be found when traversing the s-expression. The expansion algorithm is assumed to be applied to a back-quote tagged s-expression where the top-level tag has been removed.</p>
 <p>For the purpose of lispBM, I want to expand quasiquotation as part of the parsing process and in a bottom-up way. Doing it bottom-up should mean that no back-quotes will ever be found when performing the expansion as the outermost back-quote is always eliminated first in the expansion process, so the case that recursively deals with back-quotes can be dropped from this bottom-up approach.</p>
@@ -182,15 +179,13 @@ apa
 <pre><code># (+ ,1 ,2)
 eval_error
 # &#39;(+ ,1 ,2)
-(+ (comma 1) (comma 2))
-</code></pre>
+(+ (comma 1) (comma 2))</code></pre>
 <h3 id="changes-to-tokenizer-and-parser">Changes to tokenizer and parser</h3>
 <p>See <a href="../lispbm_parsing_expressions/index.html">parsing expressions</a> for more details about the tokenizer and parser.</p>
 <p>Three new token identifiers are added.</p>
 <pre><code>#define TOKBACKQUOTE    11
 #define TOKCOMMA        12
-#define TOKCOMMAAT      13
-</code></pre>
+#define TOKCOMMAAT      13</code></pre>
 <p>Then, three token-recognizing functions are added as well. These peek into the character stream and if the token they look for is found, the number of characters consumed by that token is returned.</p>
 <pre><code>int tok_backquote(tokenizer_char_stream str) {
   if (peek(str,0) == &#39;`&#39;) {
@@ -215,8 +210,7 @@ int tok_comma(tokenizer_char_stream str) {
     return 1;
   }
   return 0;
-}
-</code></pre>
+}</code></pre>
 <p>In the <code>next_token</code> function, checks are added for each of the tokenizer function defined above. Note that <code>tok_commaat</code> is tried before <code>tok_comma</code>. Since the splice syntax shares a prefix with the unquote syntax, but is longer, it is important to try it first to not falsely return a unquote token.</p>
 <pre><code>token next_token(tokenizer_char_stream str) {
 
@@ -244,7 +238,6 @@ int tok_comma(tokenizer_char_stream str) {
   t.type = TOKENIZER_ERROR;
   return t;
 }
-
 </code></pre>
 <p>Three cases are added to the parser in order to deal with the new possible tokens. The cases for <code>TOKCOMMAAT</code> and <code>TOKCOMMA</code> tags the following s-expression with the appropriate symbol.</p>
 <p>In the back-quote case, the bottom-up part of quasiquotation expanding is implemented. Here the expression following the back-quote is parsed recursively, the result of that is then passed through the function <code>qq_expand</code>. The <code>qq_expand</code> function is shown in the next section.</p>
@@ -283,7 +276,6 @@ int tok_comma(tokenizer_char_stream str) {
   }
   return enc_sym(symrepr_rerror());
 }
-
 </code></pre>
 <h3 id="expansion-of-quasiquotatations">Expansion of quasiquotatations</h3>
 <p>The functions <code>qq_expand</code> and <code>qq_expand_list</code> below are mostly just translations of Bawden's lisp functions with the same names. One difference is that I have removed the cases that deal with back-quote as no back-quotes will appear when doing this bottom-up traversal.</p>
@@ -293,8 +285,7 @@ int tok_comma(tokenizer_char_stream str) {
   return cons (enc_sym(symrepr_append()),
            cons(front,
             cons(back, enc_sym(symrepr_nil()))));
-}
-</code></pre>
+}</code></pre>
 <p>Expressions that are tagged with unquote are just untagged and returned. Expression that are neither made from cons-cells or tagged with unquote gets quoted (these are for example, numbers or symbols).</p>
 <pre><code>VALUE qq_expand(VALUE qquoted) {
 
@@ -323,8 +314,7 @@ int tok_comma(tokenizer_char_stream str) {
     break;
   }
   return res;
-}
-</code></pre>
+}</code></pre>
 <p>The <code>qq_expand_list</code> is called on items within a list (<code>car</code> positions of cons-cells) and is very similar to <code>qq_expand</code> except that it always returns a list. This function also expands splices, as these are only allowed within lists (if I understand Bawden's algorithm correctly). The cases (except for the one that splices) are all identical to <code>qq_expand</code> except that their results are put in lists. In the case for the splice tag the splice expression is untagged and returned (these splice expressions should evaluate to lists so the types still match).</p>
 <pre><code>VALUE qq_expand_list(VALUE l) {
   VALUE res = enc_sym(symrepr_nil());
@@ -354,8 +344,7 @@ int tok_comma(tokenizer_char_stream str) {
                cons(l, enc_sym(symrepr_nil())));              
   }
   return res;
-}
-</code></pre>
+}</code></pre>
 <hr />
 <p><strong>Bugfix June 10 2020</strong></p>
 <p><code>qq_expand_list</code> above is flawed in the <code>default</code> case that generates the code that generates a list. It is rather supposed to be a quoted list.</p>
@@ -389,8 +378,7 @@ int tok_comma(tokenizer_char_stream str) {
   }
   }
   return res;
-}
-</code></pre>
+}</code></pre>
 <hr />
 <h2 id="future-work">Future work</h2>
 <p>Before adding quasiquotation, expression parsing didn't generate much garbage at all (garbage in the sense of temporary heap objects that really should be garbage collected). So, thus far I didn't think very much about how to add some interplay between garbage collection and parsing. I just thought that if there is not enough heap to parse the program, you cannot run the program anyway so why bother. Now, however, the quasiquotation expansion process generates garbage that probably should be dealt with somehow as it could mean that parsing a program that really does fit in memory will fail to parse because the heap becomes full.</p>

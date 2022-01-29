@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -157,8 +158,7 @@ reset_handler:
     cmp r2, #0
     beq main
 
-    ldr r1, =_flash_dstart
-</code></pre>
+    ldr r1, =_flash_dstart</code></pre>
 <p><em>Note</em> In this version of the reset handler I am checking if there are more than 0 bytes to copy to ram, if not it jumps to label <code>main</code>. This check was not present in the <a href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html">previous</a> post.</p>
 <p>The <code>.thumb_func</code> directive before <code>reset_handler</code> has a very subtle effect. To see the effect let's look at some <code>objdump</code> output.</p>
 <p><strong>Without <code>.thumb_func</code></strong></p>
@@ -172,8 +172,7 @@ reset_handler:
  8000010:   e7fe        b.n 8000010 &lt;hard_fault_handler&gt;
 
 08000012 &lt;reset_handler&gt;:
- 8000012:   4811        ldr r0, [pc, #68]   ; (8000058 &lt;done+0x2&gt;)
-</code></pre>
+ 8000012:   4811        ldr r0, [pc, #68]   ; (8000058 &lt;done+0x2&gt;)</code></pre>
 <p><strong>With <code>.thumb_func</code></strong></p>
 <pre><code>Disassembly of section .text:
 
@@ -187,8 +186,7 @@ reset_handler:
  8000010:   e7fe        b.n 8000010 &lt;hard_fault_handler&gt;
 
 08000012 &lt;reset_handler&gt;:
- 8000012:   4811        ldr r0, [pc, #68]   ; (8000058 &lt;done+0x2&gt;)
-</code></pre>
+ 8000012:   4811        ldr r0, [pc, #68]   ; (8000058 &lt;done+0x2&gt;)</code></pre>
 <p>Now if you look at the second line of the <code>vtable</code> it says <code> 8000004:      08000012        .word   0x08000012</code> without <code>.thumb_func</code> and <code> 8000004:      08000013        .word   0x08000013</code> with it. What this line is supposed to be is a pointer to the <code>reset_handler</code> function. But then in both cases the actual address of the <code>reset_handler</code> is <code>8000012</code>. As I understand it, the least significant bit is actually discarded when reset interrupt invokes the pointer (this may be what happens for all function calls) and the least significant bit has the role of being a flag indicating ARM-mode or Thumb-mode.</p>
 <p>Now! This is something I would love some feedback or pointers on because it confuses me extremely. Aren't the Cortex-M MCUs THUMB-only architectures? I mean there is the larger THUMB instruction set for M3 and M4 and a smaller one for M0, and M1. I think these are referred to as Thumb and Thumb2. Those larger Thumb instructions on the M4 for example are 32bit instructions, but they are not the ARM instruction set.</p>
 <p>If the paragraph above is true, why would we even need a flag to differentiate between thumb and arm?</p>
@@ -211,8 +209,7 @@ reset_handler:
     ldr r0, [r1]
     orr r0, r0, 0xF         @ Set all PA0 - PA3 to 1
     str r0, [r1]            @ Write back data register
-    
-</code></pre>
+    </code></pre>
 <p>The code above is split into 3 chunks of related instructions. The first chunk sets a bit in the <code>RCC_AHB1ENR</code> register. This register is located with an offset of <code>0x30</code> from the RCC base address which is <code>0x40023800</code>. This info can be found in the reference manual (linked at the end of this text).</p>
 <p>Bit 0 of this <code>RCC_AHB1EN</code> register is called <code>GPIOAEN</code> in the reference manual and setting this bit activates the GPIO A port (the PA pins on the Discovery board).</p>
 <p>The second chunk, sets a bit pattern into the <code>MODER</code> register associated with GPIO A. The GPIO A peripheral base address is <code>0x40020000</code> and the <code>MODER</code> register is at offset 0. The <code>MODER</code> register associates two bits with each of the GPIO pins of the port. The decimal value <code>5</code> is <code>0101</code> in binary and thus <code>0x55</code> is <code>01010101</code> in binary. This pattern sets the 4 GPIO pins PA0 - PA3 into output mode.</p>
@@ -286,13 +283,12 @@ main:
 done:   
         b done
 
-        .section .data 
-</code></pre>
+        .section .data </code></pre>
 <h2 id="conclusion">Conclusion</h2>
 <p>Wow! That hard-fault issue was very subtle. Not the easiest thing to google an answer for either as it seems a hard-fault can be just about anything at this stage.</p>
 <p>Stay in touch! Have a great day</p>
 <h2 id="additional-resources">Additional resources</h2>
-<ol>
+<ol type="1">
 <li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf">STM32F405/415 (407/417) (427/437) (429/439) reference manual</a></li>
 <li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/9b/53/39/1c/f7/01/4a/79/DM00119316.pdf/files/DM00119316.pdf/jcr:content/translations/en.DM00119316.pdf">STM32F412xG/E reference manual</a></li>
 <li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/ef/92/76/6d/bb/c2/4f/f7/DM00037051.pdf/files/DM00037051.pdf/jcr:content/translations/en.DM00037051.pdf">STM32F405xx STM32F407xx datasheet</a></li>
@@ -307,4 +303,3 @@ done:
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
 </HTML>
-

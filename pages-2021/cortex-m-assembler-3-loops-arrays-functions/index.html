@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -155,22 +156,19 @@ delay_loop:
         sub r0,r0, #1           @ Otherwise, dec counter
         b delay_loop            @ and do another iteration
 delay_done:     
-        bx lr                   @ Return from function call 
-</code></pre>
+        bx lr                   @ Return from function call </code></pre>
 <p>A "large" number is loaded into <code>r0</code> giving the number of iterations to perform. We then enter into the body of the loop which checks if <code>r0</code> is 0. If <code>r0</code> is 0 we should break out of the loop and return. If <code>r0</code> is larger than 0 then subtract 1 from <code>r0</code> and run the loop body one more time.</p>
 <p>When the control jumps to <code>delay_done</code>, when <code>r0</code> hits 0, <code>bx lr</code> returns from the function call.</p>
 <p>The value to use as a delay was decided by trial and error. I really don't know how fast the MCU is executing right now (what MHz it is running at). I understand that there is some really tricky "clock configuration" stuff one should do. I don't know anything about how that works yet! We should definitely look at it in the future.</p>
 <p>So that's how to implement a function. A simple function. To call this function you do:</p>
-<pre><code>        bl delay
-</code></pre>
+<pre><code>        bl delay</code></pre>
 <p><code>bl</code> is the branch and link operation. This instruction jumps to the delay function but also stores away the return address into the <code>lr</code> register. So, the <code>bx lr</code> instruction at the end of the function, restores the address from <code>lr</code> into the program counter. This approach to function calls does not use any stack so how to do functions that call functions in a nested way is something to look at in the future.</p>
 <p>Now, let's look at the array of patterns.</p>
 <pre><code>        .section .data 
 
 led_states:     .byte 0x1, 0x2, 0x4, 0x8, 0xF, 0x0
         @ led_states could have been stored in flash as it is constant. 
-led_states_end:
-</code></pre>
+led_states_end:</code></pre>
 <p>In this case the array is placed in the <code>.data</code> section. This is the section that we wrote some startup code for, to get it copied from flash into RAM. The program will not try to modify this array, so it could just as well have been a constant array remaining in flash only. To get that effect, just define the array in the <code>.text</code> section instead.</p>
 <p>The <code>led_states:</code> symbol refers to the address where the array starts and <code>led_states_end</code> refers to the first byte after any of the defined bytes that are part of the array.</p>
 <p>The data itself is just listed after the <code>.byte</code> directive.</p>
@@ -186,23 +184,20 @@ led_states_end:
         ldr r2, =0xFFFFFF00
         and r0, r0, r2
         orr r0, r0, 0x55        @ PA0 - PA 3 output, 
-        str r0, [r1]            @ Write back PA MODER   
-</code></pre>
+        str r0, [r1]            @ Write back PA MODER   </code></pre>
 <p>The code starts out similarly to previous texts. The GPIO A (PA) is turned on and then 4 of the PA pins are set to be output pins.</p>
 <p>Next we should go into an infinite loop that updates the PA0 - PA3 pins. A few preparatory instructions before looping though:</p>
 <pre><code>        ldr r2,=led_states      @ Load led_states array address
         ldr r6,=led_states_end  @ Load led_states array end address
         ldr r3,=0x40020014      @ PA output data register
-        ldr r5,=0xFFFFFF00      @ Clear-mask for bits of interest
-</code></pre>
+        ldr r5,=0xFFFFFF00      @ Clear-mask for bits of interest</code></pre>
 <p>Here the registers <code>r2</code>,<code>r6</code>,<code>r3</code> and <code>r5</code> are set to their initial values for the loop. Actually, only <code>r2</code> will be changed over the course of the loop and the other will be kept constant. <code>r2</code> will initially point at the start of the patterns array. <code>r6</code> will always point at the "end" of the patterns array. Lastly <code>r3</code> and <code>r5</code> will hold the PA output data register address and the mask we use for clearing the outputs that we are toggling.</p>
 <pre><code>forever:
         ldrb r1, [r2], #1       @ Load a byte from array and increment address
         ldr r4, [r3]            @ Load state of PA output data register
         and r4, r4, r5          @ Clear some bits
         orr r4, r4, r1          @ Turn some bits on based on led_states value
-        str r4, [r3]            @ Write to PA output data register
-</code></pre>
+        str r4, [r3]            @ Write to PA output data register</code></pre>
 <p>The loop starts out by loading a byte from the <code>led_states</code> array from address stored in <code>r2</code>. The address in <code>r2</code> is incremented in the same instruction there, <code>ldrb r1, [r2], #1</code>. The rest of that code chunk is familiar, it is the code that sets some of the PA0-PA3 pins high and thus turns on LEDs.</p>
 <p>Next we need to check if we have cycled through all the patterns and need to restart from the beginning.</p>
 <pre><code>        cmp r2, r6              @ Did we reach end of array?
@@ -211,8 +206,7 @@ led_states_end:
 forever_cont:
         
         bl delay
-        b forever
-</code></pre>
+        b forever</code></pre>
 <p>If <code>r2</code> which keeps track of where we are in the array becomes equal to (or greater than) the value in <code>r6</code> (<code>let_states_end</code>), then we should reset <code>r2</code> back to pointing at the start of the <code>led_states</code> array. The logic is a bit backwards there as it rather checks if <code>r2</code> is less than <code>r6</code> and if it is less it skips over the instructions that performs the reset of <code>r2</code>.</p>
 <p>In either case, the code end ups at <code>bl delay</code> which calls the delay routine. Then the <code>forever</code> loop is run once more.</p>
 <h2 id="the-complete-assembly-listing">The complete assembly listing</h2>
@@ -311,19 +305,18 @@ forever_cont:
 
 led_states:     .byte 0x1, 0x2, 0x4, 0x8, 0xF, 0x0
         @ led_states could have been stored in flash as it is constant. 
-led_states_end: 
-</code></pre>
+led_states_end: </code></pre>
 <h2 id="conclusion">Conclusion</h2>
 <p>Ah, that was one more GPIO intensive text but at least it was getting into some interesting concepts... loops, arrays, simple functions. I hope to dig deeper into that as time goes by.</p>
 <p>Some other interesting things to append to the todo-list are:</p>
-<ol>
+<ol type="1">
 <li>Nested function calls.</li>
 <li>Clock configuration.</li>
 <li>More ways of writing more "principled" or "structured" assembler.</li>
 </ol>
 <p>I would love feedback if you spot bugs or things that you would do differently. Any kind of hints and tips are very much appreciated. So do not hesitate to poke.</p>
 <h2 id="additional-resources">Additional resources</h2>
-<ol>
+<ol type="1">
 <li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf">STM32F405/415 (407/417) (427/437) (429/439) reference manual</a></li>
 <li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/9b/53/39/1c/f7/01/4a/79/DM00119316.pdf/files/DM00119316.pdf/jcr:content/translations/en.DM00119316.pdf">STM32F412xG/E reference manual</a></li>
 <li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/ef/92/76/6d/bb/c2/4f/f7/DM00037051.pdf/files/DM00037051.pdf/jcr:content/translations/en.DM00037051.pdf">STM32F405xx STM32F407xx datasheet</a></li>
@@ -338,4 +331,3 @@ led_states_end:
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
 </HTML>
-

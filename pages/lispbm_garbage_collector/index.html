@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -151,7 +152,7 @@
 <p>In lispBM the heap is made up from cons-cells, which each is a pair of 32bit words. Each cons-cell has a mark bit. The purpose of this mark bit was hinted at in <a href="../lispbm_current_status/index.html">Another Lisp for Microcontrollers</a> but all the details of GC were left out. The <code>free_list</code>, which is a linked list of all non-used cons-cells, was also mentioned in that first text on lispBM. In this text I will try to go into all the details.</p>
 <p>It is up to the garbage collector to add cons-cells that are no-longer <em>reachable</em> to the free list. This is where the mark bits come in. The idea is that if an object on the heap cannot be reached by following a pointer that the program <em>knows about</em> then that object can be freed and its cons-cells can be moved to the free list. It is, however, much easier to figure out what can be reached rather than what cannot so the approach is to traverse the current environment and mark everything that can be reached from there as "in-use".</p>
 <p>The way lispBM is implemented, it is important to traverse every data-structure that could potentially hold pointers into the heap that are needed in the future. This means the following must be traversed:</p>
-<ol>
+<ol type="1">
 <li>The global environment,</li>
 <li>The current environment (local environment).</li>
 <li>The current expression.</li>
@@ -185,10 +186,9 @@
 #endif
 
   return gc_sweep_phase();
-}
-</code></pre>
+}</code></pre>
 <p>In <code>heap_perform_gc_aux</code> we can see that there are a few different functions that perform marking.</p>
-<ol>
+<ol type="1">
 <li><code>gc_mark_freelist</code></li>
 <li><code>gc_mark_phase</code></li>
 <li><code>gc_mark_aux</code></li>
@@ -223,8 +223,7 @@
   res = res &amp;&amp; gc_mark_phase(cdr(env));
 
   return res;
-}
-</code></pre>
+}</code></pre>
 <p>The <code>gc_mark_phase</code> function takes a lispBM <code>VALUE</code> as argument. The argument is called <code>env</code> but that is not important, it could be any heap structure.</p>
 <p>The first thing that is checked is if the argument, <code>env</code> is a pointer. If it is not a pointer it is a value of some kind, for example a symbol, this is an indication that we have reached a leaf node and no marking is needed so traversal is aborted. The <code>gc_mark_phase</code> function is recursive, so this leaf node case is also a recursion terminating case.</p>
 <p>If the argument is a pointer, then a second check is performed to see if the cell that the pointer points to is already marked. This could turn up if there is a circular structure stored on the heap. We do not need to traverse down a path that is already marked, so this is also a case that stops recursion.</p>
@@ -258,7 +257,6 @@
   return 1;
 }
 
-
 </code></pre>
 <p>To mark the free list, first check if the free list empty. So, if the free list is the symbol <code>nil</code>, that indicates that there are no free cells and we can return immediately. If it is a symbol but not <code>nil</code> then there is a problem.</p>
 <p>Otherwise, just loop over the linked list as long as the current value is pointer and mark everything along the way.</p>
@@ -287,7 +285,6 @@
 
   return 1;
 }
-
 </code></pre>
 <p>That concludes marking of used heap objects and it is time for the sweep. The sweep function would also have been very tiny if it weren't for boxed values that need some special attention. If we forget about those for a moment, what the sweep does is to loop over the entire heap and in each cell it checks the mark bit. If the bit is not set, the cell is added to the free list.</p>
 <p>The extra complication comes from arrays that are stored in cells where the <code>car</code> is arbitrary pointer (not to the heap) and the <code>cdr</code> is the symbol <code>DEF_REPR_ARRAY_TYPE</code>. If an object with this property is encountered <code>free</code> should be called on the address in the <code>car</code> in addition to adding the cell to the free list.</p>
@@ -341,8 +338,7 @@
     clr_gc_mark(&amp;heap[i]);
   }
   return 1;
-}
-</code></pre>
+}</code></pre>
 <p>When cells are added to the free list the <code>car</code> position is set to the symbol <code>RECOVERED</code>, this is to help with debugging. If all cells that have been freed contain the symbol <code>RECOVERED</code> it is easy to notice if a bug is causing a value that is still in use to be freed as a completely nonsense symbol would appear in the expression.</p>
 <p>The sweep also clears the mark bit of all cells as it traverses the heap so that things are set up properly for the next round of marking.</p>
 <p>Wow. Looking back at this now is interesting. This code was such a struggle to produce at one time and then I haven't really even looked at it again for quite a while. Now it seems like there is almost nothing to it! However, with this kind of code it is all in the details. Getting the details right when also learning about the "big picture" is something to not take lightly.</p>

@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -150,16 +151,13 @@
 <p>The alphabet that is used to generate the code contains single character syntactic entities such as <code>"0"</code> and <code>"a"</code>, but also composite ones like <code>"))))"</code> and <code>"define"</code>. This is based on the assumption that multiple closing brackets is pretty common and that being able to code something like <code>"define"</code> into just 6 bits is a pretty good gain (6 bytes to 6 bits).</p>
 <p>The Python script for generating the codes is located in the <code>utils</code> directory and can be run as follows using python 3:</p>
 <pre><code>exec(open(&#39;gen_codes.py&#39;).read())
-print(make_c())
-</code></pre>
+print(make_c())</code></pre>
 <p>This relies on the Huffman library that can be installed as follows:</p>
-<pre><code>pip3 install huffman
-</code></pre>
+<pre><code>pip3 install huffman</code></pre>
 <h2 id="the-key-code-mapping">The Key-Code Mapping</h2>
 <p>The key-code mapping generated using the python script is held in a 2 dimensional array that is <code>NUM_CODES</code> long and 2 elements wide, called <code>codes</code>. So the keys and codes are accessible as <code>codes[ix][KEY]</code> and <code>codes[ix][CODE]</code>, where <code>KEY</code> is defined as 0 and <code>CODE</code> as 1.</p>
 <pre><code>#define  KEY  0
-#define  CODE 1
-</code></pre>
+#define  CODE 1</code></pre>
 <p>The code below is all generated using the <code>gen_codes.py</code> script and defines the number of codes, maximum code lenght in bits and maximum key length in characters.</p>
 <pre><code>#define NUM_CODES 66
 #define MAX_KEY_LENGTH 6
@@ -231,8 +229,7 @@ char *codes[NUM_CODES][2] = {
     { &quot;c&quot;, &quot;011010&quot; },
     { &quot;b&quot;, &quot;011101&quot; },
     { &quot;a&quot;, &quot;010111&quot; }
-    };
-</code></pre>
+    };</code></pre>
 <p>There are no upper case letters among the keys, this is because lispBM ignores case. Symbols expressed as <code>apa</code>, <code>Apa</code>, <code>APA</code> or any other upper/lower case combo all refer to the same symbol:</p>
 <pre><code># (define apa 1) 
 &gt; t
@@ -242,8 +239,7 @@ char *codes[NUM_CODES][2] = {
 &gt; 1
 # aPa
 &gt; 1
-# 
-</code></pre>
+# </code></pre>
 <hr />
 <p><em>Edit 2020-02-15</em></p>
 <p>After writing this down I am now thinking that having very similar lengths of the code words is probably not a very good idea at all. It may be better to allow for the longer multibyte keys (such as <code>define</code>) to have a higher number of code bits if it means that some shorter keys can have really short codes.</p>
@@ -316,8 +312,7 @@ char *codes[NUM_CODES][2] = {
     { &quot;*&quot;, &quot;0101010&quot; },
     { &quot;-&quot;, &quot;0110000&quot; },
     { &quot;+&quot;, &quot;0101001&quot; }
-    };
-</code></pre>
+    };</code></pre>
 <p>Now, There wont actually be an optimal sequence of codes when using this approach at all since the codes are not based on statistics from the currently compressed program. But given that all the codes here contain fewer bits than the corresponding characters would (as 8bit chars), this approach will make most programs somewhat smaller. since string literals are not compressed and the compressed data contains the size in bits of the data, stored in the first 4 bytes, it is possible to come up with obscure programs that are larger after compressing them. For example the program consisting only of the expression <code>"hello world"</code>, would be larger compressed than not.</p>
 <hr />
 <h2 id="compression">Compression</h2>
@@ -340,8 +335,7 @@ char *codes[NUM_CODES][2] = {
     }
   }
   return longest_match_ix;
-}
-</code></pre>
+}</code></pre>
 <p>The <code>set_bit</code> function is used when creating the compressed output. It can be used to set a bit to 1 or 0 at any position within a byte. This function is used as a helper within the functions that emit codes onto the output buffer of compressed data.</p>
 <pre><code>void set_bit(char *c, char bit_pos, bool set) {
   char bval = 1 &lt;&lt; bit_pos;
@@ -350,8 +344,7 @@ char *codes[NUM_CODES][2] = {
   } else {
     *c = *c &amp; ~bval;
   }
-}
-</code></pre>
+}</code></pre>
 <p>Strings that occur in source code is a bit of a special case. Since there are many ASCII characters missing from the set of keys, we cannot compress arbitrary strings. So strings are stored uncompressed within the otherwise compressed result. But since we are compressing everything around the string, the position within the output buffer where the uncompressed character will end up is not necessarily byte aligned! A function is needed that can insert the bits corresponding to a character at an arbitrary bit-addressed position within a buffer.</p>
 <pre><code>void emit_string_char_code(char *compressed, char c, int *bit_pos) {
 
@@ -362,8 +355,7 @@ char *codes[NUM_CODES][2] = {
     set_bit(&amp;compressed[byte_ix], bit_ix, s);
     *bit_pos = *bit_pos + 1;
   }
-}
-</code></pre>
+}</code></pre>
 <p>The <code>emit_string_char_code</code> function takes a pointer to the output buffer (called <code>compressed</code>), a character to insert into the buffer and a bit-position that indicates where to put the character bits. The function loops over the bits in the character, computes the byte index and bit index in the output buffer and copies bits from the character to be buffer one at a time.</p>
 <p>Emitting a compressed code is quite similar to the function above that emits an arbitrary character. But instead of looping for 8 iteration it performs as many iterations as there are bits in the code. It each iteration it checks the code to see if a 1 or a 0 should be added to the compressed buffer.</p>
 <pre><code>void emit_code(char *compressed, char *code, int *bit_pos) {
@@ -376,8 +368,7 @@ char *codes[NUM_CODES][2] = {
     set_bit(&amp;compressed[byte_ix], bit_ix, s);
     *bit_pos = *bit_pos + 1;
   }
-}
-</code></pre>
+}</code></pre>
 <p>The next function calculates how many bits the result of compressing a given string would need. This function mimics the actual compression function but it does not output any compressed result. Instead it just counts the number of bits in each code that the actual compressor would have added for each key found on the input string. This function exists so that we can allocate an array large enough without having to overshoot and waste space or undershoot and be forced to <code>realloc</code>.</p>
 <p>I will not go into details of this function, rather save that for the following function that performs the actual compression.</p>
 <pre><code>int compressed_length(char *string) {
@@ -439,8 +430,7 @@ char *codes[NUM_CODES][2] = {
     }
   }
   return comp_len;
-}
-</code></pre>
+}</code></pre>
 <p>Now it is time to compress a string of source code. The compression function takes a string and a pointer to a <code>unsigned int</code> that will hold the size of the compressed output in bytes.</p>
 <p>First the compression function runs the function that calculates the compressed size of the string. This size is used to allocate an appropriately sized output buffer but the size value is also added the output and occupies the first 4 bytes of the result buffer. When uncompressing this information is used to know how many bits should be used in the decompression. This is because the output buffer will very likely not be exactly the 1/8 of the number of bits.</p>
 <p>There is a boolean called <code>string_mode</code> that, if set, indicates that a lispBM string is being copied uncompressed into the output buffer. The <code>string_mode</code> is entered if a <code>"</code> character is encountered in the input data and is left again on the next occurrence of an unescaped <code>"</code> character.</p>
@@ -528,8 +518,7 @@ char *codes[NUM_CODES][2] = {
   }
 
   return compressed;
-}
-</code></pre>
+}</code></pre>
 <p>After the special case of <code>string_mode</code> handling and comment-eating, the actual piece of code that does compression is performed. Here the index of the longest matching key is found and the corresponding code is emited.</p>
 <h2 id="decompression">Decompression</h2>
 <p>One goal of the decompression algorithm is that it should be possible to extract data from the compressed buffer in an incremental way using only a small buffer of storage. The idea is that the decompression should slot into the stream abstraction used in the tokenizer and parser in <code>tokpar.c</code>. The <code>peek</code> operation used in the tokenizer however can lead to a situation where the compressed data has to be decompressed more than once as the small buffer is filled up. This is a trade-off between memory usage and compute resources.</p>
@@ -562,8 +551,7 @@ char *codes[NUM_CODES][2] = {
     }
   }
   return longest_match_ix;
-}
-</code></pre>
+}</code></pre>
 <p>Just like in the compression case, where there was an <code>emit_code</code> function, here there is an <code>emit_key</code>. The <code>emit_key</code> function is a bit simper though as it is outputting bytes and not bits. So, given a destination buffer, a key entry from the <code>codes</code> array and a character position in the output, <code>nk</code> characters are copied to the destination.</p>
 <pre><code>void emit_key(char *dest, char *key, int nk, unsigned int *char_pos) {
 
@@ -571,8 +559,7 @@ char *codes[NUM_CODES][2] = {
     dest[*char_pos] = key[i];
     *char_pos = *char_pos + 1;
   }
-}
-</code></pre>
+}</code></pre>
 <p>The <code>read_character</code> function below is a "helper" for the case when the compressed data contains an lispBM string that is stored uncompressed. In this case 8 bits will be read, starting from an arbitrary bit-address in the compressed data and returned as a char.</p>
 <pre><code>char read_character(char *src, unsigned int *bit_pos) {
 
@@ -586,8 +573,7 @@ char *codes[NUM_CODES][2] = {
     *bit_pos = *bit_pos + 1;
   }
   return c;
-}
-</code></pre>
+}</code></pre>
 <p>To enable incremental or piece-wise decompression of the compressed data, some state must be managed by the code that utilizes the decompressor. This state keeps track of the current bit-address within the compressed data where the next code will be read from as well as the total length in bits of the compressed data. It also remembers if <code>string_mode</code> has been entered, which means that uncompressed characters are read from the data. If in string mode, the last read character is remembered to be able to figure out if a <code>"</code> character encountered was escaped or not. It also holds a pointer to the source data.</p>
 <pre><code>typedef struct {
   uint32_t compressed_bits;
@@ -595,8 +581,7 @@ char *codes[NUM_CODES][2] = {
   bool string_mode;
   char last_string_char;
   char *src;
-} decomp_state; 
-</code></pre>
+} decomp_state; </code></pre>
 <p>The following function is called to initialize a decompression state on a given compressed data buffer. The total number of bits are extracted from the first 4 bytes of the data and the current bit index is set to 32 (start decompressing after the length info). Initially <code>string_mode</code> is false as a string starting character must be found to enter that mode.</p>
 <pre><code>void compression_init_state(decomp_state *s, char *src) {
   memcpy(&amp;s-&gt;compressed_bits, src, 4);
@@ -604,8 +589,7 @@ char *codes[NUM_CODES][2] = {
   s-&gt;string_mode = false;
   s-&gt;last_string_char = 0;
   s-&gt;src = src;
-}
-</code></pre>
+}</code></pre>
 <p>The incremental decompressor extracts one key from the compressed data on each call. It takes a <code>decomp_state</code>, a destination buffer of size <code>dest_n</code>. The caller of this function is responsible for ensuring that there is enough space in the destination buffer for the longest possible key.</p>
 <pre><code>int compression_decompress_incremental(decomp_state *s, char *dest_buff, unsigned int dest_n) {
 
@@ -645,8 +629,7 @@ char *codes[NUM_CODES][2] = {
   } else {
     return 0;
   }
-}
-</code></pre>
+}</code></pre>
 <p>If the end of the compressed data is reached this function returns 0. Otherwise it checks if the state indicates that we are in <code>string_mode</code>, in which case it reads a character from the data and checks if that character is the string terminating <code>"</code>. This is where the <code>last_string_char</code> comes in and we can check that it is not an escaped <code>"</code> that is part of the string. If <code>string_mode</code> is exited, the <code>last_string_char</code> is reset to 0 so that there wont be a potential escape character left there when entering <code>string_mode</code> the next time.</p>
 <p>If not in <code>string_mode</code>, the index of the longest matching code is found. This could potentially be the <code>"</code> char that signals entry to <code>string_mode</code> but if it is not a key is emitted to the destination buffer.</p>
 <p>Incremental decompression is used to hook the reading of compressed source up to the tokenizer. It could of course be useful to have a decompress function that decompresses the entire code on the fly. This is the function shown below. It repeatedly calls the incremental decompressor until all data has been decompressed.</p>
@@ -673,8 +656,7 @@ char *codes[NUM_CODES][2] = {
     }
   }
   return true;
-}
-</code></pre>
+}</code></pre>
 <h2 id="parsing-compressed-code">Parsing Compressed Code</h2>
 <p>To implement the parser on compressed code one needs to provide implementations of the <code>more</code>, <code>get</code>, <code>peek</code> and <code>drop</code> functions in the <code>tokenizer_char_stream</code> interface. A tokenizer state with additional information is also needed. For example, this tokenizer state contains a <code>decomp_state</code>, a decompression buffer, number of bytes in the decompression buffer and the position in the buffer that the next <code>get</code> operation should return.</p>
 <pre><code>#define DECOMP_BUFF_SIZE 32
@@ -683,8 +665,7 @@ typedef struct {
   char decomp_buff[DECOMP_BUFF_SIZE];
   int  decomp_bytes;
   int  buff_pos;
-} tokenizer_compressed_state;
-</code></pre>
+} tokenizer_compressed_state;</code></pre>
 <p>Checking if there is more to read from the character stream is done by checking if there is something left in the decompression buffer or it there is still compressed data to decompress in the compressed array.</p>
 <pre><code>bool more_compressed(tokenizer_char_stream str) {
   tokenizer_compressed_state *s = (tokenizer_compressed_state*)str.state;
@@ -692,8 +673,7 @@ typedef struct {
     (s-&gt;ds.i &lt; s-&gt;ds.compressed_bits + 32) ||
     (s-&gt;buff_pos &lt; s-&gt;decomp_bytes);
   return more;
-}
-</code></pre>
+}</code></pre>
 <p>Getting an item from the compressed stream starts out by checking if there is anything left to get. If there is, we also check if the decompression buffer is empty, if so it is refilled using the incremental decompressor. Then a character is returned from the decompression buffer.</p>
 <pre><code>char get_compressed(tokenizer_char_stream str) {
   tokenizer_compressed_state *s = (tokenizer_compressed_state*)str.state;
@@ -714,8 +694,7 @@ typedef struct {
   char c = s-&gt;decomp_buff[s-&gt;buff_pos];
   s-&gt;buff_pos += 1;
   return c;
-}
-</code></pre>
+}</code></pre>
 <p>Peeking into a compressed character stream is a bit interesting. We have to be able to peek arbitrarily far into the stream (there could for example be a very long string that needs its length measured). But being able to peek arbitrarily far into the streams means the decompression buffer will not be enough. To solve this, before doing any peeking the current tokenizer state is saved to a backup, then we can read off an arbitrary number of characters from the stream using <code>get</code> (which now ruins the state), after getting the peek-depth of characters the state can be restored from the backup and it is as if the get operations never happened.</p>
 <pre><code>char peek_compressed(tokenizer_char_stream str, unsigned int n) {
   tokenizer_compressed_state *s = (tokenizer_compressed_state*)str.state;
@@ -731,15 +710,13 @@ typedef struct {
 
   memcpy(str.state, &amp;old, sizeof(tokenizer_compressed_state));
   return c;
-}
-</code></pre>
+}</code></pre>
 <p>Dropping is just getting but disregarding the output.</p>
 <pre><code>void drop_compressed(tokenizer_char_stream str, unsigned int n) {
   for (unsigned int i = 0; i &lt; n; i ++) {
     get_compressed(str);
   }
-}
-</code></pre>
+}</code></pre>
 <p>With these functions in place a parser for compressed character streams can be implemented by setting up a <code>tokenizer_compressed_state</code> and a <code>tokenizer_char_stream</code> that is based on the functions defined above. Then run <code>parse_program</code> on the compressed character stream.</p>
 <pre><code>VALUE tokpar_parse_compressed(char *bytes) {
 
@@ -759,8 +736,7 @@ typedef struct {
   str.drop = drop_compressed;
 
   return parse_program(str);
-}
-</code></pre>
+}</code></pre>
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>
 <p>Please contact me with questions, suggestions or feedback at blog (dot) joel (dot) svensson (at) gmail (dot) com or join the <a href=https://groups.google.com/g/svenssonjoelgithubio> google group </a>.</p>

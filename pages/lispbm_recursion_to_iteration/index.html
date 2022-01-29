@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -182,8 +183,7 @@
 
   gc_mark_phase(car(env));
   gc_mark_phase(cdr(env));
-}
-</code></pre>
+}</code></pre>
 <p>So, if for example the argument to <code>gc_mark_phase</code> happens to be a very long linked-list, deeply nested recursion is the outcome. It may be possible that the last call to <code>gc_mark_phase</code> will have tail-call optimization applied to it, which should mean that in the case of a linked list, this function also operates in constant space. But with this code that is up to the compiler and optimization settings and it still does not make us able to control the maximum amount of memory usage ourselves.</p>
 <p>Below is an implementation of <code>gc_mark_phase</code> that uses an explicit stack. When introducing a fixed maximum stack size the function can now fail and this is, correctly this time, reflected in its type (<code>int</code>). This is of course another benefit over the previous implementation that either would succeed, or crash in some spectacular way when the call-stack starts overwriting other data and code.</p>
 <p>This new implementation of <code>gc_mark_phase</code> starts out by creating the explicit stack. Currently this explicit stack is a block of VALUES on the call stack, but an important difference here is that this <code>gc_mark_phase</code> won't be recursive and those 1024 VALUES is what we have to work within.</p>
@@ -230,19 +230,16 @@
   }
 
   return 1;
-}
-</code></pre>
+}</code></pre>
 <p>After pushing <code>car</code> and <code>cdr</code> the loop body executes again and processes the new top of the stack. Notice that here it makes a difference in what order the <code>car</code> and <code>cdr</code> are pushed onto the stack. Pushing <code>cdr</code> before <code>car</code> gives the constant memory use for linked-lists with the pointer to the next cell in the cdr (which I think will be a common case). If instead <code>car</code> was pushed before <code>cdr</code>, linked-lists with the pointer in the <code>car</code> field would be favored but these don't sound so common to me. Also, as pointed out earlier, in the general case the stack will grow proportionally to the depth of the tree that is traversed.</p>
 <h2 id="iterative-printing-of-heap-structures">Iterative Printing of Heap Structures</h2>
 <p>Printing of <code>VALUE</code>s is another function that was implemented using recursion before. Doing some changes to the functions that print lispBM heap-structures (<code>VALUE</code>s) have been on the todo-list for a long time, so while doing this transformation some other improvements were applied as well.</p>
 <p>For example, <code>(iota 3)</code> now prints like this:</p>
 <pre><code># (iota 3)
-(0 1 2 3)
-</code></pre>
+(0 1 2 3)</code></pre>
 <p>earlier it would output</p>
 <pre><code># (iota 3)
-(0 (1 (2 (3 nil))))
-</code></pre>
+(0 (1 (2 (3 nil))))</code></pre>
 <p>which is also a hint at how that structure was printed recursively.</p>
 <p>The new <code>print_value</code> function that replaces <code>simple_print</code> turned out almost being a small interpreter for a tiny language for printing heap-structures. The explicit stack used does not just keep track of what is left to print but it also holds instructions that guide the way they are printed. The following set of definitions list the different instructions that can occur on the stack.</p>
 <pre><code>#define PRINT_STACK_SIZE 256 /* 1 KB */
@@ -251,8 +248,7 @@
 #define PRINT_SPACE    2
 #define START_LIST     3
 #define CONTINUE_LIST  4
-#define END_LIST       5
-</code></pre>
+#define END_LIST       5</code></pre>
 <p>What these instructions do will be shown in the code walk-through below.</p>
 <p>if zooming out enough and squinting appropriately the print function works the same way as the <code>gc_mark_phase</code>. It starts out by pushing the <code>VALUE</code> argument to the stack, then depending on the form of this value the parts to print next are pushed. New is that, instead of marking cons-cells, the values held in the structure are of more interest as they are what is supposed to be printed. The structure of cons-cells also hold information guiding the printing but that information is more about where spaces and parentheses should go.</p>
 <p>The <code>print_value</code> is a bit long and mainly consists of a lot of just slightly different cases. Instead of showing the entire function I will just list some representative cases of each kind.</p>
@@ -268,8 +264,7 @@
   char *str_ptr;
   int res;
   
-  push_u32_2(&amp;s, t, PRINT);
-</code></pre>
+  push_u32_2(&amp;s, t, PRINT);</code></pre>
 <p>The beginning of the function sets up the stack and initializes some state used throughout. The function operates a little bit like <code>snprintf</code> in the sense that it prints at most <code>len</code> characters into the output <code>buf</code>. It also has an error string argument that is filled in with some text in case it is not possible to print the heap-structure given.</p>
 <p>Before entering into a loop that runs while there are things on the stack, two things are pushed onto the stack. First the value to print is pushed and then above it an "Opcode" called <code>PRINT</code> is pushed. When later popping <code>PRINT</code> we know it has an additional argument on the stack, which represents what to print.</p>
 <pre><code>  while (!stack_is_empty(&amp;s) &amp;&amp; offset &lt;= len - 5) {
@@ -278,8 +273,7 @@
     UINT  instr;
     pop_u32(&amp;s, &amp;instr);
 
-    switch(instr) {
-</code></pre>
+    switch(instr) {</code></pre>
 <p>The loop starts out by popping the top of the stack, which gives an instruction. Depending on what that instruction is a case is selected. Let's look at the <code>PRINT</code> case first.</p>
 <p>When entering the <code>PRINT</code> case, its argument is popped and depending on the type of that argument we proceed. If the argument is a symbol or number it is directly printed into the <code>buf</code>. If, however, the argument is a pointer to a cons-cell it signals the start of a list that should be wrapped in parentheses. This is dealt with by pushing the value back onto the stack and then pushing the instruction <code>START_LIST</code>.</p>
 <pre><code>    case PRINT:
@@ -332,8 +326,7 @@
         return -1;
         break;
       } // Switch type of curr
-      break; // case PRINT
-</code></pre>
+      break; // case PRINT</code></pre>
 <p>When interpreting the <code>START_LIST</code> instruction, an argument is popped from the stack and a start parenthesis is printed to the buffer. So when printing a list like this, the <code>car</code> value should be printed first and thus has to be pushed last. So before pushing the instruction to <code>PRINT</code> the car we have to deal with the <code>cdr</code>. depending on the type of <code>cdr</code> there are some options, if it is a pointer we should <code>CONTINUE_LIST</code>, if is the <code>nil</code> symbol we should <code>END_LIST</code> otherwise it is something that should be printed (Actually I think that this case is what should be the dotted pair case, if lispBM had them).</p>
 <p><em>EDIT 2020-03-05</em> bug-fix. Added <code>res &amp;= push_u32(&amp;s, END_LIST);</code> to the cases in <code>START_LIST</code> and <code>CONTINUE_LIST</code> where the value in the <code>cdr</code> position is neither a pointer to a cons-cell or a <code>nil</code>. This fix adds a closing parentheses to things like <code>(cons 1 2)</code>.</p>
 <pre><code>    case START_LIST: {
@@ -366,8 +359,7 @@
       }
       
       break;
-    }
-</code></pre>
+    }</code></pre>
 <p>The <code>CONTINUE_LIST</code> instruction is close to identical to <code>START_LIST</code> except that it does not print an opening parenthesis, instead it prints a space to separate the elements of the list.</p>
 <pre><code>    case CONTINUE_LIST: {
 
@@ -404,20 +396,17 @@
         return -1;
       }
       break;
-    }
-</code></pre>
+    }</code></pre>
 <p>The <code>END_LIST</code> instruction takes no argument and simply adds the closing parenthesis.</p>
 <pre><code>    case END_LIST: 
       n = snprintf(buf + offset, len - offset, &quot;)&quot;);
       offset += n;
-      break;
-</code></pre>
+      break;</code></pre>
 <p>The <code>PRINT_SPACE</code> instruction is equally simple, it takes no arguments and just adds a space.</p>
 <pre><code>    case PRINT_SPACE:
       n = snprintf(buf + offset, len - offset, &quot; &quot;);
       offset += n;
-      break;
-</code></pre>
+      break;</code></pre>
 <p>If none of the cases above apply, the stack is corrupted.</p>
 <pre><code>    default:
       snprintf(error, len_error, &quot;Error: Corrupt print stack!&quot;);
@@ -434,8 +423,7 @@
 
   
   return n;
-}
-</code></pre>
+}</code></pre>
 <p>After leaving the while loop, there is a check to see if we exited because of being done or because of running out of buffer to write into. If we have filled up the buffer the last few bytes of it is replaced with the "..." to signal that there really was more stuff here but it didn't fit.</p>
 <h2 id="future-work">Future work</h2>
 <p>As I understand it there is a technique called pointer-reversal that can eliminate the need for an explicit stack as used in the <code>gc_mark_phase</code> function. This technique would require the use a few more bits within each cons-cell. These extra bits should encode information about whether the <code>car</code> and the <code>cdr</code> have been processed. In the case of lispBM that would mean that 2 bits would be required for this information and that does not feel impossible to tweak in there. Actually, the mark bit is already present in both the <code>car</code> and the <code>cdr</code> field, but only the one in the <code>cdr</code> is used. This leaves almost no excuse not to try it, I must learn more about this pointer-reversal technique before attempting it though.</p>

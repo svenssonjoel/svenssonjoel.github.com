@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -145,7 +146,7 @@
 <h1 id="interfacing-a-neato-lidar-with-an-stm32-under-chibios">Interfacing a Neato Lidar with an STM32 under ChibiOS</h1>
 <p>I bought my Neato lidar very cheaply from Ebay. I did get it to run and talk to an stm32f4 under ChibiOs. But it does seem to not be in top working order. Good enough to play with though.</p>
 <p>There are several blogs and forum posts on the web that discuss the Neato lidar in one way or another and I pieced together the information needed to talk to the lidar from such sources. At this time I cannot remember exactly which source gave me what insight and I am also uncertain that I managed to find all the sources that helped me. So here is a list other sites that talk about the Neato lidar in a hobbyist setting:</p>
-<ol>
+<ol type="1">
 <li><a href="https://hackaday.com/2016/01/22/how-to-use-lidar-with-the-raspberry-pi/">Lidar on RPI</a></li>
 <li><a href="https://www.impulseadventure.com/elec/robot-lidar-neato-xv11.html">Adding Inexpensive Lidar to your Robot</a></li>
 <li><a href="https://forum.processing.org/two/discussion/26201/neato-lidar-sensor-and-reading-the-serial-data-and-making-sense-of-it">Forum post about reading of Neato lidar serial data</a></li>
@@ -162,7 +163,7 @@
 <p>To interface with the Neato lidar, the UART connector is used for data and one of the motor drive channels is used to control the RPM of the motor that spins the lidar. The never version of the PCB has two additional motor drive outputs that are not full H-Bridges but rather just a mosfet that can be pwmed, on this version all 4 motor drive channels would remain free even when equipped with lidar.</p>
 <h2 id="the-code">The CODE</h2>
 <p>The code consists of the following parts:</p>
-<ol>
+<ol type="1">
 <li>A ChibiOS thread that talks to the lidar.</li>
 <li>An initialization function.</li>
 <li>A calibration function</li>
@@ -175,16 +176,14 @@
 <pre><code>#define LIDAR_UART_PORT GPIOC
 #define LIDAR_UART_TX   10
 #define LIDAR_UART_RX   11
-#define LIDAR_SERIAL_DRIVER SD3
-</code></pre>
+#define LIDAR_SERIAL_DRIVER SD3</code></pre>
 <p>Then a serial configuration object is created.</p>
 <pre><code>static SerialConfig serial_cfg = {
   115200,
   0,
   USART_CR2_STOP1_BITS,
   0
-};
-</code></pre>
+};</code></pre>
 <p>The rest of the setup of the serial communication takes place in the initialization function.</p>
 <pre><code>void neato_lidar_init(void) {
 
@@ -200,14 +199,13 @@
                           sizeof(neatoLidarThreadArea),
                           NORMALPRIO,
                           neatoLidarThread, NULL); 
-}
-</code></pre>
+}</code></pre>
 <p>The <code>neato_lidar_init</code> function configures PC10 and 11 to alternative mode 7. In the stm32f4 datasheet you can find this information in the section about <em>Alternate Function Mapping</em>. It then starts the serial driver.</p>
 <p>After setting up the uart, the lidar-spinning motor is calibrated. The lidar reports its RPM in the data it outputs. So what the calibration function is doing is trying to find the PWM duty cycle that makes the lidar spin at 300RPM. I am not sure that 300RPM is really the ideal. I found this number by experiments. It seemed to me that at 300RPM it returned the highest number of valid distance readings. This may of course be something specific to my used and not 100% <em>OK</em> lidar.</p>
 <p>Following the calibration, the <code>neatoLidarThread</code> is set up. We will look at this code after first looking at the calibration routine. There are a few things in the calibration that have not yet been introduced. But just assume that there is a way to read the current RPM out from the lidar, the details of that are shown later.</p>
 <p>The calibration routine performs a so-called binary search over the PWM duty cycles and tries to lock down on a duty cycle that results in 300RPM.</p>
 <p>It does this by:</p>
-<ol>
+<ol type="1">
 <li>Set duty cycle to 50% (<code>duty = 5000</code>).</li>
 <li>Set the range to search <code>low</code> to <code>high</code> to 0% and 100%.</li>
 <li>Enter a loop.
@@ -258,11 +256,9 @@
   motor_duty = duty;
   pwmEnableChannel(&amp;PWMD2, 3 , PWM_PERCENTAGE_TO_WIDTH(&amp;PWMD2,motor_duty));
   return 1;  
-}
-</code></pre>
+}</code></pre>
 <p>The <code>motor_duty</code> is a global variable that is later accessed by the lidar-thread and fine tuned a little bit during operation.</p>
-<pre><code>static int motor_duty = 5000;
-</code></pre>
+<pre><code>static int motor_duty = 5000;</code></pre>
 <p>Each data-packet that is sent from the lidar over the uart contains four distance readings. 90 packets are sent from the lidar during one rotation giving 360 distance readings for a full revolution. The struct below represents the data sent in each package. It contains:</p>
 <ul>
 <li>An index <code>0 - 89</code>. Encoded as <code>0xA0</code> to <code>0xF9</code></li>
@@ -282,8 +278,7 @@
   bool     warn[4]; 
   uint16_t signal[4];
   bool     checksum_ok; 
-} neato_lidar_packet_t;
-</code></pre>
+} neato_lidar_packet_t;</code></pre>
 <p>The <code>parse_packet</code> function starts out by computing the checksum over the first 20 bytes of the package. This checksum is them compared to the checksum already stored in the last 2 bytes of the package. After checking the checksum and storing the result of that in the struct, all the data fields are extracted from the bytes.</p>
 <pre><code>static int parse_packet(uint8_t *bytes, neato_lidar_packet_t *p) {
 
@@ -317,7 +312,6 @@
 
   return 1; // An alternative would be to return 0 if checksum fails.
 }
-
 </code></pre>
 <p>I show the <code>checksum</code> function below. I cannot currently find the source of where I found this <em>algorithm</em>. It may be that it is a very standard checksumming method. If you recognize this, please remind me where it comes from. The function treats adjacent bytes as a 16bit word and iteratively adds these up into a 32bit variable. In the end, to combine the high and low 16 bits of this results into a 16 bit final result.</p>
 <pre><code>static uint16_t checksum(uint8_t *data)
@@ -334,8 +328,7 @@
     
   uint32_t checksum=(chk32 &amp; 0x7FFF) + (chk32 &gt;&gt; 15);
   return checksum &amp; 0x7FFF;
-}
-</code></pre>
+}</code></pre>
 <p>To interface these neato lidar specific functions above with ChibiOS, there is a <code>read_packet</code> function. This function tries to find the <em>start of packet</em> indicator <code>0xFA</code> and then reads it and an additional 21 bytes into a buffer. This is done by polling the serial link (uart) until the start indicator is found. All the reading from the serial link is done with a timeout that aborts the procedure if no data arrives for a long time, which may indicate a problem with the hardware.</p>
 <p>Once 22 bytes have been read they are passed to the <code>parse_packet</code> function.</p>
 <pre><code>static int read_packet(neato_lidar_packet_t *p) {
@@ -363,8 +356,7 @@
   }
 
   return parse_packet(bytes, p); 
-}
-</code></pre>
+}</code></pre>
 <p>The ChibiOS thread that continuously reads lidar packets is shown below. It fills in a distance array of integers, where a -1 value indicates that the reading at that angle was invalid.</p>
 <p>The thread loops forever and in each iteration reads a packet, checks if valid and fills in the distance array.</p>
 <p>It also checks the current RPM in each iteration and makes small adjustments to the duty-cycle if the RPM has for some reason drifted away from 300.</p>
@@ -409,13 +401,11 @@ static THD_FUNCTION(neatoLidarThread, arg) {
     
      chThdSleepMilliseconds(1);
   }
-}
-</code></pre>
+}</code></pre>
 <p>The interface used by the rest of the application is <code>neato_lidar_distance</code> that takes and index <code>0 - 359</code> and returns that index from the distance array. I am not actually sure that the distance array needs to be protected by a mutex or not. On one hand I imagine that reading and writing a 32Bit value will be an atomic operation on the platform, but then I did not look into that!</p>
 <pre><code>int neato_lidar_distance(int ix) {
   return distance[ix]; 
-}
-</code></pre>
+}</code></pre>
 <p>I hope this information is of value to anyone. It is all based on bits of information that I pieced together from other sources. Maybe the full disclosure of source code and the ChibiOS integration all in one place can be a good thing? Anyway, if you are working on something related or if you recognize that I am deriving my code from yours and want acknowledgment please let me know.</p>
 <hr />
 <p><a href="https://svenssonjoel.github.io">HOME</a></p>

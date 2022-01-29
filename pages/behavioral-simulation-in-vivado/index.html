@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -153,8 +154,7 @@
          reset : in std_logic;
          count : out std_logic_vector(2 downto 0)
        );
-end counter;
-</code></pre>
+end counter;</code></pre>
 <p>The implementation of this will have an internal state signal called <code>counter_state</code> and it will be of the type <code>unsigned(2 downto 0)</code>. This is because we can perform arithmetic on these unsigned signals easily and they can also be easily converted into an <code>std_logic_vector</code> for use in the <code>count</code> signal.</p>
 <p>Let's take a look at the implementation.</p>
 <pre><code>architecture Behavioral of counter is
@@ -173,8 +173,7 @@ begin
             counter_state &lt;= counter_state + 1;
         end if;
     end process; 
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <p>What this means is that <code>count</code> should always have the value of the <code>counter_state</code> (converted to an <code>std_logic_vector</code>). Then there is a process that is sensitive to <code>clk</code> and <code>reset</code>. If reset is high then the internal state is set to 0. The reset here is independent of the clock which is called an asynchronous reset. If reset is not high and there is a rising edge on the clock, then the internal counter state is incremented. Nothing special needs to be done to make the counter wrap around to zero it will happen automatically when trying to increment the value 7 as there are only 3 bits.</p>
 <p>The complete VHDL listing looks as follows:</p>
 <pre><code>library IEEE;
@@ -204,8 +203,7 @@ begin
             counter_state &lt;= counter_state + 1;
         end if;
     end process; 
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <p>Now it would be nice to be able to get some kind of indication on whether or not this counter will behave appropriately. That is where the simulation comes in.</p>
 <h2 id="writing-a-testbench-for-the-counter">Writing a testbench for the counter</h2>
 <p>To simulate the counter we need to create a kind of testing harness for it. This harness will instantiate a counter and provide stimulus for it. The stimuli the counter will need is the <code>clk</code> and the <code>reset</code> signals.</p>
@@ -228,8 +226,7 @@ end Behavioral;
 <p>The testbench will define some local signals that it connects to an instance of our counter. This is done using <code>port map( ... )</code> syntax. Then, the testbench should provide a clock signal and perform a reset. If all works out, we should see the counter count.</p>
 <p>A testbench is just another VHDL program. So it has an entity and an architecture. The entity declaration is empty though. No external interface on this one.</p>
 <pre><code>entity counter_tb is
-end counter_tb;
-</code></pre>
+end counter_tb;</code></pre>
 <p>Then the architecture:</p>
 <pre><code>architecture Behavioral of counter_tb is
     signal tb_clk : std_logic := &#39;0&#39;;
@@ -243,8 +240,7 @@ begin
     
     tb_clk &lt;= not tb_clk after 5ns;
     
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <p>We define three signals, <code>tb_clk</code>, <code>tb_reset</code> and <code>tb_count</code>. I preceded the signal names with <code>tb</code> but I really don't think that is necessary. The signals here have default values, which is fine for a testbench but less ok for hardware to be synthesized as I understand it currently (This seems like something that would be very tricky and wasteful to build into hardware).</p>
 <p>Next the entity is instantiated and the <code>port map</code> is performed. In my opinion the port map is using a very confusing syntax. The arrow implies to me that there is a direction but rather It seems that, for example <code>reset =&gt; tb_reset</code> means that these signals are connected (As if a wire was soldered between the two).</p>
 <p>Next we provide some stimulus. <code>tb_reset</code> will be active for a short while starting 5ns after simulation starts. The <code>tb_clock</code> signal will oscillate with 10ns period throughout simulation.</p>
@@ -268,8 +264,7 @@ begin
     
     tb_clk &lt;= not tb_clk after 5ns;
     
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <h2 id="simulating-the-counter-using-the-testbench">Simulating the counter using the testbench</h2>
 <p>Before we jump to simulation, let's go into the settings and set for how long the simulation should be run. You find the settings near the top of the <em>Flow Navigator</em> under <em>Project Manager</em>. Click on <em>Settings</em></p>
 <p><img src="./media/sim-screen-3.png" alt="Settings" /></p>

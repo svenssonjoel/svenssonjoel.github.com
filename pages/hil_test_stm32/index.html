@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -144,11 +145,9 @@
 
 <h1 id="automated-hardware-in-the-loop-testing-with-stm32f4-discovery-openocd-and-expect">Automated hardware in the loop testing with STM32F4-Discovery, OpenOCD and Expect</h1>
 <p><a href="http://www.github.com/svenssonjoel/cortex_m_mcgee">Cortex M. McGee</a> is a collection of C functions for generation of 16 and 32bit thumb instructions. The goal is to provide a C function for each of the thumb1 and thumb2 opcodes. As an example there is a function called <code>m0_add_imm8</code> that adds a 8bit immediate value to a register.</p>
-<pre><code>thumb_opcode_t m0_add_imm8(reg_t rdn, uint8_t imm8) {...}
-</code></pre>
+<pre><code>thumb_opcode_t m0_add_imm8(reg_t rdn, uint8_t imm8) {...}</code></pre>
 <p>Sequences of opcodes are created using a function call <code>emit_opcode</code>:</p>
-<pre><code>int emit_opcode(instr_seq_t *seq, thumb_opcode_t op) {...}
-</code></pre>
+<pre><code>int emit_opcode(instr_seq_t *seq, thumb_opcode_t op) {...}</code></pre>
 <p>This function appends the opcode given as the second argument to the sequence of opcodes given as the first.</p>
 <p>I don't know if there is much value to be able to programmatically generate cortex-m machine code sequences in memory. JIT compilation comes to mind and that is fun and all, but how applicable and useful that is on machines that, in general, are quite restricted on resources is something to experiment with later on.</p>
 <p>This is the first time I am attempting to generate machine-code opcodes and I am quite insecure about getting the opcode encodings right, so testing will be important. The encoding functions are based on the information found in <a href="https://developer.arm.com/documentation/ddi0403/ed/">ARMv7-M Architecture Reference Manual</a> as well as <a href="https://www.goodreads.com/book/show/17070271-the-definitive-guide-to-arm-cortex-m3-and-cortex-m4-processors">The definitive guide..</a> by Joseph Yiu.</p>
@@ -166,8 +165,7 @@ seq.mc = instrs;
 emit_opcode(&amp;seq, m0_mov_imm(r0, 2));
 emit_opcode(&amp;seq, m0_mov_imm(r1, 3));
 emit_opcode(&amp;seq, m0_add_low(r2, r1, r0));
-emit_opcode(&amp;seq, m0_add_any(r0, r2));
-</code></pre>
+emit_opcode(&amp;seq, m0_add_any(r0, r2));</code></pre>
 <p>The instruction sequence can be stored into a file, here called <code>example0.bin</code>.</p>
 <pre><code>FILE *fp = fopen(&quot;example0.bin&quot;, &quot;w&quot;);
 if (!fp)  {
@@ -178,15 +176,13 @@ if (!fp)  {
 if (fwrite(seq.mc,sizeof(uint16_t),4,fp) &lt; 4) {
   printf(&quot;Error writing file\n&quot;);
   return 0;
-}
-</code></pre>
+}</code></pre>
 <p>After generating <code>example0.bin</code> the contents can be inspected using <code>xxd</code>:</p>
 <pre><code>&gt; xxd example0.bin
 00000000: 0220 0321 0a18 1044                      . .!...D
 &gt; xxd -b example0.bin
 00000000: 00000010 00100000 00000011 00100001 00001010 00011000  . .!..
-00000006: 00010000 01000100                                      .D
-</code></pre>
+00000006: 00010000 01000100                                      .D</code></pre>
 <p>The <code>example0.bin</code> file can be disassembled using <code>arm-none-eabi-objdump</code> together with some magical incantations:</p>
 <pre><code>&gt; arm-none-eabi-objdump -D -b binary -m armv6-m example0.bin -Mforce-thumb
 Disassembly of section .data:
@@ -195,16 +191,14 @@ Disassembly of section .data:
    0:   2002        movs    r0, #2
    2:   2103        movs    r1, #3
    4:   180a        adds    r2, r1, r0
-   6:   4410        add r0, r2
-</code></pre>
+   6:   4410        add r0, r2</code></pre>
 <p>The reason all that extra "magic" (all those parameters) is needed is because the <code>example0.bin</code> file is not a proper elf file, it just a bunch of opcodes thrown into a binary file. For elf files Objdump can figure out some of the things by itself from the elf header. Objdump also states that it has disassembled the "data" section, but this is of course irrelevant as there are no sections at all.</p>
 <p>However, pretty neat that the disassembly seems to be what we wanted. Two immediate mov, one three register add and one two register add. Great!</p>
 <h1 id="manual-testing-with-openocd-and-telnet">Manual "testing" with OpenOCD and Telnet</h1>
 <p>It is always fun to involve the development board and we can get the same kind of information with the STM32F4-Discovery board in the loop.</p>
 <p>Testing this on the board does not really give that much information it is however fun to see if we can write a sequence of opcodes that we generated into memory and then execute the operations.</p>
 <p>OpenOCD will be used to "debug" against the board. To do this OpenOCD should be started with a command such as this:</p>
-<pre><code>openocd -f stm32f407g.cfg
-</code></pre>
+<pre><code>openocd -f stm32f407g.cfg</code></pre>
 <p>The file <code>stm32f407g.cfg</code> has the following contents:</p>
 <pre><code># This is an STM32F4 discovery board with a single STM32F407VGT6 chip.
 # http://www.st.com/internet/evalboard/product/252419.jsp
@@ -219,8 +213,7 @@ set WORKAREASIZE 0x10000
 
 source [find target/stm32f4x.cfg]
 
-reset_config srst_only
-</code></pre>
+reset_config srst_only</code></pre>
 <p>Now OpenOCD should have started and output something that looks like below to the terminal:</p>
 <pre><code>Open On-Chip Debugger 0.10.0
 Licensed under GNU GPL v2
@@ -230,16 +223,14 @@ debug_level: 1
 adapter speed: 2000 kHz
 adapter_nsrst_delay: 100
 none separate
-srst_only separate srst_nogate srst_open_drain connect_deassert_srst
-</code></pre>
+srst_only separate srst_nogate srst_open_drain connect_deassert_srst</code></pre>
 <p>When OpenOCD is running like this it is possible to connect to it with either gdb or using telnet. I will be using telnet here.</p>
 <p>In a new terminal type <code>telnet localhost 4444</code>. this should bring up the following:</p>
 <pre><code>Trying 127.0.0.1...
 Connected to localhost.
 Escape character is &#39;^]&#39;.
 Open On-Chip Debugger
-&gt; 
-</code></pre>
+&gt; </code></pre>
 <p>We now have an interface to talk to OpenOCD and thus also the STM32F4-Discovery board.</p>
 <p>Typing <code>reset init</code>, resets the board:</p>
 <pre><code>&gt; reset init
@@ -247,8 +238,7 @@ adapter speed: 1800 kHz
 target halted due to debug-request, current mode: Thread 
 xPSR: 0x01000000 pc: 0x08000300 msp: 0x20000400
 adapter speed: 4000 kHz
-&gt; 
-</code></pre>
+&gt; </code></pre>
 <p>Another fun command is <code>reg</code> that will display information about the values in all registers.</p>
 <pre><code>&gt; reg
 ===== arm v7m registers
@@ -307,8 +297,7 @@ adapter speed: 4000 kHz
 (51) dwt_3_comp (/32)
 (52) dwt_3_mask (/4)
 (53) dwt_3_function (/32)
-&gt; 
-</code></pre>
+&gt; </code></pre>
 <p>We can change the contents of a register by issuing <code>reg reg_name value</code>, for example <code>reg pc 0x20000000</code>.</p>
 <pre><code>&gt; reg pc 0x20000000
 pc (/32): 0x20000000
@@ -369,30 +358,25 @@ pc (/32): 0x20000000
 (51) dwt_3_comp (/32)
 (52) dwt_3_mask (/4)
 (53) dwt_3_function (/32)
-&gt; 
-</code></pre>
+&gt; </code></pre>
 <p>Now, let's load the <code>example0.bin</code> into memory on the discovery board. This is done with the command <code>load_image example0.bin 0x20000000 bin</code>. This places the contents of the file at address <code>0x20000000</code> and onwards in the ram on the STM32.</p>
 <pre><code>&gt; load_image example0.bin 0x20000000 bin
 8 bytes written at address 0x20000000
-downloaded 8 bytes in 0.000639s (12.226 KiB/s)
-</code></pre>
+downloaded 8 bytes in 0.000639s (12.226 KiB/s)</code></pre>
 <p>To make sure that the instructions have been loaded correctly we can issue the command <code>arm disassemble 0x20000000 4</code>, which means "please show me 4 disassembled instructions starting from address <code>0x20000000</code> ".</p>
 <pre><code>&gt; arm disassemble 0x20000000 4
 0x20000000  0x2002      MOVS    r0, #0x02
 0x20000002  0x2103      MOVS    r1, #0x03
 0x20000004  0x180a      ADDS    r2, r1, r0
-0x20000006  0x4410      ADD r0, r2
-</code></pre>
+0x20000006  0x4410      ADD r0, r2</code></pre>
 <p>Now when it seems that the code is in memory correctly we can step through it and see if the operations have the expected results on the registers.</p>
 <p>The <code>step</code> command executes one instruction and then halts.</p>
 <pre><code>&gt; step
 target halted due to single-step, current mode: Thread 
-xPSR: 0x01000000 pc: 0x20000002 msp: 0x20000400
-</code></pre>
+xPSR: 0x01000000 pc: 0x20000002 msp: 0x20000400</code></pre>
 <p>The program counter has been moved forward to address <code>0x20000002</code>. Looks right. To inspect the the register that should have been altered by this instruction, issue the command <code>reg r0</code>.</p>
 <pre><code>&gt; reg r0
-r0 (/32): 0x00000002
-</code></pre>
+r0 (/32): 0x00000002</code></pre>
 <p>This looks quite correct after execution on the first instructions. Now I will step through the rest of the program and inspect the suitable registers.</p>
 <pre><code>&gt; step 
 target halted due to single-step, current mode: Thread 
@@ -408,8 +392,7 @@ r2 (/32): 0x00000005
 target halted due to single-step, current mode: Thread 
 xPSR: 0x01000000 pc: 0x20000008 msp: 0x20000400
 &gt; reg r0
-r0 (/32): 0x00000007
-</code></pre>
+r0 (/32): 0x00000007</code></pre>
 <p>That seems fine! I really enjoy these low-level hands-on exercises. Interacting with the discovery board like this is pretty time consuming though and it would be nice to automate it.</p>
 <h1 id="automating-the-interaction-with-expect">Automating the interaction with expect</h1>
 <p>One way to automate processes which involves interaction with a terminal is to use the <code>expect</code> program. <code>expect</code> let's you write scripts that play out an interaction for you. It seems like a quite finicky system though and writing out an <code>expect</code> script by hand for a multitude of interactions is a bit frustrating and boring.</p>
@@ -438,8 +421,7 @@ send -- &quot;~&quot;
 expect &quot;telnet&gt;&quot;
 send -- &quot;close\n&quot;
 expect eof
-wait
-</code></pre>
+wait</code></pre>
 <p>The line <code>spawn telnet -e ~ localhost 4444</code> starts telnet and tells it to use <code>~</code> as the escape character. This means that a <code>~</code> can be sent to break out and exit from telnet.</p>
 <p>After launching telnet, expect will wait for the reception of a prompt <code>expect -re "&gt; ?$</code>. After reception of the prompt, we send the <code>reset init</code> command.</p>
 <h1 id="multi-staged-programming-and-test-generation">Multi-staged programming and test-generation</h1>
@@ -449,8 +431,7 @@ wait
 <pre><code>extern void test_step(void);
 extern void test_assert_reg(char *reg, uint32_t value);
 extern int test_expect_init(const char *testname);
-extern void test_expect_shutdown(void);
-</code></pre>
+extern void test_expect_shutdown(void);</code></pre>
 <p><code>test_expect_init</code> expects a test-name which will correspond to the generated expect script (with .expect appended to it). The test system also assumes that the binary file is also has filename <code>testname</code> (but with .bin appended to it).</p>
 <p><code>test_step</code> issues a step command into the expect file to instruct OpenOCD to step an instructions. <code>test_assert_reg</code> inserts a command into the expect file that inspects a register and compares it's value to the argument called <code>value</code>. The implementation of these two functions are is shown below.</p>
 <pre><code>void test_step(void) {
@@ -471,8 +452,7 @@ void test_assert_reg(char *reg, uint32_t value) {
       &quot;    }\n&quot;
       &quot;}\n&quot;, reg, value, reg, reg, reg);
   fprintf(out, &quot;expect -re \&quot;&gt; ?$\&quot;\n&quot;);
-}
-</code></pre>
+}</code></pre>
 <p>Given these tools we can augment the code from earlier that generated the binary file we have been using.</p>
 <pre><code>uint16_t instrs[4];
 instr_seq_t seq;
@@ -499,7 +479,6 @@ test_step();
 test_assert_reg(&quot;r0&quot;, 7);
 
 test_expect_shutdown();
-
 </code></pre>
 <p><code>test_expect_shutdown</code> outputs the file <code>example0.expect</code> with the following contents.</p>
 <pre><code>#!/usr/bin/expect -f
@@ -577,8 +556,7 @@ send -- &quot;~&quot;
 expect &quot;telnet&gt;&quot;
 send -- &quot;close\n&quot;
 expect eof
-wait
-</code></pre>
+wait</code></pre>
 <p>If you also output the <code>example0.bin</code>, like this.</p>
 <pre><code>FILE *fp = fopen(&quot;example0.bin&quot;, &quot;w&quot;);
 if (!fp)  {
@@ -589,8 +567,7 @@ if (!fp)  {
 if (fwrite(seq.mc,sizeof(uint16_t),4,fp) &lt; 4) {
   printf(&quot;Error writing file\n&quot;);
   return 0;
-}
-</code></pre>
+}</code></pre>
 <p>You now have a pair of files that can be auto-tested on the STM32. I run my tests from a script that opens OpenOCD in the background and then runs all expect scripts in the directory.</p>
 <p>Output from this automated interactions looks something like this.</p>
 <pre><code>Open On-Chip Debugger 0.10.0
@@ -694,8 +671,7 @@ r0 (/32): 0x00000007
 
 telnet&gt; close
 Connection closed.
-Info : dropped &#39;telnet&#39; connection
-</code></pre>
+Info : dropped &#39;telnet&#39; connection</code></pre>
 <h1 id="conclusion">Conclusion</h1>
 <p>There are a lot of instructions in the ARM Thumb1 and Thumb2 instruction sets. Well not a lot compared to X86, but still a lot if manual interaction is needed for every test. This automation still leaves a lot of repetitive work if every single opcode is to be tested. Will look for further automation as I progress.</p>
 <p>I hope you enjoyed reading and do not hesitate to contact me with questions if you think any of what I do is fun or interesting in any way :)</p>

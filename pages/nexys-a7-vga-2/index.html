@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -244,8 +245,7 @@
 11101111
 11110011
 11101110
-...
-</code></pre>
+...</code></pre>
 <p>The palette conversion function updates the <code>header_data_cmap</code> array in place. by looping over each index, converting each of the R,G and B values (between 0 and 255) to a double that is then divided by 16, rounded and stored back again into the array.</p>
 <pre><code>void convert_palette(void) {
   
@@ -256,8 +256,7 @@
       header_data_cmap[i][j] = (unsigned char)c;
     }
   }
-}
-</code></pre>
+}</code></pre>
 <p>There are two functions for printing as binary called <code>print_binary</code> and <code>print_binary4</code>. <code>print_binary</code> prints an 8 bit number and the "4" variant prints a nibble.</p>
 <pre><code>void print_binary(unsigned char a) {
   
@@ -279,8 +278,7 @@ void print_binary4(unsigned char a) {
      (a &gt;&gt; 2) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
      (a &gt;&gt; 1) &amp; 1 ? &#39;1&#39; : &#39;0&#39;,
      (a) &amp; 1 ? &#39;1&#39; : &#39;0&#39;);   
-}
-</code></pre>
+}</code></pre>
 <p>In the <code>main</code> function, the palette is converted then the image indices are printed out as binary followed by lastly printing out the nibbles making up the palette.</p>
 <pre><code>void main(void) {
 
@@ -303,8 +301,7 @@ void print_binary4(unsigned char a) {
       }
     }
   }
-}
-</code></pre>
+}</code></pre>
 <p>The complete program listing looks like this:</p>
 <pre><code>#include &lt;stdio.h&gt;
 #include &lt;math.h&gt;
@@ -365,8 +362,7 @@ void main(void) {
       }
     }
   }
-}
-</code></pre>
+}</code></pre>
 <h2 id="implementation-of-the-memory">Implementation of the memory</h2>
 <p>The memory, here called <code>image_rom</code> has three output signals called <code>red</code>, <code>green</code> and <code>blue</code> each of 4 bits. The inputs are <code>clk</code> and <code>addr</code></p>
 <p>The thought behind the memory is that you provide a value between 0 and 63999 (inclusive) as the address. The values &lt; 64000 represent a valid pixel location on the screen such that values 0 - 319 is the topmost line of pixels, 320 - 639 is the next line and so on. So when a valid pixel "address" is provided, out comes its R,G and B intensities.</p>
@@ -378,11 +374,9 @@ void main(void) {
     blue : out std_logic_vector (3 downto 0);
     clk  : in std_logic
   );
-end image_rom;
-</code></pre>
+end image_rom;</code></pre>
 <p>The memory type is defined to be an array of 64kb. This is more than enough room for the 64000 pixel indices and the 384 bytes (768 nibbles) of color intensity nibbles.</p>
-<pre><code>type MEM_ARRAY is ARRAY (0 to 65535) of std_logic_vector (7 downto 0);
-</code></pre>
+<pre><code>type MEM_ARRAY is ARRAY (0 to 65535) of std_logic_vector (7 downto 0);</code></pre>
 <p>The contents of memory is initialized from a file. see for example <a href="https://vhdlwhiz.com/initialize-ram-from-file/">this</a> for more info.</p>
 <pre><code>impure function init_memory(fn : in string) return MEM_ARRAY is 
     file f : text open read_mode is fn;
@@ -396,19 +390,16 @@ begin
         tmp_mem(i) := to_stdlogicvector(bv);
     end loop;
     return tmp_mem;
-end function;
-</code></pre>
+end function;</code></pre>
 <p>Then the <code>mem</code> signal, the actual memory, can be declared as follows.</p>
-<pre><code>signal mem : MEM_ARRAY := init_memory(&quot;memory.img&quot;);
-</code></pre>
+<pre><code>signal mem : MEM_ARRAY := init_memory(&quot;memory.img&quot;);</code></pre>
 <p>With that settled, we can take a look at the interesting part of the memory implementation, the <code>read</code> process. Here a lookup is done into memory using the address provided. The result of that lookup is an index into the palette which consist of nibble-triplets. The palette begins in memory on byte number 64000, or nibble number 128000, so this value is added to the index multiplied by 3. The index is multiplied by 3 because there is 3 nibbles per color.</p>
 <p>Each RGB triplet is spread out across two consecutive bytes in a way that looks like this:</p>
 <pre><code>byte +0 +1     nibbles
 0    rg br     0 - 3
 2    gb rg     4 - 7
 4    br gb     8 - 11
-6    rg br     12 - 15
-</code></pre>
+6    rg br     12 - 15</code></pre>
 <p>The byte (bytes) to access for a particular index is obtained by <code>(index * 3) / 2</code> and <code>(index * 3) / 2 + 1</code>. Also note that depending on if the index is even or not you have two cases <code>rg br</code> if the LSB is <code>0</code> and <code>br gb</code> if the LSB is <code>1</code>.</p>
 <p>The result is code looking like this:</p>
 <pre><code>    read : process(clk)
@@ -438,8 +429,7 @@ end function;
                 blue &lt;= b2(7 downto 4);
             end if;
         end if;
-    end process;
-</code></pre>
+    end process;</code></pre>
 <p>I've added the complete listing for the memory implementation here:</p>
 <pre><code>library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -506,8 +496,7 @@ begin
             end if;             
         end if;
     end process;
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <h2 id="implementation-of-the-vga-driver">Implementation of the VGA driver</h2>
 <p>The <code>vga</code> entity is unchanged compared to the <a href="https://svenssonjoel.github.io/pages/nexys-a7-vga">last post</a></p>
 <pre><code>entity vga is
@@ -525,19 +514,16 @@ end Behavioral;
        -- hcnt : out unsigned(10 downto 0);
        -- vcnt : out unsigned(10 downto 0)
     );
-end vga;
-</code></pre>
+end vga;</code></pre>
 <p>When in comes to the architecture there are also a bunch of things that are unchanged compared to <a href="https://svenssonjoel.github.io/pages/nexys-a7-vga">last post</a>. Focus here will what is new, but the entire VHDL code listing will be included at the end.</p>
 <p>A new counter is added to keep track of which pixel value to fetch.</p>
-<pre><code>signal index_cnt : unsigned(15 downto 0);
-</code></pre>
+<pre><code>signal index_cnt : unsigned(15 downto 0);</code></pre>
 <p>Then a couple of signals are added that are going to be connected to the memory.</p>
 <pre><code>    signal r : std_logic_vector (3 downto 0);
     signal g : std_logic_vector (3 downto 0); 
     signal b : std_logic_vector (3 downto 0);
     
-    signal img_addr : std_logic_vector (15 downto 0); 
-</code></pre>
+    signal img_addr : std_logic_vector (15 downto 0); </code></pre>
 <p>The memory is instantiated:</p>
 <pre><code>    image_mem : entity work.image_rom port map (
         addr =&gt; img_addr,
@@ -545,12 +531,10 @@ end vga;
         green =&gt; g, 
         blue =&gt; b,
         clk =&gt; pix_clock
-    );
-</code></pre>
+    );</code></pre>
 <p>The clock division processes are exactly the same as in the <a href="https://svenssonjoel.github.io/pages/nexys-a7-vga">last post</a> and left out from here.</p>
 <p>The <code>index_cnt</code> signal is fed as address to the memory.</p>
-<pre><code>    img_addr &lt;= std_logic_vector(index_cnt);
-</code></pre>
+<pre><code>    img_addr &lt;= std_logic_vector(index_cnt);</code></pre>
 <p>Then there is a process for accessing the memory and keeping the R,G and B signals steady for a period of the clock. This is what fixed the vertical lines in the displayed image between picture 9 and 10 in the beginning of this text.</p>
 <pre><code>    output_reg : process(pix_clock) 
     begin 
@@ -565,8 +549,7 @@ end vga;
                 vga_b &lt;= &quot;0000&quot;;
             end if;
         end if;
-    end process; 
-</code></pre>
+    end process; </code></pre>
 <p>The rest of the timing logic takes place in a process called <code>cnt_proc</code>. This process cycles the <code>h_cnt</code> and <code>v_cnt</code> counters over their ranges and correspondingly also increments the <code>index_cnt</code> while in the valid display range of the <code>h_cnt</code> and <code>v_cnt</code> counters. Since the mode displayed is really 640x400 but the image resolution is 320x200, <code>index_cnt</code> is only incremented every other horizontal pixel and every other time we <code>v_cnt</code> we subtract an entire line from <code>index_cnt</code> leading to a duplication of pixel in H and V direction.</p>
 <pre><code>    cnt_proc : process(pix_clock, reset)
     begin 
@@ -594,8 +577,7 @@ end vga;
                 end if;
             end if;
         end if;
-    end process; 
-</code></pre>
+    end process; </code></pre>
 <p>And that is it. The <code>cnt_proc</code> is quite messy and probably there are mistakes. One thing about getting visual feedback on stuff is that some bugs should have visible effects on the display. Say we were off by one in horizontal counting of the <code>index_cnt</code>, my guess is that this would lead to skewed image?!</p>
 <p>Lastly, the entire VHDL listing for the implementation of the VGA architecture.</p>
 <pre><code>architecture Behavioral of vga is
@@ -692,8 +674,7 @@ begin
         end if;
     end process; 
     
-end Behavioral;
-</code></pre>
+end Behavioral;</code></pre>
 <h2 id="conclusions">Conclusions</h2>
 <p>The 320x200 resolution is DOS-era nostalgia of course, the good old mode 13h. The "mode 13h" graphics mode was easy to work with as it had a linear 64000 bytes oh graphics memory. To write a pixel you just calculated how many bytes into this 64000 byte area the corresponding color index byte is located and change the value there. To set a pixel at pos (x,y) you computed (x * 320 + y) then added this to the base address, 0xA0000000, (the location in the address space where the VGA adapters memory was mapped to) and you had a pointer to your pixels color value.</p>
 <p>Working with nibbles is a bit messy. I think the next step will be to implement a dual-ported "nibble" memory so that one port would have an 8 bit data bus and the other a 4 bit data bus. When writing a byte to this memory on the 8bit data-bus the most significant 4 bits will be thrown away and only the low nibble stored. That memory does not need to be large, it only needs to hold 256 * 3 nibbles, that is 384 bytes. With a specialized memory for the nibbles of color channel info, the lookup of color channel data should be a lot easier. We'll see if that works out.</p>

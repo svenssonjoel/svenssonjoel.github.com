@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -150,14 +151,12 @@
 #define PTR_TYPE_BOXED_I     0x20000000u
 #define PTR_TYPE_BOXED_U     0x30000000u
 #define PTR_TYPE_BOXED_F     0x40000000u
-#define PTR_TYPE_ARRAY       0xD0000000u
-</code></pre>
+#define PTR_TYPE_ARRAY       0xD0000000u</code></pre>
 <p>As an example, a float value is encoded as a cons cell where all the 32Bits of the <code>car</code> are used for the floating point value. The <code>cdr</code> of this cell contail a special symbol <code>DEF_REPR_BOXED_F_TYPE</code>. The special symbols used in the <code>cdr</code> position of boxed values are listed below.</p>
 <pre><code>#define DEF_REPR_ARRAY_TYPE     0x20FFFF
 #define DEF_REPR_BOXED_I_TYPE   0x21FFFF
 #define DEF_REPR_BOXED_U_TYPE   0x22FFFF
-#define DEF_REPR_BOXED_F_TYPE   0x23FFFF
-</code></pre>
+#define DEF_REPR_BOXED_F_TYPE   0x23FFFF</code></pre>
 <p>Only the <code>cdr</code> field of a cons cell hold a GC bit so there is no problem in using all 32Bits of the <code>car</code> if only it can be identified properly.</p>
 <p>Arrays are a special case and not fully implemented yet. Currently the only thing that is an array in lispBM is a text string. Most of the plumbing is there for implementing arrays of any other lispBM value type, it just needs to be hacked up. Arrays are encoded in a very similar way to boxed values, just that instead of a 32Bit value in the <code>car</code> slot there is an arbitrary pointer. The array storage itself is allocated using <code>malloc</code>. When garbage collection frees a cons cell with the special symbol <code>DEF_REPR_ARRAY_TYPE</code>, it also calls <code>free</code> on the pointer in the <code>car</code> position.</p>
 <hr />

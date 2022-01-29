@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -179,8 +180,7 @@
   }
   buffer[size - 1] = 0;
   return 0; // Filled up buffer without reading a linebreak
-}
-</code></pre>
+}</code></pre>
 <p>The function tries to fill up the buffer, by looping from <code>0</code> to <code>size-1</code> and in each iteration getting a character from the stream.</p>
 <p>There are a few special cases here. For example, the character read could be a backspace character. If that is the case a character should be removed from the buffer and the loop counter be decremented, unless of course it is zero.</p>
 <p>Then in the case of a newline character, the number of read characters are returned.</p>
@@ -213,8 +213,7 @@
  
   }
   return enc_sym(symrepr_true());
-}
-</code></pre>
+}</code></pre>
 <p>The extension can print strings and characters. It can be seen in the conditionals that either an array, <code>PTR_TYPE_ARRAY</code>, is expected or a character, <code>VAL_TYPE_CHAR</code>. Any other type is not accepted and the extension just returns nil. Another choice would have been to return the type error symbol in this case, or to ignore that argument and proceed with printing all printable arguments.</p>
 <p>The print extension is also an example of a function that can take 0 or more arguments.</p>
 <pre><code># (print)
@@ -224,8 +223,7 @@ apa&gt; t
 # (print &quot;apa&quot; &quot;kurt&quot;)
 apakurt&gt; t 
 # (print &quot;apa&quot; &quot;kurt&quot; &quot;bertil&quot;)
-apakurtbertil&gt; t 
-</code></pre>
+apakurtbertil&gt; t </code></pre>
 <h3 id="initialization-and-reset-of-the-runtime-system">Initialization and Reset of the Runtime System</h3>
 <p>The following function resets and reinitializes the lispBM runtime system. If there is an existing symbol representation table, heap or extensions these are freed. Then all of the subsystems are restarted.</p>
 <pre><code>int reset_repl(int heap_size) {
@@ -271,8 +269,7 @@ apakurtbertil&gt; t
   chprintf(chp,&quot;Lisp REPL started (ChibiOS)!\n\r&quot;);
   
   return res;
-}
-</code></pre>
+}</code></pre>
 <p>The boolean argument to <code>eval_cps_init</code> indicates if the continuation stack is allowed to grow or not. In this case it is not.</p>
 <p>Later a command will be added to the REPL called <code>:reset</code> that will run the function above.</p>
 <pre><code># :reset
@@ -281,8 +278,7 @@ Heap initialized. Free cons cells: 2048
 Evaluator initialized.
 Extension added.
 Lisp REPL started (ChibiOS)!
-# 
-</code></pre>
+# </code></pre>
 <h3 id="the-repl-thread">The REPL Thread</h3>
 <p>In ChibiOs thread functions are defined using the <code>THD_FUNCTION</code> macro that takes two arguments, the function name and the name of an argument. For the REPL thread no argument of value is passed over, so we ignore this.</p>
 <p>This thread function will run forever and in parallel with the main exection thread. Before entering into an eternal loop some storage space for input and output strings are allocated and the REPL is reset using the function defined above.</p>
@@ -341,8 +337,7 @@ Lisp REPL started (ChibiOS)!
 
   symrepr_del();
   heap_del();
-}
-</code></pre>
+}</code></pre>
 <p>The thread then goes into an infinite loop and most of the code in there is about handling the <code>:</code> commands. But first it prints a prompts, clear the input buffer and reads a line of text from the user. If the text that is read in is not one of the <code>:</code> commands it will be fed through the parser and the result of that is fed to the evaluator. This will either result in an error symbol and an error message is printed. Otherwise it is output as a result. The REPL then does it all again.</p>
 <h2 id="the-main-function">The Main Function</h2>
 <p>The <code>main</code> function doesn't do very much. It does what ChibiOs main function usually do, <code>halInit</code> and <code>chSysInit</code>. Then it sets up the byte stream over USB (this is code directly from one of the examples that come with ChibiOs).</p>
@@ -376,8 +371,7 @@ Lisp REPL started (ChibiOS)!
       chThdSleepMilliseconds(500);
     }
 
-}
-</code></pre>
+}</code></pre>
 <p>The <code>REPL_WA_SIZE</code>, is a value that sets up a thread working area size. This is set to 40kb in this case. With a heap of 2048 cells, the heap alone should be using 16kb. So picking 40kb for working area should leave some room for the symbol tables and such. I am actually entirely sure that when malloc is called from a thread it is allocated within the working area, but experiments seem to indiciate this as setting the working area too small will cause a failure. Must learn more about how ChibiOs threads and working areas work.</p>
 <p>If you want to get a hold of all of the code involved, that is a source tree where all you need to do is run make, this is present on <a href="www.github.com/svenssonjoel/lispBM">Github</a> under the directory <code>repl-ChibiOs</code>.</p>
 <hr />

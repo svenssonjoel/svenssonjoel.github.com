@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -234,7 +235,7 @@ w 912 288 912 320 0
 <p>The VHDL code used for this first VGA experiment on the Zynqberry is identical to that used in <a href="https://svenssonjoel.github.io/pages/nexys-a7-vga-2/index.html">Nexys A7 VGA - part 2</a>. So wont go into any of the details of that here again. There are some differences in how to get it all to work on the Zynq though. The main difference being the Zynq processing system and how to clock the thing. In the Nexys case getting a clock to the design was done through the constraints file but here I did it using the block design GUI.</p>
 <p>I am not sure that what I describe here is the one and true way to do it. If you have feedback, please just send an email. There may be better ways.</p>
 <p>To set up this on the Zynq one needs to go through roughly these steps:</p>
-<ol>
+<ol type="1">
 <li>Create a new project with a Zynqberry target.</li>
 <li>Add the VHDL files developed in the <a href="https://svenssonjoel.github.io/pages/nexys-a7-vga-2/index.html">Nexys A7 VGA - part 2</a>.</li>
 <li>Create a block design.</li>
@@ -273,8 +274,7 @@ set_property -dict {PACKAGE_PIN R13 IOSTANDARD LVCMOS33} [get_ports {BLUE[0]}]
 # VSYNC
 set_property -dict {PACKAGE_PIN R12 IOSTANDARD LVCMOS33} [get_ports {VSYNC}]
 #HSYNC
-set_property -dict {PACKAGE_PIN L12 IOSTANDARD LVCMOS33} [get_ports {HSYNC}]
-</code></pre>
+set_property -dict {PACKAGE_PIN L12 IOSTANDARD LVCMOS33} [get_ports {HSYNC}]</code></pre>
 <p>At this stage it should be time to synthesize, implement and generate bitstream. And if all of that completes successfully the next step is to export hardware (include the bitstream) and then launch Vitis.</p>
 <p>In Vitis create a hello world project using the exported hardware and run it through the debugger.</p>
 <h2 id="conclusion">Conclusion</h2>

@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -189,8 +190,7 @@
      (cons argl val)
      (movimm val 1)
      (cons argl val)
-     (callf)))
-</code></pre>
+     (callf)))</code></pre>
 <p>It does not depend on values in any registers and it updates the <code>proc</code>, <code>argl</code> and <code>val</code> registers. A list of all registers and their intended usage will be shown later in the text.</p>
 <p>The compiler takes an expression as input together with a target register and a specified linkage. The linkage is most importance when compiler is called recursively to generate different sub-parts of the instruction list. The linkage describes how the compiled instruction list should end. Returning from a function application will be special for example, but there will be more info about this in the following sections.</p>
 <p>The compiler looks at the passed in expression and dispatches to an appropriate function that generates an instruction list for that case. Each of these case specific functions may call <code>compile-instr-list</code> on subexpressions.</p>
@@ -212,8 +212,7 @@
                     (compile-let exp target linkage)
                   (if (is-list exp)
                       (compile-application exp target linkage)
-                    (print &quot;Not recognized&quot;)))))))))))
-</code></pre>
+                    (print &quot;Not recognized&quot;)))))))))))</code></pre>
 <h2 id="library-of-helper-functions">Library of helper functions</h2>
 <h3 id="predicates">Predicates</h3>
 <p>The <code>compile-instr-list</code> function makes use of a number of predicates to decide which branch to take. The implementation of these are mostly very similar to each other. They take an expression as argument and check if it is of some particular shape, such as it being a symbol or that it is a list and the first element is a <code>lambda</code>.</p>
@@ -245,8 +244,7 @@
   (lambda (exp) (= type-list (type-of exp))))
 
 (define is-last-element
-  (lambda (exp) (and (is-list exp) (is-nil (cdr exp)))))
-</code></pre>
+  (lambda (exp) (and (is-list exp) (is-nil (cdr exp)))))</code></pre>
 <p>Some expressions evaluate to them self, such as a number or an array. These will be compiler into immediate values in the resulting instruction list. The following functions are used to identify <code>self-evaluating</code> expressions.</p>
 <pre><code>(define is-number
   (lambda (exp)
@@ -264,8 +262,7 @@
 (define is-self-evaluating
   (lambda (exp)
     (or (is-number exp)
-        (is-array  exp))))
-</code></pre>
+        (is-array  exp))))</code></pre>
 <h3 id="labels">Labels</h3>
 <p>The generated code will contain jumps and when at some later producing the actual byte code, these will be jumps to absolute addresses. When generating the instruction list, however, there will be labels with a unique number at the place for each jump target. A later pass will calculate what the "address" into the bytecode each label is at and replace jumps to label with jumps to address.</p>
 <p>A label counter keeps track of the next label identifier to generate and a function called <code>mk-label</code> is called to generate a fresh label.</p>
@@ -280,8 +277,7 @@
 
 (define mk-label
   (lambda (name)
-    (list &#39;label name (incr-label))))
-</code></pre>
+    (list &#39;label name (incr-label))))</code></pre>
 <p>A label is a list containing the symbol <code>label</code> as first element, the next element is a string (mostly for easier understanding of a generated instruction list) and the third element is the label value.</p>
 <h3 id="instructions-and-registers">Instructions and registers</h3>
 <p>The compiler generates code for a machine with 5 special purpose registers.</p>
@@ -289,8 +285,7 @@
                    proc
                    val
                    argl
-                   cont))
-</code></pre>
+                   cont))</code></pre>
 <ul>
 <li><strong>env</strong> holds a pointer to the currently in use local environment.</li>
 <li><strong>proc</strong> holds a procedure description. Used in function applications.</li>
@@ -318,24 +313,20 @@
     (cadr         3)
     (caddr        3)
     (callf        1)
-    (label        0)))
-</code></pre>
+    (label        0)))</code></pre>
 <p>This is something that will most likely change a bit but for now and for simplicity this is what I am working with. Using a full byte for an op-code is a waste as there are only roughly 17 of them. Instructions that right now take a register as argument may later be replicated for each possible register that is can use, turning fewer general instructions into more and specialized but smaller in size.</p>
 <p>A machine that can execute these instructions will also have a program counter, <code>pc</code>, register.</p>
 <p>The <code>jmpcnt</code> instruction can then be thought of as performing the operation:</p>
-<pre><code>pc &lt;- cont
-</code></pre>
+<pre><code>pc &lt;- cont</code></pre>
 <p>As a more involved example, <code>exenvargl &lt;symbol&gt;</code> performs the following operations:</p>
 <pre><code>env &lt;- (cons (cons &lt;symbol&gt; (car argl)) env)
-argl &lt;- cdr argl
-</code></pre>
+argl &lt;- cdr argl</code></pre>
 <h3 id="sequences-of-instructions">Sequences of instructions</h3>
 <p>the output of the compiler is a triple containing the list of registers needed, the list of registers modified and the list of instructions. This section shows a set of functions to create and modify such triples.</p>
 <p>The first of these function is <code>mk-instr-seq</code> that takes tree input and puts those three in a list. This is used to create a snippet of output code while specifying also the registers needed and used.</p>
 <pre><code>(define mk-instr-seq
   (lambda (needs mods stms)
-    (list needs mods stms)))
-</code></pre>
+    (list needs mods stms)))</code></pre>
 <p>A set of accessor functions can be used to extract information from an instruction sequence.</p>
 <pre><code>(define regs-needed
   (lambda (s)
@@ -353,8 +344,7 @@ argl &lt;- cdr argl
   (lambda (s)
     (if (is-label s)
         (list s)
-      (car (cdr (cdr s))))))
-</code></pre>
+      (car (cdr (cdr s))))))</code></pre>
 <p>The following two functions check if a specific register is used or needed by a instruction sequence.</p>
 <pre><code>(define needs-reg
   (lambda (s r)
@@ -362,8 +352,7 @@ argl &lt;- cdr argl
 
 (define modifies-reg
   (lambda (s r)
-    (mem r (regs-modified s))))
-</code></pre>
+    (mem r (regs-modified s))))</code></pre>
 <p><code>mem</code> is the function that checks if an element is present in a list.</p>
 <pre><code>(define mem
   (lambda (x xs)
@@ -371,8 +360,7 @@ argl &lt;- cdr argl
         &#39;nil
       (if (= x (car xs))
           &#39;t
-        (mem x (cdr xs))))))
-</code></pre>
+        (mem x (cdr xs))))))</code></pre>
 <p>The <code>instr-seq-bytes</code> function calculates how many bytes a compact representation (bytecode) of an instruction sequence will require.</p>
 <pre><code>(define instr-seq-bytes
   (lambda (s)
@@ -380,8 +368,7 @@ argl &lt;- cdr argl
            (lambda (x acc)
              (if (is-nil x) acc
                (sum-bytes (cdr x) (+ (lookup (car (car x)) instr-size) acc))))))
-      (sum-bytes (car (cdr (cdr s))) 0))))
-</code></pre>
+      (sum-bytes (car (cdr (cdr s))) 0))))</code></pre>
 <p>Combining two instruction sequences is a bit tricky as the resulting combined instruction sequence must also represent registers needed and modified correctly. Most of the code, with few exceptions, in this section is close to identical to the presentation in SICP only translated to the lispBM-dialect ;).</p>
 <p>The following functions implements appending of two instructions sequences, appending of an arbitrary number of sequences passed in as a list, combination of totally independent sequences of instructions (called <code>parallel-instr-seqs</code>) and a tack-on function used to insert a function body into the instruction sequence.</p>
 <pre><code>(define append-two-instr-seqs
@@ -414,8 +401,7 @@ argl &lt;- cdr argl
                  (regs-needed s2))
      (list-union (regs-modified s1)
                  (regs-modified s2))
-     (append (statements s1) (statements s2)))))
-</code></pre>
+     (append (statements s1) (statements s2)))))</code></pre>
 <p>The helper functions <code>list-union</code> and <code>list-diff</code> are implemented as follows in lispBM. Again this is just a translation from the SICP lisp dialect to the lispBM-dialect.</p>
 <pre><code>(define list-union
    (lambda (s1 s2)
@@ -428,8 +414,7 @@ argl &lt;- cdr argl
   (lambda (s1 s2)
     (if (is-nil s1) &#39;()
       (if (mem (car s1) s2) (list-diff (cdr s1) s2)
-        (cons (car s1) (list-diff (cdr s1) s2))))))
-</code></pre>
+        (cons (car s1) (list-diff (cdr s1) s2))))))</code></pre>
 <h3 id="preserving-registers">Preserving registers</h3>
 <p>When generating code for things like nested function applications (for example <code>(+ 1 (+ 2 3) 4)</code>, there is a need for preserving registers that are used on both levels. The <code>preserving</code> function combines two instruction sequences while automatically inserting <code>push</code> and <code>pop</code> of the registers specified around the first of the sequences.</p>
 <pre><code>(define preserving
@@ -449,8 +434,7 @@ argl &lt;- cdr argl
                                  (append (statements s1) `((pop ,first-reg)))))
                         s2)
 
-          (preserving (cdr regs) s1 s2))))))
-</code></pre>
+          (preserving (cdr regs) s1 s2))))))</code></pre>
 <h3 id="connecting-instruction-sequences">Connecting instruction sequences</h3>
 <p>There are two different kinds of ways that a sequence of instructions can end. an instruction sequence that represents a function body ends with a jump to an address stored in the <code>cont</code> registers. Other instruction sequences just flow naturally into each other.</p>
 <p>The <code>end-with-linkage</code> function inserts the appropriate code depending on an argument called <code>linkage</code> that is passed as an argument. If this <code>linkage</code> is <code>'return</code> code that returns from a function call is inserted and if the <code>linkage</code> is <code>next</code> nothing is added at all.</p>
@@ -471,7 +455,6 @@ argl &lt;- cdr argl
     (preserving &#39;(cont)
                 seq
                 (compile-linkage linkage))))
-
 </code></pre>
 <h2 id="compilers">Compilers</h2>
 <p>Ok! All up to this point is just plumbing. Now we cget to write compilers for the different kinds of language constructs. This part differs more from the SICP implementation than previous sections but still is quite similar. The differences come from lispBM having a bit different set of special forms compared to the SICP dialect. Another difference is the "abstraction level" of the generated instructions, here the aim is at slightly lower level.</p>
@@ -483,8 +466,7 @@ argl &lt;- cdr argl
     (end-with-linkage linkage
                       (mk-instr-seq &#39;()
                                     (list target)
-                                    `((movimm ,target ,exp))))))
-</code></pre>
+                                    `((movimm ,target ,exp))))))</code></pre>
 <p>The idea is that this can be turned into bytecode consisting of one byte for instruction, one byte for target register and 4 bytes for the value. Since we have very few registers and instructions using a full byte for each is a huge waste. But it is ok to be working in this way for now. Later a more compact representation should be used. I don't want to do this "optimization" too early, before knowing exactly what other kinds of instructions or registers that may be added later.</p>
 <h3 id="compilation-of-symbols">Compilation of symbols</h3>
 <p>Compilation of a symbol generates code that performs a lookup in the environment and stores the result of that lookup in a target register.</p>
@@ -494,8 +476,7 @@ argl &lt;- cdr argl
                       ;; Implied that the lookup looks in env register
                       (mk-instr-seq &#39;(env)
                                     (list target)
-                                    `((lookup ,target ,exp))))))
-</code></pre>
+                                    `((lookup ,target ,exp))))))</code></pre>
 <h3 id="compilation-of-quoted-expressions">Compilation of quoted expressions</h3>
 <p>Now it gets a bit complicated and also very different from how SICP does it. In SICP, a quoted expression doesn't seem to be compiled at all (as I understand it). Rather the expression is just "pointed to" from the compiled instructions sequence. I do not see how this would allow that the compiled result is stored and loaded into a fresh runtime system. Being able to load compiled source into a freshly started RTS is one of the goals with the compiler implemented here. There are Other problems with generating code that can be loaded into a fresh RTS, I will try to explain these in the closing section.</p>
 <p>So, to be able to load in the compiled code that contains quoted expressions, my feeling is that the code mush reconstruct the quoted expression on the heap. This is my first attempt at this compilation and it has not been extensively tested, so there surely are buggy corner cases.</p>
@@ -545,8 +526,7 @@ argl &lt;- cdr argl
       (append-instr-seqs
        (map (lambda (e)
               (compile-data-nest e target))
-            exp)))))
-</code></pre>
+            exp)))))</code></pre>
 <h3 id="compilation-of-definitions">Compilation of definitions</h3>
 <p>Definitions are compiled into code that updates the global environment.</p>
 <pre><code>(define compile-def
@@ -558,11 +538,9 @@ argl &lt;- cdr argl
                          (append-two-instr-seqs get-value-code
                                                 (mk-instr-seq &#39;(val) (list target)
                                                               `((setglbval ,var)
-                                                                (movimm ,target ,var))))))))
-</code></pre>
+                                                                (movimm ,target ,var))))))))</code></pre>
 <p>The generated code uses <code>setglbval</code> to update the environment. It can be thought of as performing the following operations.</p>
-<pre><code>global-env &lt;- (cons (cons (var val)) global-env)
-</code></pre>
+<pre><code>global-env &lt;- (cons (cons (var val)) global-env)</code></pre>
 <p>The target register will hold the bound variable after executing the generated sequence.</p>
 <h3 id="compilation-of-lambda-expressions">Compilation of lambda expressions</h3>
 <p>Lambda expressions are also slightly different in lispBM. The function is just a single expression and cannot be a list of expressions as in the SICP dialect.</p>
@@ -599,7 +577,6 @@ argl &lt;- cdr argl
                               `((exenvargl ,p))))
               formals)))
        (compile-instr-list (car (cdr (cdr exp))) &#39;val &#39;return)))))
-
 </code></pre>
 <h3 id="compilation-of-the-progn-form">Compilation of the progn form</h3>
 <p>The only way to write a program that sequentially executes a number of expressions in lispBM is the <code>progn</code> form. Oh, actually a top level program is also a list of sequential expressions. But in a function, you need to use <code>progn</code>.</p>
@@ -610,8 +587,7 @@ argl &lt;- cdr argl
         (compile-instr-list (car exp) target linkage)
       (preserving &#39;(env continue)
                   (compile-instr-list (car exp) target &#39;next)
-                  (compile-progn (cdr exp) target linkage)))))
-</code></pre>
+                  (compile-progn (cdr exp) target linkage)))))</code></pre>
 <h3 id="compilation-of-let-expressions">Compilation of let expressions</h3>
 <p>This is a first go at compiling let expressions. I think it will not allow the definition of mutual recursion as it stands now. Must fix this.</p>
 <p>The generated code for a let expression will contain an <code>evenvval</code> instruction per variable to bind. Between these instructions there will be some sequence generated by <code>compile-instr-list</code> that each output their result into the <code>val</code> register.</p>
@@ -628,8 +604,7 @@ argl &lt;- cdr argl
           (var (car keyval)))
       (append-two-instr-seqs get-value-code                          
                              (mk-instr-seq &#39;(val) (list &#39;env)
-                                           `((exenvval ,var)))))))
-</code></pre>
+                                           `((exenvval ,var)))))))</code></pre>
 <h3 id="compilation-of-function-application-expressions">Compilation of function application expressions</h3>
 <p>Function application is compiled by first compiling all of the arguments. The arguments are all appended to a list created in the <code>argl</code> register (the actual arguments are stored as a list on the heap, a pointer to the list is in argl).</p>
 <pre><code>(define compile-application
@@ -649,7 +624,6 @@ argl &lt;- cdr argl
                 (if (is-lambda (car exp))
                     (compile-lambda-proc-call target linkage)
                   (compile-proc-call target linkage))))))))
-
 </code></pre>
 <pre><code>(define add-fst-argument
   (lambda (arg-code)
@@ -683,8 +657,7 @@ argl &lt;- cdr argl
       code-for-next-arg
     (preserving &#39;(env)
             code-for-next-arg
-            (get-rest-args (cdr operand-codes)))))))
-</code></pre>
+            (get-rest-args (cdr operand-codes)))))))</code></pre>
 <p>As an optimization, to generate small code when it is known that the procedure is a fundamental or the result of lambda, the specific <code>compile-fundamental-proc-call</code> or <code>compile-lambda-proc-call</code> functions can be used. When it is unknown what type of procedure is at hand, the general ´compile-proc-call` function is used.</p>
 <p>The general function inserts code that checks what kind of procedure is going to be called and then branches either to a fundamental or a lambda case.</p>
 <pre><code>(define compile-fundamental-proc-call
@@ -726,8 +699,7 @@ argl &lt;- cdr argl
                  (mk-instr-seq &#39;(proc argl)
                            (list target)
                            &#39;((callf))))))
-         after-call)))))
-</code></pre>
+         after-call)))))</code></pre>
 <p>Jumping to and how to return from a procedure call is implemented in function below. It is split up into cases depending on target register and linkage type.</p>
 <p>If linkage is a label and target is the val register, then code is inserted that sets the cont register to the label from the linkage, the function body label is extracted from the procedure object and then a jump instruction transfers execution to that label.</p>
 <p>The other cases are slight modifications to this flow.</p>
@@ -753,8 +725,7 @@ argl &lt;- cdr argl
         (mk-instr-seq &#39;(proc continue) all-regs
               &#39;((cadr val proc)
                 (jmpval)))
-      &#39;compile-error)))))
-</code></pre>
+      &#39;compile-error)))))</code></pre>
 <h2 id="examples-of-compilation-output">Examples of compilation output</h2>
 <p>First example is an application of a fundamental operation. This generates code that sets up the argument list in <code>argl</code> and then issues <code>callf</code> that will execute the fundamental operation stored in the <code>proc</code> register.</p>
 <pre><code># (compile-instr-list &#39;(+ 1 2) &#39;val &#39;next)
@@ -766,8 +737,7 @@ argl &lt;- cdr argl
         (cons argl val)
         (movimm val 1)
         (cons argl val)
-        (callf)))
-</code></pre>
+        (callf)))</code></pre>
 <p>The next example is an application of a lambda, tis results in code that creates a procedure object in the <code>proc</code> register and a lambda function body. After setting up the procedure object, control is transfered to the label that is directly after the function body. Here, the arguments are added to the <code>argl</code> list, <code>cont</code> is set to a label to return to after the function application and a jump to the function body is performed.</p>
 <pre><code># (compile-instr-list &#39;((lambda (x y) y) 10 20) &#39;val &#39;next)
 
@@ -792,8 +762,7 @@ argl &lt;- cdr argl
           (movimm cont (label &quot;after-call&quot; 3))
           (cadr val proc)
           (jmpval)
-          (label &quot;after-call&quot; 3)))
-</code></pre>
+          (label &quot;after-call&quot; 3)))</code></pre>
 <p>The last example is the result of compiling a quoted expression. This results in code that recreates the quoted expression on the heap and points to this structure from the <code>val</code> register. Here <code>argl</code> is used as a temporary register while building the data structure.</p>
 <pre><code># (compile-instr-list &#39;&#39;(+ 1 2) &#39;val &#39;next)
 
@@ -804,8 +773,7 @@ argl &lt;- cdr argl
         (movimm argl 1)
         (cons val argl)
         (movimm argl +)
-        (cons val argl)))
-</code></pre>
+        (cons val argl)))</code></pre>
 <h2 id="conclusion-and-the-problem-with-symbols">Conclusion and the problem with symbols</h2>
 <p>Since the goal is to be able to generate code that can be saved to disk and then later loaded into a fresh RTS, a problem with symbols presents itself.</p>
 <p>Say I load the lisp source containing the code <code>(define apa 10)</code> into lispBM, then a mapping is created between the text string "apa" and a symbol identifier in the symbol table. The actual heap representation does not contain these symbol-strings, rather just a value that via the symbol table is mapped to a name. So the internal representation of `(define apa 10) could be something like ([431431] [342432] 10) where the [] illustrates that these are numbers of a different type to the number 10.</p>

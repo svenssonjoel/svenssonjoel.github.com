@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -146,7 +147,7 @@
 <p>Lava is an embedded domain specific language for hardware description implemented in Haskell. Playing with an FPGA is a lot of fun and I have been doing that for a while now using VHDL. So, the plan here is to experiment a bit with Lava and try to (in time) get to the point where we can run some Lava-generated hardware on an FPGA.</p>
 <p>The FPGA candidates will be the Artix-7 on the Nexys A7 board as well as the Zynq 7000 platform.</p>
 <p>Now! There are lots of Lavas. I found 4 of them on <a href="https://hackage.haskell.org/">Hackage</a>.</p>
-<ol>
+<ol type="1">
 <li><a href="https://hackage.haskell.org/package/york-lava-0.2/docs/Lava.html">York Lava</a></li>
 <li><a href="https://hackage.haskell.org/package/chalmers-lava2000">Chalmers Lava 2000</a></li>
 <li><a href="https://hackage.haskell.org/package/xilinx-lava">Xilinx Lava</a></li>
@@ -178,18 +179,15 @@
   | Equal    [s]
   | If       s s s
   | VarInt   String
-  | DelayInt s s
-</code></pre>
+  | DelayInt s s</code></pre>
 <p>The Lava implementation uses the <code>unsafePerfomIO</code> and <code>Ref</code> approach for discovery of sharing in the tree. This is why this <code>s</code> parameter is needed and the data type declaration becomes rather obscure. Anyway, I am not going to try to change that at all.</p>
 <p>The symbol type introduces the reference. A symbol is a reference to an object of type <code>S Symbol</code>.</p>
 <pre><code>newtype Symbol
-  = Symbol (Ref (S Symbol))
-</code></pre>
+  = Symbol (Ref (S Symbol))</code></pre>
 <p>So that is how the tree is described in a bit of a roundabout way.</p>
 <p>The type the Lava programmer very often sees is called <code>Signal</code> and it represents either a boolean or a integer "wire" in the circuit.</p>
 <pre><code>newtype Signal a
-  = Signal Symbol
-</code></pre>
+  = Signal Symbol</code></pre>
 <p>The <code>a</code> parameter to <code>Signal</code> is a so-called phantom type (a phantom as there is no value with type <code>a</code> associated with the <code>signal</code> type). It is expected that a True/False signal will be a <code>Signal Bool</code> but it is entirely up to the library implementation to enforce that property.</p>
 <h2 id="attempting-to-modify-the-s-type-some">Attempting to modify the <code>S</code> type some</h2>
 <p>From the <code>S</code> type we can see that all Lava hardware will be constructed using boolean constants, <code>Inv</code> (inversion of a signal), <code>And</code>, <code>Or</code>, <code>Xor</code>, variables and Delay elements (and similarly for integer signals). But there is no "foreign operation" constructor that we could use to build a BRAM or whatever we may want that would be inefficient to describe in logic primitives. This may be because the FPGA provides special built in functional units to perform that operation we are interested in or that it is just to complicated and we want to use some existing library, macro or code generating tool to build those for us.</p>
@@ -206,59 +204,48 @@
   | VarBool   String
   | DelayBool s s
 
-  | If       s s s
-</code></pre>
+  | If       s s s</code></pre>
 <p>But then we add an attempt at a component abstraction.</p>
 <pre><code>  | Component
     String           -- name
-    [s]              -- inputs
-</code></pre>
+    [s]              -- inputs</code></pre>
 <p>Currently the component is just a <code>String</code> that represents some kind of an implementation of the desired functionality. This implementation will be looked up later while doing VHDL generation. There is also a list of inputs. The list of inputs may need to be expended upon a bit, I'll get back to that.</p>
 <p>Now, a component is just one <code>S</code> node, traditionally meaning it is a one output thing. Some way around this is needed as we want a component to be able to have multiple outputs. I am a bit unsure if the attempt of that that is implemented below will work out.</p>
 <pre><code>  | ComponentOutput
     CompOut          -- A specific output bit
-    s                -- Component producing output
-</code></pre>
+    s                -- Component producing output</code></pre>
 <p>The idea is that the constructor above represents a specific output of a component. <code>CompOut</code> is a structure that identifies a specific output bit. I will get back to this as well after introducing Vectors.</p>
 <p>A vector is a grouping of some signals and represented in the tree as.</p>
 <pre><code>  | Vec -- A vector of signals
     Int -- Number of elements
-    [s] -- Values
-</code></pre>
+    [s] -- Values</code></pre>
 <p>With this constructor you can grab any set of signals you have access to and bunch them together in one node of the tree. To access a specific signal from that vector there is another constructor.</p>
-<pre><code>  | VecIndex Int s 
-</code></pre>
+<pre><code>  | VecIndex Int s </code></pre>
 <p>With these two vector related constructors we can implement functions for packing and unpacking signals into a vector.</p>
 <pre><code>packVec :: Elt a =&gt; [a] -&gt; Vector a
-unpackVec :: Elt a =&gt; Vector a -&gt; [a]
-</code></pre>
+unpackVec :: Elt a =&gt; Vector a -&gt; [a]</code></pre>
 <p><code>packVec</code> creates a <code>Vec</code> node and <code>unpackVec</code> creates a list of <code>VecIndex</code> nodes.</p>
 <p>The <code>ComponentOutput</code> node works in a similar way but I imagine that a component output could have more structure to it than just a vector and this is why it is not enough with just an index to identify the output bit.</p>
 <pre><code>data CompOut
   = BitOutput  
   | VecOutput   Int Int CompOut
-  | TupleOutput Int Int [CompOut]
-</code></pre>
+  | TupleOutput Int Int [CompOut]</code></pre>
 <p>With the <code>CompOut</code> structure we can have components that output Tuples for example. There is a discrepancy here between the structures possible in the output and the input to components. I am not going to worry to much about that for now, there are so many loose ends to tie together anyway ;). Later if need be, we can add more structure to the input as well.</p>
 <h2 id="some-more-about-vectors">Some more about Vectors</h2>
 <p>There is a type called <code>Vector</code> that should be visible to the Lava-programmer. It is implemented like this:</p>
-<pre><code>data Vector a = Vector Symbol
-</code></pre>
+<pre><code>data Vector a = Vector Symbol</code></pre>
 <p>Which is exactly the same way a <code>signal</code> is implemented.</p>
 <p>A vector is created using <code>mkVec</code>:</p>
 <pre><code>mkVec :: Elt a =&gt; [a] -&gt; Vector a
 mkVec sigs = genericLift0 (Vec n (map unwrapElt sigs))
- where n = length sigs
-</code></pre>
+ where n = length sigs</code></pre>
 <p>Which makes use of something called <code>genericLift0</code> and <code>unwrapElt</code> and it creates a <code>Vec</code> node. <code>genericLift0</code> is the following:</p>
 <pre><code>genericLift0 :: Elt a =&gt; S Symbol -&gt; a
-genericLift0 oper = wrapElt (symbol oper) 
-</code></pre>
+genericLift0 oper = wrapElt (symbol oper) </code></pre>
 <p>which uses <code>wrapElt</code>. So unwrap and wrap of <code>Elt</code>s is what it comes down to. These operations are part of a class:</p>
 <pre><code>class Elt a where
   unwrapElt :: a -&gt; Symbol
-  wrapElt   :: Symbol -&gt; a
-</code></pre>
+  wrapElt   :: Symbol -&gt; a</code></pre>
 <p>and there must be an instance of this class for everything that can be put into vectors. Currently there are two instances.</p>
 <pre><code>instance Elt (Signal a) where
   unwrapElt (Signal s) = s
@@ -266,8 +253,7 @@ genericLift0 oper = wrapElt (symbol oper)
   
 instance Elt (Vector a) where
   unwrapElt (Vector s) = s
-  wrapElt s = Vector s
-</code></pre>
+  wrapElt s = Vector s</code></pre>
 <p>So, <code>packVec</code> and <code>unpackVec</code> currently looks like this.</p>
 <pre><code>packVec :: Elt a =&gt; [a] -&gt; Vector a
 packVec sigs = mkVec sigs
@@ -278,7 +264,6 @@ unpackVec (Vector s) = case unsymbol s of
                                          (VecIndex i s) 
                                        | i &lt;- [0..n-1]]
                          _ -&gt; wrong Lava.Error.NotAVec
-
 </code></pre>
 <p>The main point of these vectors that I can think of now is to use as input to and output from components. But they could also be of a little benefit when generating VHDL where a single variable and assignment could be used for assigning a large number of signals for example.</p>
 <h2 id="some-more-about-components">Some more about Components</h2>
@@ -293,12 +278,10 @@ bitwiseNeg vec = packVec outs
     
     -- Want just one unique symbol per component instantiation.
     -- Each output node will refer to the same component symbol.
-    c = symbol (Component &quot;bitwiseNeg&quot; [unVec vec])
-</code></pre>
+    c = symbol (Component &quot;bitwiseNeg&quot; [unVec vec])</code></pre>
 <p><code>bitwiseNeg</code> takes a vector of boolean signals and outputs a vector of boolean signals. The <code>c</code> represents the component named "bitwiseNeg" that takes the signals <code>unVec vec</code> as input. <code>unVec</code> does not "unpack" the vector, it rather just unWraps the "symbol". So no structure is lost there.</p>
 <pre><code>unVec :: Elt a =&gt; Vector a -&gt; Symbol
 unVec (Vector s) = s
-
 </code></pre>
 <p>The output is a vector created using <code>packVec</code> on the Haskell list called <code>outs</code>. Each element of the <code>outs</code> list is a <code>ComponentOutput</code>. In this case these Component node, each of them, hold a representation of the output shape of the component.</p>
 <p>The <code>fullAdder</code> is just an attempt to build a <code>ComponentOutput</code> that is a tuple</p>
@@ -308,8 +291,7 @@ fullAdder a b cin = (o, sum)
     o = lift0 (ComponentOutput (output 0) c)
     sum = lift0 (ComponentOutput (output 1) c)
     output i = TupleOutput 2 i [BitOutput, BitOutput]
-    c = symbol (Component &quot;fullAdder&quot; (map unsignal [a,b,cin]))
-</code></pre>
+    c = symbol (Component &quot;fullAdder&quot; (map unsignal [a,b,cin]))</code></pre>
 <h2 id="todos-and-conclusion">TODOs and Conclusion</h2>
 <p>I really feel like I am on thin ice here! I've made a lot of strange changes and I am not really sure they are all that sound. Will proceed and try to see what happens as a Lava program is reified into a graph (via the sharing detection) and then see if what pops out at the other end is something suitable for VHDL generation.</p>
 <p>Please let me know if you think this is fun or if you have feedback or ideas. Maybe you want to jump in and help out? ;)</p>
@@ -321,4 +303,3 @@ fullAdder a b cin = (o, sum)
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
 </HTML>
-

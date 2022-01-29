@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -171,8 +172,7 @@
     cy = 0;
     cx++;
   }
-} 
-</code></pre>
+} </code></pre>
 <p>This is done by looping over the area of the target buffer (which will map directly to the 8x8 LED matrix) that will be covered by the 8x8 character we are printing. So, if the position we want to draw the character at is (0,0), then <code>i</code> and <code>j</code> will range over 0 to, and including, 7.</p>
 <p>The font data (in <code>font8x8_basic.h</code>) is stored in an array such that the ASCII code for a character corresponds to the location in the array. So we can directly index into the <code>font8x8_basic</code> array at position <code>c</code> and find the bit pattern for the corresponding ASCII character.</p>
 <p>While <code>i</code> and <code>j</code> are the rows and columns of the buffer, <code>cy</code> and <code>cx</code> are the row and column of the character to print. If we want to paint a character at position (4,4) for example, then <code>i</code> and <code>j</code> will both start at value 4 the rows and columns of the character should however start at (0,0) (or we would draw out the bottom right corner of the character instead of the top left one).</p>
@@ -199,21 +199,17 @@
     chThdSleepMilliseconds(50);
     pos--;
   }
-}
-</code></pre>
+}</code></pre>
 <p>The <code>render_string</code> draws the string, <code>str</code>, repeatedly into the buffer each time at an updated position. Between each time the string is drawn the thread goes to sleep. this is to set the speed with which the text scrolls and to allow that other threads can execute. One other thread that must be given time to execute is the thread that copies the contents of the buffer that we print into onto the LED Matrix.</p>
 <p>First this function computes the length of the string in "pixels", here call <code>len_bits</code>. A position variable <code>pos</code> is set to 0. This is the position in the buffer where the first character in the string will be painted. The <code>pos</code> variable will then decrease for every iteration of the while loop, this essentially moves the starting point of the string outside of the buffer to "the left". If you go back and look at <code>render_character</code> you can see that it will not try to paint any characters that are entirely outside of the buffer.</p>
-<pre><code>if (x &lt;= -8 || y &lt;= -8 || y &gt;= 8 || x &gt;= 8) return;
-</code></pre>
+<pre><code>if (x &lt;= -8 || y &lt;= -8 || y &gt;= 8 || x &gt;= 8) return;</code></pre>
 <p>So, anyway, the string will be drawn as many times as there are pixels in the string.</p>
-<pre><code>  while (pos &gt; -len_bits) {
-</code></pre>
+<pre><code>  while (pos &gt; -len_bits) {</code></pre>
 <p>We start at position 0 and decrease pos until it is <code>-len_bits</code> which means that the entire string has scrolled by.</p>
 <p>Each iteration in the while loop clears the buffer and then loops through the entire string and performs <code>render_character</code> for each character. The position for each individual character is called <code>char_pos</code> and it starts being the same as <code>pos</code> for the first character of the string. <code>char_pos</code> then increases by 8 for each iteration of the loop.</p>
 <p>That takes care of the scrolling text.</p>
 <p>The buffer is stored in a global variable of 8 by 8 bits.</p>
-<pre><code>char buffer[8]; 
-</code></pre>
+<pre><code>char buffer[8]; </code></pre>
 <p>A ChibiOs thread will be used to update the 8x8 LED matrix. This thread will be called <code>update</code>.</p>
 <pre><code>static THD_WORKING_AREA(update_area, 2048);
 
@@ -230,7 +226,6 @@ static THD_FUNCTION(update, arg) {
     }
   }
 }
-
 </code></pre>
 <p>This thread just loops forever and keeps copying the values from the buffer to the GPIOs. <code>palWriteGroup</code> allows you to set or clear a bunch of GPIOs in just one call.</p>
 <p>We loop over the buffer and for each row we use <code>palWriteGroup</code> to first set a 1 on the row output of interest. Then <code>palWriteGroup</code> is used again to copy a row from the buffer onto the PD0-7 pins. The value from the buffer is negated as these pins will be used to sink a current in the case an LED should turn on, not source one.</p>
@@ -257,7 +252,6 @@ static THD_FUNCTION(update, arg) {
   }
   return 0; //unreachable
 }
-
 </code></pre>
 <p>The <code>main</code> "thread" also runs forever, but in this case all it does is to repeatedly render a string into the buffer.</p>
 <p>I paste the complete code listing here:</p>
@@ -354,8 +348,7 @@ int main(void) {
   }
 
   return 0; //unreachable
-}
-</code></pre>
+}</code></pre>
 <h2 id="conclusion">Conclusion</h2>
 <p>Thank you for reading. If you have any questions or feedback you can always send an email or join the google group.</p>
 <p>Have a good day!</p>

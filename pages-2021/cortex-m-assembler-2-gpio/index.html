@@ -2,11 +2,11 @@
 
 <HEAD>  
 
-  <TITLE>Assembler programming of ARM Cortex-M microcontrollers - Part 1 - Some more GPIO</TITLE>
+  <TITLE>Template</TITLE>
 
   <meta charset="UTF-8">
-  <meta name="description" content="Input from buttons and output to LEDs.">
-  <meta name="keywords" content="STM32, STM32F4, buttons, gpio, LED, assembler, discovery, cortex, cortex-m, cortex-m4">
+  <meta name="description" content="Template">
+  <meta name="keywords" content="Template">
   <meta name="author" content="Bo Joel Svensson">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -131,6 +131,7 @@
   <a href="../../index.html#BLOG"> Blog </a>
   <a href="../../index.html#VIDEOS"> Videos </a>   
   <a href="../../research.html"> Research </a>
+  <a href="../../lispbm"> LispBM </a>
   <a href="../../about.html"> About </a>
   <a href="../../privacy_policy.html">Privacy Policy</a>
 </div>
@@ -170,31 +171,27 @@
         ldr r0, [r1]
         orr r0, 0x1             @ Turn on GPIO A        
         orr r0, 0x8             @ Turn on GPIO D
-        str r0, [r1]
-</code></pre>
+        str r0, [r1]</code></pre>
 <p>This part loads the address of the <code>AHB1ENR</code> register into <code>r1</code> then it loads the contents of the register into <code>r0</code>. A few bits are set to turn on GPIO A and D and then the value is written back to the AHB1ENR register. Details about this register can be found in the reference manual that I will link to at the bottom of this post.</p>
 <pre><code>        ldr r1, =0x40020000     @ Pointer to PA MODER
         ldr r0, [r1]            @ Value of PA MODER
         ldr r2, =0xFFFFFF00
         and r0, r0, r2
         orr r0, r0, 0x55        @ PA0 - PA3 output, 
-        str r0, [r1]            @ Write back PA MODER
-</code></pre>
+        str r0, [r1]            @ Write back PA MODER</code></pre>
 <p>As last time, PA0 - PA3 are set to outputs.</p>
 <pre><code>        ldr r1, =0x40020C00     @ Pointer to PD MODER
         ldr r0, [r1]            @ Value of PD MODER
         ldr r2, =0xFFFFFF00
         and r0, r0, r2
-        str r0, [r1]            @ Write back PC MODER
-</code></pre>
+        str r0, [r1]            @ Write back PC MODER</code></pre>
 <p>Here PD0 - PD3 is set to be inputs. This is done by clearing 8 bits in the <code>PD MODER</code> register located at address <code>0x40020C00</code>.</p>
 <pre><code>        ldr r1, =0x40020C0C     @ Pointer to PD PUPDR
         ldr r0, [r1]            @ Value of PD PUPDR
         ldr r2, =0xFFFFFF00
         and r0, r0, r2
         orr r0, r0, 0xAA        @ PD 0 - PD 3 pull down
-        str r0, [r1]            @ Write back PC PUPDR
-</code></pre>
+        str r0, [r1]            @ Write back PC PUPDR</code></pre>
 <p>The code above modifies the <code>PD PUPDR</code> register. <code>PUPDR</code> stands for <code>PULL UP, PULL DOWN Register</code>. This register is used to configure how the PD pins behave "electronically" and how to configure this will depend on what kind of electronics you have connected to the pin. In this case I have a button that when it is open means that the GPIO pin is connected to "nothing" but when the button is closed the GPIO pin is connected to +3V (via a resistor). When a pin is connected to "nothing" like that it is said to be "floating".</p>
 <p>The code above, configures the PD0 - PD3 pins to be PULL DOWN pins. This means that internally in the "chip", some switches (transistors) will be configured in such a way that the pins are connected to ground via a large resistor. With this configuration the pin will never be in a floating state as it is either pulled to +3V by the button or pulled to ground internally in the chip.</p>
 <p>The next thing that happens is that we enter into an infinite loop.</p>
@@ -208,8 +205,7 @@
         and r1, r1, r3          @ Clear PA0 - PA3
         orr r1, r1, r0          @ Turn on leds corresponding to buttons
         str r1, [r2]
-        b forever
-</code></pre>
+        b forever</code></pre>
 <p>This loop reads the PD input data register, looks at the 4 bits that corresponds to PD0 - PD3 and copies their state over to the PA output data register. There is some masking going on so that only the bits of interest are updated.</p>
 <p>The complete assembly code listing is available below:</p>
 <pre><code>        .syntax unified
@@ -297,15 +293,14 @@ forever:
         str r1, [r2]
         b forever
 
-        .section .data 
-</code></pre>
+        .section .data </code></pre>
 <h2 id="conclusion">Conclusion</h2>
 <p>Ah! that was another one about GPIO. Seems to work fine. This sets a good foundation for future exploration, I think. I want to take a few steps back now and take a look at the assembler, the directives, the instruction set and such things. The code written for <a href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index">session0</a>, <a href="https://svenssonjoel.github.io/pages-2021/cortex-m-assembler-1-hardfault/index.html">session1</a> and this current post is a bit ad-hoc, so going back and learning some of the basics sounds like a good idea. We can then revisit things like GPIO and maybe improve on the code by using more features of the assembly later.</p>
 <p>As usual all feedback is very welcome. So do not hesitate to poke me about anything.</p>
 <p>Oh I should add! The code for this sequence of posts is available at <a href="https://github.com/svenssonjoel/Learning-ARM-Cortex-M-Assembly">github</a>.</p>
 <p>Have a good day!</p>
 <h2 id="additional-resources">Additional resources</h2>
-<ol>
+<ol type="1">
 <li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/translations/en.DM00031020.pdf">STM32F405/415 (407/417) (427/437) (429/439) reference manual</a></li>
 <li><a href="https://www.st.com/content/ccc/resource/technical/document/reference_manual/9b/53/39/1c/f7/01/4a/79/DM00119316.pdf/files/DM00119316.pdf/jcr:content/translations/en.DM00119316.pdf">STM32F412xG/E reference manual</a></li>
 <li><a href="https://www.st.com/content/ccc/resource/technical/document/datasheet/ef/92/76/6d/bb/c2/4f/f7/DM00037051.pdf/files/DM00037051.pdf/jcr:content/translations/en.DM00037051.pdf">STM32F405xx STM32F407xx datasheet</a></li>
@@ -320,4 +315,3 @@ forever:
 <p>This page was generated using <a href=https://pandoc.org/> Pandoc</a>.</p>
 </BODY>
 </HTML>
-
