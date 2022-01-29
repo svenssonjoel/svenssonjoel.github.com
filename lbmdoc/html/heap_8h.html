@@ -71,7 +71,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;string.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="lispbm__types_8h_source.html">lispbm_types.h</a>&quot;</code><br />
+<code>#include &quot;lbm_types.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="symrepr_8h_source.html">symrepr.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="streams_8h_source.html">streams.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -79,7 +79,7 @@ Include dependency graph for heap.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="heap_8h__incl.png" border="0" usemap="#heap_8h" alt=""/></div>
 <map name="heap_8h" id="heap_8h">
-<area shape="rect" id="node3" href="lispbm__types_8h.html" title="lispbm_types.h" alt="" coords="173,155,284,181"/>
+<area shape="rect" id="node3" href="lbm__types_8h_source.html" title="lbm_types.h" alt="" coords="173,155,266,181"/>
 <area shape="rect" id="node7" href="symrepr_8h.html" title="symrepr.h" alt="" coords="95,80,175,107"/>
 <area shape="rect" id="node8" href="streams_8h.html" title="streams.h" alt="" coords="250,80,330,107"/>
 </map>
@@ -179,6 +179,10 @@ Macros</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a086cf17ce84f6e2fca1f53fe31be1342"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a086cf17ce84f6e2fca1f53fe31be1342">lbm_heap_init</a> (<a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> *addr, unsigned int num_cells)</td></tr>
 <tr class="separator:a086cf17ce84f6e2fca1f53fe31be1342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0beebcf46a3e14f313602903a9626106"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a0beebcf46a3e14f313602903a9626106">lbm_heap_new_gc_time</a> (uint32_t dur)</td></tr>
+<tr class="separator:a0beebcf46a3e14f313602903a9626106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a308d9998cd46f3b2dbdc315b05f14736"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a308d9998cd46f3b2dbdc315b05f14736">lbm_heap_new_freelist_length</a> (uint32_t l)</td></tr>
+<tr class="separator:a308d9998cd46f3b2dbdc315b05f14736"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46aa46b5b0361efcb65e774bf149b209"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a46aa46b5b0361efcb65e774bf149b209">lbm_heap_num_free</a> (void)</td></tr>
 <tr class="separator:a46aa46b5b0361efcb65e774bf149b209"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f71b1d3167e9f0867855098a18f7ef5"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a5f71b1d3167e9f0867855098a18f7ef5">lbm_heap_num_allocated</a> (void)</td></tr>
@@ -187,35 +191,35 @@ Functions</h2></td></tr>
 <tr class="separator:aeb6fe63cbaa814f619271c90a823e841"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac31c15de25bad21ea5cc7f3595336e1d"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ac31c15de25bad21ea5cc7f3595336e1d">lbm_heap_size_bytes</a> (void)</td></tr>
 <tr class="separator:ac31c15de25bad21ea5cc7f3595336e1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67f43bf6872d048d6b9edbfdd5427003"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a67f43bf6872d048d6b9edbfdd5427003">lbm_heap_allocate_cell</a> (<a class="el" href="lispbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a> type)</td></tr>
+<tr class="memitem:a67f43bf6872d048d6b9edbfdd5427003"><td class="memItemLeft" align="right" valign="top">lbm_value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a67f43bf6872d048d6b9edbfdd5427003">lbm_heap_allocate_cell</a> (lbm_type type)</td></tr>
 <tr class="separator:a67f43bf6872d048d6b9edbfdd5427003"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa91e7850c4bb0f80ba879418d628b408"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aa91e7850c4bb0f80ba879418d628b408">lbm_dec_str</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> val)</td></tr>
+<tr class="memitem:aa91e7850c4bb0f80ba879418d628b408"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aa91e7850c4bb0f80ba879418d628b408">lbm_dec_str</a> (lbm_value val)</td></tr>
 <tr class="separator:aa91e7850c4bb0f80ba879418d628b408"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c0eda85b384e104e85fccdc9a78076f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structlbm__stream__s.html">lbm_stream_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1c0eda85b384e104e85fccdc9a78076f">lbm_dec_stream</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> val)</td></tr>
+<tr class="memitem:a1c0eda85b384e104e85fccdc9a78076f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structlbm__stream__s.html">lbm_stream_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1c0eda85b384e104e85fccdc9a78076f">lbm_dec_stream</a> (lbm_value val)</td></tr>
 <tr class="separator:a1c0eda85b384e104e85fccdc9a78076f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1df37ed4c5c5b687e0028f02ac43f980"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1df37ed4c5c5b687e0028f02ac43f980">lbm_dec_as_u</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> val)</td></tr>
+<tr class="memitem:a1df37ed4c5c5b687e0028f02ac43f980"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1df37ed4c5c5b687e0028f02ac43f980">lbm_dec_as_u</a> (lbm_value val)</td></tr>
 <tr class="separator:a1df37ed4c5c5b687e0028f02ac43f980"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ccf940d6ccefd69109a4f80ed9633e7"><td class="memItemLeft" align="right" valign="top">lbm_int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a7ccf940d6ccefd69109a4f80ed9633e7">lbm_dec_as_i</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> val)</td></tr>
+<tr class="memitem:a7ccf940d6ccefd69109a4f80ed9633e7"><td class="memItemLeft" align="right" valign="top">lbm_int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a7ccf940d6ccefd69109a4f80ed9633e7">lbm_dec_as_i</a> (lbm_value val)</td></tr>
 <tr class="separator:a7ccf940d6ccefd69109a4f80ed9633e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f4150137ae194add8318d41f0252b22"><td class="memItemLeft" align="right" valign="top">lbm_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a9f4150137ae194add8318d41f0252b22">lbm_dec_as_f</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> val)</td></tr>
+<tr class="memitem:a9f4150137ae194add8318d41f0252b22"><td class="memItemLeft" align="right" valign="top">lbm_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a9f4150137ae194add8318d41f0252b22">lbm_dec_as_f</a> (lbm_value val)</td></tr>
 <tr class="separator:a9f4150137ae194add8318d41f0252b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46e2957c7965b22e66f99637604ef9a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a46e2957c7965b22e66f99637604ef9a0">lbm_cons</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> car, <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> cdr)</td></tr>
+<tr class="memitem:a46e2957c7965b22e66f99637604ef9a0"><td class="memItemLeft" align="right" valign="top">lbm_value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a46e2957c7965b22e66f99637604ef9a0">lbm_cons</a> (lbm_value car, lbm_value cdr)</td></tr>
 <tr class="separator:a46e2957c7965b22e66f99637604ef9a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2c1cd386a0ce7a7ca076e865ece53e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> cons)</td></tr>
+<tr class="memitem:ab2c1cd386a0ce7a7ca076e865ece53e1"><td class="memItemLeft" align="right" valign="top">lbm_value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a> (lbm_value cons)</td></tr>
 <tr class="separator:ab2c1cd386a0ce7a7ca076e865ece53e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59724a6d1b267124e23d01f267d43644"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a59724a6d1b267124e23d01f267d43644">lbm_cdr</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> cons)</td></tr>
+<tr class="memitem:a59724a6d1b267124e23d01f267d43644"><td class="memItemLeft" align="right" valign="top">lbm_value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a59724a6d1b267124e23d01f267d43644">lbm_cdr</a> (lbm_value cons)</td></tr>
 <tr class="separator:a59724a6d1b267124e23d01f267d43644"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57b2a0257512b74b7563e773e2a62609"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a57b2a0257512b74b7563e773e2a62609">lbm_set_car</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> c, <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> v)</td></tr>
+<tr class="memitem:a57b2a0257512b74b7563e773e2a62609"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a57b2a0257512b74b7563e773e2a62609">lbm_set_car</a> (lbm_value c, lbm_value v)</td></tr>
 <tr class="separator:a57b2a0257512b74b7563e773e2a62609"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa79ac3129c42cc1ee9aa5927a3d690e0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aa79ac3129c42cc1ee9aa5927a3d690e0">lbm_set_cdr</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> c, <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> v)</td></tr>
+<tr class="memitem:aa79ac3129c42cc1ee9aa5927a3d690e0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aa79ac3129c42cc1ee9aa5927a3d690e0">lbm_set_cdr</a> (lbm_value c, lbm_value v)</td></tr>
 <tr class="separator:aa79ac3129c42cc1ee9aa5927a3d690e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f5c5fc0208d9a1c34b994f7bc872c81"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1f5c5fc0208d9a1c34b994f7bc872c81">lbm_list_length</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> c)</td></tr>
+<tr class="memitem:a1f5c5fc0208d9a1c34b994f7bc872c81"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1f5c5fc0208d9a1c34b994f7bc872c81">lbm_list_length</a> (lbm_value c)</td></tr>
 <tr class="separator:a1f5c5fc0208d9a1c34b994f7bc872c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1012700b1f6cd537d44f7d8cf089a644"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1012700b1f6cd537d44f7d8cf089a644">lbm_list_reverse</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list)</td></tr>
+<tr class="memitem:a1012700b1f6cd537d44f7d8cf089a644"><td class="memItemLeft" align="right" valign="top">lbm_value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1012700b1f6cd537d44f7d8cf089a644">lbm_list_reverse</a> (lbm_value list)</td></tr>
 <tr class="separator:a1012700b1f6cd537d44f7d8cf089a644"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44bea52645ca3214973f9ccb1b151c3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a44bea52645ca3214973f9ccb1b151c3c">lbm_list_copy</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list)</td></tr>
+<tr class="memitem:a44bea52645ca3214973f9ccb1b151c3c"><td class="memItemLeft" align="right" valign="top">lbm_value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a44bea52645ca3214973f9ccb1b151c3c">lbm_list_copy</a> (lbm_value list)</td></tr>
 <tr class="separator:a44bea52645ca3214973f9ccb1b151c3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14b66d531d4be881c4734b47b5469bea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a14b66d531d4be881c4734b47b5469bea">lbm_list_append</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list1, <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list2)</td></tr>
+<tr class="memitem:a14b66d531d4be881c4734b47b5469bea"><td class="memItemLeft" align="right" valign="top">lbm_value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a14b66d531d4be881c4734b47b5469bea">lbm_list_append</a> (lbm_value list1, lbm_value list2)</td></tr>
 <tr class="separator:a14b66d531d4be881c4734b47b5469bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40d7fc3962c8d8bc6cc0617edecb134a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a40d7fc3962c8d8bc6cc0617edecb134a">lbm_get_heap_state</a> (<a class="el" href="structlbm__heap__state__t.html">lbm_heap_state_t</a> *)</td></tr>
 <tr class="separator:a40d7fc3962c8d8bc6cc0617edecb134a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -223,105 +227,108 @@ Functions</h2></td></tr>
 <tr class="separator:a6a5e35b5721a0f5a4b8626f349e5e6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7a0616a62278a8108a73bdc6b8284fb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ae7a0616a62278a8108a73bdc6b8284fb">lbm_gc_mark_freelist</a> (void)</td></tr>
 <tr class="separator:ae7a0616a62278a8108a73bdc6b8284fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3dc9f3482aec23d187932f3de34fb84b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a3dc9f3482aec23d187932f3de34fb84b">lbm_gc_mark_phase</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> v)</td></tr>
+<tr class="memitem:a3dc9f3482aec23d187932f3de34fb84b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a3dc9f3482aec23d187932f3de34fb84b">lbm_gc_mark_phase</a> (lbm_value v)</td></tr>
 <tr class="separator:a3dc9f3482aec23d187932f3de34fb84b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68d6397bad38a6838f4ed4601c8aa8d5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a68d6397bad38a6838f4ed4601c8aa8d5">lbm_gc_mark_aux</a> (lbm_uint *data, unsigned int n)</td></tr>
 <tr class="separator:a68d6397bad38a6838f4ed4601c8aa8d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5dfa361fe508b4dbd76578626205468"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ad5dfa361fe508b4dbd76578626205468">lbm_gc_sweep_phase</a> (void)</td></tr>
 <tr class="separator:ad5dfa361fe508b4dbd76578626205468"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe555a64c5b0423b3e958043a8a30217"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#afe555a64c5b0423b3e958043a8a30217">lbm_heap_allocate_array</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *res, unsigned int size, <a class="el" href="lispbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a> type)</td></tr>
+<tr class="memitem:afe555a64c5b0423b3e958043a8a30217"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#afe555a64c5b0423b3e958043a8a30217">lbm_heap_allocate_array</a> (lbm_value *res, unsigned int size, lbm_type type)</td></tr>
 <tr class="separator:afe555a64c5b0423b3e958043a8a30217"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9da664df13e84778ec84ec5ba9a8f353"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="lispbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+<tr class="memitem:a9da664df13e84778ec84ec5ba9a8f353"><td class="memItemLeft" align="right" valign="top">static lbm_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a> (lbm_value x)</td></tr>
 <tr class="separator:a9da664df13e84778ec84ec5ba9a8f353"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa234f31e427cd7092de75acbdc8529bd"><td class="memItemLeft" align="right" valign="top"><a id="aa234f31e427cd7092de75acbdc8529bd"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_ptr</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_ptr</b> (lbm_value x)</td></tr>
 <tr class="separator:aa234f31e427cd7092de75acbdc8529bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aded9fdeea166a41e61db874bf5bcfbaf"><td class="memItemLeft" align="right" valign="top"><a id="aded9fdeea166a41e61db874bf5bcfbaf"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_cons_ptr</b> (lbm_uint x)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_cons_ptr</b> (lbm_uint x)</td></tr>
 <tr class="separator:aded9fdeea166a41e61db874bf5bcfbaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc4021a0ecfe85dd93d33fc80718758d"><td class="memItemLeft" align="right" valign="top"><a id="acc4021a0ecfe85dd93d33fc80718758d"></a>
-static lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_ptr</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> p)</td></tr>
+static lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_ptr</b> (lbm_value p)</td></tr>
 <tr class="separator:acc4021a0ecfe85dd93d33fc80718758d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29a5894240b6210dbe65e929bafd330b"><td class="memItemLeft" align="right" valign="top"><a id="a29a5894240b6210dbe65e929bafd330b"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_set_ptr_type</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> p, <a class="el" href="lispbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a> t)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_set_ptr_type</b> (lbm_value p, lbm_type t)</td></tr>
 <tr class="separator:a29a5894240b6210dbe65e929bafd330b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8858feb967f0f42b8a873b0de35c042f"><td class="memItemLeft" align="right" valign="top"><a id="a8858feb967f0f42b8a873b0de35c042f"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_sym</b> (uint32_t s)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_sym</b> (uint32_t s)</td></tr>
 <tr class="separator:a8858feb967f0f42b8a873b0de35c042f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67851625b8fa15c015cd9b186415fe2c"><td class="memItemLeft" align="right" valign="top"><a id="a67851625b8fa15c015cd9b186415fe2c"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_i</b> (lbm_int x)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_i</b> (lbm_int x)</td></tr>
 <tr class="separator:a67851625b8fa15c015cd9b186415fe2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a716633310f25239a622705a995effb37"><td class="memItemLeft" align="right" valign="top"><a id="a716633310f25239a622705a995effb37"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_u</b> (lbm_uint x)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_u</b> (lbm_uint x)</td></tr>
 <tr class="separator:a716633310f25239a622705a995effb37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a540dddeb423772a3fbbe7e841ee678d4"><td class="memItemLeft" align="right" valign="top"><a id="a540dddeb423772a3fbbe7e841ee678d4"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_I</b> (lbm_int x)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_I</b> (lbm_int x)</td></tr>
 <tr class="separator:a540dddeb423772a3fbbe7e841ee678d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac91725c0c52903225d27a5b4b5c6f175"><td class="memItemLeft" align="right" valign="top"><a id="ac91725c0c52903225d27a5b4b5c6f175"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_U</b> (lbm_uint x)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_U</b> (lbm_uint x)</td></tr>
 <tr class="separator:ac91725c0c52903225d27a5b4b5c6f175"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a570505ceaaf1d1bfad6bb22211938f54"><td class="memItemLeft" align="right" valign="top"><a id="a570505ceaaf1d1bfad6bb22211938f54"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_F</b> (lbm_float x)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_F</b> (lbm_float x)</td></tr>
 <tr class="separator:a570505ceaaf1d1bfad6bb22211938f54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1479efff73cc4409c40d334ae8198921"><td class="memItemLeft" align="right" valign="top"><a id="a1479efff73cc4409c40d334ae8198921"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_char</b> (char x)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_enc_char</b> (char x)</td></tr>
 <tr class="separator:a1479efff73cc4409c40d334ae8198921"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a674a3e53c861985e6748777a1051fe6e"><td class="memItemLeft" align="right" valign="top"><a id="a674a3e53c861985e6748777a1051fe6e"></a>
-static lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_i</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_i</b> (lbm_value x)</td></tr>
 <tr class="separator:a674a3e53c861985e6748777a1051fe6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35fc56f46e3669a97c2ea985c5038fc8"><td class="memItemLeft" align="right" valign="top"><a id="a35fc56f46e3669a97c2ea985c5038fc8"></a>
-static lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_u</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_u</b> (lbm_value x)</td></tr>
 <tr class="separator:a35fc56f46e3669a97c2ea985c5038fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9972fe9d097db6fb3bdb56b707b4c2a"><td class="memItemLeft" align="right" valign="top"><a id="ab9972fe9d097db6fb3bdb56b707b4c2a"></a>
-static char&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_char</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static char&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_char</b> (lbm_value x)</td></tr>
 <tr class="separator:ab9972fe9d097db6fb3bdb56b707b4c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2facf6f237ffb94f86476ceee09c900a"><td class="memItemLeft" align="right" valign="top"><a id="a2facf6f237ffb94f86476ceee09c900a"></a>
-static lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_sym</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_sym</b> (lbm_value x)</td></tr>
 <tr class="separator:a2facf6f237ffb94f86476ceee09c900a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a333e4ca60d279178d35e35109806f63b"><td class="memItemLeft" align="right" valign="top"><a id="a333e4ca60d279178d35e35109806f63b"></a>
-static lbm_float&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_F</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static lbm_float&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_F</b> (lbm_value x)</td></tr>
 <tr class="separator:a333e4ca60d279178d35e35109806f63b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e79b30d596c1e7895312ab8baf0025c"><td class="memItemLeft" align="right" valign="top"><a id="a2e79b30d596c1e7895312ab8baf0025c"></a>
-static lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_U</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_U</b> (lbm_value x)</td></tr>
 <tr class="separator:a2e79b30d596c1e7895312ab8baf0025c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb96de2247fc0e336a0242fd0436c351"><td class="memItemLeft" align="right" valign="top"><a id="afb96de2247fc0e336a0242fd0436c351"></a>
-static lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_I</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_I</b> (lbm_value x)</td></tr>
 <tr class="separator:afb96de2247fc0e336a0242fd0436c351"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ae9c391b5154593eeee78957ee8f569"><td class="memItemLeft" align="right" valign="top"><a id="a2ae9c391b5154593eeee78957ee8f569"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_set_gc_mark</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_set_gc_mark</b> (lbm_value x)</td></tr>
 <tr class="separator:a2ae9c391b5154593eeee78957ee8f569"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7426a98e62d0cb5c173cc18cf90b43ad"><td class="memItemLeft" align="right" valign="top"><a id="a7426a98e62d0cb5c173cc18cf90b43ad"></a>
-static <a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_clr_gc_mark</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static lbm_value&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_clr_gc_mark</b> (lbm_value x)</td></tr>
 <tr class="separator:a7426a98e62d0cb5c173cc18cf90b43ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a35fbd7993c591d929a63a8bc881ec4"><td class="memItemLeft" align="right" valign="top"><a id="a7a35fbd7993c591d929a63a8bc881ec4"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_get_gc_mark</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_get_gc_mark</b> (lbm_value x)</td></tr>
 <tr class="separator:a7a35fbd7993c591d929a63a8bc881ec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8ddfe9ec5c37042f55488627f9f185d"><td class="memItemLeft" align="right" valign="top"><a id="ae8ddfe9ec5c37042f55488627f9f185d"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_number</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_number</b> (lbm_value x)</td></tr>
 <tr class="separator:ae8ddfe9ec5c37042f55488627f9f185d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4bab812974a00bdabfea8b1b025c1fe"><td class="memItemLeft" align="right" valign="top"><a id="ad4bab812974a00bdabfea8b1b025c1fe"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_char</b> (lbm_value x)</td></tr>
+<tr class="separator:ad4bab812974a00bdabfea8b1b025c1fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb353adb577088baa0c275447001aff4"><td class="memItemLeft" align="right" valign="top"><a id="adb353adb577088baa0c275447001aff4"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_special</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> symrep)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_special</b> (lbm_value symrep)</td></tr>
 <tr class="separator:adb353adb577088baa0c275447001aff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30089083ccabd8c253d2780120bcf78d"><td class="memItemLeft" align="right" valign="top"><a id="a30089083ccabd8c253d2780120bcf78d"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_fundamental</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> symrep)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_fundamental</b> (lbm_value symrep)</td></tr>
 <tr class="separator:a30089083ccabd8c253d2780120bcf78d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59c45a4d6b97f795d06a05d9e0087723"><td class="memItemLeft" align="right" valign="top"><a id="a59c45a4d6b97f795d06a05d9e0087723"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_closure</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_closure</b> (lbm_value exp)</td></tr>
 <tr class="separator:a59c45a4d6b97f795d06a05d9e0087723"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98ed638fa7a83e16efe5d24e93987d1c"><td class="memItemLeft" align="right" valign="top"><a id="a98ed638fa7a83e16efe5d24e93987d1c"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_match_binder</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_match_binder</b> (lbm_value exp)</td></tr>
 <tr class="separator:a98ed638fa7a83e16efe5d24e93987d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55d73213d4a1adc4bf0bbb39e916d2e5"><td class="memItemLeft" align="right" valign="top"><a id="a55d73213d4a1adc4bf0bbb39e916d2e5"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol</b> (lbm_value exp)</td></tr>
 <tr class="separator:a55d73213d4a1adc4bf0bbb39e916d2e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32a9addfd5438df14f41e4fa8e0945e0"><td class="memItemLeft" align="right" valign="top"><a id="a32a9addfd5438df14f41e4fa8e0945e0"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_nil</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_nil</b> (lbm_value exp)</td></tr>
 <tr class="separator:a32a9addfd5438df14f41e4fa8e0945e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf90e15092c45d68da7f1bee52e930d6"><td class="memItemLeft" align="right" valign="top"><a id="abf90e15092c45d68da7f1bee52e930d6"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_eval</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_eval</b> (lbm_value exp)</td></tr>
 <tr class="separator:abf90e15092c45d68da7f1bee52e930d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6368e3c83c73fb236b954730f4192113"><td class="memItemLeft" align="right" valign="top"><a id="a6368e3c83c73fb236b954730f4192113"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_merror</b> (<a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_merror</b> (lbm_value exp)</td></tr>
 <tr class="separator:a6368e3c83c73fb236b954730f4192113"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -332,9 +339,9 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_car </td>
+          <td class="memname">lbm_value lbm_car </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>cons</em></td><td>)</td>
           <td></td>
         </tr>
@@ -358,9 +365,9 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_cdr </td>
+          <td class="memname">lbm_value lbm_cdr </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>cons</em></td><td>)</td>
           <td></td>
         </tr>
@@ -384,15 +391,15 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_cons </td>
+          <td class="memname">lbm_value lbm_cons </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>car</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>cdr</em>&#160;</td>
         </tr>
         <tr>
@@ -423,7 +430,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="memname">lbm_float lbm_dec_as_f </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>val</em></td><td>)</td>
           <td></td>
         </tr>
@@ -449,7 +456,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="memname">lbm_int lbm_dec_as_i </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>val</em></td><td>)</td>
           <td></td>
         </tr>
@@ -475,7 +482,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="memname">lbm_uint lbm_dec_as_u </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>val</em></td><td>)</td>
           <td></td>
         </tr>
@@ -501,7 +508,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="memname">char* lbm_dec_str </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>val</em></td><td>)</td>
           <td></td>
         </tr>
@@ -527,7 +534,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="memname"><a class="el" href="structlbm__stream__s.html">lbm_stream_t</a>* lbm_dec_stream </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>val</em></td><td>)</td>
           <td></td>
         </tr>
@@ -610,7 +617,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="memname">int lbm_gc_mark_phase </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>v</em></td><td>)</td>
           <td></td>
         </tr>
@@ -700,7 +707,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="memname">int lbm_heap_allocate_array </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *&#160;</td>
+          <td class="paramtype">lbm_value *&#160;</td>
           <td class="paramname"><em>res</em>, </td>
         </tr>
         <tr>
@@ -712,7 +719,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a>&#160;</td>
+          <td class="paramtype">lbm_type&#160;</td>
           <td class="paramname"><em>type</em>&#160;</td>
         </tr>
         <tr>
@@ -722,7 +729,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Allocate an array in symbols and arrays memory (<a class="el" href="lispbm__memory_8h.html">lispbm_memory.h</a>) and create a heap cell that refers to this array. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Allocate an array in symbols and arrays memory (lispbm_memory.h) and create a heap cell that refers to this array. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">res</td><td>The resulting lbm_value is returned through this argument. </td></tr>
     <tr><td class="paramname">size</td><td>Array size in number of 32 bit words. </td></tr>
@@ -741,9 +748,9 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_heap_allocate_cell </td>
+          <td class="memname">lbm_value lbm_heap_allocate_cell </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a>&#160;</td>
+          <td class="paramtype">lbm_type&#160;</td>
           <td class="paramname"><em>type</em></td><td>)</td>
           <td></td>
         </tr>
@@ -794,6 +801,56 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>1 on success or 0 for failure. </dd></dl>
+
+</div>
+</div>
+<a id="a308d9998cd46f3b2dbdc315b05f14736"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a308d9998cd46f3b2dbdc315b05f14736">&#9670;&nbsp;</a></span>lbm_heap_new_freelist_length()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_heap_new_freelist_length </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>l</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Add a new free_list length to the heap_stats.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">l</td><td>Current length of freelist. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0beebcf46a3e14f313602903a9626106"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0beebcf46a3e14f313602903a9626106">&#9670;&nbsp;</a></span>lbm_heap_new_gc_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_heap_new_gc_time </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>dur</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Add GC time statistics to heap_stats</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dur</td><td>Duration as reported by the timestamp callback. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -884,15 +941,15 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_list_append </td>
+          <td class="memname">lbm_value lbm_list_append </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>list1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>list2</em>&#160;</td>
         </tr>
         <tr>
@@ -921,9 +978,9 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_list_copy </td>
+          <td class="memname">lbm_value lbm_list_copy </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>list</em></td><td>)</td>
           <td></td>
         </tr>
@@ -949,7 +1006,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="memname">unsigned int lbm_list_length </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>c</em></td><td>)</td>
           <td></td>
         </tr>
@@ -973,9 +1030,9 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_list_reverse </td>
+          <td class="memname">lbm_value lbm_list_reverse </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>list</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1001,13 +1058,13 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="memname">int lbm_set_car </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>c</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>v</em>&#160;</td>
         </tr>
         <tr>
@@ -1038,13 +1095,13 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="memname">int lbm_set_cdr </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>c</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>v</em>&#160;</td>
         </tr>
         <tr>
@@ -1076,9 +1133,9 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="lispbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a> lbm_type_of </td>
+          <td class="memname">static lbm_type lbm_type_of </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lispbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramtype">lbm_value&#160;</td>
           <td class="paramname"><em>x</em></td><td>)</td>
           <td></td>
         </tr>

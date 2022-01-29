@@ -68,6 +68,8 @@ $(function() {
 <li class="level1"><a href="#sec_bool">Boolean operators</a></li>
 <li class="level1"><a href="#sec_nil">nil and t</a></li>
 <li class="level1"><a href="#sec_forms">Special forms</a></li>
+<li class="level1"><a href="#sec_lists">Lists</a></li>
+<li class="level1"><a href="#sec_streams">Streams</a></li>
 <li class="level1"><a href="#sec_pattern">Pattern-matching</a></li>
 <li class="level1"><a href="#sec_concurrency">Concurrency</a></li>
 <li class="level1"><a href="#sec_messages">Message-passing</a></li>
@@ -75,6 +77,7 @@ $(function() {
 <li class="level1"><a href="#sec_builtin">Built-in operations</a></li>
 <li class="level1"><a href="#sec_types">Types</a></li>
 <li class="level1"><a href="#sec_internal">Internal symbols</a></li>
+<li class="level1"><a href="#sec_low_level">Low level operations</a></li>
 </ul>
 </div>
 <div class="textblock"><h1><a class="anchor" id="sec_arith"></a>
@@ -177,6 +180,32 @@ Special forms</h1>
 <p>Parses a string containing multiple sequenced expressed. The resulting list of expressions can be evaluated as a program using <a href="#eval-program">eval-program</a>. The form of a read-program expression is <code>(read-program string)</code>.</p>
 <dl class="section note"><dt>Note</dt><dd>Evaluate a program you just read from a string with <a href="#eval-program">eval-program</a>. <div class="fragment"><div class="line">(eval-program (read-program <span class="stringliteral">&quot;(define apa 1) (+ 2 apa)&quot;</span>))</div></div><!-- fragment --> The expression above evaluates to 3 with the side effect that the global environment has been extended with the binding <code>(apa 1)</code>.</dd></dl>
 <hr/>
+<h1><a class="anchor" id="sec_lists"></a>
+Lists</h1>
+<p><a class="anchor" id="car"></a> </p><h3>car</h3>
+<hr/>
+<p><a class="anchor" id="cdr"></a> </p><h3>cdr</h3>
+<hr/>
+<p><a class="anchor" id="cons"></a> </p><h3>cons</h3>
+<hr/>
+<p><a class="anchor" id="list"></a> </p><h3>list</h3>
+<hr/>
+<p><a class="anchor" id="append"></a> </p><h3>append</h3>
+<hr/>
+<p><a class="anchor" id="ix"></a> </p><h3>ix</h3>
+<hr/>
+<h1><a class="anchor" id="sec_streams"></a>
+Streams</h1>
+<p><a class="anchor" id="stream-get"></a> </p><h3>stream-get</h3>
+<hr/>
+<p><a class="anchor" id="stream-more"></a> </p><h3>stream-more</h3>
+<hr/>
+<p><a class="anchor" id="stream-peek"></a> </p><h3>stream-peek</h3>
+<hr/>
+<p><a class="anchor" id="stream-drop"></a> </p><h3>stream-drop</h3>
+<hr/>
+<p><a class="anchor" id="stream-put"></a> </p><h3>stream-put</h3>
+<hr/>
 <h1><a class="anchor" id="sec_pattern"></a>
 Pattern-matching</h1>
 <p><a class="anchor" id="match"></a> </p><h3>match</h3>
@@ -236,16 +265,6 @@ Built-in operations</h1>
 <p><a class="anchor" id="eval"></a> </p><h3>eval</h3>
 <hr/>
 <p><a class="anchor" id="eval-program"></a> </p><h3>eval-program</h3>
-<hr/>
-<p><a class="anchor" id="car"></a> </p><h3>car</h3>
-<hr/>
-<p><a class="anchor" id="cdr"></a> </p><h3>cdr</h3>
-<hr/>
-<p><a class="anchor" id="cons"></a> </p><h3>cons</h3>
-<hr/>
-<p><a class="anchor" id="list"></a> </p><h3>list</h3>
-<hr/>
-<p><a class="anchor" id="append"></a> </p><h3>append</h3>
 <hr/>
 <p><a class="anchor" id="array-read"></a> </p><h3>array-read</h3>
 <hr/>
@@ -322,6 +341,16 @@ Internal symbols</h1>
 <p><a class="anchor" id="sym_recovered"></a> </p><h3>sym_recovered</h3>
 <hr/>
 <p><a class="anchor" id="sym_nonsense"></a> </p><h3>sym_nonsense</h3>
+<hr/>
+<h1><a class="anchor" id="sec_low_level"></a>
+Low level operations</h1>
+<p><a class="anchor" id="encode-i32"></a> </p><h3>encode-i32</h3>
+<hr/>
+<p><a class="anchor" id="encode-u32"></a> </p><h3>encode-u32</h3>
+<hr/>
+<p><a class="anchor" id="encode-float"></a> </p><h3>encode-float</h3>
+<hr/>
+<p><a class="anchor" id="decode"></a> </p><h3>decode</h3>
 <hr/>
  </div></div><!-- contents -->
 <!-- start footer part -->

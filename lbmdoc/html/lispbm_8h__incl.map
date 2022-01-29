@@ -1,15 +1,15 @@
 <map id="lispbm.h" name="lispbm.h">
-<area shape="rect" id="node2" href="$heap_8h.html" title="heap.h" alt="" coords="578,155,639,181"/>
-<area shape="rect" id="node4" href="$lispbm__types_8h.html" title="lispbm_types.h" alt="" coords="305,304,416,331"/>
-<area shape="rect" id="node8" href="$symrepr_8h.html" title="symrepr.h" alt="" coords="775,229,855,256"/>
-<area shape="rect" id="node10" href="$extensions_8h.html" title="extensions.h" alt="" coords="646,80,742,107"/>
-<area shape="rect" id="node11" href="$eval__cps_8h.html" title="eval_cps.h" alt="" coords="17,155,102,181"/>
+<area shape="rect" id="node2" href="$heap_8h.html" title="heap.h" alt="" coords="495,155,557,181"/>
+<area shape="rect" id="node4" href="$lbm__types_8h_source.html" title="lbm_types.h" alt="" coords="375,304,469,331"/>
+<area shape="rect" id="node8" href="$symrepr_8h.html" title="symrepr.h" alt="" coords="645,229,725,256"/>
+<area shape="rect" id="node10" href="$extensions_8h.html" title="extensions.h" alt="" coords="559,80,655,107"/>
+<area shape="rect" id="node11" href="$eval__cps_8h.html" title="eval_cps.h" alt="" coords="193,155,278,181"/>
 <area shape="rect" id="node15" href="$print_8h.html" title="print.h" alt="" coords="879,229,938,256"/>
-<area shape="rect" id="node16" href="$tokpar_8h.html" title="tokpar.h" alt="" coords="177,155,246,181"/>
-<area shape="rect" id="node17" href="$prelude_8h.html" title="prelude.h" alt="" coords="257,80,331,107"/>
-<area shape="rect" id="node18" href="$lispbm__memory_8h.html" title="lispbm_memory.h" alt="" coords="913,155,1038,181"/>
-<area shape="rect" id="node19" href="$env_8h.html" title="env.h" alt="" coords="359,80,413,107"/>
-<area shape="rect" id="node20" href="$compression_8h.html" title="compression.h" alt="" coords="399,229,506,256"/>
-<area shape="rect" id="node9" href="$streams_8h.html" title="streams.h" alt="" coords="621,229,701,256"/>
+<area shape="rect" id="node16" href="$tokpar_8h.html" title="tokpar.h" alt="" coords="99,155,169,181"/>
+<area shape="rect" id="node17" href="$prelude_8h.html" title="prelude.h" alt="" coords="310,80,385,107"/>
+<area shape="rect" id="node18" href="$env_8h.html" title="env.h" alt="" coords="423,80,477,107"/>
+<area shape="rect" id="node19" href="$compression_8h.html" title="compression.h" alt="" coords="749,229,855,256"/>
+<area shape="rect" id="node20" href="$lbm__memory_8h_source.html" title="lbm_memory.h" alt="" coords="912,155,1020,181"/>
+<area shape="rect" id="node9" href="$streams_8h.html" title="streams.h" alt="" coords="490,229,570,256"/>
 <area shape="rect" id="node12" href="$stack_8h.html" title="stack.h" alt="" coords="5,229,71,256"/>
 </map>

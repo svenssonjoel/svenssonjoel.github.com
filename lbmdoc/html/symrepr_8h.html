@@ -71,13 +71,13 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="lispbm__types_8h_source.html">lispbm_types.h</a>&quot;</code><br />
+<code>#include &quot;lbm_types.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for symrepr.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="symrepr_8h__incl.png" border="0" usemap="#symrepr_8h" alt=""/></div>
 <map name="symrepr_8h" id="symrepr_8h">
-<area shape="rect" id="node4" href="lispbm__types_8h.html" title="lispbm_types.h" alt="" coords="79,80,189,107"/>
+<area shape="rect" id="node4" href="lbm__types_8h_source.html" title="lbm_types.h" alt="" coords="87,80,181,107"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -360,6 +360,36 @@ Macros</h2></td></tr>
 <tr class="memitem:a213805d18ce199a0d73d9bf6f4277f1a"><td class="memItemLeft" align="right" valign="top"><a id="a213805d18ce199a0d73d9bf6f4277f1a"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_IS_FUNDAMENTAL</b>&#160;&#160;&#160;0x150</td></tr>
 <tr class="separator:a213805d18ce199a0d73d9bf6f4277f1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49f63e96f2aac6fd7d76f4c0544f0aaa"><td class="memItemLeft" align="right" valign="top"><a id="a49f63e96f2aac6fd7d76f4c0544f0aaa"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_IX</b>&#160;&#160;&#160;0x151</td></tr>
+<tr class="separator:a49f63e96f2aac6fd7d76f4c0544f0aaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfeeb9695b1a251808d50c3fbcc8f4d3"><td class="memItemLeft" align="right" valign="top"><a id="adfeeb9695b1a251808d50c3fbcc8f4d3"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_ENCODE_I32</b>&#160;&#160;&#160;0x152</td></tr>
+<tr class="separator:adfeeb9695b1a251808d50c3fbcc8f4d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2f90367d190f4cba693078dd9e2809b"><td class="memItemLeft" align="right" valign="top"><a id="ae2f90367d190f4cba693078dd9e2809b"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_ENCODE_U32</b>&#160;&#160;&#160;0x153</td></tr>
+<tr class="separator:ae2f90367d190f4cba693078dd9e2809b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d15d06606046b5ad92c76877fd13204"><td class="memItemLeft" align="right" valign="top"><a id="a0d15d06606046b5ad92c76877fd13204"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_ENCODE_FLOAT</b>&#160;&#160;&#160;0x154</td></tr>
+<tr class="separator:a0d15d06606046b5ad92c76877fd13204"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad74aea2ad89f953ba399e943e817ca96"><td class="memItemLeft" align="right" valign="top"><a id="ad74aea2ad89f953ba399e943e817ca96"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_DECODE</b>&#160;&#160;&#160;0x155</td></tr>
+<tr class="separator:ad74aea2ad89f953ba399e943e817ca96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aee1564611bfc4e2e3e3af8b81877ef"><td class="memItemLeft" align="right" valign="top"><a id="a5aee1564611bfc4e2e3e3af8b81877ef"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_STREAM_GET</b>&#160;&#160;&#160;0x160</td></tr>
+<tr class="separator:a5aee1564611bfc4e2e3e3af8b81877ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75e1431eafa6c2d56d58b74ffed447c0"><td class="memItemLeft" align="right" valign="top"><a id="a75e1431eafa6c2d56d58b74ffed447c0"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_STREAM_MORE</b>&#160;&#160;&#160;0x161</td></tr>
+<tr class="separator:a75e1431eafa6c2d56d58b74ffed447c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac173007f2f0a4d3c8b5c771c93042e8"><td class="memItemLeft" align="right" valign="top"><a id="aac173007f2f0a4d3c8b5c771c93042e8"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_STREAM_PEEK</b>&#160;&#160;&#160;0x162</td></tr>
+<tr class="separator:aac173007f2f0a4d3c8b5c771c93042e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76ffc5aa1f890a66b13716793cd352a2"><td class="memItemLeft" align="right" valign="top"><a id="a76ffc5aa1f890a66b13716793cd352a2"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_STREAM_DROP</b>&#160;&#160;&#160;0x163</td></tr>
+<tr class="separator:a76ffc5aa1f890a66b13716793cd352a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae78a4741cc22c14b6e5d26203cbb52b4"><td class="memItemLeft" align="right" valign="top"><a id="ae78a4741cc22c14b6e5d26203cbb52b4"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_STREAM_PUT</b>&#160;&#160;&#160;0x164</td></tr>
+<tr class="separator:ae78a4741cc22c14b6e5d26203cbb52b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad665f83436efbb98884659cd8f1292d4"><td class="memItemLeft" align="right" valign="top"><a id="ad665f83436efbb98884659cd8f1292d4"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>SYM_TYPE_OF</b>&#160;&#160;&#160;0x200</td></tr>
 <tr class="separator:ad665f83436efbb98884659cd8f1292d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -390,7 +420,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_error</
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="symrepr_8h.html">symrepr.h</a> implements the symbol table and symbol creation and lookup functions.</p>
-<p>The symbol table is implemented as a linked list in the arrays and symbols memory defined in <a class="el" href="lispbm__memory_8h.html">lispbm_memory.h</a>. So lbm_memory_init must be run before the symbol table is initialized and used. </p>
+<p>The symbol table is implemented as a linked list in the arrays and symbols memory defined in lispbm_memory.h. So lbm_memory_init must be run before the symbol table is initialized and used. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="a801641f99538a8e213f8c5f6550ebe3c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a801641f99538a8e213f8c5f6550ebe3c">&#9670;&nbsp;</a></span>lbm_add_symbol()</h2>
