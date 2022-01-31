@@ -74,8 +74,6 @@ $(function() {
 Include dependency graph for lbm_memory.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="lbm__memory_8h__incl.png" border="0" usemap="#lbm__memory_8h" alt=""/></div>
-<map name="lbm__memory_8h" id="lbm__memory_8h">
-</map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
@@ -157,6 +155,8 @@ Functions</h2></td></tr>
 <tr class="separator:aa66829ddb465e4114d45c863ad526239"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3f78d3e2005dc89dde979a51f36a2fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#ad3f78d3e2005dc89dde979a51f36a2fe">lbm_memory_free</a> (uint32_t *ptr)</td></tr>
 <tr class="separator:ad3f78d3e2005dc89dde979a51f36a2fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdc84b6db6430212c01fa71b0687520a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#acdc84b6db6430212c01fa71b0687520a">lbm_memory_ptr_inside</a> (uint32_t *ptr)</td></tr>
+<tr class="separator:acdc84b6db6430212c01fa71b0687520a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="aa66829ddb465e4114d45c863ad526239"></a>
@@ -298,6 +298,32 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Size of of the symbols and arrays memory in uint32_t chunks.</p>
 <dl class="section return"><dt>Returns</dt><dd>Numberof uint32_t words. </dd></dl>
+
+</div>
+</div>
+<a id="acdc84b6db6430212c01fa71b0687520a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdc84b6db6430212c01fa71b0687520a">&#9670;&nbsp;</a></span>lbm_memory_ptr_inside()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lbm_memory_ptr_inside </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramname"><em>ptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check if a pointer points into the lbm_memory</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptr</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 for yes and 0 for no. </dd></dl>
 
 </div>
 </div>

@@ -71,6 +71,7 @@ var searchData=
   ['lbm_5fmemory_5finit',['lbm_memory_init',['../lbm__memory_8h.html#a8921220d4ce237ca6a610f858ff02978',1,'lbm_memory.h']]],
   ['lbm_5fmemory_5fnum_5ffree',['lbm_memory_num_free',['../lbm__memory_8h.html#afd09d30467b16190cb320edd36356db3',1,'lbm_memory.h']]],
   ['lbm_5fmemory_5fnum_5fwords',['lbm_memory_num_words',['../lbm__memory_8h.html#a3e6283bb03ac22738f670fcb81a54efb',1,'lbm_memory.h']]],
+  ['lbm_5fmemory_5fptr_5finside',['lbm_memory_ptr_inside',['../lbm__memory_8h.html#acdc84b6db6430212c01fa71b0687520a',1,'lbm_memory.h']]],
   ['lbm_5fpause_5feval',['lbm_pause_eval',['../eval__cps_8h.html#ae89afeb0e3d8021f6cb521e68f5ff912',1,'eval_cps.h']]],
   ['lbm_5fpop_5fu32',['lbm_pop_u32',['../stack_8h.html#a590b329ea17b1e608f995841ea3b33e0',1,'stack.h']]],
   ['lbm_5fpop_5fu32_5f2',['lbm_pop_u32_2',['../stack_8h.html#aa25d1ae306a75b2762e59fe72cc45c45',1,'stack.h']]],

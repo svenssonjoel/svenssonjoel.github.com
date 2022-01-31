@@ -70,7 +70,6 @@ $(function() {
 <li class="level1"><a href="#sec_forms">Special forms</a></li>
 <li class="level1"><a href="#sec_lists">Lists</a></li>
 <li class="level1"><a href="#sec_arrays">Arrays</a></li>
-<li class="level1"><a href="#sec_streams">Streams</a></li>
 <li class="level1"><a href="#sec_pattern">Pattern-matching</a></li>
 <li class="level1"><a href="#sec_concurrency">Concurrency</a></li>
 <li class="level1"><a href="#sec_messages">Message-passing</a></li>
@@ -204,20 +203,6 @@ Arrays</h1>
 <hr/>
 <p><a class="anchor" id="array-write"></a> </p><h3>array-write</h3>
 <hr/>
-<p><a class="anchor" id="array-create"></a> </p><h3>array-create</h3>
-<hr/>
-<h1><a class="anchor" id="sec_streams"></a>
-Streams</h1>
-<p><a class="anchor" id="stream-get"></a> </p><h3>stream-get</h3>
-<hr/>
-<p><a class="anchor" id="stream-more"></a> </p><h3>stream-more</h3>
-<hr/>
-<p><a class="anchor" id="stream-peek"></a> </p><h3>stream-peek</h3>
-<hr/>
-<p><a class="anchor" id="stream-drop"></a> </p><h3>stream-drop</h3>
-<hr/>
-<p><a class="anchor" id="stream-put"></a> </p><h3>stream-put</h3>
-<hr/>
 <h1><a class="anchor" id="sec_pattern"></a>
 Pattern-matching</h1>
 <p><a class="anchor" id="match"></a> </p><h3>match</h3>
@@ -230,7 +215,7 @@ Pattern-matching</h1>
 <hr/>
 <p><a class="anchor" id="?"></a> </p><h3>?</h3>
 <p>The ? pattern matches anything and binds that anything to variable. Using the ? pattern is done as <code>(? var)</code> and the part of the expression that matches is bound to <code>var</code>.</p>
-<dl class="section note"><dt>Note</dt><dd>An example that evaluates to 19. <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;(orange 17)</span></div><div class="line"><span class="stringliteral">       ((green (? n)) (+ n 1))</span></div><div class="line"><span class="stringliteral">       ((orange (? n)) (+ n 2))</span></div><div class="line"><span class="stringliteral">       ((blue (?n)) (+ n 3)))</span></div></div><!-- fragment --> <hr/>
+<dl class="section note"><dt>Note</dt><dd>An example that evaluates to 19. <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;(orange 17)</span></div><div class="line"><span class="stringliteral">       ((green (? n)) (+ n 1))</span></div><div class="line"><span class="stringliteral">       ((orange (? n)) (+ n 2))</span></div><div class="line"><span class="stringliteral">       ((blue (? n)) (+ n 3)))</span></div></div><!-- fragment --> <hr/>
 </dd></dl>
 <p><a class="anchor" id="?i28"></a> </p><h3>?i28</h3>
 <hr/>
