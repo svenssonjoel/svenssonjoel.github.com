@@ -71,7 +71,8 @@ Collaboration diagram for lbm_heap_state_t:</div>
 <div class="dyncontent">
 <div class="center"><img src="structlbm__heap__state__t__coll__graph.png" border="0" usemap="#lbm__heap__state__t_coll__map" alt="Collaboration graph"/></div>
 <map name="lbm__heap__state__t_coll__map" id="lbm__heap__state__t_coll__map">
-<area shape="rect" id="node2" href="structlbm__cons__t.html" title="lbm_cons_t" alt="" coords="23,5,113,32"/>
+<area shape="rect" id="node2" href="structlbm__stack__t.html" title="lbm_stack_t" alt="" coords="5,5,99,32"/>
+<area shape="rect" id="node3" href="structlbm__cons__t.html" title="lbm_cons_t" alt="" coords="123,5,213,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -83,33 +84,36 @@ Data Fields</h2></td></tr>
 <tr class="memitem:ab65a876b80611c706afb8b9cbda087c3"><td class="memItemLeft" align="right" valign="top"><a id="ab65a876b80611c706afb8b9cbda087c3"></a>
 <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><b>freelist</b></td></tr>
 <tr class="separator:ab65a876b80611c706afb8b9cbda087c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd4ff118f38938ea5abe11d34dd35b95"><td class="memItemLeft" align="right" valign="top"><a id="abd4ff118f38938ea5abe11d34dd35b95"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>heap_size</b></td></tr>
-<tr class="separator:abd4ff118f38938ea5abe11d34dd35b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29e9242d2941c5c569c2ec6fb65fbed0"><td class="memItemLeft" align="right" valign="top"><a id="a29e9242d2941c5c569c2ec6fb65fbed0"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>heap_bytes</b></td></tr>
-<tr class="separator:a29e9242d2941c5c569c2ec6fb65fbed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac471b9ab2813ab4792cfc9f6b5a2c015"><td class="memItemLeft" align="right" valign="top"><a id="ac471b9ab2813ab4792cfc9f6b5a2c015"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>num_alloc</b></td></tr>
-<tr class="separator:ac471b9ab2813ab4792cfc9f6b5a2c015"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a49feacbaf0448c3e6f03f8878f5053"><td class="memItemLeft" align="right" valign="top"><a id="a7a49feacbaf0448c3e6f03f8878f5053"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>num_alloc_arrays</b></td></tr>
-<tr class="separator:a7a49feacbaf0448c3e6f03f8878f5053"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed299068c63f6532e4ac0075bec2304c"><td class="memItemLeft" align="right" valign="top"><a id="aed299068c63f6532e4ac0075bec2304c"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>gc_num</b></td></tr>
-<tr class="separator:aed299068c63f6532e4ac0075bec2304c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2b2098bcfcb6343cd552d0f8d714ea7"><td class="memItemLeft" align="right" valign="top"><a id="ad2b2098bcfcb6343cd552d0f8d714ea7"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>gc_marked</b></td></tr>
-<tr class="separator:ad2b2098bcfcb6343cd552d0f8d714ea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf8bfd88ae49a618270ccf8f844a1938"><td class="memItemLeft" align="right" valign="top"><a id="aaf8bfd88ae49a618270ccf8f844a1938"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>gc_recovered</b></td></tr>
-<tr class="separator:aaf8bfd88ae49a618270ccf8f844a1938"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6465e9f4013971e0bfe3886dc52097a7"><td class="memItemLeft" align="right" valign="top"><a id="a6465e9f4013971e0bfe3886dc52097a7"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>gc_recovered_arrays</b></td></tr>
-<tr class="separator:a6465e9f4013971e0bfe3886dc52097a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99baabe2cd02bdabd3002215581ef7f7"><td class="memItemLeft" align="right" valign="top"><a id="a99baabe2cd02bdabd3002215581ef7f7"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>gc_least_free</b></td></tr>
-<tr class="separator:a99baabe2cd02bdabd3002215581ef7f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab90cb9be4958b2b38d701970aa4b6f5c"><td class="memItemLeft" align="right" valign="top"><a id="ab90cb9be4958b2b38d701970aa4b6f5c"></a>
+<a class="el" href="structlbm__stack__t.html">lbm_stack_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>gc_stack</b></td></tr>
+<tr class="separator:ab90cb9be4958b2b38d701970aa4b6f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c6833e55fc59901eaf2605d05931092"><td class="memItemLeft" align="right" valign="top"><a id="a9c6833e55fc59901eaf2605d05931092"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>heap_size</b></td></tr>
+<tr class="separator:a9c6833e55fc59901eaf2605d05931092"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12bbf7f8cb120292f43b80420766d430"><td class="memItemLeft" align="right" valign="top"><a id="a12bbf7f8cb120292f43b80420766d430"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>heap_bytes</b></td></tr>
+<tr class="separator:a12bbf7f8cb120292f43b80420766d430"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9f71bc01b2a6c958d144253d66ab1c2"><td class="memItemLeft" align="right" valign="top"><a id="af9f71bc01b2a6c958d144253d66ab1c2"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_alloc</b></td></tr>
+<tr class="separator:af9f71bc01b2a6c958d144253d66ab1c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67c26aaae6753a964a8afc14a50faa6b"><td class="memItemLeft" align="right" valign="top"><a id="a67c26aaae6753a964a8afc14a50faa6b"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_alloc_arrays</b></td></tr>
+<tr class="separator:a67c26aaae6753a964a8afc14a50faa6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65bc2cd66f20cdcbb7e2afbe1ce3743e"><td class="memItemLeft" align="right" valign="top"><a id="a65bc2cd66f20cdcbb7e2afbe1ce3743e"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>gc_num</b></td></tr>
+<tr class="separator:a65bc2cd66f20cdcbb7e2afbe1ce3743e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7402f0971f2fb0414a6d5df7a00dcf4"><td class="memItemLeft" align="right" valign="top"><a id="ab7402f0971f2fb0414a6d5df7a00dcf4"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>gc_marked</b></td></tr>
+<tr class="separator:ab7402f0971f2fb0414a6d5df7a00dcf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf7f2fb71c5ffa7e28c38a6af0b2c4c9"><td class="memItemLeft" align="right" valign="top"><a id="abf7f2fb71c5ffa7e28c38a6af0b2c4c9"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>gc_recovered</b></td></tr>
+<tr class="separator:abf7f2fb71c5ffa7e28c38a6af0b2c4c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53f75ee660d666fecee269e87580e1c8"><td class="memItemLeft" align="right" valign="top"><a id="a53f75ee660d666fecee269e87580e1c8"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>gc_recovered_arrays</b></td></tr>
+<tr class="separator:a53f75ee660d666fecee269e87580e1c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a8ee66ec8d124775b4c7f0607567e43"><td class="memItemLeft" align="right" valign="top"><a id="a0a8ee66ec8d124775b4c7f0607567e43"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>gc_least_free</b></td></tr>
+<tr class="separator:a0a8ee66ec8d124775b4c7f0607567e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a834b84965e2376205abad104ca368361"><td class="memItemLeft" align="right" valign="top"><a id="a834b84965e2376205abad104ca368361"></a>
 uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>gc_time_acc</b></td></tr>
 <tr class="separator:a834b84965e2376205abad104ca368361"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -121,7 +125,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>gc_max_duration</
 <tr class="separator:a1e8774ed55a4e20097c2bada808b8ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Heap statistics struct. </p>
+<div class="textblock"><p>Heap state </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="heap_8h_source.html">heap.h</a></li>
 </ul>

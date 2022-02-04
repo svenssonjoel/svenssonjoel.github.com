@@ -1,5 +1,6 @@
 <map id="heap.h" name="heap.h">
-<area shape="rect" id="node3" href="$lbm__types_8h.html" title="lbm_types.h" alt="" coords="173,155,266,181"/>
+<area shape="rect" id="node3" href="$lbm__types_8h.html" title="lbm_types.h" alt="" coords="181,155,274,181"/>
 <area shape="rect" id="node7" href="$symrepr_8h.html" title="symrepr.h" alt="" coords="95,80,175,107"/>
 <area shape="rect" id="node8" href="$streams_8h.html" title="streams.h" alt="" coords="250,80,330,107"/>
+<area shape="rect" id="node9" href="$stack_8h.html" title="stack.h" alt="" coords="355,80,420,107"/>
 </map>

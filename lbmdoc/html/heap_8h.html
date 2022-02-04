@@ -74,14 +74,16 @@ $(function() {
 <code>#include &quot;<a class="el" href="lbm__types_8h_source.html">lbm_types.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="symrepr_8h_source.html">symrepr.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="streams_8h_source.html">streams.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="stack_8h_source.html">stack.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for heap.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="heap_8h__incl.png" border="0" usemap="#heap_8h" alt=""/></div>
 <map name="heap_8h" id="heap_8h">
-<area shape="rect" id="node3" href="lbm__types_8h.html" title="lbm_types.h" alt="" coords="173,155,266,181"/>
+<area shape="rect" id="node3" href="lbm__types_8h.html" title="lbm_types.h" alt="" coords="181,155,274,181"/>
 <area shape="rect" id="node7" href="symrepr_8h.html" title="symrepr.h" alt="" coords="95,80,175,107"/>
 <area shape="rect" id="node8" href="streams_8h.html" title="streams.h" alt="" coords="250,80,330,107"/>
+<area shape="rect" id="node9" href="stack_8h.html" title="stack.h" alt="" coords="355,80,420,107"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -91,7 +93,8 @@ This graph shows which files directly or indirectly include this file:</div>
 <map name="heap_8hdep" id="heap_8hdep">
 <area shape="rect" id="node2" href="exp__kind_8h.html" title="exp_kind.h" alt="" coords="5,80,91,107"/>
 <area shape="rect" id="node3" href="extensions_8h.html" title="extensions.h" alt="" coords="115,80,211,107"/>
-<area shape="rect" id="node4" href="lispbm_8h.html" title="lispbm.h" alt="" coords="170,155,241,181"/>
+<area shape="rect" id="node4" href="lispbm_8h.html" title="lispbm.h" alt="" coords="213,155,283,181"/>
+<area shape="rect" id="node5" href="lbm__c__interop_8h.html" title="lbm_c_interop.h" alt="" coords="285,80,400,107"/>
 </map>
 </div>
 </div>
@@ -178,8 +181,8 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a086cf17ce84f6e2fca1f53fe31be1342"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a086cf17ce84f6e2fca1f53fe31be1342">lbm_heap_init</a> (<a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> *addr, unsigned int num_cells)</td></tr>
-<tr class="separator:a086cf17ce84f6e2fca1f53fe31be1342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9acb52eb390f670c5ed51aff669adb6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aa9acb52eb390f670c5ed51aff669adb6">lbm_heap_init</a> (<a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> *addr, uint32_t num_cells, uint32_t *gc_stack_storage, uint32_t gc_stack_size)</td></tr>
+<tr class="separator:aa9acb52eb390f670c5ed51aff669adb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0beebcf46a3e14f313602903a9626106"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a0beebcf46a3e14f313602903a9626106">lbm_heap_new_gc_time</a> (uint32_t dur)</td></tr>
 <tr class="separator:a0beebcf46a3e14f313602903a9626106"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a308d9998cd46f3b2dbdc315b05f14736"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a308d9998cd46f3b2dbdc315b05f14736">lbm_heap_new_freelist_length</a> (uint32_t l)</td></tr>
@@ -230,6 +233,9 @@ Functions</h2></td></tr>
 <tr class="separator:ae7a0616a62278a8108a73bdc6b8284fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3dc9f3482aec23d187932f3de34fb84b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a3dc9f3482aec23d187932f3de34fb84b">lbm_gc_mark_phase</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> v)</td></tr>
 <tr class="separator:a3dc9f3482aec23d187932f3de34fb84b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4d3bcbf2d7e324335939d73c2c2e14c"><td class="memItemLeft" align="right" valign="top"><a id="ae4d3bcbf2d7e324335939d73c2c2e14c"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_gc_mark_phase2</b> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> env)</td></tr>
+<tr class="separator:ae4d3bcbf2d7e324335939d73c2c2e14c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68d6397bad38a6838f4ed4601c8aa8d5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a68d6397bad38a6838f4ed4601c8aa8d5">lbm_gc_mark_aux</a> (lbm_uint *data, unsigned int n)</td></tr>
 <tr class="separator:a68d6397bad38a6838f4ed4601c8aa8d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5dfa361fe508b4dbd76578626205468"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ad5dfa361fe508b4dbd76578626205468">lbm_gc_sweep_phase</a> (void)</td></tr>
@@ -768,8 +774,8 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
 
 </div>
 </div>
-<a id="a086cf17ce84f6e2fca1f53fe31be1342"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a086cf17ce84f6e2fca1f53fe31be1342">&#9670;&nbsp;</a></span>lbm_heap_init()</h2>
+<a id="aa9acb52eb390f670c5ed51aff669adb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9acb52eb390f670c5ed51aff669adb6">&#9670;&nbsp;</a></span>lbm_heap_init()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -783,8 +789,20 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>num_cells</em>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_cells</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramname"><em>gc_stack_storage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>gc_stack_size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -793,11 +811,12 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_symbol_
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize heap storage.</p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Initialize heap storage. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">addr</td><td>Pointer to an array of <a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> elements. This array must at least be aligned 4. </td></tr>
     <tr><td class="paramname">num_cells</td><td>Number of <a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> elements in the array. </td></tr>
+    <tr><td class="paramname">gc_stack_storage</td><td>uint32_t pointer to space to use as "recursion" stack for GC </td></tr>
+    <tr><td class="paramname">gc_stack_size</td><td>Size of the gc_stack in number of words. </td></tr>
   </table>
   </dd>
 </dl>

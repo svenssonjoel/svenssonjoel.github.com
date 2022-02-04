@@ -1,6 +1,7 @@
 <map id="extensions.h" name="extensions.h">
-<area shape="rect" id="node2" href="$symrepr_8h.html" title="symrepr.h" alt="" coords="13,155,93,181"/>
-<area shape="rect" id="node5" href="$lbm__types_8h.html" title="lbm_types.h" alt="" coords="126,229,219,256"/>
-<area shape="rect" id="node7" href="$heap_8h.html" title="heap.h" alt="" coords="165,80,226,107"/>
-<area shape="rect" id="node9" href="$streams_8h.html" title="streams.h" alt="" coords="117,155,197,181"/>
+<area shape="rect" id="node2" href="$symrepr_8h.html" title="symrepr.h" alt="" coords="406,155,486,181"/>
+<area shape="rect" id="node5" href="$lbm__types_8h.html" title="lbm_types.h" alt="" coords="248,229,341,256"/>
+<area shape="rect" id="node7" href="$heap_8h.html" title="heap.h" alt="" coords="222,80,284,107"/>
+<area shape="rect" id="node9" href="$streams_8h.html" title="streams.h" alt="" coords="252,155,332,181"/>
+<area shape="rect" id="node10" href="$stack_8h.html" title="stack.h" alt="" coords="22,155,87,181"/>
 </map>

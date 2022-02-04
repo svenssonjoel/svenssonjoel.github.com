@@ -1,4 +1,8 @@
 <map id="stack.h" name="stack.h">
-<area shape="rect" id="node2" href="$eval__cps_8h.html" title="eval_cps.h" alt="" coords="5,80,91,107"/>
-<area shape="rect" id="node3" href="$lispbm_8h.html" title="lispbm.h" alt="" coords="13,155,83,181"/>
+<area shape="rect" id="node2" href="$eval__cps_8h.html" title="eval_cps.h" alt="" coords="36,80,121,107"/>
+<area shape="rect" id="node5" href="$heap_8h.html" title="heap.h" alt="" coords="145,80,206,107"/>
+<area shape="rect" id="node3" href="$lbm__c__interop_8h.html" title="lbm_c_interop.h" alt="" coords="22,155,137,181"/>
+<area shape="rect" id="node4" href="$lispbm_8h.html" title="lispbm.h" alt="" coords="91,229,162,256"/>
+<area shape="rect" id="node6" href="$exp__kind_8h.html" title="exp_kind.h" alt="" coords="212,155,297,181"/>
+<area shape="rect" id="node7" href="$extensions_8h.html" title="extensions.h" alt="" coords="321,155,417,181"/>
 </map>
