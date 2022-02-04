@@ -14,6 +14,7 @@ var searchData=
   ['lbm_5fcons',['lbm_cons',['../heap_8h.html#a46e2957c7965b22e66f99637604ef9a0',1,'heap.h']]],
   ['lbm_5fcons_5ft',['lbm_cons_t',['../structlbm__cons__t.html',1,'']]],
   ['lbm_5fcontinue_5feval',['lbm_continue_eval',['../eval__cps_8h.html#a28f76b9b7315dc307d7301becdd76330',1,'eval_cps.h']]],
+  ['lbm_5fcreate_5farray',['lbm_create_array',['../lbm__c__interop_8h.html#a8ab2a73c3173740b60b3867bd439b460',1,'lbm_c_interop.h']]],
   ['lbm_5fcreate_5fchar_5fstream_5ffrom_5fcompressed',['lbm_create_char_stream_from_compressed',['../compression_8h.html#a1aa6d53d5c70d1f79bcb297cc07e9cd8',1,'compression.h']]],
   ['lbm_5fcreate_5fchar_5fstream_5ffrom_5fstring',['lbm_create_char_stream_from_string',['../tokpar_8h.html#a18555b84815d63476d5072d9dd8db32e',1,'tokpar.h']]],
   ['lbm_5fcreate_5fctx',['lbm_create_ctx',['../eval__cps_8h.html#a21f456202b79722d143f9bb377e0f23c',1,'eval_cps.h']]],

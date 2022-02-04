@@ -93,7 +93,7 @@ Arithmetic</h1>
 <hr/>
 <p><a class="anchor" id="*"></a> </p><h3>*</h3>
 <p>Multiplying an arbitrary number of values. The form of a * expression is <code>(* expr1 ... exprN)</code></p>
-<dl class="section note"><dt>Note</dt><dd>Example 2pi. <div class="fragment"><div class="line">(* 2 3.14) </div></div><!-- fragment --></dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Example 2pi. <div class="fragment"><div class="line">(* 2 3.14)</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="/"></a> </p><h3>/</h3>
 <p>Division. The form of a / expression is <code>(/ expr1 ... exprN)</code>.</p>
@@ -101,7 +101,7 @@ Arithmetic</h1>
 <hr/>
 <p><a class="anchor" id="mod"></a> </p><h3>mod</h3>
 <p>Modulo operation. The form of a mod expression is <code>(mode expr1 ... exprN)</code>.</p>
-<dl class="section note"><dt>Note</dt><dd>Compute 5 % 3, evaluates to 2. <div class="fragment"><div class="line">(mod 5 3) </div></div><!-- fragment --></dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Compute 5 % 3, evaluates to 2. <div class="fragment"><div class="line">(mod 5 3)</div></div><!-- fragment --></dd></dl>
 <hr/>
 <h1><a class="anchor" id="sec_comp"></a>
 Comparisons</h1>
@@ -191,7 +191,7 @@ Lists and cons cells</h1>
 <p>Lists are build using cons cells. A cons cell is represented by the <a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> struct in the implementation and consists of two fields named the <code>car</code> and the <code>cdr</code>. There is no special meaning associated with the <code>car</code> and the <code>cdr</code> each can hold a <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>. See <a href="#cons">cons</a> and <a href="#list">list</a> for two ways to create structures of cons cells on the heap.</p>
 <p><a class="anchor" id="car"></a> </p><h3>car</h3>
 <p>Use <code>car</code> to access the <code>car</code> field of a cons cell. A <code>car</code> expression has the form <code>(car expr)<code>.</code></code></p>
-<p><code><code></p><dl class="section note"><dt>Note</dt><dd>Taking the <code>car</code> of a number of symbol type is in general a <a href="#type_error">type_error</a>. The following program results in <code>type_error</code>. <div class="fragment"><div class="line">(car 1) </div></div><!-- fragment --> The next example evaluates to 1. <div class="fragment"><div class="line">(car (cons 1 2))</div></div><!-- fragment --> The <code>car</code> operation accesses the head element of a list. The following program evaluates to 9. <div class="fragment"><div class="line">(car (list 9 8 7))  </div></div><!-- fragment --></dd></dl>
+<p><code><code></p><dl class="section note"><dt>Note</dt><dd>Taking the <code>car</code> of a number of symbol type is in general a <a href="#type_error">type_error</a>. The following program results in <code>type_error</code>. <div class="fragment"><div class="line">(car 1)</div></div><!-- fragment --> The next example evaluates to 1. <div class="fragment"><div class="line">(car (cons 1 2))</div></div><!-- fragment --> The <code>car</code> operation accesses the head element of a list. The following program evaluates to 9. <div class="fragment"><div class="line">(car (list 9 8 7))</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p></code></code></p>
 <p><code><code><a class="anchor" id="cdr"></a> </p><h3>cdr</h3>
