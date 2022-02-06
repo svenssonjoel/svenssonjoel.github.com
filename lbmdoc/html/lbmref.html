@@ -70,6 +70,7 @@ $(function() {
 <li class="level1"><a href="#sec_low_level">Low level operations</a></li>
 <li class="level1"><a href="#sec_nil">nil and t</a></li>
 <li class="level1"><a href="#sec_quote">Quotes and Quasiquotation</a></li>
+<li class="level1"><a href="#sec_builtin">Built-in operations</a></li>
 <li class="level1"><a href="#sec_forms">Special forms</a></li>
 <li class="level1"><a href="#sec_lists">Lists and cons cells</a></li>
 <li class="level1"><a href="#sec_arrays">Arrays</a></li>
@@ -77,7 +78,6 @@ $(function() {
 <li class="level1"><a href="#sec_concurrency">Concurrency</a></li>
 <li class="level1"><a href="#sec_messages">Message-passing</a></li>
 <li class="level1"><a href="#sec_unparse">Unparsable symbols</a></li>
-<li class="level1"><a href="#sec_builtin">Built-in operations</a></li>
 <li class="level1"><a href="#sec_types">Types</a></li>
 <li class="level1"><a href="#sec_internal">Internal symbols</a></li>
 </ul>
@@ -140,25 +140,35 @@ Boolean operators</h1>
 <h1><a class="anchor" id="sec_bitwise"></a>
 Bit level operations</h1>
 <p><a class="anchor" id="shl"></a></p><h3>shl</h3>
+<p>The shift left operation takes two arguments. The first argument is a value to shift and the second argument is the number of bit positions to shift the value. </p><dl class="section note"><dt>Note</dt><dd>The example below evaluates to 4. <div class="fragment"><div class="line">(shl 1 2)</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="shr"></a></p><h3>shr</h3>
+<p>The shift right operation takes two arguments. The first argument is a value to shift and the second argument in the number of bit positions to shift the value. </p><dl class="section note"><dt>Note</dt><dd>The example below evaluates to 1. <div class="fragment"><div class="line">(shr 4 2)</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="bitwise-and"></a></p><h3>bitwise-and</h3>
+<p>Performs the bitwise and operation between two values. The type of the result is the same type as the first of the arguments.</p>
 <hr/>
 <p><a class="anchor" id="bitwise-or"></a></p><h3>bitwise-or</h3>
+<p>Performs the bitwise or operation between two values. The type of the result is the same type as the first of the arguments.</p>
 <hr/>
 <p><a class="anchor" id="bitwise-xor"></a></p><h3>bitwise-xor</h3>
+<p>Performs the bitwise xor operation between two values. The type of the result is the same type as the first of the arguments.</p>
 <hr/>
 <p><a class="anchor" id="bitwise-not"></a></p><h3>bitwise-not</h3>
+<p>Performs the bitwise not operations on a value. The result is of same type as the argument.</p>
 <h1><a class="anchor" id="sec_low_level"></a>
 Low level operations</h1>
 <p><a class="anchor" id="encode-i32"></a> </p><h3>encode-i32</h3>
+<p>The <code>encode-i32</code> function converts a list of four (byte sized) values into an i32 value. </p><dl class="section note"><dt>Note</dt><dd>Example that evaluates to the i32 value 1024. <div class="fragment"><div class="line">(encode-i32 (list 0 0 4 0))</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="encode-u32"></a> </p><h3>encode-u32</h3>
+<p>The <code>encode-u32</code> function converts a list of four (byte sized) values into an u32 value. </p><dl class="section note"><dt>Note</dt><dd>Example that evaluates to the u32 value 1024. <div class="fragment"><div class="line">(encode-u32 (list 0 0 4 0))</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="encode-float"></a> </p><h3>encode-float</h3>
+<p>The <code>encode-float</code> function converts a list four (byte sized) values into a float value. </p><dl class="section note"><dt>Note</dt><dd>Example that evaluates to 3.14. <div class="fragment"><div class="line">(encode-float (list 64 72 245 195))</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="decode"></a> </p><h3>decode</h3>
+<p>The <code>decode</code> function decodes a value into a list of four (byte sized) values. </p><dl class="section note"><dt>Note</dt><dd>Example that decodes float 3.14 into the list (64 72 245 195). <div class="fragment"><div class="line">(decode 3.14)</div></div><!-- fragment --></dd></dl>
 <hr/>
 <h1><a class="anchor" id="sec_nil"></a>
 nil and t</h1>
@@ -190,6 +200,24 @@ Quotes and Quasiquotation</h1>
 <hr/>
 <p><a class="anchor" id="commaat"></a></p><h3>,@</h3>
 <p>The comma-at operation is used to splice in the result of a computation (that returns a list) into a list. </p><dl class="section note"><dt>Note</dt><dd>Example: <div class="fragment"><div class="line">(define mylist (list 1 2 3 4 5)</div><div class="line">`(9 6 5 ,@mylist)</div></div><!-- fragment --> Evaluates to the list <code>(9 6 5 1 2 3 4 5)</code>.</dd></dl>
+<h1><a class="anchor" id="sec_builtin"></a>
+Built-in operations</h1>
+<p><a class="anchor" id="eval"></a> </p><h3>eval</h3>
+<hr/>
+<p><a class="anchor" id="eval-program"></a> </p><h3>eval-program</h3>
+<hr/>
+<p><a class="anchor" id="type-of"></a> </p><h3>type-of</h3>
+<hr/>
+<p><a class="anchor" id="sym-to-str"></a> </p><h3>sym-to-str</h3>
+<hr/>
+<p><a class="anchor" id="str-to-sym"></a> </p><h3>str-to-sym</h3>
+<hr/>
+<p><a class="anchor" id="sym-to-u"></a> </p><h3>sym-to-u</h3>
+<hr/>
+<p><a class="anchor" id="u-to-sym"></a> </p><h3>u-to-sym</h3>
+<hr/>
+<p><a class="anchor" id="is-fundamental"></a> </p><h3>is-fundamental</h3>
+<hr/>
 <h1><a class="anchor" id="sec_forms"></a>
 Special forms</h1>
 <p><a class="anchor" id="if"></a> </p><h3>if</h3>
@@ -272,13 +300,14 @@ Pattern-matching</h1>
 <dl class="section note"><dt>Note</dt><dd>An example that evaluates to 19. <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;(orange 17)</span></div><div class="line"><span class="stringliteral">       ((green (? n)) (+ n 1))</span></div><div class="line"><span class="stringliteral">       ((orange (? n)) (+ n 2))</span></div><div class="line"><span class="stringliteral">       ((blue (? n)) (+ n 3)))</span></div></div><!-- fragment --> <hr/>
 </dd></dl>
 <p><a class="anchor" id="?i28"></a> </p><h3>?i28</h3>
+<p>The ?i28 pattern matches any i28 and binds that value to a variable. Using the ?i28 pattern is done as <code>(?i28 var)</code> and the part of the expression that matches is bound to the <code>var</code>.</p>
+<dl class="section note"><dt>Note</dt><dd>The following example evaluates to <code>not-an-i28</code>. <div class="fragment"><div class="line">(match 3.14</div><div class="line">       ( (i28 n) (+ n 1))</div><div class="line">       ( _ <span class="stringliteral">&#39;not-an-i28))</span></div></div><!-- fragment --> The example below evaluates to 5. <div class="fragment"><div class="line">(match 4</div><div class="line">       ( (i28 n) (+ n 1))</div><div class="line">       ( _ <span class="stringliteral">&#39;not-an-i28))</span></div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="?u28"></a> </p><h3>?u28</h3>
+<p>The ?u28 pattern matches any u28 and binds that value to a variable. Using the ?u28 pattern is done as <code>(?u28 var)</code> and the part of the expression that matches is bound to the <code>var</code>.</p>
 <hr/>
 <p><a class="anchor" id="?float"></a> </p><h3>?float</h3>
-<hr/>
-<p><a class="anchor" id="?cons"></a> </p><h3>?cons</h3>
-<hr/>
+<p>The ?float pattern matches any float and binds that value to a variable. Using the ?float pattern is done as <code>(?float var)</code> and the part of the expression that matches is bound to the <code>var</code>. </p><hr/>
 <h1><a class="anchor" id="sec_concurrency"></a>
 Concurrency</h1>
 <p><a class="anchor" id="spawn"></a> </p><h3>spawn</h3>
@@ -294,41 +323,27 @@ Message-passing</h1>
 <p><a class="anchor" id="recv"></a> </p><h3>recv</h3>
 <h1><a class="anchor" id="sec_unparse"></a>
 Unparsable symbols</h1>
+<p>Unparsable symbols cannot be written into a program. The unparsable symbols signals different kinds of error conditions that may point at something being wrong in the code (or that it is exhausting all resources).</p>
 <p><a class="anchor" id="no_match"></a> </p><h3>no_match</h3>
+<p>The <code>no_match</code> symbol is returned from pattern matching if no case matches the expression.</p>
 <hr/>
 <p><a class="anchor" id="read_error"></a> </p><h3>read_error</h3>
+<p>The <code>read_error</code> symbol is returned if the reader cannot parse the input code.</p>
 <hr/>
 <p><a class="anchor" id="type_error"></a> </p><h3>type_error</h3>
-<hr/>
+<p>The <code>type_error</code> symbol is returned byt built-in functions if the values passed in are of incompatible types. </p><hr/>
 <p><a class="anchor" id="eval_error"></a> </p><h3>eval_error</h3>
-<hr/>
+<p>The <code>eval_error</code> symbol is returned if evaluation could not proceed to evaluate the expression. This could be because the expression is malformed. </p><hr/>
 <p><a class="anchor" id="out_of_memory"></a> </p><h3>out_of_memory</h3>
-<hr/>
+<p>The <code>out_of_memory</code> symbol is returned if the heap is full and running the garbage collector was not able to free any memory up. The program uses more memory than the size of the heap. Make the heap larger. </p><hr/>
 <p><a class="anchor" id="fatal_error"></a> </p><h3>fatal_error</h3>
-<hr/>
+<p>The <code>fatal_error</code> symbol is returned in cases where the LispBM runtime system cannot proceed. Something is corrupt and it is not safe to continue. </p><hr/>
 <p><a class="anchor" id="out_of_stack"></a> </p><h3>out_of_stack</h3>
-<hr/>
+<p>The <code>out_of_stack</code> symbol is returned if the evaluator runs out of continuation stack (this is its runtime-stack). You are most likely writing a non-tail-recursive function that is exhausting all the resources. </p><hr/>
 <p><a class="anchor" id="division_by_zero"></a> </p><h3>division_by_zero</h3>
-<hr/>
+<p>The <code>division_by_zero</code> symbol is returned when dividing by zero. </p><hr/>
 <p><a class="anchor" id="variable_not_bound"></a> </p><h3>variable_not_bound</h3>
-<h1><a class="anchor" id="sec_builtin"></a>
-Built-in operations</h1>
-<p><a class="anchor" id="eval"></a> </p><h3>eval</h3>
-<hr/>
-<p><a class="anchor" id="eval-program"></a> </p><h3>eval-program</h3>
-<hr/>
-<p><a class="anchor" id="type-of"></a> </p><h3>type-of</h3>
-<hr/>
-<p><a class="anchor" id="sym-to-str"></a> </p><h3>sym-to-str</h3>
-<hr/>
-<p><a class="anchor" id="str-to-sym"></a> </p><h3>str-to-sym</h3>
-<hr/>
-<p><a class="anchor" id="sym-to-u"></a> </p><h3>sym-to-u</h3>
-<hr/>
-<p><a class="anchor" id="u-to-sym"></a> </p><h3>u-to-sym</h3>
-<hr/>
-<p><a class="anchor" id="is-fundamental"></a> </p><h3>is-fundamental</h3>
-<hr/>
+<p>The <code>variable_not_bound</code> symbol is returned when evaluating a variable (symbol) that is neighter bound nor special (built-in function).</p>
 <h1><a class="anchor" id="sec_types"></a>
 Types</h1>
 <p><a class="anchor" id="type-list"></a> </p><h3>type-list</h3>
