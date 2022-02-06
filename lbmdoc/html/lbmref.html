@@ -66,6 +66,8 @@ $(function() {
 <ul><li class="level1"><a href="#sec_arith">Arithmetic</a></li>
 <li class="level1"><a href="#sec_comp">Comparisons</a></li>
 <li class="level1"><a href="#sec_bool">Boolean operators</a></li>
+<li class="level1"><a href="#sec_bitwise">Bit level operations</a></li>
+<li class="level1"><a href="#sec_low_level">Low level operations</a></li>
 <li class="level1"><a href="#sec_nil">nil and t</a></li>
 <li class="level1"><a href="#sec_quote">Quotes and Quasiquotation</a></li>
 <li class="level1"><a href="#sec_forms">Special forms</a></li>
@@ -78,7 +80,6 @@ $(function() {
 <li class="level1"><a href="#sec_builtin">Built-in operations</a></li>
 <li class="level1"><a href="#sec_types">Types</a></li>
 <li class="level1"><a href="#sec_internal">Internal symbols</a></li>
-<li class="level1"><a href="#sec_low_level">Low level operations</a></li>
 </ul>
 </div>
 <div class="textblock"><h1><a class="anchor" id="sec_arith"></a>
@@ -136,6 +137,29 @@ Boolean operators</h1>
 <p>Boolean <code>not</code> takes one argument. The form of a <code>not</code> expression is <code>(not expr)</code>. All non-nil values are considered true.</p>
 <dl class="section note"><dt>Note</dt><dd>The following example evaluates to <code>t</code> <div class="fragment"><div class="line">(not nil)</div></div><!-- fragment --></dd></dl>
 <hr/>
+<h1><a class="anchor" id="sec_bitwise"></a>
+Bit level operations</h1>
+<p><a class="anchor" id="shl"></a></p><h3>shl</h3>
+<hr/>
+<p><a class="anchor" id="shr"></a></p><h3>shr</h3>
+<hr/>
+<p><a class="anchor" id="bitwise-and"></a></p><h3>bitwise-and</h3>
+<hr/>
+<p><a class="anchor" id="bitwise-or"></a></p><h3>bitwise-or</h3>
+<hr/>
+<p><a class="anchor" id="bitwise-xor"></a></p><h3>bitwise-xor</h3>
+<hr/>
+<p><a class="anchor" id="bitwise-not"></a></p><h3>bitwise-not</h3>
+<h1><a class="anchor" id="sec_low_level"></a>
+Low level operations</h1>
+<p><a class="anchor" id="encode-i32"></a> </p><h3>encode-i32</h3>
+<hr/>
+<p><a class="anchor" id="encode-u32"></a> </p><h3>encode-u32</h3>
+<hr/>
+<p><a class="anchor" id="encode-float"></a> </p><h3>encode-float</h3>
+<hr/>
+<p><a class="anchor" id="decode"></a> </p><h3>decode</h3>
+<hr/>
 <h1><a class="anchor" id="sec_nil"></a>
 nil and t</h1>
 <p><a class="anchor" id="nil"></a></p><h3>nil</h3>
@@ -157,10 +181,15 @@ Quotes and Quasiquotation</h1>
  Evaluating the expression <code>(quote (+ 1 2))</code> results in the value <code>(+ 1 2)</code>.</dd></dl>
 <hr/>
 <p><a class="anchor" id="`"></a></p><h3>`</h3>
+<p>The backwards tick <code>`</code> is called the quasiquote. It is similar to the <code>'</code> but allows splicing in results of computations using the <a href="#,">,</a> and the <a href="#commaat">,@</a> operators.</p>
+<dl class="section note"><dt>Note</dt><dd>The result of <code>'(+ 1 2)</code> and <code>`(+ 1 2)</code> are similar in effect. Both result in the result value of <code>(+ 1 2)</code>, that is a list containing +, 1 and 2. <br />
+ When <code>`(+ 1 2)</code> is read into the heap it is expanded into the expression <code>(append (quote (+)) (append (quote (1)) (append (quote (2)) (quote nil))))</code> which evaluates to the list <code>(+ 1 2)</code>.</dd></dl>
 <hr/>
 <p><a class="anchor" id=","></a></p><h3>,</h3>
+<p>The comma is used to splice the result of a computation into a quasiquotation. </p><dl class="section note"><dt>Note</dt><dd>The expression <code>`(+ 1 ,(+ 1 1))</code> is expanded by the reader into <code>(append (quote (+)) (append (quote (1)) (append (list (+ 1 1)) (quote nil))))</code>. Evaluating the expression above results in the list <code>(+ 1 2)</code>.</dd></dl>
 <hr/>
 <p><a class="anchor" id="commaat"></a></p><h3>,@</h3>
+<p>The comma-at operation is used to splice in the result of a computation (that returns a list) into a list. </p><dl class="section note"><dt>Note</dt><dd>Example: <div class="fragment"><div class="line">(define mylist (list 1 2 3 4 5)</div><div class="line">`(9 6 5 ,@mylist)</div></div><!-- fragment --> Evaluates to the list <code>(9 6 5 1 2 3 4 5)</code>.</dd></dl>
 <h1><a class="anchor" id="sec_forms"></a>
 Special forms</h1>
 <p><a class="anchor" id="if"></a> </p><h3>if</h3>
@@ -209,306 +238,152 @@ Lists and cons cells</h1>
 <hr/>
 <p><a class="anchor" id="cons"></a> </p><h3>cons</h3>
 <p>The <code>cons</code> operation allocates a cons cell from the heap and populates the <code>car</code> and the <code>cdr</code> fields of this cell with its two arguments. The form of a <code>cons</code> expression is <code>(cons expr1 expr2)</code>.</p>
-<dl class="section note"><dt>Note</dt><dd>Build the list <code>(1 2 3)&lt;/cons&gt; using cons. <a href="#nil">nil</a> terminates a proper list. <div class="fragment"><div class="line">(cons 1 (cons 2 (cons 3 nil)))</div></div><!-- fragment --> Construct the pair <code>(+ . 1)</code> using cons. <div class="fragment"><div class="line">(cons + 1)</div></div><!-- fragment --></code></dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Build the list <code>(1 2 3)</code> using cons. <a href="#nil">nil</a> terminates a proper list. <div class="fragment"><div class="line">(cons 1 (cons 2 (cons 3 nil)))</div></div><!-- fragment --> Construct the pair <code>(+ . 1)</code> using cons. <div class="fragment"><div class="line">(cons + 1)</div></div><!-- fragment --></dd></dl>
 <hr/>
-<p><code><a class="anchor" id="."></a> </p><h3>.</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="list"></a> </p><h3>list</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="append"></a> </p><h3>append</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="ix"></a> </p><h3>ix</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="set-car"></a> </p><h3>set-car</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="set-cdr"></a> </p><h3>set-cdr</h3>
-<p></code></p>
-<p><code> </code></p>
-<p><code></code></p>
+<p><a class="anchor" id="."></a> </p><h3>.</h3>
+<hr/>
+<p><a class="anchor" id="list"></a> </p><h3>list</h3>
+<hr/>
+<p><a class="anchor" id="append"></a> </p><h3>append</h3>
+<hr/>
+<p><a class="anchor" id="ix"></a> </p><h3>ix</h3>
+<hr/>
+<p><a class="anchor" id="set-car"></a> </p><h3>set-car</h3>
+<hr/>
+<p><a class="anchor" id="set-cdr"></a> </p><h3>set-cdr</h3>
 <h1><a class="anchor" id="sec_arrays"></a>
 Arrays</h1>
-<p><code></code></p>
-<p><code><a class="anchor" id="array-read"></a> </p><h3>array-read</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="array-write"></a> </p><h3>array-write</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code></code></p>
+<p><a class="anchor" id="array-read"></a> </p><h3>array-read</h3>
+<hr/>
+<p><a class="anchor" id="array-write"></a> </p><h3>array-write</h3>
+<hr/>
 <h1><a class="anchor" id="sec_pattern"></a>
 Pattern-matching</h1>
-<p><code> <a class="anchor" id="match"></a> </p><h3>match</h3>
-<p></code></p>
-<p><code> </code></p>
-<p><code>Pattern-matching is expressed using match. The form of a match expression is <code>(match expr (pat1 expr1) ... (patN exprN))</code>. Pattern-matching compares the shape of an expression to each of the <code>pat1</code> ... <code>patN</code> and evaluates the expression <code>exprM</code> of the pattern that matches. In a pattern you can use a number of match-binders or wildcards: <a href="#_">_</a>, <a href="#?">?</a>, <a href="#?i28">?i28</a>, <a href="#?u28">?u28</a>, <a href="#?float">?float</a>, <a href="#?cons">?cons</a>.</code></p>
-<p><code></p><dl class="section note"><dt>Note</dt><dd>For example the match expression below evaluates to 2. <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;orange</span></div><div class="line"><span class="stringliteral">       (green 1)</span></div><div class="line"><span class="stringliteral">       (orange 2)</span></div><div class="line"><span class="stringliteral">       (blue 3))</span></div></div><!-- fragment --></dd></dl>
+<p><a class="anchor" id="match"></a> </p><h3>match</h3>
+<p>Pattern-matching is expressed using match. The form of a match expression is <code>(match expr (pat1 expr1) ... (patN exprN))</code>. Pattern-matching compares the shape of an expression to each of the <code>pat1</code> ... <code>patN</code> and evaluates the expression <code>exprM</code> of the pattern that matches. In a pattern you can use a number of match-binders or wildcards: <a href="#_">_</a>, <a href="#?">?</a>, <a href="#?i28">?i28</a>, <a href="#?u28">?u28</a>, <a href="#?float">?float</a>, <a href="#?cons">?cons</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>For example the match expression below evaluates to 2. <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;orange</span></div><div class="line"><span class="stringliteral">       (green 1)</span></div><div class="line"><span class="stringliteral">       (orange 2)</span></div><div class="line"><span class="stringliteral">       (blue 3))</span></div></div><!-- fragment --></dd></dl>
 <hr/>
-<p></code></p>
-<p><code><a class="anchor" id="_"></a> </p><h3>_</h3>
-<p></code></p>
-<p><code> </code></p>
-<p><code>The underscore pattern matches anything.</code></p>
-<p><code></p><dl class="section note"><dt>Note</dt><dd>An example that evaluates to <code>i-dont-know</code> <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;fish</span></div><div class="line"><span class="stringliteral">       (horse &#39;</span>its-a-horse)</div><div class="line">       (pig <span class="stringliteral">&#39;its-a-pig)</span></div><div class="line"><span class="stringliteral">       (_ &#39;</span>i-dont-know))</div></div><!-- fragment --></dd></dl>
+<p><a class="anchor" id="_"></a> </p><h3>_</h3>
+<p>The underscore pattern matches anything.</p>
+<dl class="section note"><dt>Note</dt><dd>An example that evaluates to <code>i-dont-know</code> <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;fish</span></div><div class="line"><span class="stringliteral">       (horse &#39;</span>its-a-horse)</div><div class="line">       (pig <span class="stringliteral">&#39;its-a-pig)</span></div><div class="line"><span class="stringliteral">       (_ &#39;</span>i-dont-know))</div></div><!-- fragment --></dd></dl>
 <hr/>
-<p></code></p>
-<p><code><a class="anchor" id="?"></a> </p><h3>?</h3>
-<p></code></p>
-<p><code> </code></p>
-<p><code>The ? pattern matches anything and binds that anything to variable. Using the ? pattern is done as <code>(? var)</code> and the part of the expression that matches is bound to <code>var</code>.</code></p>
-<p><code></p><dl class="section note"><dt>Note</dt><dd>An example that evaluates to 19. <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;(orange 17)</span></div><div class="line"><span class="stringliteral">       ((green (? n)) (+ n 1))</span></div><div class="line"><span class="stringliteral">       ((orange (? n)) (+ n 2))</span></div><div class="line"><span class="stringliteral">       ((blue (? n)) (+ n 3)))</span></div></div><!-- fragment --> <hr/>
+<p><a class="anchor" id="?"></a> </p><h3>?</h3>
+<p>The ? pattern matches anything and binds that anything to variable. Using the ? pattern is done as <code>(? var)</code> and the part of the expression that matches is bound to <code>var</code>.</p>
+<dl class="section note"><dt>Note</dt><dd>An example that evaluates to 19. <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;(orange 17)</span></div><div class="line"><span class="stringliteral">       ((green (? n)) (+ n 1))</span></div><div class="line"><span class="stringliteral">       ((orange (? n)) (+ n 2))</span></div><div class="line"><span class="stringliteral">       ((blue (? n)) (+ n 3)))</span></div></div><!-- fragment --> <hr/>
 </dd></dl>
 <p><a class="anchor" id="?i28"></a> </p><h3>?i28</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="?u28"></a> </p><h3>?u28</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="?float"></a> </p><h3>?float</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="?cons"></a> </p><h3>?cons</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code></code></p>
+<hr/>
+<p><a class="anchor" id="?u28"></a> </p><h3>?u28</h3>
+<hr/>
+<p><a class="anchor" id="?float"></a> </p><h3>?float</h3>
+<hr/>
+<p><a class="anchor" id="?cons"></a> </p><h3>?cons</h3>
+<hr/>
 <h1><a class="anchor" id="sec_concurrency"></a>
 Concurrency</h1>
-<p><code> <a class="anchor" id="spawn"></a> </p><h3>spawn</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="wait"></a> </p><h3>wait</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="yield"></a> </p><h3>yield</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code></code></p>
+<p><a class="anchor" id="spawn"></a> </p><h3>spawn</h3>
+<hr/>
+<p><a class="anchor" id="wait"></a> </p><h3>wait</h3>
+<hr/>
+<p><a class="anchor" id="yield"></a> </p><h3>yield</h3>
+<hr/>
 <h1><a class="anchor" id="sec_messages"></a>
 Message-passing</h1>
-<p><code> <a class="anchor" id="send"></a> </p><h3>send</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="recv"></a> </p><h3>recv</h3>
-<p></code></p>
-<p><code> </code></p>
-<p><code></code></p>
+<p><a class="anchor" id="send"></a> </p><h3>send</h3>
+<hr/>
+<p><a class="anchor" id="recv"></a> </p><h3>recv</h3>
 <h1><a class="anchor" id="sec_unparse"></a>
 Unparsable symbols</h1>
-<p><code> <a class="anchor" id="no_match"></a> </p><h3>no_match</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="read_error"></a> </p><h3>read_error</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type_error"></a> </p><h3>type_error</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="eval_error"></a> </p><h3>eval_error</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="out_of_memory"></a> </p><h3>out_of_memory</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="fatal_error"></a> </p><h3>fatal_error</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="out_of_stack"></a> </p><h3>out_of_stack</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="division_by_zero"></a> </p><h3>division_by_zero</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="variable_not_bound"></a> </p><h3>variable_not_bound</h3>
-<p></code></p>
-<p><code> </code></p>
-<p><code></code></p>
+<p><a class="anchor" id="no_match"></a> </p><h3>no_match</h3>
+<hr/>
+<p><a class="anchor" id="read_error"></a> </p><h3>read_error</h3>
+<hr/>
+<p><a class="anchor" id="type_error"></a> </p><h3>type_error</h3>
+<hr/>
+<p><a class="anchor" id="eval_error"></a> </p><h3>eval_error</h3>
+<hr/>
+<p><a class="anchor" id="out_of_memory"></a> </p><h3>out_of_memory</h3>
+<hr/>
+<p><a class="anchor" id="fatal_error"></a> </p><h3>fatal_error</h3>
+<hr/>
+<p><a class="anchor" id="out_of_stack"></a> </p><h3>out_of_stack</h3>
+<hr/>
+<p><a class="anchor" id="division_by_zero"></a> </p><h3>division_by_zero</h3>
+<hr/>
+<p><a class="anchor" id="variable_not_bound"></a> </p><h3>variable_not_bound</h3>
 <h1><a class="anchor" id="sec_builtin"></a>
 Built-in operations</h1>
-<p><code></code></p>
-<p><code><a class="anchor" id="eval"></a> </p><h3>eval</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="eval-program"></a> </p><h3>eval-program</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-of"></a> </p><h3>type-of</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym-to-str"></a> </p><h3>sym-to-str</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="str-to-sym"></a> </p><h3>str-to-sym</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym-to-u"></a> </p><h3>sym-to-u</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="u-to-sym"></a> </p><h3>u-to-sym</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="is-fundamental"></a> </p><h3>is-fundamental</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code></code></p>
+<p><a class="anchor" id="eval"></a> </p><h3>eval</h3>
+<hr/>
+<p><a class="anchor" id="eval-program"></a> </p><h3>eval-program</h3>
+<hr/>
+<p><a class="anchor" id="type-of"></a> </p><h3>type-of</h3>
+<hr/>
+<p><a class="anchor" id="sym-to-str"></a> </p><h3>sym-to-str</h3>
+<hr/>
+<p><a class="anchor" id="str-to-sym"></a> </p><h3>str-to-sym</h3>
+<hr/>
+<p><a class="anchor" id="sym-to-u"></a> </p><h3>sym-to-u</h3>
+<hr/>
+<p><a class="anchor" id="u-to-sym"></a> </p><h3>u-to-sym</h3>
+<hr/>
+<p><a class="anchor" id="is-fundamental"></a> </p><h3>is-fundamental</h3>
+<hr/>
 <h1><a class="anchor" id="sec_types"></a>
 Types</h1>
-<p><code> <a class="anchor" id="type-list"></a> </p><h3>type-list</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-i28"></a> </p><h3>type-i28</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-u28"></a> </p><h3>type-u28</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-float"></a> </p><h3>type-float</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-i32"></a> </p><h3>type-i32</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-u32"></a> </p><h3>type-u32</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-array"></a> </p><h3>type-array</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-symbol"></a> </p><h3>type-symbol</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-char"></a> </p><h3>type-char</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-ref"></a> </p><h3>type-ref</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="type-stream"></a> </p><h3>type-stream</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code></code></p>
+<p><a class="anchor" id="type-list"></a> </p><h3>type-list</h3>
+<hr/>
+<p><a class="anchor" id="type-i28"></a> </p><h3>type-i28</h3>
+<hr/>
+<p><a class="anchor" id="type-u28"></a> </p><h3>type-u28</h3>
+<hr/>
+<p><a class="anchor" id="type-float"></a> </p><h3>type-float</h3>
+<hr/>
+<p><a class="anchor" id="type-i32"></a> </p><h3>type-i32</h3>
+<hr/>
+<p><a class="anchor" id="type-u32"></a> </p><h3>type-u32</h3>
+<hr/>
+<p><a class="anchor" id="type-array"></a> </p><h3>type-array</h3>
+<hr/>
+<p><a class="anchor" id="type-symbol"></a> </p><h3>type-symbol</h3>
+<hr/>
+<p><a class="anchor" id="type-char"></a> </p><h3>type-char</h3>
+<hr/>
+<p><a class="anchor" id="type-ref"></a> </p><h3>type-ref</h3>
+<hr/>
+<p><a class="anchor" id="type-stream"></a> </p><h3>type-stream</h3>
+<hr/>
 <h1><a class="anchor" id="sec_internal"></a>
 Internal symbols</h1>
-<p><code> <a class="anchor" id="sym_openpar"></a> </p><h3>sym_openpar</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_closepar"></a> </p><h3>sym_closepar</h3>
-<p></code></p>
-<p><code>  </p><hr/>
+<p><a class="anchor" id="sym_openpar"></a> </p><h3>sym_openpar</h3>
+<hr/>
+<p><a class="anchor" id="sym_closepar"></a> </p><h3>sym_closepar</h3>
+<hr/>
 <p> <a class="anchor" id="sym_backquote"></a> </p><h3>sym_backquote</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_comma"></a> </p><h3>sym_comma</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_commaat"></a> </p><h3>sym_commaat</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_dot"></a> </p><h3>sym_dot</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_tok_done"></a> </p><h3>sym_tok_done</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_array"></a> </p><h3>sym_array</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_boxed_i"></a> </p><h3>sym_boxed_i</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_boxed_u"></a> </p><h3>sym_boxed_u</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_boxed_f"></a> </p><h3>sym_boxed_f</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_ref"></a> </p><h3>sym_ref</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_recovered"></a> </p><h3>sym_recovered</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="sym_nonsense"></a> </p><h3>sym_nonsense</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code></code></p>
-<h1><a class="anchor" id="sec_low_level"></a>
-Low level operations</h1>
-<p><code> <a class="anchor" id="encode-i32"></a> </p><h3>encode-i32</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="encode-u32"></a> </p><h3>encode-u32</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="encode-float"></a> </p><h3>encode-float</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p></code></p>
-<p><code><a class="anchor" id="decode"></a> </p><h3>decode</h3>
-<p></code></p>
-<p><code>  </p><hr/>
-<p> </code></p>
-</div></div><!-- contents -->
+<hr/>
+<p><a class="anchor" id="sym_comma"></a> </p><h3>sym_comma</h3>
+<hr/>
+<p><a class="anchor" id="sym_commaat"></a> </p><h3>sym_commaat</h3>
+<hr/>
+<p><a class="anchor" id="sym_dot"></a> </p><h3>sym_dot</h3>
+<hr/>
+<p><a class="anchor" id="sym_tok_done"></a> </p><h3>sym_tok_done</h3>
+<hr/>
+<p><a class="anchor" id="sym_array"></a> </p><h3>sym_array</h3>
+<hr/>
+<p><a class="anchor" id="sym_boxed_i"></a> </p><h3>sym_boxed_i</h3>
+<hr/>
+<p><a class="anchor" id="sym_boxed_u"></a> </p><h3>sym_boxed_u</h3>
+<hr/>
+<p><a class="anchor" id="sym_boxed_f"></a> </p><h3>sym_boxed_f</h3>
+<hr/>
+<p><a class="anchor" id="sym_ref"></a> </p><h3>sym_ref</h3>
+<hr/>
+<p><a class="anchor" id="sym_recovered"></a> </p><h3>sym_recovered</h3>
+<hr/>
+<p><a class="anchor" id="sym_nonsense"></a> </p><h3>sym_nonsense</h3>
+<hr/>
+ </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
