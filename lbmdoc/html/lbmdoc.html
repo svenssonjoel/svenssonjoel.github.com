@@ -63,21 +63,20 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="toc"><h3>Table of Contents</h3>
-<ul><li class="level1"><a href="#sec_intro">Introduction</a><ul><li class="level2"><a href="#sec_intro_lisp">Lisp</a></li>
-<li class="level2"><a href="#sec_intro_lbm">What is LispBM</a></li>
-</ul>
-</li>
+<ul><li class="level1"><a href="#sec_intro">Introduction</a></li>
+<li class="level1"><a href="#sec_repl">Using a REPL</a></li>
 <li class="level1"><a href="#sec_program">A first program</a></li>
 <li class="level1"><a href="#sec_c">Integration into C code</a></li>
 </ul>
 </div>
 <div class="textblock"><h1><a class="anchor" id="sec_intro"></a>
 Introduction</h1>
-<h2><a class="anchor" id="sec_intro_lisp"></a>
-Lisp</h2>
-<h2><a class="anchor" id="sec_intro_lbm"></a>
-What is LispBM</h2>
-<h1><a class="anchor" id="sec_program"></a>
+<p>LispBM is a lisp-like language implemented by a non-lisper. The inspiration for LispBM came from watching the <a href="https://www.youtube.com/watch?v=-J_xL4IGhJA&amp;list=PLE18841CABEA24090">SICP course on youtube </a> and a tiny amount of experimenting with EMACS lisp. I strongly recommend that you watch the SICP course, it is a lot of fun!<br />
+</p>
+<p>LispBM does not try to implement any particular Lisp or Scheme standard but may be more scheme-like in nature.</p>
+<h1><a class="anchor" id="sec_repl"></a>
+Using a REPL</h1>
+<div class="fragment"><div class="line"><span class="preprocessor"># :info</span></div><div class="line">--(LISP HEAP)-----------------------------------------------</div><div class="line">Heap size: 16384 Bytes</div><div class="line">Used cons cells: 11</div><div class="line">Free cons cells: 2037</div><div class="line">GC counter: 0</div><div class="line">Recovered: 0</div><div class="line">Recovered arrays: 0</div><div class="line">Marked: 0</div><div class="line">--(Symbol and Array memory)---------------------------------</div><div class="line">Memory size: 2048 Words</div><div class="line">Memory free: 2024 Words</div><div class="line">Allocated arrays: 0</div><div class="line">Symbol table size: 40 Bytes</div></div><!-- fragment --><div class="fragment"><div class="line"><span class="preprocessor"># :env</span></div><div class="line"><span class="preprocessor">Environment:</span></div></div><!-- fragment --><div class="fragment"><div class="line"><span class="preprocessor"># :ctxs</span></div><div class="line">       Running contexts ******</div><div class="line">       Blocked contexts ******</div><div class="line">       Done contexts ******</div></div><!-- fragment --><div class="fragment"><div class="line"><span class="preprocessor"># :pause</span></div><div class="line"><span class="preprocessor">Evaluator paused</span></div></div><!-- fragment --><div class="fragment"><div class="line"><span class="preprocessor"># :step</span></div></div><!-- fragment --><div class="fragment"><div class="line"><span class="preprocessor"># :step 10</span></div></div><!-- fragment --><div class="fragment"><div class="line"><span class="preprocessor"># :continue</span></div></div><!-- fragment --><h1><a class="anchor" id="sec_program"></a>
 A first program</h1>
 <h1><a class="anchor" id="sec_c"></a>
 Integration into C code</h1>

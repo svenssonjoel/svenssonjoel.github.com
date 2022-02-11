@@ -79,7 +79,6 @@ $(function() {
 <li class="level1"><a href="#sec_messages">Message-passing</a></li>
 <li class="level1"><a href="#sec_unparse">Unparsable symbols</a></li>
 <li class="level1"><a href="#sec_types">Types</a></li>
-<li class="level1"><a href="#sec_internal">Internal symbols</a></li>
 </ul>
 </div>
 <div class="textblock"><h1><a class="anchor" id="sec_arith"></a>
@@ -203,20 +202,30 @@ Quotes and Quasiquotation</h1>
 <h1><a class="anchor" id="sec_builtin"></a>
 Built-in operations</h1>
 <p><a class="anchor" id="eval"></a> </p><h3>eval</h3>
+<p>Evaluate data as an expression. The data must represent a valid expression. </p><dl class="section note"><dt>Note</dt><dd>Example that evaluates to 3. <div class="fragment"><div class="line">(eval (list + 1 2))</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="eval-program"></a> </p><h3>eval-program</h3>
+<p>Evaluate a list of data where each element represents an expression. </p><dl class="section note"><dt>Note</dt><dd>This function is quite awkward as it replaces the program in the running context with the program provided in the list. Avoid using this function if possible.</dd></dl>
 <hr/>
 <p><a class="anchor" id="type-of"></a> </p><h3>type-of</h3>
+<p>The <code>type-of</code> function returns a symbol that indicates what type the argument is. The form of a <code>type-of</code> expression is <code>(type-of expr)</code>.</p>
+<dl class="section note"><dt>Note</dt><dd>Example that evaluates to <code>type-float</code>. <div class="fragment"><div class="line">(type-of 3.14)</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="sym-to-str"></a> </p><h3>sym-to-str</h3>
+<p>The <code>sym-to-str</code> function converts a symbol to its string representation. The resulting string is a copy of the original so you cannot destroy built in symbols using this function.</p>
+<dl class="section note"><dt>Note</dt><dd>Example that returns the string <code>"lambda"</code>. <div class="fragment"><div class="line">(sym-to-str <span class="stringliteral">&#39;lambda)</span></div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="str-to-sym"></a> </p><h3>str-to-sym</h3>
-<hr/>
+<p>The <code>str-to-sym</code> function converts a string to a symbol. </p><dl class="section note"><dt>Note</dt><dd>Example that returns the symbol <code>hello</code>. <div class="fragment"><div class="line">(str-to-sym <span class="stringliteral">&quot;hello&quot;</span>)</div></div><!-- fragment --> <hr/>
+</dd></dl>
 <p><a class="anchor" id="sym-to-u"></a> </p><h3>sym-to-u</h3>
+<p>The <code>sym-to-u</code> function returns the numerical value used by the runtime system for a symbol.</p>
+<dl class="section note"><dt>Note</dt><dd>Example that evaluates to 4. <div class="fragment"><div class="line">(sym-to-u <span class="stringliteral">&#39;lambda)</span></div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="u-to-sym"></a> </p><h3>u-to-sym</h3>
-<hr/>
+<p>The <code>u-to-sym</code> function returns the symbol associated with the numerical value provided. This symbol may be undefined in which case you get as result a unnamed symbol. </p><hr/>
 <p><a class="anchor" id="is-fundamental"></a> </p><h3>is-fundamental</h3>
+<p>The <code>is-funamental</code> function returns true for built-in functions. </p><dl class="section note"><dt>Note</dt><dd>Example that returns true. <div class="fragment"><div class="line">(is-fundamental <span class="stringliteral">&#39;+)</span></div></div><!-- fragment --></dd></dl>
 <hr/>
 <h1><a class="anchor" id="sec_forms"></a>
 Special forms</h1>
@@ -269,21 +278,37 @@ Lists and cons cells</h1>
 <dl class="section note"><dt>Note</dt><dd>Build the list <code>(1 2 3)</code> using cons. <a href="#nil">nil</a> terminates a proper list. <div class="fragment"><div class="line">(cons 1 (cons 2 (cons 3 nil)))</div></div><!-- fragment --> Construct the pair <code>(+ . 1)</code> using cons. <div class="fragment"><div class="line">(cons + 1)</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="."></a> </p><h3>.</h3>
+<p>The dot, <code>.</code>, operation creates a pair. The form of a dot expression is <code>(expr1 . expr2)</code>. By default the evaluator will attempt to evaluate the result of <code>(expr1 . expr2)</code> unless it is prefixed with <code>'</code>.</p>
+<dl class="section note"><dt>Note</dt><dd>Example that creates the pair (1 . 2) <div class="fragment"><div class="line"><span class="stringliteral">&#39;(1 . 2)</span></div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="list"></a> </p><h3>list</h3>
+<p>The <code>list</code> function is used to create proper lists. The function takes n arguments and is of the form <code>(list expr1 ... exprN)</code>.</p>
+<dl class="section note"><dt>Note</dt><dd>Example that creates the list (1 2 3 4). <div class="fragment"><div class="line">(list 1 2 3 4)</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="append"></a> </p><h3>append</h3>
+<p>The <code>append</code> function combines two lists into a longer list. An <code>append</code> expression is of the form <code>(append expr1 expr2)</code>.</p>
+<dl class="section note"><dt>Note</dt><dd>Example that combines to lists. <div class="fragment"><div class="line">(append (list 1 2 3) (list 4 5 6))</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="ix"></a> </p><h3>ix</h3>
+<p>Index into a list using the <code>ix</code>. the form of an <code>ix</code> expression is <code>(ix index-expr list-expr)</code>. Indexing starts from 0 and if you index out of bounds the result is nil.</p>
+<dl class="section note"><dt>Note</dt><dd>Example that evaluates to 2. <div class="fragment"><div class="line">(ix 1 (list 1 2 3))</div></div><!-- fragment --></dd></dl>
 <hr/>
 <p><a class="anchor" id="set-car"></a> </p><h3>set-car</h3>
-<hr/>
+<p>The <code>set-car</code> is a destructive update of the car field of a cons-cell.</p>
+<dl class="section note"><dt>Note</dt><dd>Define <code>apa</code> to be the pair <code>(1 . 2)</code> <div class="fragment"><div class="line">(define apa <span class="stringliteral">&#39;(1 . 2))</span></div></div><!-- fragment --> Now change the value in the car field of apa to 42. <div class="fragment"><div class="line">(<span class="keyword">set</span>-car apa 42)</div></div><!-- fragment --> The <code>apa</code> pair is now <code>(42 . 2)</code>. <hr/>
+</dd></dl>
 <p><a class="anchor" id="set-cdr"></a> </p><h3>set-cdr</h3>
+<p>The <code>set-cdr</code> is a destructive update of the cdr field of a cons-cell.</p>
+<dl class="section note"><dt>Note</dt><dd>Define <code>apa</code> to be the pair <code>(1 . 2)</code> <div class="fragment"><div class="line">(define apa <span class="stringliteral">&#39;(1 . 2))</span></div></div><!-- fragment --> Now change the value in the cdr field of apa to 42. <div class="fragment"><div class="line">(<span class="keyword">set</span>-cdr apa 42)</div></div><!-- fragment --> The <code>apa</code> pair is now <code>(1 . 42)</code>.</dd></dl>
 <h1><a class="anchor" id="sec_arrays"></a>
 Arrays</h1>
 <p><a class="anchor" id="array-read"></a> </p><h3>array-read</h3>
+<p>Read one or many elements from an array. The form of an <code>array-read</code> expression is either <code>(array-read array-expr index-expr)</code> of <code>(array-read array-expr start-index-expr end-index-expr)</code> for reading a range of values into a list.</p>
+<dl class="section note"><dt>Note</dt><dd>Example that evaluates to the character l. <div class="fragment"><div class="line">(array-read <span class="stringliteral">&quot;hello&quot;</span> 3)</div></div><!-- fragment --> The next example reads a range values <div class="fragment"><div class="line">(array-read <span class="stringliteral">&quot;hello&quot;</span> 1 3)</div></div><!-- fragment --> and results in the list <code>(#e #l #l)</code>.</dd></dl>
 <hr/>
 <p><a class="anchor" id="array-write"></a> </p><h3>array-write</h3>
+<p>The <code>array-write</code> function performs a destructive update of an array.</p>
+<dl class="section note"><dt>Note</dt><dd>Example that turns array "hello" into "heflo" <div class="fragment"><div class="line">(array-write <span class="stringliteral">&quot;hello&quot;</span> 2 \#f)</div></div><!-- fragment --></dd></dl>
 <hr/>
 <h1><a class="anchor" id="sec_pattern"></a>
 Pattern-matching</h1>
@@ -297,8 +322,8 @@ Pattern-matching</h1>
 <hr/>
 <p><a class="anchor" id="?"></a> </p><h3>?</h3>
 <p>The ? pattern matches anything and binds that anything to variable. Using the ? pattern is done as <code>(? var)</code> and the part of the expression that matches is bound to <code>var</code>.</p>
-<dl class="section note"><dt>Note</dt><dd>An example that evaluates to 19. <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;(orange 17)</span></div><div class="line"><span class="stringliteral">       ((green (? n)) (+ n 1))</span></div><div class="line"><span class="stringliteral">       ((orange (? n)) (+ n 2))</span></div><div class="line"><span class="stringliteral">       ((blue (? n)) (+ n 3)))</span></div></div><!-- fragment --> <hr/>
-</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>An example that evaluates to 19. <div class="fragment"><div class="line">(match <span class="stringliteral">&#39;(orange 17)</span></div><div class="line"><span class="stringliteral">       ((green (? n)) (+ n 1))</span></div><div class="line"><span class="stringliteral">       ((orange (? n)) (+ n 2))</span></div><div class="line"><span class="stringliteral">       ((blue (? n)) (+ n 3)))</span></div></div><!-- fragment --></dd></dl>
+<hr/>
 <p><a class="anchor" id="?i28"></a> </p><h3>?i28</h3>
 <p>The ?i28 pattern matches any i28 and binds that value to a variable. Using the ?i28 pattern is done as <code>(?i28 var)</code> and the part of the expression that matches is bound to the <code>var</code>.</p>
 <dl class="section note"><dt>Note</dt><dd>The following example evaluates to <code>not-an-i28</code>. <div class="fragment"><div class="line">(match 3.14</div><div class="line">       ( (i28 n) (+ n 1))</div><div class="line">       ( _ <span class="stringliteral">&#39;not-an-i28))</span></div></div><!-- fragment --> The example below evaluates to 5. <div class="fragment"><div class="line">(match 4</div><div class="line">       ( (i28 n) (+ n 1))</div><div class="line">       ( _ <span class="stringliteral">&#39;not-an-i28))</span></div></div><!-- fragment --></dd></dl>
@@ -307,20 +332,28 @@ Pattern-matching</h1>
 <p>The ?u28 pattern matches any u28 and binds that value to a variable. Using the ?u28 pattern is done as <code>(?u28 var)</code> and the part of the expression that matches is bound to the <code>var</code>.</p>
 <hr/>
 <p><a class="anchor" id="?float"></a> </p><h3>?float</h3>
-<p>The ?float pattern matches any float and binds that value to a variable. Using the ?float pattern is done as <code>(?float var)</code> and the part of the expression that matches is bound to the <code>var</code>. </p><hr/>
+<p>The ?float pattern matches any float and binds that value to a variable. Using the ?float pattern is done as <code>(?float var)</code> and the part of the expression that matches is bound to the <code>var</code>.</p>
+<hr/>
 <h1><a class="anchor" id="sec_concurrency"></a>
 Concurrency</h1>
 <p><a class="anchor" id="spawn"></a> </p><h3>spawn</h3>
+<p>Use <code>spawn</code> to spawn a concurrent task. The concurrency implemented by LispBM is called cooperative concurrency and it means that processes must sleep using <a href="#yield">yield</a> or they will starve out other processes. The form of a spawn expression is <code>(spawn closure arg1 ... argN)</code> The return value is a process ID.</p>
 <hr/>
 <p><a class="anchor" id="wait"></a> </p><h3>wait</h3>
+<p>Use <code>wait</code> to wait for a spawned process to finish. The argument to <code>wait</code> should be a process id. The <code>wait</code> blocks until the process with the given process id finishes.</p>
+<dl class="section note"><dt>Note</dt><dd>Be careful to only wait for processes that actually exist and do finish. Otherwise you will wait forever.</dd></dl>
 <hr/>
 <p><a class="anchor" id="yield"></a> </p><h3>yield</h3>
-<hr/>
+<p>To put a process to sleep, call <code>yield</code>. The argument to <code>yield</code> is number indicating at least how many microseconds the process should sleep. </p><hr/>
 <h1><a class="anchor" id="sec_messages"></a>
 Message-passing</h1>
 <p><a class="anchor" id="send"></a> </p><h3>send</h3>
+<p>Messages can be sent to a process by using <code>send</code>. The form of a <code>send</code> expression is <code>(send pid msg)</code>. The message, msg, can be any LispBM value.</p>
 <hr/>
 <p><a class="anchor" id="recv"></a> </p><h3>recv</h3>
+<p>To receive a message use the <code>recv</code> command. A process will block on a <code>recv</code> until there is a matching message in the mailbox. <br />
+ The <code>recv</code> syntax is very similar to <a href="#match">match</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>Example where a process waits for an i28 <div class="fragment"><div class="line">(recv ( (?i28 n) (+ n 1) ))</div></div><!-- fragment --></dd></dl>
 <h1><a class="anchor" id="sec_unparse"></a>
 Unparsable symbols</h1>
 <p>Unparsable symbols cannot be written into a program. The unparsable symbols signals different kinds of error conditions that may point at something being wrong in the code (or that it is exhausting all resources).</p>
@@ -367,36 +400,6 @@ Types</h1>
 <p><a class="anchor" id="type-ref"></a> </p><h3>type-ref</h3>
 <hr/>
 <p><a class="anchor" id="type-stream"></a> </p><h3>type-stream</h3>
-<hr/>
-<h1><a class="anchor" id="sec_internal"></a>
-Internal symbols</h1>
-<p><a class="anchor" id="sym_openpar"></a> </p><h3>sym_openpar</h3>
-<hr/>
-<p><a class="anchor" id="sym_closepar"></a> </p><h3>sym_closepar</h3>
-<hr/>
-<p> <a class="anchor" id="sym_backquote"></a> </p><h3>sym_backquote</h3>
-<hr/>
-<p><a class="anchor" id="sym_comma"></a> </p><h3>sym_comma</h3>
-<hr/>
-<p><a class="anchor" id="sym_commaat"></a> </p><h3>sym_commaat</h3>
-<hr/>
-<p><a class="anchor" id="sym_dot"></a> </p><h3>sym_dot</h3>
-<hr/>
-<p><a class="anchor" id="sym_tok_done"></a> </p><h3>sym_tok_done</h3>
-<hr/>
-<p><a class="anchor" id="sym_array"></a> </p><h3>sym_array</h3>
-<hr/>
-<p><a class="anchor" id="sym_boxed_i"></a> </p><h3>sym_boxed_i</h3>
-<hr/>
-<p><a class="anchor" id="sym_boxed_u"></a> </p><h3>sym_boxed_u</h3>
-<hr/>
-<p><a class="anchor" id="sym_boxed_f"></a> </p><h3>sym_boxed_f</h3>
-<hr/>
-<p><a class="anchor" id="sym_ref"></a> </p><h3>sym_ref</h3>
-<hr/>
-<p><a class="anchor" id="sym_recovered"></a> </p><h3>sym_recovered</h3>
-<hr/>
-<p><a class="anchor" id="sym_nonsense"></a> </p><h3>sym_nonsense</h3>
 <hr/>
  </div></div><!-- contents -->
 <!-- start footer part -->
