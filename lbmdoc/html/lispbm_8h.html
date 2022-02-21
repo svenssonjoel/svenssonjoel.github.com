@@ -80,25 +80,27 @@ $(function() {
 <code>#include &quot;<a class="el" href="lbm__memory_8h_source.html">lbm_memory.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="lbm__types_8h_source.html">lbm_types.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="lbm__c__interop_8h_source.html">lbm_c_interop.h</a>&quot;</code><br />
+<code>#include &quot;lbm_variables.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for lispbm.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="lispbm_8h__incl.png" border="0" usemap="#lispbm_8h" alt=""/></div>
 <map name="lispbm_8h" id="lispbm_8h">
-<area shape="rect" id="node2" href="heap_8h.html" title="heap.h" alt="" coords="447,155,509,181"/>
-<area shape="rect" id="node4" href="lbm__types_8h.html" title="lbm_types.h" alt="" coords="526,304,619,331"/>
-<area shape="rect" id="node8" href="symrepr_8h.html" title="symrepr.h" alt="" coords="237,229,317,256"/>
-<area shape="rect" id="node13" href="extensions_8h.html" title="extensions.h" alt="" coords="306,80,402,107"/>
-<area shape="rect" id="node14" href="eval__cps_8h.html" title="eval_cps.h" alt="" coords="861,155,946,181"/>
-<area shape="rect" id="node15" href="print_8h.html" title="print.h" alt="" coords="23,229,82,256"/>
-<area shape="rect" id="node16" href="tokpar_8h.html" title="tokpar.h" alt="" coords="767,155,837,181"/>
-<area shape="rect" id="node17" href="prelude_8h.html" title="prelude.h" alt="" coords="615,80,690,107"/>
-<area shape="rect" id="node18" href="env_8h.html" title="env.h" alt="" coords="688,155,743,181"/>
-<area shape="rect" id="node19" href="compression_8h.html" title="compression.h" alt="" coords="106,229,213,256"/>
+<area shape="rect" id="node2" href="heap_8h.html" title="heap.h" alt="" coords="341,155,402,181"/>
+<area shape="rect" id="node4" href="lbm__types_8h.html" title="lbm_types.h" alt="" coords="615,304,709,331"/>
+<area shape="rect" id="node8" href="symrepr_8h.html" title="symrepr.h" alt="" coords="162,229,242,256"/>
+<area shape="rect" id="node13" href="extensions_8h.html" title="extensions.h" alt="" coords="362,80,458,107"/>
+<area shape="rect" id="node14" href="eval__cps_8h.html" title="eval_cps.h" alt="" coords="477,155,562,181"/>
+<area shape="rect" id="node15" href="print_8h.html" title="print.h" alt="" coords="79,229,138,256"/>
+<area shape="rect" id="node16" href="tokpar_8h.html" title="tokpar.h" alt="" coords="687,155,757,181"/>
+<area shape="rect" id="node17" href="prelude_8h.html" title="prelude.h" alt="" coords="962,80,1037,107"/>
+<area shape="rect" id="node18" href="env_8h.html" title="env.h" alt="" coords="781,155,836,181"/>
+<area shape="rect" id="node19" href="compression_8h.html" title="compression.h" alt="" coords="1013,229,1119,256"/>
 <area shape="rect" id="node20" href="lbm__memory_8h.html" title="lbm_memory.h" alt="" coords="5,155,113,181"/>
-<area shape="rect" id="node21" href="lbm__c__interop_8h.html" title="lbm_c_interop.h" alt="" coords="477,80,591,107"/>
-<area shape="rect" id="node9" href="streams_8h.html" title="streams.h" alt="" coords="533,229,613,256"/>
-<area shape="rect" id="node10" href="stack_8h.html" title="stack.h" alt="" coords="941,229,1007,256"/>
+<area shape="rect" id="node21" href="lbm__c__interop_8h.html" title="lbm_c_interop.h" alt="" coords="533,80,647,107"/>
+<area shape="rect" id="node22" href="lbm__variables_8h_source.html" title="lbm_variables.h" alt="" coords="773,80,887,107"/>
+<area shape="rect" id="node9" href="streams_8h.html" title="streams.h" alt="" coords="547,229,627,256"/>
+<area shape="rect" id="node10" href="stack_8h.html" title="stack.h" alt="" coords="356,229,421,256"/>
 </map>
 </div>
 </div>
@@ -106,12 +108,12 @@ Include dependency graph for lispbm.h:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a76647c43e5194509e0abd58ff9df34c8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lispbm_8h.html#a76647c43e5194509e0abd58ff9df34c8">lbm_init</a> (<a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> *heap_storage, uint32_t heap_size, uint32_t *gc_stack_storage, uint32_t gc_stack_size, uint32_t *memory, uint32_t memory_size, uint32_t *memory_bitmap, uint32_t bitmap_size, uint32_t *print_stack_storage, uint32_t print_stack_size)</td></tr>
-<tr class="separator:a76647c43e5194509e0abd58ff9df34c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdd04ed9d928c227cab306a0624dcadd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lispbm_8h.html#acdd04ed9d928c227cab306a0624dcadd">lbm_init</a> (<a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> *heap_storage, uint32_t heap_size, uint32_t *gc_stack_storage, uint32_t gc_stack_size, uint32_t *memory, uint32_t memory_size, uint32_t *memory_bitmap, uint32_t bitmap_size, uint32_t *print_stack_storage, uint32_t print_stack_size, <a class="el" href="extensions_8h.html#a827b7befeee649f25bf11ae14b5f3aa9">extension_fptr</a> *extension_storage, int extension_storage_size)</td></tr>
+<tr class="separator:acdd04ed9d928c227cab306a0624dcadd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a76647c43e5194509e0abd58ff9df34c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a76647c43e5194509e0abd58ff9df34c8">&#9670;&nbsp;</a></span>lbm_init()</h2>
+<a id="acdd04ed9d928c227cab306a0624dcadd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdd04ed9d928c227cab306a0624dcadd">&#9670;&nbsp;</a></span>lbm_init()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -174,7 +176,19 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>print_stack_size</em>&#160;</td>
+          <td class="paramname"><em>print_stack_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="extensions_8h.html#a827b7befeee649f25bf11ae14b5f3aa9">extension_fptr</a> *&#160;</td>
+          <td class="paramname"><em>extension_storage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>extension_storage_size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -190,7 +204,7 @@ Functions</h2></td></tr>
 <li><a class="el" href="heap_8h.html#aa9acb52eb390f670c5ed51aff669adb6">lbm_heap_init</a></li>
 <li><a class="el" href="env_8h.html#abf15fc9635a4fa0f0bd6287b320daf90">lbm_init_env</a></li>
 <li><a class="el" href="eval__cps_8h.html#a8ef94b8743ef4e0291524155649c2172">lbm_eval_init</a></li>
-<li><a class="el" href="extensions_8h.html#a303bd7becc8e042112343e2c0ec0d056">lbm_extensions_init</a></li>
+<li><a class="el" href="extensions_8h.html#aedb3e95581627b6636f953cb17e7824f">lbm_extensions_init</a></li>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -202,6 +216,8 @@ Functions</h2></td></tr>
     <tr><td class="paramname">bitmap_size</td><td>Size of the memory meta-data array. </td></tr>
     <tr><td class="paramname">print_stack_storage</td><td>Pointer to uint32_t array to use as print_value stack. </td></tr>
     <tr><td class="paramname">print_stack_size</td><td>Size in number of uint32_t values of the print stack. </td></tr>
+    <tr><td class="paramname">extension_storage</td><td>Pointer to array of extension_fptr. </td></tr>
+    <tr><td class="paramname">extension_storage_size</td><td>Size of extension array. </td></tr>
   </table>
   </dd>
 </dl>
