@@ -1,6 +1,7 @@
 <map id="heap.h" name="heap.h">
-<area shape="rect" id="node2" href="$exp__kind_8h.html" title="exp_kind.h" alt="" coords="5,80,91,107"/>
-<area shape="rect" id="node3" href="$extensions_8h.html" title="extensions.h" alt="" coords="115,80,211,107"/>
-<area shape="rect" id="node4" href="$lispbm_8h.html" title="lispbm.h" alt="" coords="213,155,283,181"/>
-<area shape="rect" id="node5" href="$lbm__c__interop_8h.html" title="lbm_c_interop.h" alt="" coords="285,80,400,107"/>
+<area shape="rect" id="node1" title=" " alt="" coords="175,5,236,32"/>
+<area shape="rect" id="node2" href="$exp__kind_8h.html" title=" " alt="" coords="5,80,91,107"/>
+<area shape="rect" id="node3" href="$extensions_8h.html" title=" " alt="" coords="115,80,211,107"/>
+<area shape="rect" id="node4" href="$lispbm_8h.html" title=" " alt="" coords="213,155,283,181"/>
+<area shape="rect" id="node5" href="$lbm__c__interop_8h.html" title=" " alt="" coords="285,80,400,107"/>
 </map>

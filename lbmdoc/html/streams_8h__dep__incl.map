@@ -1,7 +1,8 @@
 <map id="streams.h" name="streams.h">
-<area shape="rect" id="node2" href="$heap_8h.html" title="heap.h" alt="" coords="217,80,279,107"/>
-<area shape="rect" id="node6" href="$lbm__c__interop_8h.html" title="lbm_c_interop.h" alt="" coords="285,155,400,181"/>
-<area shape="rect" id="node3" href="$exp__kind_8h.html" title="exp_kind.h" alt="" coords="5,155,91,181"/>
-<area shape="rect" id="node4" href="$extensions_8h.html" title="extensions.h" alt="" coords="115,155,211,181"/>
-<area shape="rect" id="node5" href="$lispbm_8h.html" title="lispbm.h" alt="" coords="213,229,283,256"/>
+<area shape="rect" id="node1" title=" " alt="" coords="248,5,328,32"/>
+<area shape="rect" id="node2" href="$heap_8h.html" title=" " alt="" coords="217,80,279,107"/>
+<area shape="rect" id="node6" href="$lbm__c__interop_8h.html" title=" " alt="" coords="285,155,400,181"/>
+<area shape="rect" id="node3" href="$exp__kind_8h.html" title=" " alt="" coords="5,155,91,181"/>
+<area shape="rect" id="node4" href="$extensions_8h.html" title=" " alt="" coords="115,155,211,181"/>
+<area shape="rect" id="node5" href="$lispbm_8h.html" title=" " alt="" coords="213,229,283,256"/>
 </map>
