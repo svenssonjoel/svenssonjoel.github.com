@@ -1,10 +1,4 @@
 <map id="eval_cps.h" name="eval_cps.h">
-<area shape="rect" id="node1" title=" " alt="" coords="209,5,295,32"/>
-<area shape="rect" id="node2" href="$lbm__types_8h.html" title=" " alt="" coords="280,155,373,181"/>
-<area shape="rect" id="node6" href="$stack_8h.html" title=" " alt="" coords="185,80,250,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="254,229,319,256"/>
-<area shape="rect" id="node4" title=" " alt="" coords="155,229,229,256"/>
-<area shape="rect" id="node5" title=" " alt="" coords="343,229,422,256"/>
-<area shape="rect" id="node7" title=" " alt="" coords="5,155,69,181"/>
-<area shape="rect" id="node8" title=" " alt="" coords="93,155,155,181"/>
+<area shape="rect" id="node2" href="$lbm__types_8h.html" title="lbm_types.h" alt="" coords="280,155,373,181"/>
+<area shape="rect" id="node6" href="$stack_8h.html" title="stack.h" alt="" coords="185,80,250,107"/>
 </map>
