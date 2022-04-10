@@ -1,7 +1,8 @@
 <map id="exp_kind.h" name="exp_kind.h">
-<area shape="rect" id="node2" href="$heap_8h.html" title="heap.h" alt="" coords="301,80,362,107"/>
-<area shape="rect" id="node8" href="$symrepr_8h.html" title="symrepr.h" alt="" coords="438,155,518,181"/>
-<area shape="rect" id="node4" href="$lbm__types_8h.html" title="lbm_types.h" alt="" coords="249,229,342,256"/>
-<area shape="rect" id="node9" href="$streams_8h.html" title="streams.h" alt="" coords="243,155,323,181"/>
-<area shape="rect" id="node10" href="$stack_8h.html" title="stack.h" alt="" coords="103,155,168,181"/>
+<area shape="rect" id="node2" href="$heap_8h.html" title="heap.h" alt="" coords="299,80,361,107"/>
+<area shape="rect" id="node8" href="$symrepr_8h.html" title="symrepr.h" alt="" coords="471,155,551,181"/>
+<area shape="rect" id="node4" href="$lbm__types_8h.html" title="lbm_types.h" alt="" coords="326,229,419,256"/>
+<area shape="rect" id="node9" href="$streams_8h.html" title="streams.h" alt="" coords="367,155,447,181"/>
+<area shape="rect" id="node10" href="$stack_8h.html" title="stack.h" alt="" coords="95,155,160,181"/>
+<area shape="rect" id="node13" href="$lbm__memory_8h.html" title="lbm_memory.h" alt="" coords="184,155,292,181"/>
 </map>
