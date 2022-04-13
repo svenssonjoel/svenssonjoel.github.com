@@ -31,6 +31,7 @@ var searchData=
   ['lbm_5fenv_5fbuild_5fparams_5fargs',['lbm_env_build_params_args',['../env_8h.html#aead63f3c866292cf3e7e8cebac669d93',1,'env.h']]],
   ['lbm_5fenv_5fcopy_5fshallow',['lbm_env_copy_shallow',['../env_8h.html#a466657a4c4b74e1151dd0f19ca3bcc5a',1,'env.h']]],
   ['lbm_5fenv_5flookup',['lbm_env_lookup',['../env_8h.html#ae7202631c44e2e14683cb225bcf10405',1,'env.h']]],
+  ['lbm_5fenv_5flookup_5fb',['lbm_env_lookup_b',['../env_8h.html#ab84d1bb07a96f85358877b3df966a2fd',1,'env.h']]],
   ['lbm_5fenv_5fmodify_5fbinding',['lbm_env_modify_binding',['../env_8h.html#abc1c0067eec616a2736b287193ea942e',1,'env.h']]],
   ['lbm_5fenv_5fset',['lbm_env_set',['../env_8h.html#a976a660e5d2c355a1ddf7a97904af1e8',1,'env.h']]],
   ['lbm_5feval_5fdefined_5fexpression',['lbm_eval_defined_expression',['../lbm__c__interop_8h.html#ae82e23b8d456bbdaea6fd46cfba6e225',1,'lbm_c_interop.h']]],

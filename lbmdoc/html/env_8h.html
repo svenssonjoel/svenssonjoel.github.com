@@ -99,6 +99,8 @@ Functions</h2></td></tr>
 <tr class="separator:a6c33a90700f49d6da713bd7d5c0b49c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a466657a4c4b74e1151dd0f19ca3bcc5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="env_8h.html#a466657a4c4b74e1151dd0f19ca3bcc5a">lbm_env_copy_shallow</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> env)</td></tr>
 <tr class="separator:a466657a4c4b74e1151dd0f19ca3bcc5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab84d1bb07a96f85358877b3df966a2fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="env_8h.html#ab84d1bb07a96f85358877b3df966a2fd">lbm_env_lookup_b</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *res, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> sym, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> env)</td></tr>
+<tr class="separator:ab84d1bb07a96f85358877b3df966a2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7202631c44e2e14683cb225bcf10405"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="env_8h.html#ae7202631c44e2e14683cb225bcf10405">lbm_env_lookup</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> sym, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> env)</td></tr>
 <tr class="separator:ae7202631c44e2e14683cb225bcf10405"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a976a660e5d2c355a1ddf7a97904af1e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="env_8h.html#a976a660e5d2c355a1ddf7a97904af1e8">lbm_env_set</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> env, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> key, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> val)</td></tr>
@@ -188,6 +190,49 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_env_lookup </td>
           <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>sym</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>env</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Lookup a value in from the global environment.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sym</td><td>The key to look for in the environment </td></tr>
+    <tr><td class="paramname">env</td><td>The environment to search for the key. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The value bound to key or lbm_enc_sym(SYM_NOT_FOUND). </dd></dl>
+
+</div>
+</div>
+<a id="ab84d1bb07a96f85358877b3df966a2fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab84d1bb07a96f85358877b3df966a2fd">&#9670;&nbsp;</a></span>lbm_env_lookup_b()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_env_lookup_b </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *&#160;</td>
+          <td class="paramname"><em>res</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
           <td class="paramname"><em>sym</em>, </td>
         </tr>

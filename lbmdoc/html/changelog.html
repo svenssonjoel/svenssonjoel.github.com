@@ -62,7 +62,8 @@ $(function() {
 <div class="title">Changelog </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Apr 10 2022: Version 0.5.2</p><ul>
+<div class="textblock"><p>Apr 12 2022: Version 0.5.2</p><ul>
+<li>Restructure symbol evaluation for efficiency and readability.</li>
 <li>Rewrite progn to update stack in place when possible.</li>
 <li>Removed a bunch of convertion back and forth from C and LBM representation of continuation identifiers in eval_cps. They are now compared in encoded form in the evaluator.</li>
 <li>Added lbm_cadr and replaced lbm_car(lbm_cdr(x)) with lbm_cadr(x) in the evaluator.</li>
