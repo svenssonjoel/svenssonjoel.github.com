@@ -62,7 +62,9 @@ $(function() {
 <div class="title">Changelog </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Apr 12 2022: Version 0.5.2</p><ul>
+<div class="textblock"><p>Apr 19 2022: Version 0.5.2</p><ul>
+<li>Added a reader_done_callback that is run when a context is done with a reading task.</li>
+<li>Array-literal syntax.</li>
 <li>Restructure symbol evaluation for efficiency and readability.</li>
 <li>Rewrite progn to update stack in place when possible.</li>
 <li>Removed a bunch of convertion back and forth from C and LBM representation of continuation identifiers in eval_cps. They are now compared in encoded form in the evaluator.</li>

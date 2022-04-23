@@ -159,10 +159,14 @@ Functions</h2></td></tr>
 <tr class="separator:a922a510ea933cf5ae2296503482c1bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9997976fe721c409169cb53e80beecb9"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a9997976fe721c409169cb53e80beecb9">lbm_memory_num_free</a> (void)</td></tr>
 <tr class="separator:a9997976fe721c409169cb53e80beecb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeba497124d9981ba9d2094c0774059ef"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#aeba497124d9981ba9d2094c0774059ef">lbm_memory_longest_free</a> (void)</td></tr>
+<tr class="separator:aeba497124d9981ba9d2094c0774059ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e861e92f4438ef734b2683079c686cd"><td class="memItemLeft" align="right" valign="top">lbm_uint *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a8e861e92f4438ef734b2683079c686cd">lbm_memory_allocate</a> (lbm_uint num_words)</td></tr>
 <tr class="separator:a8e861e92f4438ef734b2683079c686cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac12ef3b205c8daeb29e727999a2eead"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#aac12ef3b205c8daeb29e727999a2eead">lbm_memory_free</a> (lbm_uint *ptr)</td></tr>
 <tr class="separator:aac12ef3b205c8daeb29e727999a2eead"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8606efdddea2206e1b4b32c4c86ba90f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a8606efdddea2206e1b4b32c4c86ba90f">lbm_memory_shrink</a> (lbm_uint *ptr, unsigned int n)</td></tr>
+<tr class="separator:a8606efdddea2206e1b4b32c4c86ba90f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adee19e7cc1c8af99b65322ca934bb456"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#adee19e7cc1c8af99b65322ca934bb456">lbm_memory_ptr_inside</a> (lbm_uint *ptr)</td></tr>
 <tr class="separator:adee19e7cc1c8af99b65322ca934bb456"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4adb927bafbf4fba7a30ccb636f489e5"><td class="memItemLeft" align="right" valign="top"><a id="a4adb927bafbf4fba7a30ccb636f489e5"></a>
@@ -273,6 +277,25 @@ lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_memory_address
 
 </div>
 </div>
+<a id="aeba497124d9981ba9d2094c0774059ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeba497124d9981ba9d2094c0774059ef">&#9670;&nbsp;</a></span>lbm_memory_longest_free()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lbm_uint lbm_memory_longest_free </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Find the length of the longest run of consecutire free indices in the LBM memory. </p>
+
+</div>
+</div>
 <a id="a9997976fe721c409169cb53e80beecb9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9997976fe721c409169cb53e80beecb9">&#9670;&nbsp;</a></span>lbm_memory_num_free()</h2>
 
@@ -335,6 +358,42 @@ lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_memory_address
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>1 for yes and 0 for no. </dd></dl>
+
+</div>
+</div>
+<a id="a8606efdddea2206e1b4b32c4c86ba90f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8606efdddea2206e1b4b32c4c86ba90f">&#9670;&nbsp;</a></span>lbm_memory_shrink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lbm_memory_shrink </td>
+          <td>(</td>
+          <td class="paramtype">lbm_uint *&#160;</td>
+          <td class="paramname"><em>ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Shrink an allocated array. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptr</td><td>Pointer to array to shrink </td></tr>
+    <tr><td class="paramname">n</td><td>New smaller size of array </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 on success and 0 on failure. </dd></dl>
 
 </div>
 </div>

@@ -178,6 +178,8 @@ Functions</h2></td></tr>
 <tr class="separator:a9c36edb0500e2024901f0b823020689c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3895d975f4604285b9070e70c94c2ed7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a3895d975f4604285b9070e70c94c2ed7">lbm_set_dynamic_load_callback</a> (bool(*fptr)(const char *, const char **))</td></tr>
 <tr class="separator:a3895d975f4604285b9070e70c94c2ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1be4c7a2bbab98b854cac3eba19c8bc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a1be4c7a2bbab98b854cac3eba19c8bc7">lbm_set_reader_done_callback</a> (void(*fptr)(lbm_cid))</td></tr>
+<tr class="separator:a1be4c7a2bbab98b854cac3eba19c8bc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af81aae58aa955d02b2f44093cc6e9dd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#af81aae58aa955d02b2f44093cc6e9dd3">lbm_create_token_stream</a> (<a class="el" href="lbm__types_8h.html#acfab2d63774ffdfc74751d5ffe193992">lbm_tokenizer_char_stream_t</a> *str)</td></tr>
 <tr class="separator:af81aae58aa955d02b2f44093cc6e9dd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7224a5aec0e0430ff90fabc96c89ebe8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a7224a5aec0e0430ff90fabc96c89ebe8">lbm_find_receiver_and_send</a> (lbm_cid cid, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> msg)</td></tr>
@@ -832,6 +834,25 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a1be4c7a2bbab98b854cac3eba19c8bc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1be4c7a2bbab98b854cac3eba19c8bc7">&#9670;&nbsp;</a></span>lbm_set_reader_done_callback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_set_reader_done_callback </td>
+          <td>(</td>
+          <td class="paramtype">void(*)(lbm_cid)&#160;</td>
+          <td class="paramname"><em>fptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set a callback that is run when reading source is finishes within a context </p>
 
 </div>
 </div>
