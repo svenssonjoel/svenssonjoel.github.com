@@ -62,7 +62,28 @@ $(function() {
 <div class="title">Changelog </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Mar 02 2022: Version (0.4.2)</p><ul>
+<div class="textblock"><p>Apr 19 2022: Version 0.5.2</p><ul>
+<li>Added a reader_done_callback that is run when a context is done with a reading task.</li>
+<li>Array-literal syntax.</li>
+<li>Restructure symbol evaluation for efficiency and readability.</li>
+<li>Rewrite progn to update stack in place when possible.</li>
+<li>Removed a bunch of convertion back and forth from C and LBM representation of continuation identifiers in eval_cps. They are now compared in encoded form in the evaluator.</li>
+<li>Added lbm_cadr and replaced lbm_car(lbm_cdr(x)) with lbm_cadr(x) in the evaluator.</li>
+</ul>
+<p>Apr 10 2022: Version 0.5.1</p><ul>
+<li>Removed the prelude.lisp, prelude.xxd step of building LBM.</li>
+<li>A continuation created by call-cc can be applied to 0 or 1 argument. If there are 0 arguments an implicit application to nil takes place.</li>
+</ul>
+<p>Mar 26 2022: Version (0.5.0)</p><ul>
+<li>Optimized code-path for closure applications.</li>
+<li>64 and 32 bit support from a single source code</li>
+<li>Added math extensions library from Benjamin Vedder</li>
+<li>Added String manipulation extensions library from Benjamin Vedder</li>
+</ul>
+<p>Mar 10 2022: Version (0.4.2)</p><ul>
+<li>Added the lbm_set_error_reason function.</li>
+</ul>
+<p>Mar 02 2022: Version (0.4.2)</p><ul>
 <li>Bug fix in initialization of contexts.</li>
 </ul>
 <p>Feb 28 2022: Version (0.4.2)</p><ul>
