@@ -114,6 +114,8 @@ Functions</h2></td></tr>
 <tr class="separator:aedb3e95581627b6636f953cb17e7824f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f08b58ef5dc5aea093ba5dc7648b743"><td class="memItemLeft" align="right" valign="top"><a class="el" href="extensions_8h.html#a827b7befeee649f25bf11ae14b5f3aa9">extension_fptr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#a5f08b58ef5dc5aea093ba5dc7648b743">lbm_get_extension</a> (lbm_uint sym)</td></tr>
 <tr class="separator:a5f08b58ef5dc5aea093ba5dc7648b743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc59a9128a4438526d9868abb8515ece"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#afc59a9128a4438526d9868abb8515ece">lbm_clr_extension</a> (lbm_uint sym_id)</td></tr>
+<tr class="separator:afc59a9128a4438526d9868abb8515ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada642000aa03faeb52a22a9e629fe104"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#ada642000aa03faeb52a22a9e629fe104">lbm_add_extension</a> (char *sym_str, <a class="el" href="extensions_8h.html#a827b7befeee649f25bf11ae14b5f3aa9">extension_fptr</a> ext)</td></tr>
 <tr class="separator:ada642000aa03faeb52a22a9e629fe104"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09883c797aba431c65ac2fefcd04f2ba"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#a09883c797aba431c65ac2fefcd04f2ba">lbm_is_extension</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp)</td></tr>
@@ -176,6 +178,32 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success and false on failure. </dd></dl>
+
+</div>
+</div>
+<a id="afc59a9128a4438526d9868abb8515ece"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc59a9128a4438526d9868abb8515ece">&#9670;&nbsp;</a></span>lbm_clr_extension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_clr_extension </td>
+          <td>(</td>
+          <td class="paramtype">lbm_uint&#160;</td>
+          <td class="paramname"><em>sym_id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reset an extension back to the default value. Trying to apply the extension after clearing it will result in an eval error.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sym_id</td><td>Symbol id of the extension to clear. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if successfully cleared an extension otherwise false. </dd></dl>
 
 </div>
 </div>

@@ -158,6 +158,10 @@ Functions</h2></td></tr>
 <tr class="separator:afeae5261f66e4eee2d91beb3e3924acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3fba24f80cfb2c55912c57a4e3acf2d"><td class="memItemLeft" align="right" valign="top">lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#ae3fba24f80cfb2c55912c57a4e3acf2d">lbm_create_ctx</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> program, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> env, lbm_uint stack_size)</td></tr>
 <tr class="separator:ae3fba24f80cfb2c55912c57a4e3acf2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad24d4c3a16c52971ef31755804610be0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#ad24d4c3a16c52971ef31755804610be0">lbm_block_ctx_from_extension</a> (void)</td></tr>
+<tr class="separator:ad24d4c3a16c52971ef31755804610be0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ce6ccb122269e3dad4354ce9e137a24"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a8ce6ccb122269e3dad4354ce9e137a24">lbm_unblock_ctx</a> (lbm_cid cid, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> result)</td></tr>
+<tr class="separator:a8ce6ccb122269e3dad4354ce9e137a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9b437223bf63d0be3a5edef9bee912e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#af9b437223bf63d0be3a5edef9bee912e">lbm_running_iterator</a> (<a class="el" href="eval__cps_8h.html#ac027b6619adcd4a0a10aea060e10e4df">ctx_fun</a> f, void *, void *)</td></tr>
 <tr class="separator:af9b437223bf63d0be3a5edef9bee912e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42f3162c9f54d156cba7cf681a2659b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a42f3162c9f54d156cba7cf681a2659b8">lbm_blocked_iterator</a> (<a class="el" href="eval__cps_8h.html#ac027b6619adcd4a0a10aea060e10e4df">ctx_fun</a> f, void *, void *)</td></tr>
@@ -180,8 +184,12 @@ Functions</h2></td></tr>
 <tr class="separator:a3895d975f4604285b9070e70c94c2ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1be4c7a2bbab98b854cac3eba19c8bc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a1be4c7a2bbab98b854cac3eba19c8bc7">lbm_set_reader_done_callback</a> (void(*fptr)(lbm_cid))</td></tr>
 <tr class="separator:a1be4c7a2bbab98b854cac3eba19c8bc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec267606ed667ddfeff9ac639d6b9f09"><td class="memItemLeft" align="right" valign="top">lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#aec267606ed667ddfeff9ac639d6b9f09">lbm_get_current_cid</a> (void)</td></tr>
+<tr class="separator:aec267606ed667ddfeff9ac639d6b9f09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af81aae58aa955d02b2f44093cc6e9dd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#af81aae58aa955d02b2f44093cc6e9dd3">lbm_create_token_stream</a> (<a class="el" href="lbm__types_8h.html#acfab2d63774ffdfc74751d5ffe193992">lbm_tokenizer_char_stream_t</a> *str)</td></tr>
 <tr class="separator:af81aae58aa955d02b2f44093cc6e9dd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb3766c59fbc9dac6b506e169b660e4f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#adb3766c59fbc9dac6b506e169b660e4f">lbm_explicit_free_token_stream</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> stream)</td></tr>
+<tr class="separator:adb3766c59fbc9dac6b506e169b660e4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7224a5aec0e0430ff90fabc96c89ebe8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a7224a5aec0e0430ff90fabc96c89ebe8">lbm_find_receiver_and_send</a> (lbm_cid cid, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> msg)</td></tr>
 <tr class="separator:a7224a5aec0e0430ff90fabc96c89ebe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27657f87b34ca03ac8a6d75bb38113c0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a27657f87b34ca03ac8a6d75bb38113c0">lbm_perform_gc</a> (void)</td></tr>
@@ -242,6 +250,25 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Get the global environment</p>
 <dl class="section return"><dt>Returns</dt><dd>global environment. </dd></dl>
+
+</div>
+</div>
+<a id="ad24d4c3a16c52971ef31755804610be0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad24d4c3a16c52971ef31755804610be0">&#9670;&nbsp;</a></span>lbm_block_ctx_from_extension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_block_ctx_from_extension </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Block a context from an extension </p>
 
 </div>
 </div>
@@ -503,6 +530,30 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="adb3766c59fbc9dac6b506e169b660e4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb3766c59fbc9dac6b506e169b660e4f">&#9670;&nbsp;</a></span>lbm_explicit_free_token_stream()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lbm_explicit_free_token_stream </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>stream</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Explicitly free a stream (if something breaks while creating it) The stream must not have been made available to the program </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>The stream to free </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a7224a5aec0e0430ff90fabc96c89ebe8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7224a5aec0e0430ff90fabc96c89ebe8">&#9670;&nbsp;</a></span>lbm_find_receiver_and_send()</h2>
 
@@ -537,6 +588,25 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>lbm_enc_sym(SYM_NIL) on failure and lbm_enc_sym(SYM_TRUE) on success. </dd></dl>
+
+</div>
+</div>
+<a id="aec267606ed667ddfeff9ac639d6b9f09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec267606ed667ddfeff9ac639d6b9f09">&#9670;&nbsp;</a></span>lbm_get_current_cid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lbm_cid lbm_get_current_cid </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the CID of the currently executing context. Should be called from an extension where there is a guarantee that a context is running </p>
 
 </div>
 </div>
@@ -802,7 +872,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Provide a description of an error as a string. Use when implementing for example extensions to report an error message to the programmer in case the extension is used incorrectly.</p>
-<p>The error string can be allocates in lbm_memory and will in that case be freed when the context that errored is removed. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>The error string can be allocated in lbm_memory and will in that case be freed when the context that errored is removed. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">error_str</td><td></td></tr>
   </table>
@@ -990,6 +1060,41 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>toggle verbosity level of error messages </p>
+
+</div>
+</div>
+<a id="a8ce6ccb122269e3dad4354ce9e137a24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ce6ccb122269e3dad4354ce9e137a24">&#9670;&nbsp;</a></span>lbm_unblock_ctx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_unblock_ctx </td>
+          <td>(</td>
+          <td class="paramtype">lbm_cid&#160;</td>
+          <td class="paramname"><em>cid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Unblock a context that has been blocked by a C extension Trying to unblock a context that is waiting on a message in a mailbox is not encouraged </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cid</td><td>Lisp process to wake up. </td></tr>
+    <tr><td class="paramname">result</td><td>Value passed to the lisp process as the result from the blocking function. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

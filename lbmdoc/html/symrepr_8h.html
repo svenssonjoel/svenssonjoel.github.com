@@ -546,6 +546,8 @@ Functions</h2></td></tr>
 <tr class="separator:aedf48c855e436e8ee46a2efd29d8acc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7039bc5a92c34a4211e2cf2a0a8504ba"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="symrepr_8h.html#a7039bc5a92c34a4211e2cf2a0a8504ba">lbm_add_symbol_const</a> (char *name, lbm_uint *id)</td></tr>
 <tr class="separator:a7039bc5a92c34a4211e2cf2a0a8504ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ee6d359376f0811605e72658683d4cc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="symrepr_8h.html#a2ee6d359376f0811605e72658683d4cc">lbm_add_extension_symbol</a> (char *name, lbm_uint *id)</td></tr>
+<tr class="separator:a2ee6d359376f0811605e72658683d4cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd7b9ec39a7b98ff61b4a81368144fc0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="symrepr_8h.html#abd7b9ec39a7b98ff61b4a81368144fc0">lbm_add_extension_symbol_const</a> (char *name, lbm_uint *id)</td></tr>
 <tr class="separator:abd7b9ec39a7b98ff61b4a81368144fc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a347bf11c32ad1f328ef79873e346f4b8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="symrepr_8h.html#a347bf11c32ad1f328ef79873e346f4b8">lbm_get_symbol_by_name</a> (char *name, lbm_uint *id)</td></tr>
@@ -557,11 +559,50 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_get_num_variables<
 <tr class="separator:a15202631e5a20d156ab474c3244b7909"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade4f681604203f93a08446f0e66fc5b0"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="symrepr_8h.html#ade4f681604203f93a08446f0e66fc5b0">lbm_get_symbol_table_size</a> (void)</td></tr>
 <tr class="separator:ade4f681604203f93a08446f0e66fc5b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8aca5e485d7254456910fbff5c596e56"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="symrepr_8h.html#a8aca5e485d7254456910fbff5c596e56">lbm_get_symbol_table_size_names</a> (void)</td></tr>
+<tr class="separator:a8aca5e485d7254456910fbff5c596e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="symrepr_8h.html">symrepr.h</a> implements the symbol table and symbol creation and lookup functions.</p>
 <p>The symbol table is implemented as a linked list in the arrays and symbols memory defined in lispbm_memory.h. So lbm_memory_init must be run before the symbol table is initialized and used. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a2ee6d359376f0811605e72658683d4cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ee6d359376f0811605e72658683d4cc">&#9670;&nbsp;</a></span>lbm_add_extension_symbol()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lbm_add_extension_symbol </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lbm_uint *&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Add an extension symbol to the symbol table. The name is assumed is dynamically allocated on lbm_memory</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Name of the symbol. </td></tr>
+    <tr><td class="paramname">id</td><td>Resulting id is returned through this argument. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 for success and 0 for failure. </dd></dl>
+
+</div>
+</div>
 <a id="abd7b9ec39a7b98ff61b4a81368144fc0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abd7b9ec39a7b98ff61b4a81368144fc0">&#9670;&nbsp;</a></span>lbm_add_extension_symbol_const()</h2>
 
@@ -788,7 +829,26 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_get_num_variables<
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The amount of space occupied by the symbol table in bytes. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The total amount of space occupied by the symbol table in bytes. </dd></dl>
+
+</div>
+</div>
+<a id="a8aca5e485d7254456910fbff5c596e56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8aca5e485d7254456910fbff5c596e56">&#9670;&nbsp;</a></span>lbm_get_symbol_table_size_names()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lbm_uint lbm_get_symbol_table_size_names </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The size in bytes of all symbol strings stored in the symbol table. </dd></dl>
 
 </div>
 </div>

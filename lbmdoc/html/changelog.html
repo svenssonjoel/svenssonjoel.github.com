@@ -62,7 +62,23 @@ $(function() {
 <div class="title">Changelog </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Apr 19 2022: Version 0.5.2</p><ul>
+<div class="textblock"><p>May 10 2022: Version 0.5.3</p><ul>
+<li>symbols starting with "ext-" will be allocated into the extensions-list and can on the VESC version of lispbm be dynamically bound to newly loaded extensions at runtime.</li>
+</ul>
+<p>May 8 2022: Version 0.5.2</p><ul>
+<li>Added new macros for 10, 12 and 14K lbm_memory sizes.</li>
+</ul>
+<p>May 5 2022: Version 0.5.2</p><ul>
+<li>Line and column numbers associated with read errors.</li>
+<li>More explanatory descriptions in error messages related to read errors.</li>
+</ul>
+<p>May 2 2022: Version 0.5.2</p><ul>
+<li>Performance tweaks to the evaluator. Small but positive effect.</li>
+</ul>
+<p>May 1 2022: Version 0.5.2</p><ul>
+<li>Added lbm_stack_reserve for allocating multiple words on stack in one function call (and one check on stack limits).</li>
+</ul>
+<p>Apr 19 2022: Version 0.5.2</p><ul>
 <li>Added a reader_done_callback that is run when a context is done with a reading task.</li>
 <li>Array-literal syntax.</li>
 <li>Restructure symbol evaluation for efficiency and readability.</li>

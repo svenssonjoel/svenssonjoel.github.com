@@ -283,6 +283,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_gc_mark_phase2</b>
 <tr class="separator:ad5dfa361fe508b4dbd76578626205468"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9b304ad844ad7599f4b0d846045fa29"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ae9b304ad844ad7599f4b0d846045fa29">lbm_heap_allocate_array</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *res, lbm_uint size, <a class="el" href="lbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a> type)</td></tr>
 <tr class="separator:ae9b304ad844ad7599f4b0d846045fa29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0f432be8396f2495ba256fe1801f63e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ae0f432be8396f2495ba256fe1801f63e">lbm_heap_explicit_free_array</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> arr)</td></tr>
+<tr class="separator:ae0f432be8396f2495ba256fe1801f63e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9da664df13e84778ec84ec5ba9a8f353"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="lbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
 <tr class="separator:a9da664df13e84778ec84ec5ba9a8f353"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aded9fdeea166a41e61db874bf5bcfbaf"><td class="memItemLeft" align="right" valign="top"><a id="aded9fdeea166a41e61db874bf5bcfbaf"></a>
@@ -375,6 +377,9 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_number<
 <tr class="memitem:a98ca34316bf150f06212c61a1508e4b3"><td class="memItemLeft" align="right" valign="top"><a id="a98ca34316bf150f06212c61a1508e4b3"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_array</b> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
 <tr class="separator:a98ca34316bf150f06212c61a1508e4b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64a7f4470bf20eed791fc1dea0ae71d4"><td class="memItemLeft" align="right" valign="top"><a id="a64a7f4470bf20eed791fc1dea0ae71d4"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_stream</b> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
+<tr class="separator:a64a7f4470bf20eed791fc1dea0ae71d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4bab812974a00bdabfea8b1b025c1fe"><td class="memItemLeft" align="right" valign="top"><a id="ad4bab812974a00bdabfea8b1b025c1fe"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_is_char</b> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
 <tr class="separator:ad4bab812974a00bdabfea8b1b025c1fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -987,6 +992,30 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>An lbm_value referring to a cons_cell or enc_sym(SYM_MERROR) in case the heap is full. </dd></dl>
+
+</div>
+</div>
+<a id="ae0f432be8396f2495ba256fe1801f63e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0f432be8396f2495ba256fe1801f63e">&#9670;&nbsp;</a></span>lbm_heap_explicit_free_array()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lbm_heap_explicit_free_array </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>arr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Explicitly free an array. This function needs to be used with care and knowledge. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">arr</td><td>Array value. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
