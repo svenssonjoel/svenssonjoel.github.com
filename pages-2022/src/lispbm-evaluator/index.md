@@ -10,7 +10,7 @@ script (if my memory does not fail me). Java script supports higher
 order functions (HOFs) which makes CPS more pleasant to work with
 (it's never entirely pleasant, at least not for me, it feels like a
 very backwards and roundabout way to think). LispBM is implemented in
-C, so there are no nice HOFs to work with. Some work around is needed.
+C, so there are no nice HOFs to work with. Some workaround is needed.
 
 Defunctionalization is a transformation one can apply to code that
 uses HOFs resulting in new code with no HOFs, a first order program.
