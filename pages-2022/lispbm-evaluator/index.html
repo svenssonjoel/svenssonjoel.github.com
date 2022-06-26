@@ -906,7 +906,7 @@ done
 <span id="cb39-138"><a href="#cb39-138" aria-hidden="true"></a>                                    (eval-list env ls <span class="kw">nil</span>)))</span>
 <span id="cb39-139"><a href="#cb39-139" aria-hidden="true"></a>               )))))</span></code></pre></div>
 <h2 id="relation-to-lispbm">Relation to LispBM</h2>
-<p>The approach to evaluation in LispBM is very similar to the explicit stack defunctionalized continuation-passing style evaluator defined in the section above, only it is implemented in C (and actually does some amount of error checking).</p>
+<p>The approach to evaluation in LispBM is very similar to the <em><strong>explicit stack defunctionalized continuation-passing style evaluator</strong></em> defined in the section above, only it is implemented in C (and actually does some amount of error checking).</p>
 <p>The continuation identities that exist in the LispBM implementation are many more of course:</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true"></a><span class="pp">#define ILLEGAL_CONT      ((0 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true"></a><span class="pp">#define DONE              ((1 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>

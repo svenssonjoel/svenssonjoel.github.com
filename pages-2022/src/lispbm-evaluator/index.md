@@ -1173,8 +1173,8 @@ Below you can find the code for the explicit stack evaluator.
 
 ## Relation to LispBM
 
-The approach to evaluation in LispBM is very similar to the explicit
-stack defunctionalized continuation-passing style evaluator defined in
+The approach to evaluation in LispBM is very similar to the ***explicit
+stack defunctionalized continuation-passing style evaluator*** defined in
 the section above, only it is implemented in C (and actually does some
 amount of error checking).
 
