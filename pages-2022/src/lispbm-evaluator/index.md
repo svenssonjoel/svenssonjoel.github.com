@@ -784,6 +784,26 @@ this continuation `done`.
 The last pattern added to `apply-cont` matches the symbol  `done` and
 the result is the `exp` argument. Computation is done. 
 
+
+Let's try the defunctionalized evaluator out a bit:
+
+``` 
+# global-env
+> nil
+# (evald nil '(define apa 1) 'done)
+> 1
+# global-env 
+> ((apa . 1))
+# 
+```
+
+Note that `done` is now just a symbol.
+
+```
+# (evald nil '(+ apa 100) 'done)
+> 101
+# 
+```
 Below you find the complete code for the defunctionalized continuation-passing
 style evaluator! 
 
@@ -923,16 +943,17 @@ done
 All of these, except for `done` is a list, where the last element is `k`.
 The `k` here is itself a continuation. So continuations in the defunctionalized
 interpreter is a list of lists or in other words a list of continuation objects.
+`done` takes the role of a terminating `nil` value.
 
 If we look at the functions that create continuations we can see that each
 of these functions only ever add a new continuation object to the head of this
-continuation list.
+continuation list. 
 
 And if we then look at `apply-cont` we see that it processes the continuation
 at the head of the list.
 
 So, what we really have is a stack of continuation objects and this last
-version of the interpreter makes this stack of continuations explicit. 
+version of the interpreter makes that stack of continuations explicit. 
 
 Let's first add a stack abstraction and then go through a few examples:
 

@@ -575,119 +575,133 @@
 <span id="cb30-15"><a href="#cb30-15" aria-hidden="true"></a>              (evald env then-branch k1)</span>
 <span id="cb30-16"><a href="#cb30-16" aria-hidden="true"></a>            (evald env else-branch k1)))))</span></code></pre></div>
 <p>The last pattern added to <code>apply-cont</code> matches the symbol <code>done</code> and the result is the <code>exp</code> argument. Computation is done.</p>
+<p>Let's try the defunctionalized evaluator out a bit:</p>
+<pre><code># global-env
+&gt; nil
+# (evald nil &#39;(define apa 1) &#39;done)
+&gt; 1
+# global-env 
+&gt; ((apa . 1))
+# 
+</code></pre>
+<p>Note that <code>done</code> is now just a symbol.</p>
+<pre><code># (evald nil &#39;(+ apa 100) &#39;done)
+&gt; 101
+# 
+</code></pre>
 <p>Below you find the complete code for the defunctionalized continuation-passing style evaluator!</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true"></a></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true"></a>(define global-env &#39;nil)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-number </span>(e)</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true"></a>  (<span class="kw">or</span> (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-i)</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true"></a>      (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-u)))</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true"></a></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-symbol </span>(e)</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true"></a>  (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-symbol))</span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true"></a></span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-operator </span>(e)</span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true"></a>  (<span class="kw">or</span> (<span class="kw">eq</span> e &#39;+)</span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;-)</span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;=)</span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;*)</span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true"></a>      ))</span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true"></a></span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-closure </span>(e)</span>
-<span id="cb31-19"><a href="#cb31-19" aria-hidden="true"></a>  (<span class="kw">and</span> (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-list)</span>
-<span id="cb31-20"><a href="#cb31-20" aria-hidden="true"></a>       (<span class="kw">eq</span> (<span class="kw">car</span> e) &#39;closure)))</span>
-<span id="cb31-21"><a href="#cb31-21" aria-hidden="true"></a></span>
-<span id="cb31-22"><a href="#cb31-22" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> add-bindings </span>(env binds)</span>
-<span id="cb31-23"><a href="#cb31-23" aria-hidden="true"></a>  (match binds</span>
-<span id="cb31-24"><a href="#cb31-24" aria-hidden="true"></a>         (<span class="kw">nil</span> env)</span>
-<span id="cb31-25"><a href="#cb31-25" aria-hidden="true"></a>         (((? b) . (? rs))</span>
-<span id="cb31-26"><a href="#cb31-26" aria-hidden="true"></a>          (add-bindings (setassoc env b) rs))))</span>
-<span id="cb31-27"><a href="#cb31-27" aria-hidden="true"></a></span>
-<span id="cb31-28"><a href="#cb31-28" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-progn </span>(env args k)</span>
-<span id="cb31-29"><a href="#cb31-29" aria-hidden="true"></a>  (match args</span>
-<span id="cb31-30"><a href="#cb31-30" aria-hidden="true"></a>         (<span class="kw">nil</span> (apply-cont k <span class="kw">nil</span>))</span>
-<span id="cb31-31"><a href="#cb31-31" aria-hidden="true"></a>         (((? l) . <span class="kw">nil</span>) (evald env l k))</span>
-<span id="cb31-32"><a href="#cb31-32" aria-hidden="true"></a>         (((? l) . (? ls))</span>
-<span id="cb31-33"><a href="#cb31-33" aria-hidden="true"></a>          (evald env l</span>
-<span id="cb31-34"><a href="#cb31-34" aria-hidden="true"></a>                 (<span class="kw">list</span> &#39;progn-cont env ls k)))))</span>
-<span id="cb31-35"><a href="#cb31-35" aria-hidden="true"></a></span>
-<span id="cb31-36"><a href="#cb31-36" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-define </span>(env args k)</span>
-<span id="cb31-37"><a href="#cb31-37" aria-hidden="true"></a>  (<span class="kw">let</span> ((key (<span class="kw">car</span> args))</span>
-<span id="cb31-38"><a href="#cb31-38" aria-hidden="true"></a>        (val (<span class="kw">car</span> (<span class="kw">cdr</span> args))))</span>
-<span id="cb31-39"><a href="#cb31-39" aria-hidden="true"></a>    (evald env val</span>
-<span id="cb31-40"><a href="#cb31-40" aria-hidden="true"></a>           (<span class="kw">list</span> &#39;define-cont key k))))</span>
-<span id="cb31-41"><a href="#cb31-41" aria-hidden="true"></a></span>
-<span id="cb31-42"><a href="#cb31-42" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-lambda </span>(env args k)</span>
-<span id="cb31-43"><a href="#cb31-43" aria-hidden="true"></a>  (apply-cont k (<span class="kw">append</span> (<span class="kw">cons</span> &#39;closure args) (<span class="kw">list</span> env))))</span>
-<span id="cb31-44"><a href="#cb31-44" aria-hidden="true"></a></span>
-<span id="cb31-45"><a href="#cb31-45" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-if </span>(env args k)</span>
-<span id="cb31-46"><a href="#cb31-46" aria-hidden="true"></a>  (<span class="kw">let</span> ((cond-exp  (<span class="kw">car</span> args))</span>
-<span id="cb31-47"><a href="#cb31-47" aria-hidden="true"></a>        (then-branch (<span class="kw">car</span> (<span class="kw">cdr</span> args)))</span>
-<span id="cb31-48"><a href="#cb31-48" aria-hidden="true"></a>        (else-branch (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> args)))))</span>
-<span id="cb31-49"><a href="#cb31-49" aria-hidden="true"></a>    (evald env cond-exp</span>
-<span id="cb31-50"><a href="#cb31-50" aria-hidden="true"></a>           (<span class="kw">list</span> &#39;if-cont env then-branch else-branch k))))</span>
-<span id="cb31-51"><a href="#cb31-51" aria-hidden="true"></a></span>
-<span id="cb31-52"><a href="#cb31-52" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-list </span>(env ls acc k)</span>
-<span id="cb31-53"><a href="#cb31-53" aria-hidden="true"></a>  (<span class="kw">if</span> (<span class="kw">eq</span> ls <span class="kw">nil</span>)</span>
-<span id="cb31-54"><a href="#cb31-54" aria-hidden="true"></a>      (apply-cont k acc)</span>
-<span id="cb31-55"><a href="#cb31-55" aria-hidden="true"></a>      (<span class="kw">let</span> (( l (<span class="kw">car</span> ls))</span>
-<span id="cb31-56"><a href="#cb31-56" aria-hidden="true"></a>            ( r (<span class="kw">cdr</span> ls)))</span>
-<span id="cb31-57"><a href="#cb31-57" aria-hidden="true"></a>        (evald env l</span>
-<span id="cb31-58"><a href="#cb31-58" aria-hidden="true"></a>               (<span class="kw">list</span> &#39;list-cont env r acc k)))))</span>
-<span id="cb31-59"><a href="#cb31-59" aria-hidden="true"></a></span>
-<span id="cb31-60"><a href="#cb31-60" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply-closure </span>(env ls k)</span>
-<span id="cb31-61"><a href="#cb31-61" aria-hidden="true"></a>  (<span class="kw">let</span> ((clo  (<span class="kw">car</span> ls))</span>
-<span id="cb31-62"><a href="#cb31-62" aria-hidden="true"></a>        (args (<span class="kw">cdr</span> ls))</span>
-<span id="cb31-63"><a href="#cb31-63" aria-hidden="true"></a>        (ps (<span class="kw">car</span> (<span class="kw">cdr</span> clo)))</span>
-<span id="cb31-64"><a href="#cb31-64" aria-hidden="true"></a>        (body (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> clo))))</span>
-<span id="cb31-65"><a href="#cb31-65" aria-hidden="true"></a>        (env1 (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> clo)))))</span>
-<span id="cb31-66"><a href="#cb31-66" aria-hidden="true"></a>        (arg-env (zip ps args))</span>
-<span id="cb31-67"><a href="#cb31-67" aria-hidden="true"></a>        (new-env (add-bindings (<span class="kw">append</span> env1 env) arg-env)))</span>
-<span id="cb31-68"><a href="#cb31-68" aria-hidden="true"></a>    (evald new-env body k)))</span>
-<span id="cb31-69"><a href="#cb31-69" aria-hidden="true"></a></span>
-<span id="cb31-70"><a href="#cb31-70" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply </span>(env ls k)</span>
-<span id="cb31-71"><a href="#cb31-71" aria-hidden="true"></a>   (<span class="kw">let</span> ((f (<span class="kw">car</span> ls)))</span>
-<span id="cb31-72"><a href="#cb31-72" aria-hidden="true"></a>     (<span class="kw">if</span> (is-operator f)</span>
-<span id="cb31-73"><a href="#cb31-73" aria-hidden="true"></a>         (apply-cont k (<span class="kw">eval</span> ls))</span>
-<span id="cb31-74"><a href="#cb31-74" aria-hidden="true"></a>         (<span class="kw">if</span> (is-closure f)</span>
-<span id="cb31-75"><a href="#cb31-75" aria-hidden="true"></a>             (apply-closure env ls k)</span>
-<span id="cb31-76"><a href="#cb31-76" aria-hidden="true"></a>             &#39;error))))</span>
-<span id="cb31-77"><a href="#cb31-77" aria-hidden="true"></a></span>
-<span id="cb31-78"><a href="#cb31-78" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply-cont </span>(k <span class="kw">exp</span>)</span>
-<span id="cb31-79"><a href="#cb31-79" aria-hidden="true"></a>  (match k</span>
-<span id="cb31-80"><a href="#cb31-80" aria-hidden="true"></a>         (done <span class="kw">exp</span>)</span>
-<span id="cb31-81"><a href="#cb31-81" aria-hidden="true"></a>         ((progn-cont (? env) (? ls) (? k1)) (eval-progn env ls k1))</span>
-<span id="cb31-82"><a href="#cb31-82" aria-hidden="true"></a>         ((define-cont (? key) (? k1))</span>
-<span id="cb31-83"><a href="#cb31-83" aria-hidden="true"></a>          (<span class="kw">progn</span></span>
-<span id="cb31-84"><a href="#cb31-84" aria-hidden="true"></a>            (setvar &#39;global-env (<span class="kw">acons</span> key <span class="kw">exp</span> global-env))</span>
-<span id="cb31-85"><a href="#cb31-85" aria-hidden="true"></a>            (apply-cont k1 <span class="kw">exp</span>)))</span>
-<span id="cb31-86"><a href="#cb31-86" aria-hidden="true"></a>         ((list-cont (? env) (? r) (? acc) (? k1))</span>
-<span id="cb31-87"><a href="#cb31-87" aria-hidden="true"></a>          (eval-list env r (<span class="kw">append</span> acc (<span class="kw">list</span> <span class="kw">exp</span>)) k1))</span>
-<span id="cb31-88"><a href="#cb31-88" aria-hidden="true"></a>         ((application-cont (? env) (? k1))</span>
-<span id="cb31-89"><a href="#cb31-89" aria-hidden="true"></a>          (<span class="kw">apply</span> env <span class="kw">exp</span> k1))</span>
-<span id="cb31-90"><a href="#cb31-90" aria-hidden="true"></a>         ((if-cont (? env) (? then-branch) (? else-branch) (? k1))</span>
-<span id="cb31-91"><a href="#cb31-91" aria-hidden="true"></a>          (<span class="kw">if</span> <span class="kw">exp</span></span>
-<span id="cb31-92"><a href="#cb31-92" aria-hidden="true"></a>              (evald env then-branch k1)</span>
-<span id="cb31-93"><a href="#cb31-93" aria-hidden="true"></a>            (evald env else-branch k1)))))</span>
-<span id="cb31-94"><a href="#cb31-94" aria-hidden="true"></a></span>
-<span id="cb31-95"><a href="#cb31-95" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> evald </span>(env <span class="kw">exp</span> k)</span>
-<span id="cb31-96"><a href="#cb31-96" aria-hidden="true"></a>  (<span class="kw">if</span> (is-operator <span class="kw">exp</span>)</span>
-<span id="cb31-97"><a href="#cb31-97" aria-hidden="true"></a>      (apply-cont k <span class="kw">exp</span>)</span>
-<span id="cb31-98"><a href="#cb31-98" aria-hidden="true"></a>    (<span class="kw">if</span> (is-symbol <span class="kw">exp</span>)</span>
-<span id="cb31-99"><a href="#cb31-99" aria-hidden="true"></a>        (<span class="kw">let</span> ((res (<span class="kw">assoc</span> env <span class="kw">exp</span>)))</span>
-<span id="cb31-100"><a href="#cb31-100" aria-hidden="true"></a>          (<span class="kw">if</span> (<span class="kw">eq</span> res <span class="kw">nil</span>)</span>
-<span id="cb31-101"><a href="#cb31-101" aria-hidden="true"></a>              (apply-cont k (<span class="kw">assoc</span> global-env <span class="kw">exp</span>))</span>
-<span id="cb31-102"><a href="#cb31-102" aria-hidden="true"></a>            (apply-cont k res)))</span>
-<span id="cb31-103"><a href="#cb31-103" aria-hidden="true"></a>      (<span class="kw">if</span> (is-number <span class="kw">exp</span>)</span>
-<span id="cb31-104"><a href="#cb31-104" aria-hidden="true"></a>          (apply-cont k <span class="kw">exp</span>)</span>
-<span id="cb31-105"><a href="#cb31-105" aria-hidden="true"></a>        (match <span class="kw">exp</span></span>
-<span id="cb31-106"><a href="#cb31-106" aria-hidden="true"></a>               ((<span class="kw">progn</span>  . (? ls)) (eval-progn  env ls k))</span>
-<span id="cb31-107"><a href="#cb31-107" aria-hidden="true"></a>               ((define . (? ls)) (eval-define env ls k))</span>
-<span id="cb31-108"><a href="#cb31-108" aria-hidden="true"></a>               ((<span class="kw">lambda</span> . (? ls)) (eval-lambda env ls k))</span>
-<span id="cb31-109"><a href="#cb31-109" aria-hidden="true"></a>               ((<span class="kw">if</span> . (? ls))     (eval-if env ls k))</span>
-<span id="cb31-110"><a href="#cb31-110" aria-hidden="true"></a>               ((?cons ls)        (eval-list env ls <span class="kw">nil</span></span>
-<span id="cb31-111"><a href="#cb31-111" aria-hidden="true"></a>                                             (<span class="kw">list</span> &#39;application-cont env k)))</span>
-<span id="cb31-112"><a href="#cb31-112" aria-hidden="true"></a>               )))))</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true"></a></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true"></a>(define global-env &#39;nil)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-number </span>(e)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true"></a>  (<span class="kw">or</span> (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-i)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true"></a>      (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-u)))</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-symbol </span>(e)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true"></a>  (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-symbol))</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-operator </span>(e)</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true"></a>  (<span class="kw">or</span> (<span class="kw">eq</span> e &#39;+)</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;-)</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;=)</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;*)</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true"></a>      ))</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true"></a></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-closure </span>(e)</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true"></a>  (<span class="kw">and</span> (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-list)</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true"></a>       (<span class="kw">eq</span> (<span class="kw">car</span> e) &#39;closure)))</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true"></a></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> add-bindings </span>(env binds)</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true"></a>  (match binds</span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true"></a>         (<span class="kw">nil</span> env)</span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true"></a>         (((? b) . (? rs))</span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true"></a>          (add-bindings (setassoc env b) rs))))</span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true"></a></span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-progn </span>(env args k)</span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true"></a>  (match args</span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true"></a>         (<span class="kw">nil</span> (apply-cont k <span class="kw">nil</span>))</span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true"></a>         (((? l) . <span class="kw">nil</span>) (evald env l k))</span>
+<span id="cb33-32"><a href="#cb33-32" aria-hidden="true"></a>         (((? l) . (? ls))</span>
+<span id="cb33-33"><a href="#cb33-33" aria-hidden="true"></a>          (evald env l</span>
+<span id="cb33-34"><a href="#cb33-34" aria-hidden="true"></a>                 (<span class="kw">list</span> &#39;progn-cont env ls k)))))</span>
+<span id="cb33-35"><a href="#cb33-35" aria-hidden="true"></a></span>
+<span id="cb33-36"><a href="#cb33-36" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-define </span>(env args k)</span>
+<span id="cb33-37"><a href="#cb33-37" aria-hidden="true"></a>  (<span class="kw">let</span> ((key (<span class="kw">car</span> args))</span>
+<span id="cb33-38"><a href="#cb33-38" aria-hidden="true"></a>        (val (<span class="kw">car</span> (<span class="kw">cdr</span> args))))</span>
+<span id="cb33-39"><a href="#cb33-39" aria-hidden="true"></a>    (evald env val</span>
+<span id="cb33-40"><a href="#cb33-40" aria-hidden="true"></a>           (<span class="kw">list</span> &#39;define-cont key k))))</span>
+<span id="cb33-41"><a href="#cb33-41" aria-hidden="true"></a></span>
+<span id="cb33-42"><a href="#cb33-42" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-lambda </span>(env args k)</span>
+<span id="cb33-43"><a href="#cb33-43" aria-hidden="true"></a>  (apply-cont k (<span class="kw">append</span> (<span class="kw">cons</span> &#39;closure args) (<span class="kw">list</span> env))))</span>
+<span id="cb33-44"><a href="#cb33-44" aria-hidden="true"></a></span>
+<span id="cb33-45"><a href="#cb33-45" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-if </span>(env args k)</span>
+<span id="cb33-46"><a href="#cb33-46" aria-hidden="true"></a>  (<span class="kw">let</span> ((cond-exp  (<span class="kw">car</span> args))</span>
+<span id="cb33-47"><a href="#cb33-47" aria-hidden="true"></a>        (then-branch (<span class="kw">car</span> (<span class="kw">cdr</span> args)))</span>
+<span id="cb33-48"><a href="#cb33-48" aria-hidden="true"></a>        (else-branch (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> args)))))</span>
+<span id="cb33-49"><a href="#cb33-49" aria-hidden="true"></a>    (evald env cond-exp</span>
+<span id="cb33-50"><a href="#cb33-50" aria-hidden="true"></a>           (<span class="kw">list</span> &#39;if-cont env then-branch else-branch k))))</span>
+<span id="cb33-51"><a href="#cb33-51" aria-hidden="true"></a></span>
+<span id="cb33-52"><a href="#cb33-52" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-list </span>(env ls acc k)</span>
+<span id="cb33-53"><a href="#cb33-53" aria-hidden="true"></a>  (<span class="kw">if</span> (<span class="kw">eq</span> ls <span class="kw">nil</span>)</span>
+<span id="cb33-54"><a href="#cb33-54" aria-hidden="true"></a>      (apply-cont k acc)</span>
+<span id="cb33-55"><a href="#cb33-55" aria-hidden="true"></a>      (<span class="kw">let</span> (( l (<span class="kw">car</span> ls))</span>
+<span id="cb33-56"><a href="#cb33-56" aria-hidden="true"></a>            ( r (<span class="kw">cdr</span> ls)))</span>
+<span id="cb33-57"><a href="#cb33-57" aria-hidden="true"></a>        (evald env l</span>
+<span id="cb33-58"><a href="#cb33-58" aria-hidden="true"></a>               (<span class="kw">list</span> &#39;list-cont env r acc k)))))</span>
+<span id="cb33-59"><a href="#cb33-59" aria-hidden="true"></a></span>
+<span id="cb33-60"><a href="#cb33-60" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply-closure </span>(env ls k)</span>
+<span id="cb33-61"><a href="#cb33-61" aria-hidden="true"></a>  (<span class="kw">let</span> ((clo  (<span class="kw">car</span> ls))</span>
+<span id="cb33-62"><a href="#cb33-62" aria-hidden="true"></a>        (args (<span class="kw">cdr</span> ls))</span>
+<span id="cb33-63"><a href="#cb33-63" aria-hidden="true"></a>        (ps (<span class="kw">car</span> (<span class="kw">cdr</span> clo)))</span>
+<span id="cb33-64"><a href="#cb33-64" aria-hidden="true"></a>        (body (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> clo))))</span>
+<span id="cb33-65"><a href="#cb33-65" aria-hidden="true"></a>        (env1 (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> clo)))))</span>
+<span id="cb33-66"><a href="#cb33-66" aria-hidden="true"></a>        (arg-env (zip ps args))</span>
+<span id="cb33-67"><a href="#cb33-67" aria-hidden="true"></a>        (new-env (add-bindings (<span class="kw">append</span> env1 env) arg-env)))</span>
+<span id="cb33-68"><a href="#cb33-68" aria-hidden="true"></a>    (evald new-env body k)))</span>
+<span id="cb33-69"><a href="#cb33-69" aria-hidden="true"></a></span>
+<span id="cb33-70"><a href="#cb33-70" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply </span>(env ls k)</span>
+<span id="cb33-71"><a href="#cb33-71" aria-hidden="true"></a>   (<span class="kw">let</span> ((f (<span class="kw">car</span> ls)))</span>
+<span id="cb33-72"><a href="#cb33-72" aria-hidden="true"></a>     (<span class="kw">if</span> (is-operator f)</span>
+<span id="cb33-73"><a href="#cb33-73" aria-hidden="true"></a>         (apply-cont k (<span class="kw">eval</span> ls))</span>
+<span id="cb33-74"><a href="#cb33-74" aria-hidden="true"></a>         (<span class="kw">if</span> (is-closure f)</span>
+<span id="cb33-75"><a href="#cb33-75" aria-hidden="true"></a>             (apply-closure env ls k)</span>
+<span id="cb33-76"><a href="#cb33-76" aria-hidden="true"></a>             &#39;error))))</span>
+<span id="cb33-77"><a href="#cb33-77" aria-hidden="true"></a></span>
+<span id="cb33-78"><a href="#cb33-78" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply-cont </span>(k <span class="kw">exp</span>)</span>
+<span id="cb33-79"><a href="#cb33-79" aria-hidden="true"></a>  (match k</span>
+<span id="cb33-80"><a href="#cb33-80" aria-hidden="true"></a>         (done <span class="kw">exp</span>)</span>
+<span id="cb33-81"><a href="#cb33-81" aria-hidden="true"></a>         ((progn-cont (? env) (? ls) (? k1)) (eval-progn env ls k1))</span>
+<span id="cb33-82"><a href="#cb33-82" aria-hidden="true"></a>         ((define-cont (? key) (? k1))</span>
+<span id="cb33-83"><a href="#cb33-83" aria-hidden="true"></a>          (<span class="kw">progn</span></span>
+<span id="cb33-84"><a href="#cb33-84" aria-hidden="true"></a>            (setvar &#39;global-env (<span class="kw">acons</span> key <span class="kw">exp</span> global-env))</span>
+<span id="cb33-85"><a href="#cb33-85" aria-hidden="true"></a>            (apply-cont k1 <span class="kw">exp</span>)))</span>
+<span id="cb33-86"><a href="#cb33-86" aria-hidden="true"></a>         ((list-cont (? env) (? r) (? acc) (? k1))</span>
+<span id="cb33-87"><a href="#cb33-87" aria-hidden="true"></a>          (eval-list env r (<span class="kw">append</span> acc (<span class="kw">list</span> <span class="kw">exp</span>)) k1))</span>
+<span id="cb33-88"><a href="#cb33-88" aria-hidden="true"></a>         ((application-cont (? env) (? k1))</span>
+<span id="cb33-89"><a href="#cb33-89" aria-hidden="true"></a>          (<span class="kw">apply</span> env <span class="kw">exp</span> k1))</span>
+<span id="cb33-90"><a href="#cb33-90" aria-hidden="true"></a>         ((if-cont (? env) (? then-branch) (? else-branch) (? k1))</span>
+<span id="cb33-91"><a href="#cb33-91" aria-hidden="true"></a>          (<span class="kw">if</span> <span class="kw">exp</span></span>
+<span id="cb33-92"><a href="#cb33-92" aria-hidden="true"></a>              (evald env then-branch k1)</span>
+<span id="cb33-93"><a href="#cb33-93" aria-hidden="true"></a>            (evald env else-branch k1)))))</span>
+<span id="cb33-94"><a href="#cb33-94" aria-hidden="true"></a></span>
+<span id="cb33-95"><a href="#cb33-95" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> evald </span>(env <span class="kw">exp</span> k)</span>
+<span id="cb33-96"><a href="#cb33-96" aria-hidden="true"></a>  (<span class="kw">if</span> (is-operator <span class="kw">exp</span>)</span>
+<span id="cb33-97"><a href="#cb33-97" aria-hidden="true"></a>      (apply-cont k <span class="kw">exp</span>)</span>
+<span id="cb33-98"><a href="#cb33-98" aria-hidden="true"></a>    (<span class="kw">if</span> (is-symbol <span class="kw">exp</span>)</span>
+<span id="cb33-99"><a href="#cb33-99" aria-hidden="true"></a>        (<span class="kw">let</span> ((res (<span class="kw">assoc</span> env <span class="kw">exp</span>)))</span>
+<span id="cb33-100"><a href="#cb33-100" aria-hidden="true"></a>          (<span class="kw">if</span> (<span class="kw">eq</span> res <span class="kw">nil</span>)</span>
+<span id="cb33-101"><a href="#cb33-101" aria-hidden="true"></a>              (apply-cont k (<span class="kw">assoc</span> global-env <span class="kw">exp</span>))</span>
+<span id="cb33-102"><a href="#cb33-102" aria-hidden="true"></a>            (apply-cont k res)))</span>
+<span id="cb33-103"><a href="#cb33-103" aria-hidden="true"></a>      (<span class="kw">if</span> (is-number <span class="kw">exp</span>)</span>
+<span id="cb33-104"><a href="#cb33-104" aria-hidden="true"></a>          (apply-cont k <span class="kw">exp</span>)</span>
+<span id="cb33-105"><a href="#cb33-105" aria-hidden="true"></a>        (match <span class="kw">exp</span></span>
+<span id="cb33-106"><a href="#cb33-106" aria-hidden="true"></a>               ((<span class="kw">progn</span>  . (? ls)) (eval-progn  env ls k))</span>
+<span id="cb33-107"><a href="#cb33-107" aria-hidden="true"></a>               ((define . (? ls)) (eval-define env ls k))</span>
+<span id="cb33-108"><a href="#cb33-108" aria-hidden="true"></a>               ((<span class="kw">lambda</span> . (? ls)) (eval-lambda env ls k))</span>
+<span id="cb33-109"><a href="#cb33-109" aria-hidden="true"></a>               ((<span class="kw">if</span> . (? ls))     (eval-if env ls k))</span>
+<span id="cb33-110"><a href="#cb33-110" aria-hidden="true"></a>               ((?cons ls)        (eval-list env ls <span class="kw">nil</span></span>
+<span id="cb33-111"><a href="#cb33-111" aria-hidden="true"></a>                                             (<span class="kw">list</span> &#39;application-cont env k)))</span>
+<span id="cb33-112"><a href="#cb33-112" aria-hidden="true"></a>               )))))</span></code></pre></div>
 <p>We now have a first order program for evaluation of mini-lisp programs in continuation passing style.</p>
 <h2 id="making-the-stack-explicit">Making the Stack Explicit</h2>
 <p>If we look at the continuation objects created in the previous section:</p>
@@ -698,21 +712,21 @@
 (list &#39;list-cont env r acc k)
 done
 </code></pre>
-<p>All of these, except for <code>done</code> is a list, where the last element is <code>k</code>. The <code>k</code> here is itself a continuation. So continuations in the defunctionalized interpreter is a list of lists or in other words a list of continuation objects.</p>
+<p>All of these, except for <code>done</code> is a list, where the last element is <code>k</code>. The <code>k</code> here is itself a continuation. So continuations in the defunctionalized interpreter is a list of lists or in other words a list of continuation objects. <code>done</code> takes the role of a terminating <code>nil</code> value.</p>
 <p>If we look at the functions that create continuations we can see that each of these functions only ever add a new continuation object to the head of this continuation list.</p>
 <p>And if we then look at <code>apply-cont</code> we see that it processes the continuation at the head of the list.</p>
-<p>So, what we really have is a stack of continuation objects and this last version of the interpreter makes this stack of continuations explicit.</p>
+<p>So, what we really have is a stack of continuation objects and this last version of the interpreter makes that stack of continuations explicit.</p>
 <p>Let's first add a stack abstraction and then go through a few examples:</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true"></a>(define stack &#39;nil)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true"></a></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> push </span>(v)</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true"></a>  (setvar &#39;stack (<span class="kw">cons</span> v stack)))</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true"></a></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> pop </span>()</span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true"></a>  (<span class="kw">let</span> ((r (<span class="kw">car</span> stack)))</span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true"></a>    (<span class="kw">progn</span></span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true"></a>      (setvar &#39;stack (<span class="kw">cdr</span> stack))</span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true"></a>      r)))</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true"></a>(define stack &#39;nil)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> push </span>(v)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true"></a>  (setvar &#39;stack (<span class="kw">cons</span> v stack)))</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> pop </span>()</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true"></a>  (<span class="kw">let</span> ((r (<span class="kw">car</span> stack)))</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true"></a>    (<span class="kw">progn</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true"></a>      (setvar &#39;stack (<span class="kw">cdr</span> stack))</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true"></a>      r)))</span></code></pre></div>
 <p>The code above defines a stack and the operations <code>push</code>, for adding to the top and <code>pop, for removing the and returning the top element. As the stack defined here is global, there is no need to pass the k argument around everywhere in the new evaluator called </code>eval-stack<code>. So </code>eval-stack` takes just two arguments, an environment and an expression.</p>
 <p><em><strong>Defunctionalized: eval-progn</strong></em></p>
 <pre><code>(defun eval-progn (env args k)
@@ -724,317 +738,317 @@ done
                  (list &#39;progn-cont env ls k)))))
 </code></pre>
 <p><em><strong>Explicit Stack: eval-progn</strong></em></p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-progn </span>(env args)</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true"></a>  (match args</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true"></a>         (<span class="kw">nil</span> (apply-cont <span class="kw">nil</span>))</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true"></a>         (((? l) . <span class="kw">nil</span>) (eval-stack env l))</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true"></a>         (((? l) . (? ls))</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true"></a>          (<span class="kw">progn</span></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true"></a>            (<span class="kw">push</span> (<span class="kw">list</span> &#39;progn-cont env ls))</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true"></a>            (eval-stack env l)))))</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-progn </span>(env args)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true"></a>  (match args</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true"></a>         (<span class="kw">nil</span> (apply-cont <span class="kw">nil</span>))</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true"></a>         (((? l) . <span class="kw">nil</span>) (eval-stack env l))</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true"></a>         (((? l) . (? ls))</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true"></a>          (<span class="kw">progn</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true"></a>            (<span class="kw">push</span> (<span class="kw">list</span> &#39;progn-cont env ls))</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true"></a>            (eval-stack env l)))))</span></code></pre></div>
 <p>The explicit stack version of <code>eval-progn</code>, pushes the object <code>(list 'progn-cont env ls)</code> (note there is no <code>k</code> in there).</p>
 <p>When it is time to interpret the continuation, <code>apply-cont</code> pops the top of the stack and interprets it.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply-cont </span>(<span class="kw">exp</span>)</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true"></a>  (<span class="kw">let</span> (( k (<span class="kw">pop</span>)))</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true"></a>    (match k</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true"></a>           (done <span class="kw">exp</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true"></a>           ((progn-cont (? env) (? ls)) (eval-progn env ls))</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true"></a>           ((define-cont (? key))</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true"></a>            (<span class="kw">progn</span></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true"></a>              (setvar &#39;global-env (<span class="kw">acons</span> key <span class="kw">exp</span> global-env))</span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true"></a>              (apply-cont <span class="kw">exp</span>)))</span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true"></a>           ((list-cont (? env) (? r) (? acc))</span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true"></a>            (eval-list env r (<span class="kw">append</span> acc (<span class="kw">list</span> <span class="kw">exp</span>))))</span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true"></a>           ((application-cont (? env))</span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true"></a>            (<span class="kw">apply</span> env <span class="kw">exp</span>))</span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true"></a>           ((if-cont (? env) (? then-branch) (? else-branch))</span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true"></a>            (<span class="kw">if</span> <span class="kw">exp</span></span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true"></a>                (eval-stack env then-branch)</span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true"></a>                (eval-stack env else-branch))))))</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply-cont </span>(<span class="kw">exp</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true"></a>  (<span class="kw">let</span> (( k (<span class="kw">pop</span>)))</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true"></a>    (match k</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true"></a>           (done <span class="kw">exp</span>)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true"></a>           ((progn-cont (? env) (? ls)) (eval-progn env ls))</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true"></a>           ((define-cont (? key))</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true"></a>            (<span class="kw">progn</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true"></a>              (setvar &#39;global-env (<span class="kw">acons</span> key <span class="kw">exp</span> global-env))</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true"></a>              (apply-cont <span class="kw">exp</span>)))</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true"></a>           ((list-cont (? env) (? r) (? acc))</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true"></a>            (eval-list env r (<span class="kw">append</span> acc (<span class="kw">list</span> <span class="kw">exp</span>))))</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true"></a>           ((application-cont (? env))</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true"></a>            (<span class="kw">apply</span> env <span class="kw">exp</span>))</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true"></a>           ((if-cont (? env) (? then-branch) (? else-branch))</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true"></a>            (<span class="kw">if</span> <span class="kw">exp</span></span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true"></a>                (eval-stack env then-branch)</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true"></a>                (eval-stack env else-branch))))))</span></code></pre></div>
 <p>Below you can find the code for the explicit stack evaluator.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true"></a>(define global-env &#39;nil)</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true"></a></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true"></a>(define stack &#39;nil)</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true"></a></span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> push </span>(v)</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true"></a>  (setvar &#39;stack (<span class="kw">cons</span> v stack)))</span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true"></a></span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> pop </span>()</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true"></a>  (<span class="kw">let</span> ((r (<span class="kw">car</span> stack)))</span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true"></a>    (<span class="kw">progn</span></span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true"></a>      (setvar &#39;stack (<span class="kw">cdr</span> stack))</span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true"></a>      r)))</span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true"></a></span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-number </span>(e)</span>
-<span id="cb37-15"><a href="#cb37-15" aria-hidden="true"></a>  (<span class="kw">or</span> (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-i)</span>
-<span id="cb37-16"><a href="#cb37-16" aria-hidden="true"></a>      (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-u)))</span>
-<span id="cb37-17"><a href="#cb37-17" aria-hidden="true"></a></span>
-<span id="cb37-18"><a href="#cb37-18" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-symbol </span>(e)</span>
-<span id="cb37-19"><a href="#cb37-19" aria-hidden="true"></a>  (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-symbol))</span>
-<span id="cb37-20"><a href="#cb37-20" aria-hidden="true"></a></span>
-<span id="cb37-21"><a href="#cb37-21" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-operator </span>(e)</span>
-<span id="cb37-22"><a href="#cb37-22" aria-hidden="true"></a>  (<span class="kw">or</span> (<span class="kw">eq</span> e &#39;+)</span>
-<span id="cb37-23"><a href="#cb37-23" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;-)</span>
-<span id="cb37-24"><a href="#cb37-24" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;=)</span>
-<span id="cb37-25"><a href="#cb37-25" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;*)</span>
-<span id="cb37-26"><a href="#cb37-26" aria-hidden="true"></a>      ))</span>
-<span id="cb37-27"><a href="#cb37-27" aria-hidden="true"></a></span>
-<span id="cb37-28"><a href="#cb37-28" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-closure </span>(e)</span>
-<span id="cb37-29"><a href="#cb37-29" aria-hidden="true"></a>  (<span class="kw">and</span> (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-list)</span>
-<span id="cb37-30"><a href="#cb37-30" aria-hidden="true"></a>       (<span class="kw">eq</span> (<span class="kw">car</span> e) &#39;closure)))</span>
-<span id="cb37-31"><a href="#cb37-31" aria-hidden="true"></a></span>
-<span id="cb37-32"><a href="#cb37-32" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> add-bindings </span>(env binds)</span>
-<span id="cb37-33"><a href="#cb37-33" aria-hidden="true"></a>  (match binds</span>
-<span id="cb37-34"><a href="#cb37-34" aria-hidden="true"></a>         (<span class="kw">nil</span> env)</span>
-<span id="cb37-35"><a href="#cb37-35" aria-hidden="true"></a>         (((? b) . (? rs))</span>
-<span id="cb37-36"><a href="#cb37-36" aria-hidden="true"></a>          (add-bindings (setassoc env b) rs))))</span>
-<span id="cb37-37"><a href="#cb37-37" aria-hidden="true"></a></span>
-<span id="cb37-38"><a href="#cb37-38" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-progn </span>(env args)</span>
-<span id="cb37-39"><a href="#cb37-39" aria-hidden="true"></a>  (match args</span>
-<span id="cb37-40"><a href="#cb37-40" aria-hidden="true"></a>         (<span class="kw">nil</span> (apply-cont <span class="kw">nil</span>))</span>
-<span id="cb37-41"><a href="#cb37-41" aria-hidden="true"></a>         (((? l) . <span class="kw">nil</span>) (eval-stack env l))</span>
-<span id="cb37-42"><a href="#cb37-42" aria-hidden="true"></a>         (((? l) . (? ls))</span>
-<span id="cb37-43"><a href="#cb37-43" aria-hidden="true"></a>          (<span class="kw">progn</span></span>
-<span id="cb37-44"><a href="#cb37-44" aria-hidden="true"></a>            (<span class="kw">push</span> (<span class="kw">list</span> &#39;progn-cont env ls))</span>
-<span id="cb37-45"><a href="#cb37-45" aria-hidden="true"></a>            (eval-stack env l)))))</span>
-<span id="cb37-46"><a href="#cb37-46" aria-hidden="true"></a>              </span>
-<span id="cb37-47"><a href="#cb37-47" aria-hidden="true"></a></span>
-<span id="cb37-48"><a href="#cb37-48" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-define </span>(env args)</span>
-<span id="cb37-49"><a href="#cb37-49" aria-hidden="true"></a>  (<span class="kw">let</span> ((key (<span class="kw">car</span> args))</span>
-<span id="cb37-50"><a href="#cb37-50" aria-hidden="true"></a>        (val (<span class="kw">car</span> (<span class="kw">cdr</span> args))))</span>
-<span id="cb37-51"><a href="#cb37-51" aria-hidden="true"></a>    (<span class="kw">progn</span></span>
-<span id="cb37-52"><a href="#cb37-52" aria-hidden="true"></a>      (<span class="kw">push</span> (<span class="kw">list</span> &#39;define-cont key))</span>
-<span id="cb37-53"><a href="#cb37-53" aria-hidden="true"></a>      (eval-stack env val))))</span>
-<span id="cb37-54"><a href="#cb37-54" aria-hidden="true"></a>           </span>
-<span id="cb37-55"><a href="#cb37-55" aria-hidden="true"></a></span>
-<span id="cb37-56"><a href="#cb37-56" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-lambda </span>(env args)</span>
-<span id="cb37-57"><a href="#cb37-57" aria-hidden="true"></a>  (apply-cont (<span class="kw">append</span> (<span class="kw">cons</span> &#39;closure args) (<span class="kw">list</span> env))))</span>
-<span id="cb37-58"><a href="#cb37-58" aria-hidden="true"></a></span>
-<span id="cb37-59"><a href="#cb37-59" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-if </span>(env args)</span>
-<span id="cb37-60"><a href="#cb37-60" aria-hidden="true"></a>  (<span class="kw">let</span> ((cond-exp  (<span class="kw">car</span> args))</span>
-<span id="cb37-61"><a href="#cb37-61" aria-hidden="true"></a>        (then-branch (<span class="kw">car</span> (<span class="kw">cdr</span> args)))</span>
-<span id="cb37-62"><a href="#cb37-62" aria-hidden="true"></a>        (else-branch (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> args)))))</span>
-<span id="cb37-63"><a href="#cb37-63" aria-hidden="true"></a>    (<span class="kw">progn</span> </span>
-<span id="cb37-64"><a href="#cb37-64" aria-hidden="true"></a>      (<span class="kw">push</span> (<span class="kw">list</span> &#39;if-cont env then-branch else-branch))</span>
-<span id="cb37-65"><a href="#cb37-65" aria-hidden="true"></a>      (eval-stack env cond-exp))))</span>
-<span id="cb37-66"><a href="#cb37-66" aria-hidden="true"></a>          </span>
-<span id="cb37-67"><a href="#cb37-67" aria-hidden="true"></a></span>
-<span id="cb37-68"><a href="#cb37-68" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-list </span>(env ls acc)</span>
-<span id="cb37-69"><a href="#cb37-69" aria-hidden="true"></a>  (<span class="kw">if</span> (<span class="kw">eq</span> ls <span class="kw">nil</span>)</span>
-<span id="cb37-70"><a href="#cb37-70" aria-hidden="true"></a>      (apply-cont acc)</span>
-<span id="cb37-71"><a href="#cb37-71" aria-hidden="true"></a>      (<span class="kw">let</span> (( l (<span class="kw">car</span> ls))</span>
-<span id="cb37-72"><a href="#cb37-72" aria-hidden="true"></a>            ( r (<span class="kw">cdr</span> ls)))</span>
-<span id="cb37-73"><a href="#cb37-73" aria-hidden="true"></a>        (<span class="kw">progn</span></span>
-<span id="cb37-74"><a href="#cb37-74" aria-hidden="true"></a>          (<span class="kw">push</span> (<span class="kw">list</span> &#39;list-cont env r acc))</span>
-<span id="cb37-75"><a href="#cb37-75" aria-hidden="true"></a>          (eval-stack env l)))))</span>
-<span id="cb37-76"><a href="#cb37-76" aria-hidden="true"></a>               </span>
-<span id="cb37-77"><a href="#cb37-77" aria-hidden="true"></a></span>
-<span id="cb37-78"><a href="#cb37-78" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply-closure </span>(env ls)</span>
-<span id="cb37-79"><a href="#cb37-79" aria-hidden="true"></a>  (<span class="kw">let</span> ((clo  (<span class="kw">car</span> ls))</span>
-<span id="cb37-80"><a href="#cb37-80" aria-hidden="true"></a>        (args (<span class="kw">cdr</span> ls))</span>
-<span id="cb37-81"><a href="#cb37-81" aria-hidden="true"></a>        (ps (<span class="kw">car</span> (<span class="kw">cdr</span> clo)))</span>
-<span id="cb37-82"><a href="#cb37-82" aria-hidden="true"></a>        (body (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> clo))))</span>
-<span id="cb37-83"><a href="#cb37-83" aria-hidden="true"></a>        (env1 (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> clo)))))</span>
-<span id="cb37-84"><a href="#cb37-84" aria-hidden="true"></a>        (arg-env (zip ps args))</span>
-<span id="cb37-85"><a href="#cb37-85" aria-hidden="true"></a>        (new-env (add-bindings (<span class="kw">append</span> env1 env) arg-env)))</span>
-<span id="cb37-86"><a href="#cb37-86" aria-hidden="true"></a>    (eval-stack new-env body)))</span>
-<span id="cb37-87"><a href="#cb37-87" aria-hidden="true"></a></span>
-<span id="cb37-88"><a href="#cb37-88" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply </span>(env ls)</span>
-<span id="cb37-89"><a href="#cb37-89" aria-hidden="true"></a>   (<span class="kw">let</span> ((f (<span class="kw">car</span> ls)))</span>
-<span id="cb37-90"><a href="#cb37-90" aria-hidden="true"></a>     (<span class="kw">if</span> (is-operator f)</span>
-<span id="cb37-91"><a href="#cb37-91" aria-hidden="true"></a>         (apply-cont (<span class="kw">eval</span> ls))</span>
-<span id="cb37-92"><a href="#cb37-92" aria-hidden="true"></a>         (<span class="kw">if</span> (is-closure f)</span>
-<span id="cb37-93"><a href="#cb37-93" aria-hidden="true"></a>             (apply-closure env ls)</span>
-<span id="cb37-94"><a href="#cb37-94" aria-hidden="true"></a>             &#39;error))))</span>
-<span id="cb37-95"><a href="#cb37-95" aria-hidden="true"></a></span>
-<span id="cb37-96"><a href="#cb37-96" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply-cont </span>(<span class="kw">exp</span>)</span>
-<span id="cb37-97"><a href="#cb37-97" aria-hidden="true"></a>  (<span class="kw">let</span> (( k (<span class="kw">pop</span>)))</span>
-<span id="cb37-98"><a href="#cb37-98" aria-hidden="true"></a>    (match k</span>
-<span id="cb37-99"><a href="#cb37-99" aria-hidden="true"></a>           (done <span class="kw">exp</span>)</span>
-<span id="cb37-100"><a href="#cb37-100" aria-hidden="true"></a>           ((progn-cont (? env) (? ls)) (eval-progn env ls))</span>
-<span id="cb37-101"><a href="#cb37-101" aria-hidden="true"></a>           ((define-cont (? key))</span>
-<span id="cb37-102"><a href="#cb37-102" aria-hidden="true"></a>            (<span class="kw">progn</span></span>
-<span id="cb37-103"><a href="#cb37-103" aria-hidden="true"></a>              (setvar &#39;global-env (<span class="kw">acons</span> key <span class="kw">exp</span> global-env))</span>
-<span id="cb37-104"><a href="#cb37-104" aria-hidden="true"></a>              (apply-cont <span class="kw">exp</span>)))</span>
-<span id="cb37-105"><a href="#cb37-105" aria-hidden="true"></a>           ((list-cont (? env) (? r) (? acc))</span>
-<span id="cb37-106"><a href="#cb37-106" aria-hidden="true"></a>            (eval-list env r (<span class="kw">append</span> acc (<span class="kw">list</span> <span class="kw">exp</span>))))</span>
-<span id="cb37-107"><a href="#cb37-107" aria-hidden="true"></a>           ((application-cont (? env))</span>
-<span id="cb37-108"><a href="#cb37-108" aria-hidden="true"></a>            (<span class="kw">apply</span> env <span class="kw">exp</span>))</span>
-<span id="cb37-109"><a href="#cb37-109" aria-hidden="true"></a>           ((if-cont (? env) (? then-branch) (? else-branch))</span>
-<span id="cb37-110"><a href="#cb37-110" aria-hidden="true"></a>            (<span class="kw">if</span> <span class="kw">exp</span></span>
-<span id="cb37-111"><a href="#cb37-111" aria-hidden="true"></a>                (eval-stack env then-branch)</span>
-<span id="cb37-112"><a href="#cb37-112" aria-hidden="true"></a>                (eval-stack env else-branch))))))</span>
-<span id="cb37-113"><a href="#cb37-113" aria-hidden="true"></a></span>
-<span id="cb37-114"><a href="#cb37-114" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> evals </span>(env <span class="kw">exp</span>)</span>
-<span id="cb37-115"><a href="#cb37-115" aria-hidden="true"></a>  (<span class="kw">progn</span></span>
-<span id="cb37-116"><a href="#cb37-116" aria-hidden="true"></a>    (setvar &#39;stack <span class="kw">nil</span>)</span>
-<span id="cb37-117"><a href="#cb37-117" aria-hidden="true"></a>    (<span class="kw">push</span> &#39;done)</span>
-<span id="cb37-118"><a href="#cb37-118" aria-hidden="true"></a>    (eval-stack env <span class="kw">exp</span>)))</span>
-<span id="cb37-119"><a href="#cb37-119" aria-hidden="true"></a>  </span>
-<span id="cb37-120"><a href="#cb37-120" aria-hidden="true"></a></span>
-<span id="cb37-121"><a href="#cb37-121" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-stack </span>(env <span class="kw">exp</span>)</span>
-<span id="cb37-122"><a href="#cb37-122" aria-hidden="true"></a>  (<span class="kw">if</span> (is-operator <span class="kw">exp</span>)</span>
-<span id="cb37-123"><a href="#cb37-123" aria-hidden="true"></a>      (apply-cont <span class="kw">exp</span>)</span>
-<span id="cb37-124"><a href="#cb37-124" aria-hidden="true"></a>    (<span class="kw">if</span> (is-symbol <span class="kw">exp</span>)</span>
-<span id="cb37-125"><a href="#cb37-125" aria-hidden="true"></a>        (<span class="kw">let</span> ((res (<span class="kw">assoc</span> env <span class="kw">exp</span>)))</span>
-<span id="cb37-126"><a href="#cb37-126" aria-hidden="true"></a>          (<span class="kw">if</span> (<span class="kw">eq</span> res <span class="kw">nil</span>)</span>
-<span id="cb37-127"><a href="#cb37-127" aria-hidden="true"></a>              (apply-cont (<span class="kw">assoc</span> global-env <span class="kw">exp</span>))</span>
-<span id="cb37-128"><a href="#cb37-128" aria-hidden="true"></a>            (apply-cont res)))</span>
-<span id="cb37-129"><a href="#cb37-129" aria-hidden="true"></a>      (<span class="kw">if</span> (is-number <span class="kw">exp</span>)</span>
-<span id="cb37-130"><a href="#cb37-130" aria-hidden="true"></a>          (apply-cont <span class="kw">exp</span>)</span>
-<span id="cb37-131"><a href="#cb37-131" aria-hidden="true"></a>        (match <span class="kw">exp</span></span>
-<span id="cb37-132"><a href="#cb37-132" aria-hidden="true"></a>               ((<span class="kw">progn</span>  . (? ls)) (eval-progn  env ls))</span>
-<span id="cb37-133"><a href="#cb37-133" aria-hidden="true"></a>               ((define . (? ls)) (eval-define env ls))</span>
-<span id="cb37-134"><a href="#cb37-134" aria-hidden="true"></a>               ((<span class="kw">lambda</span> . (? ls)) (eval-lambda env ls))</span>
-<span id="cb37-135"><a href="#cb37-135" aria-hidden="true"></a>               ((<span class="kw">if</span> . (? ls))     (eval-if env ls))</span>
-<span id="cb37-136"><a href="#cb37-136" aria-hidden="true"></a>               ((?cons ls)        (<span class="kw">progn</span></span>
-<span id="cb37-137"><a href="#cb37-137" aria-hidden="true"></a>                                    (<span class="kw">push</span> (<span class="kw">list</span> &#39;application-cont env))</span>
-<span id="cb37-138"><a href="#cb37-138" aria-hidden="true"></a>                                    (eval-list env ls <span class="kw">nil</span>)))</span>
-<span id="cb37-139"><a href="#cb37-139" aria-hidden="true"></a>               )))))</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true"></a>(define global-env &#39;nil)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true"></a>(define stack &#39;nil)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> push </span>(v)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true"></a>  (setvar &#39;stack (<span class="kw">cons</span> v stack)))</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true"></a></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> pop </span>()</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true"></a>  (<span class="kw">let</span> ((r (<span class="kw">car</span> stack)))</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true"></a>    (<span class="kw">progn</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true"></a>      (setvar &#39;stack (<span class="kw">cdr</span> stack))</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true"></a>      r)))</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true"></a></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-number </span>(e)</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true"></a>  (<span class="kw">or</span> (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-i)</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true"></a>      (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-u)))</span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true"></a></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-symbol </span>(e)</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true"></a>  (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-symbol))</span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true"></a></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-operator </span>(e)</span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true"></a>  (<span class="kw">or</span> (<span class="kw">eq</span> e &#39;+)</span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;-)</span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;=)</span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true"></a>      (<span class="kw">eq</span> e &#39;*)</span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true"></a>      ))</span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true"></a></span>
+<span id="cb39-28"><a href="#cb39-28" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> is-closure </span>(e)</span>
+<span id="cb39-29"><a href="#cb39-29" aria-hidden="true"></a>  (<span class="kw">and</span> (<span class="kw">eq</span> (<span class="kw">type-of</span> e) type-list)</span>
+<span id="cb39-30"><a href="#cb39-30" aria-hidden="true"></a>       (<span class="kw">eq</span> (<span class="kw">car</span> e) &#39;closure)))</span>
+<span id="cb39-31"><a href="#cb39-31" aria-hidden="true"></a></span>
+<span id="cb39-32"><a href="#cb39-32" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> add-bindings </span>(env binds)</span>
+<span id="cb39-33"><a href="#cb39-33" aria-hidden="true"></a>  (match binds</span>
+<span id="cb39-34"><a href="#cb39-34" aria-hidden="true"></a>         (<span class="kw">nil</span> env)</span>
+<span id="cb39-35"><a href="#cb39-35" aria-hidden="true"></a>         (((? b) . (? rs))</span>
+<span id="cb39-36"><a href="#cb39-36" aria-hidden="true"></a>          (add-bindings (setassoc env b) rs))))</span>
+<span id="cb39-37"><a href="#cb39-37" aria-hidden="true"></a></span>
+<span id="cb39-38"><a href="#cb39-38" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-progn </span>(env args)</span>
+<span id="cb39-39"><a href="#cb39-39" aria-hidden="true"></a>  (match args</span>
+<span id="cb39-40"><a href="#cb39-40" aria-hidden="true"></a>         (<span class="kw">nil</span> (apply-cont <span class="kw">nil</span>))</span>
+<span id="cb39-41"><a href="#cb39-41" aria-hidden="true"></a>         (((? l) . <span class="kw">nil</span>) (eval-stack env l))</span>
+<span id="cb39-42"><a href="#cb39-42" aria-hidden="true"></a>         (((? l) . (? ls))</span>
+<span id="cb39-43"><a href="#cb39-43" aria-hidden="true"></a>          (<span class="kw">progn</span></span>
+<span id="cb39-44"><a href="#cb39-44" aria-hidden="true"></a>            (<span class="kw">push</span> (<span class="kw">list</span> &#39;progn-cont env ls))</span>
+<span id="cb39-45"><a href="#cb39-45" aria-hidden="true"></a>            (eval-stack env l)))))</span>
+<span id="cb39-46"><a href="#cb39-46" aria-hidden="true"></a>              </span>
+<span id="cb39-47"><a href="#cb39-47" aria-hidden="true"></a></span>
+<span id="cb39-48"><a href="#cb39-48" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-define </span>(env args)</span>
+<span id="cb39-49"><a href="#cb39-49" aria-hidden="true"></a>  (<span class="kw">let</span> ((key (<span class="kw">car</span> args))</span>
+<span id="cb39-50"><a href="#cb39-50" aria-hidden="true"></a>        (val (<span class="kw">car</span> (<span class="kw">cdr</span> args))))</span>
+<span id="cb39-51"><a href="#cb39-51" aria-hidden="true"></a>    (<span class="kw">progn</span></span>
+<span id="cb39-52"><a href="#cb39-52" aria-hidden="true"></a>      (<span class="kw">push</span> (<span class="kw">list</span> &#39;define-cont key))</span>
+<span id="cb39-53"><a href="#cb39-53" aria-hidden="true"></a>      (eval-stack env val))))</span>
+<span id="cb39-54"><a href="#cb39-54" aria-hidden="true"></a>           </span>
+<span id="cb39-55"><a href="#cb39-55" aria-hidden="true"></a></span>
+<span id="cb39-56"><a href="#cb39-56" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-lambda </span>(env args)</span>
+<span id="cb39-57"><a href="#cb39-57" aria-hidden="true"></a>  (apply-cont (<span class="kw">append</span> (<span class="kw">cons</span> &#39;closure args) (<span class="kw">list</span> env))))</span>
+<span id="cb39-58"><a href="#cb39-58" aria-hidden="true"></a></span>
+<span id="cb39-59"><a href="#cb39-59" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-if </span>(env args)</span>
+<span id="cb39-60"><a href="#cb39-60" aria-hidden="true"></a>  (<span class="kw">let</span> ((cond-exp  (<span class="kw">car</span> args))</span>
+<span id="cb39-61"><a href="#cb39-61" aria-hidden="true"></a>        (then-branch (<span class="kw">car</span> (<span class="kw">cdr</span> args)))</span>
+<span id="cb39-62"><a href="#cb39-62" aria-hidden="true"></a>        (else-branch (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> args)))))</span>
+<span id="cb39-63"><a href="#cb39-63" aria-hidden="true"></a>    (<span class="kw">progn</span> </span>
+<span id="cb39-64"><a href="#cb39-64" aria-hidden="true"></a>      (<span class="kw">push</span> (<span class="kw">list</span> &#39;if-cont env then-branch else-branch))</span>
+<span id="cb39-65"><a href="#cb39-65" aria-hidden="true"></a>      (eval-stack env cond-exp))))</span>
+<span id="cb39-66"><a href="#cb39-66" aria-hidden="true"></a>          </span>
+<span id="cb39-67"><a href="#cb39-67" aria-hidden="true"></a></span>
+<span id="cb39-68"><a href="#cb39-68" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-list </span>(env ls acc)</span>
+<span id="cb39-69"><a href="#cb39-69" aria-hidden="true"></a>  (<span class="kw">if</span> (<span class="kw">eq</span> ls <span class="kw">nil</span>)</span>
+<span id="cb39-70"><a href="#cb39-70" aria-hidden="true"></a>      (apply-cont acc)</span>
+<span id="cb39-71"><a href="#cb39-71" aria-hidden="true"></a>      (<span class="kw">let</span> (( l (<span class="kw">car</span> ls))</span>
+<span id="cb39-72"><a href="#cb39-72" aria-hidden="true"></a>            ( r (<span class="kw">cdr</span> ls)))</span>
+<span id="cb39-73"><a href="#cb39-73" aria-hidden="true"></a>        (<span class="kw">progn</span></span>
+<span id="cb39-74"><a href="#cb39-74" aria-hidden="true"></a>          (<span class="kw">push</span> (<span class="kw">list</span> &#39;list-cont env r acc))</span>
+<span id="cb39-75"><a href="#cb39-75" aria-hidden="true"></a>          (eval-stack env l)))))</span>
+<span id="cb39-76"><a href="#cb39-76" aria-hidden="true"></a>               </span>
+<span id="cb39-77"><a href="#cb39-77" aria-hidden="true"></a></span>
+<span id="cb39-78"><a href="#cb39-78" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply-closure </span>(env ls)</span>
+<span id="cb39-79"><a href="#cb39-79" aria-hidden="true"></a>  (<span class="kw">let</span> ((clo  (<span class="kw">car</span> ls))</span>
+<span id="cb39-80"><a href="#cb39-80" aria-hidden="true"></a>        (args (<span class="kw">cdr</span> ls))</span>
+<span id="cb39-81"><a href="#cb39-81" aria-hidden="true"></a>        (ps (<span class="kw">car</span> (<span class="kw">cdr</span> clo)))</span>
+<span id="cb39-82"><a href="#cb39-82" aria-hidden="true"></a>        (body (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> clo))))</span>
+<span id="cb39-83"><a href="#cb39-83" aria-hidden="true"></a>        (env1 (<span class="kw">car</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> (<span class="kw">cdr</span> clo)))))</span>
+<span id="cb39-84"><a href="#cb39-84" aria-hidden="true"></a>        (arg-env (zip ps args))</span>
+<span id="cb39-85"><a href="#cb39-85" aria-hidden="true"></a>        (new-env (add-bindings (<span class="kw">append</span> env1 env) arg-env)))</span>
+<span id="cb39-86"><a href="#cb39-86" aria-hidden="true"></a>    (eval-stack new-env body)))</span>
+<span id="cb39-87"><a href="#cb39-87" aria-hidden="true"></a></span>
+<span id="cb39-88"><a href="#cb39-88" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply </span>(env ls)</span>
+<span id="cb39-89"><a href="#cb39-89" aria-hidden="true"></a>   (<span class="kw">let</span> ((f (<span class="kw">car</span> ls)))</span>
+<span id="cb39-90"><a href="#cb39-90" aria-hidden="true"></a>     (<span class="kw">if</span> (is-operator f)</span>
+<span id="cb39-91"><a href="#cb39-91" aria-hidden="true"></a>         (apply-cont (<span class="kw">eval</span> ls))</span>
+<span id="cb39-92"><a href="#cb39-92" aria-hidden="true"></a>         (<span class="kw">if</span> (is-closure f)</span>
+<span id="cb39-93"><a href="#cb39-93" aria-hidden="true"></a>             (apply-closure env ls)</span>
+<span id="cb39-94"><a href="#cb39-94" aria-hidden="true"></a>             &#39;error))))</span>
+<span id="cb39-95"><a href="#cb39-95" aria-hidden="true"></a></span>
+<span id="cb39-96"><a href="#cb39-96" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> apply-cont </span>(<span class="kw">exp</span>)</span>
+<span id="cb39-97"><a href="#cb39-97" aria-hidden="true"></a>  (<span class="kw">let</span> (( k (<span class="kw">pop</span>)))</span>
+<span id="cb39-98"><a href="#cb39-98" aria-hidden="true"></a>    (match k</span>
+<span id="cb39-99"><a href="#cb39-99" aria-hidden="true"></a>           (done <span class="kw">exp</span>)</span>
+<span id="cb39-100"><a href="#cb39-100" aria-hidden="true"></a>           ((progn-cont (? env) (? ls)) (eval-progn env ls))</span>
+<span id="cb39-101"><a href="#cb39-101" aria-hidden="true"></a>           ((define-cont (? key))</span>
+<span id="cb39-102"><a href="#cb39-102" aria-hidden="true"></a>            (<span class="kw">progn</span></span>
+<span id="cb39-103"><a href="#cb39-103" aria-hidden="true"></a>              (setvar &#39;global-env (<span class="kw">acons</span> key <span class="kw">exp</span> global-env))</span>
+<span id="cb39-104"><a href="#cb39-104" aria-hidden="true"></a>              (apply-cont <span class="kw">exp</span>)))</span>
+<span id="cb39-105"><a href="#cb39-105" aria-hidden="true"></a>           ((list-cont (? env) (? r) (? acc))</span>
+<span id="cb39-106"><a href="#cb39-106" aria-hidden="true"></a>            (eval-list env r (<span class="kw">append</span> acc (<span class="kw">list</span> <span class="kw">exp</span>))))</span>
+<span id="cb39-107"><a href="#cb39-107" aria-hidden="true"></a>           ((application-cont (? env))</span>
+<span id="cb39-108"><a href="#cb39-108" aria-hidden="true"></a>            (<span class="kw">apply</span> env <span class="kw">exp</span>))</span>
+<span id="cb39-109"><a href="#cb39-109" aria-hidden="true"></a>           ((if-cont (? env) (? then-branch) (? else-branch))</span>
+<span id="cb39-110"><a href="#cb39-110" aria-hidden="true"></a>            (<span class="kw">if</span> <span class="kw">exp</span></span>
+<span id="cb39-111"><a href="#cb39-111" aria-hidden="true"></a>                (eval-stack env then-branch)</span>
+<span id="cb39-112"><a href="#cb39-112" aria-hidden="true"></a>                (eval-stack env else-branch))))))</span>
+<span id="cb39-113"><a href="#cb39-113" aria-hidden="true"></a></span>
+<span id="cb39-114"><a href="#cb39-114" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> evals </span>(env <span class="kw">exp</span>)</span>
+<span id="cb39-115"><a href="#cb39-115" aria-hidden="true"></a>  (<span class="kw">progn</span></span>
+<span id="cb39-116"><a href="#cb39-116" aria-hidden="true"></a>    (setvar &#39;stack <span class="kw">nil</span>)</span>
+<span id="cb39-117"><a href="#cb39-117" aria-hidden="true"></a>    (<span class="kw">push</span> &#39;done)</span>
+<span id="cb39-118"><a href="#cb39-118" aria-hidden="true"></a>    (eval-stack env <span class="kw">exp</span>)))</span>
+<span id="cb39-119"><a href="#cb39-119" aria-hidden="true"></a>  </span>
+<span id="cb39-120"><a href="#cb39-120" aria-hidden="true"></a></span>
+<span id="cb39-121"><a href="#cb39-121" aria-hidden="true"></a>(<span class="kw">defun</span><span class="fu"> eval-stack </span>(env <span class="kw">exp</span>)</span>
+<span id="cb39-122"><a href="#cb39-122" aria-hidden="true"></a>  (<span class="kw">if</span> (is-operator <span class="kw">exp</span>)</span>
+<span id="cb39-123"><a href="#cb39-123" aria-hidden="true"></a>      (apply-cont <span class="kw">exp</span>)</span>
+<span id="cb39-124"><a href="#cb39-124" aria-hidden="true"></a>    (<span class="kw">if</span> (is-symbol <span class="kw">exp</span>)</span>
+<span id="cb39-125"><a href="#cb39-125" aria-hidden="true"></a>        (<span class="kw">let</span> ((res (<span class="kw">assoc</span> env <span class="kw">exp</span>)))</span>
+<span id="cb39-126"><a href="#cb39-126" aria-hidden="true"></a>          (<span class="kw">if</span> (<span class="kw">eq</span> res <span class="kw">nil</span>)</span>
+<span id="cb39-127"><a href="#cb39-127" aria-hidden="true"></a>              (apply-cont (<span class="kw">assoc</span> global-env <span class="kw">exp</span>))</span>
+<span id="cb39-128"><a href="#cb39-128" aria-hidden="true"></a>            (apply-cont res)))</span>
+<span id="cb39-129"><a href="#cb39-129" aria-hidden="true"></a>      (<span class="kw">if</span> (is-number <span class="kw">exp</span>)</span>
+<span id="cb39-130"><a href="#cb39-130" aria-hidden="true"></a>          (apply-cont <span class="kw">exp</span>)</span>
+<span id="cb39-131"><a href="#cb39-131" aria-hidden="true"></a>        (match <span class="kw">exp</span></span>
+<span id="cb39-132"><a href="#cb39-132" aria-hidden="true"></a>               ((<span class="kw">progn</span>  . (? ls)) (eval-progn  env ls))</span>
+<span id="cb39-133"><a href="#cb39-133" aria-hidden="true"></a>               ((define . (? ls)) (eval-define env ls))</span>
+<span id="cb39-134"><a href="#cb39-134" aria-hidden="true"></a>               ((<span class="kw">lambda</span> . (? ls)) (eval-lambda env ls))</span>
+<span id="cb39-135"><a href="#cb39-135" aria-hidden="true"></a>               ((<span class="kw">if</span> . (? ls))     (eval-if env ls))</span>
+<span id="cb39-136"><a href="#cb39-136" aria-hidden="true"></a>               ((?cons ls)        (<span class="kw">progn</span></span>
+<span id="cb39-137"><a href="#cb39-137" aria-hidden="true"></a>                                    (<span class="kw">push</span> (<span class="kw">list</span> &#39;application-cont env))</span>
+<span id="cb39-138"><a href="#cb39-138" aria-hidden="true"></a>                                    (eval-list env ls <span class="kw">nil</span>)))</span>
+<span id="cb39-139"><a href="#cb39-139" aria-hidden="true"></a>               )))))</span></code></pre></div>
 <h2 id="relation-to-lispbm">Relation to LispBM</h2>
 <p>The approach to evaluation in LispBM is very similar to the explicit stack defunctionalized continuation-passing style evaluator defined in the section above, only it is implemented in C (and actually does some amount of error checking).</p>
 <p>The continuation identities that exist in the LispBM implementation are many more of course:</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true"></a><span class="pp">#define ILLEGAL_CONT      ((0 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true"></a><span class="pp">#define DONE              ((1 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true"></a><span class="pp">#define SET_GLOBAL_ENV    ((2 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true"></a><span class="pp">#define BIND_TO_KEY_REST  ((3 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true"></a><span class="pp">#define IF                ((4 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true"></a><span class="pp">#define PROGN_REST        ((5 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true"></a><span class="pp">#define APPLICATION       ((6 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true"></a><span class="pp">#define APPLICATION_ARGS  ((7 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true"></a><span class="pp">#define AND               ((8 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true"></a><span class="pp">#define OR                ((9 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true"></a><span class="pp">#define WAIT              ((10 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true"></a><span class="pp">#define MATCH             ((11 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true"></a><span class="pp">#define MATCH_MANY        ((12 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-14"><a href="#cb38-14" aria-hidden="true"></a><span class="pp">#define READ              ((13 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-15"><a href="#cb38-15" aria-hidden="true"></a><span class="pp">#define APPLICATION_START ((14 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-16"><a href="#cb38-16" aria-hidden="true"></a><span class="pp">#define EVAL_R            ((15 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-17"><a href="#cb38-17" aria-hidden="true"></a><span class="pp">#define SET_VARIABLE      ((16 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-18"><a href="#cb38-18" aria-hidden="true"></a><span class="pp">#define RESUME            ((17 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-19"><a href="#cb38-19" aria-hidden="true"></a><span class="pp">#define EXPAND_MACRO      ((18 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-20"><a href="#cb38-20" aria-hidden="true"></a><span class="pp">#define QUOTE_RESULT      ((19 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-21"><a href="#cb38-21" aria-hidden="true"></a><span class="pp">#define BACKQUOTE_RESULT  ((20 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-22"><a href="#cb38-22" aria-hidden="true"></a><span class="pp">#define COMMAAT_RESULT    ((21 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-23"><a href="#cb38-23" aria-hidden="true"></a><span class="pp">#define COMMA_RESULT      ((22 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-24"><a href="#cb38-24" aria-hidden="true"></a><span class="pp">#define DOT_TERMINATE     ((23 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-25"><a href="#cb38-25" aria-hidden="true"></a><span class="pp">#define EXPECT_CLOSEPAR   ((24 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-26"><a href="#cb38-26" aria-hidden="true"></a><span class="pp">#define APPEND_CONTINUE   ((25 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-27"><a href="#cb38-27" aria-hidden="true"></a><span class="pp">#define READ_DONE         ((26 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-28"><a href="#cb38-28" aria-hidden="true"></a><span class="pp">#define CLOSURE_ARGS      ((27 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
-<span id="cb38-29"><a href="#cb38-29" aria-hidden="true"></a><span class="pp">#define CLOSURE_APP       ((28 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true"></a><span class="pp">#define ILLEGAL_CONT      ((0 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true"></a><span class="pp">#define DONE              ((1 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true"></a><span class="pp">#define SET_GLOBAL_ENV    ((2 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true"></a><span class="pp">#define BIND_TO_KEY_REST  ((3 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true"></a><span class="pp">#define IF                ((4 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true"></a><span class="pp">#define PROGN_REST        ((5 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true"></a><span class="pp">#define APPLICATION       ((6 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true"></a><span class="pp">#define APPLICATION_ARGS  ((7 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true"></a><span class="pp">#define AND               ((8 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true"></a><span class="pp">#define OR                ((9 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true"></a><span class="pp">#define WAIT              ((10 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true"></a><span class="pp">#define MATCH             ((11 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true"></a><span class="pp">#define MATCH_MANY        ((12 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true"></a><span class="pp">#define READ              ((13 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true"></a><span class="pp">#define APPLICATION_START ((14 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true"></a><span class="pp">#define EVAL_R            ((15 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true"></a><span class="pp">#define SET_VARIABLE      ((16 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true"></a><span class="pp">#define RESUME            ((17 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true"></a><span class="pp">#define EXPAND_MACRO      ((18 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true"></a><span class="pp">#define QUOTE_RESULT      ((19 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true"></a><span class="pp">#define BACKQUOTE_RESULT  ((20 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true"></a><span class="pp">#define COMMAAT_RESULT    ((21 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true"></a><span class="pp">#define COMMA_RESULT      ((22 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true"></a><span class="pp">#define DOT_TERMINATE     ((23 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true"></a><span class="pp">#define EXPECT_CLOSEPAR   ((24 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true"></a><span class="pp">#define APPEND_CONTINUE   ((25 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true"></a><span class="pp">#define READ_DONE         ((26 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true"></a><span class="pp">#define CLOSURE_ARGS      ((27 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true"></a><span class="pp">#define CLOSURE_APP       ((28 &lt;&lt; LBM_VAL_SHIFT) | LBM_TYPE_U)</span></span></code></pre></div>
 <p>The part of LispBM that corresponds to <code>eval-stack</code> from above is implemented as a C switch statements:</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true"></a>  <span class="cf">switch</span> (lbm_type_of(ctx-&gt;curr_exp)) {</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true"></a></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_SYMBOL: {</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true"></a>    lbm_value s;</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true"></a>    <span class="cf">if</span> (ctx-&gt;curr_exp == NIL) {</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true"></a>      ctx-&gt;app_cont = true;</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true"></a>      ctx-&gt;r = NIL;</span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true"></a>      <span class="cf">return</span>;</span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true"></a>    }</span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true"></a></span>
-<span id="cb39-11"><a href="#cb39-11" aria-hidden="true"></a>    <span class="cf">if</span> (eval_symbol(ctx, &amp;s)) {</span>
-<span id="cb39-12"><a href="#cb39-12" aria-hidden="true"></a>      ctx-&gt;app_cont = true;</span>
-<span id="cb39-13"><a href="#cb39-13" aria-hidden="true"></a>      ctx-&gt;r = s;</span>
-<span id="cb39-14"><a href="#cb39-14" aria-hidden="true"></a>      <span class="cf">return</span>;</span>
-<span id="cb39-15"><a href="#cb39-15" aria-hidden="true"></a>    }</span>
-<span id="cb39-16"><a href="#cb39-16" aria-hidden="true"></a></span>
-<span id="cb39-17"><a href="#cb39-17" aria-hidden="true"></a>    <span class="cf">if</span> (dynamic_load_callback) {</span>
-<span id="cb39-18"><a href="#cb39-18" aria-hidden="true"></a>      dynamic_load(ctx);</span>
-<span id="cb39-19"><a href="#cb39-19" aria-hidden="true"></a>    }</span>
-<span id="cb39-20"><a href="#cb39-20" aria-hidden="true"></a>    <span class="cf">return</span>;</span>
-<span id="cb39-21"><a href="#cb39-21" aria-hidden="true"></a>  }</span>
-<span id="cb39-22"><a href="#cb39-22" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_FLOAT: <span class="co">/* fall through */</span></span>
-<span id="cb39-23"><a href="#cb39-23" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_DOUBLE:</span>
-<span id="cb39-24"><a href="#cb39-24" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_U32:</span>
-<span id="cb39-25"><a href="#cb39-25" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_U64:</span>
-<span id="cb39-26"><a href="#cb39-26" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_I32:</span>
-<span id="cb39-27"><a href="#cb39-27" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_I64:</span>
-<span id="cb39-28"><a href="#cb39-28" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_I:</span>
-<span id="cb39-29"><a href="#cb39-29" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_U:</span>
-<span id="cb39-30"><a href="#cb39-30" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_CHAR:</span>
-<span id="cb39-31"><a href="#cb39-31" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_ARRAY:</span>
-<span id="cb39-32"><a href="#cb39-32" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_REF:</span>
-<span id="cb39-33"><a href="#cb39-33" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_STREAM: eval_selfevaluating(ctx);  <span class="cf">return</span>;</span>
-<span id="cb39-34"><a href="#cb39-34" aria-hidden="true"></a></span>
-<span id="cb39-35"><a href="#cb39-35" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_CONS:</span>
-<span id="cb39-36"><a href="#cb39-36" aria-hidden="true"></a>    head = lbm_car(ctx-&gt;curr_exp);</span>
-<span id="cb39-37"><a href="#cb39-37" aria-hidden="true"></a></span>
-<span id="cb39-38"><a href="#cb39-38" aria-hidden="true"></a>    <span class="cf">if</span> (lbm_type_of(head) == LBM_TYPE_SYMBOL) {</span>
-<span id="cb39-39"><a href="#cb39-39" aria-hidden="true"></a></span>
-<span id="cb39-40"><a href="#cb39-40" aria-hidden="true"></a>      lbm_uint sym_id = lbm_dec_sym(head);</span>
-<span id="cb39-41"><a href="#cb39-41" aria-hidden="true"></a></span>
-<span id="cb39-42"><a href="#cb39-42" aria-hidden="true"></a>      <span class="cf">switch</span>(sym_id) {</span>
-<span id="cb39-43"><a href="#cb39-43" aria-hidden="true"></a>      <span class="cf">case</span> SYM_QUOTE:   eval_quote(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-44"><a href="#cb39-44" aria-hidden="true"></a>      <span class="cf">case</span> SYM_DEFINE:  eval_define(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-45"><a href="#cb39-45" aria-hidden="true"></a>      <span class="cf">case</span> SYM_PROGN:   eval_progn(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-46"><a href="#cb39-46" aria-hidden="true"></a>      <span class="cf">case</span> SYM_LAMBDA:  eval_lambda(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-47"><a href="#cb39-47" aria-hidden="true"></a>      <span class="cf">case</span> SYM_IF:      eval_if(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-48"><a href="#cb39-48" aria-hidden="true"></a>      <span class="cf">case</span> SYM_LET:     eval_let(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-49"><a href="#cb39-49" aria-hidden="true"></a>      <span class="cf">case</span> SYM_AND:     eval_and(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-50"><a href="#cb39-50" aria-hidden="true"></a>      <span class="cf">case</span> SYM_OR:      eval_or(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-51"><a href="#cb39-51" aria-hidden="true"></a>      <span class="cf">case</span> SYM_MATCH:   eval_match(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-52"><a href="#cb39-52" aria-hidden="true"></a>      <span class="cf">case</span> SYM_RECEIVE: eval_receive(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-53"><a href="#cb39-53" aria-hidden="true"></a>      <span class="cf">case</span> SYM_CALLCC:  eval_callcc(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-54"><a href="#cb39-54" aria-hidden="true"></a></span>
-<span id="cb39-55"><a href="#cb39-55" aria-hidden="true"></a>      <span class="cf">case</span> SYM_MACRO:   <span class="co">/* fall through */</span></span>
-<span id="cb39-56"><a href="#cb39-56" aria-hidden="true"></a>      <span class="cf">case</span> SYM_CONT:</span>
-<span id="cb39-57"><a href="#cb39-57" aria-hidden="true"></a>      <span class="cf">case</span> SYM_CLOSURE: eval_selfevaluating(ctx); <span class="cf">return</span>;</span>
-<span id="cb39-58"><a href="#cb39-58" aria-hidden="true"></a></span>
-<span id="cb39-59"><a href="#cb39-59" aria-hidden="true"></a>      <span class="cf">default</span>: <span class="cf">break</span>; <span class="co">/* May be general application form. Checked below*/</span></span>
-<span id="cb39-60"><a href="#cb39-60" aria-hidden="true"></a>      }</span>
-<span id="cb39-61"><a href="#cb39-61" aria-hidden="true"></a>    } <span class="co">// If head is symbol</span></span>
-<span id="cb39-62"><a href="#cb39-62" aria-hidden="true"></a>    <span class="co">/*</span></span>
-<span id="cb39-63"><a href="#cb39-63" aria-hidden="true"></a><span class="co">     * At this point head can be a closure, fundamental, extension or a macro.</span></span>
-<span id="cb39-64"><a href="#cb39-64" aria-hidden="true"></a><span class="co">     * Anything else would be an error.</span></span>
-<span id="cb39-65"><a href="#cb39-65" aria-hidden="true"></a><span class="co">     */</span></span>
-<span id="cb39-66"><a href="#cb39-66" aria-hidden="true"></a>    lbm_value *reserved = lbm_stack_reserve(&amp;ctx-&gt;K, <span class="dv">3</span>);</span>
-<span id="cb39-67"><a href="#cb39-67" aria-hidden="true"></a>    <span class="cf">if</span> (!reserved) {</span>
-<span id="cb39-68"><a href="#cb39-68" aria-hidden="true"></a>      error_ctx(lbm_enc_sym(SYM_STACK_ERROR));</span>
-<span id="cb39-69"><a href="#cb39-69" aria-hidden="true"></a>      <span class="cf">return</span>;</span>
-<span id="cb39-70"><a href="#cb39-70" aria-hidden="true"></a>    }</span>
-<span id="cb39-71"><a href="#cb39-71" aria-hidden="true"></a>    reserved[<span class="dv">0</span>] = ctx-&gt;curr_env;</span>
-<span id="cb39-72"><a href="#cb39-72" aria-hidden="true"></a>    reserved[<span class="dv">1</span>] = lbm_cdr(ctx-&gt;curr_exp);</span>
-<span id="cb39-73"><a href="#cb39-73" aria-hidden="true"></a>    reserved[<span class="dv">2</span>] = APPLICATION_START;</span>
-<span id="cb39-74"><a href="#cb39-74" aria-hidden="true"></a></span>
-<span id="cb39-75"><a href="#cb39-75" aria-hidden="true"></a>    ctx-&gt;curr_exp = head; <span class="co">// evaluate the function</span></span>
-<span id="cb39-76"><a href="#cb39-76" aria-hidden="true"></a>    <span class="cf">break</span>;</span>
-<span id="cb39-77"><a href="#cb39-77" aria-hidden="true"></a>  <span class="cf">default</span>:</span>
-<span id="cb39-78"><a href="#cb39-78" aria-hidden="true"></a>    <span class="co">// </span><span class="al">BUG</span><span class="co"> No applicable case!</span></span>
-<span id="cb39-79"><a href="#cb39-79" aria-hidden="true"></a>    error_ctx(lbm_enc_sym(SYM_EERROR));</span>
-<span id="cb39-80"><a href="#cb39-80" aria-hidden="true"></a>    <span class="cf">break</span>;</span>
-<span id="cb39-81"><a href="#cb39-81" aria-hidden="true"></a>  }</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true"></a>  <span class="cf">switch</span> (lbm_type_of(ctx-&gt;curr_exp)) {</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true"></a></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_SYMBOL: {</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true"></a>    lbm_value s;</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true"></a>    <span class="cf">if</span> (ctx-&gt;curr_exp == NIL) {</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true"></a>      ctx-&gt;app_cont = true;</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true"></a>      ctx-&gt;r = NIL;</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true"></a>      <span class="cf">return</span>;</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true"></a>    }</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true"></a></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true"></a>    <span class="cf">if</span> (eval_symbol(ctx, &amp;s)) {</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true"></a>      ctx-&gt;app_cont = true;</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true"></a>      ctx-&gt;r = s;</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true"></a>      <span class="cf">return</span>;</span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true"></a>    }</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true"></a></span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true"></a>    <span class="cf">if</span> (dynamic_load_callback) {</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true"></a>      dynamic_load(ctx);</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true"></a>    }</span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true"></a>    <span class="cf">return</span>;</span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true"></a>  }</span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_FLOAT: <span class="co">/* fall through */</span></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_DOUBLE:</span>
+<span id="cb41-24"><a href="#cb41-24" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_U32:</span>
+<span id="cb41-25"><a href="#cb41-25" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_U64:</span>
+<span id="cb41-26"><a href="#cb41-26" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_I32:</span>
+<span id="cb41-27"><a href="#cb41-27" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_I64:</span>
+<span id="cb41-28"><a href="#cb41-28" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_I:</span>
+<span id="cb41-29"><a href="#cb41-29" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_U:</span>
+<span id="cb41-30"><a href="#cb41-30" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_CHAR:</span>
+<span id="cb41-31"><a href="#cb41-31" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_ARRAY:</span>
+<span id="cb41-32"><a href="#cb41-32" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_REF:</span>
+<span id="cb41-33"><a href="#cb41-33" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_STREAM: eval_selfevaluating(ctx);  <span class="cf">return</span>;</span>
+<span id="cb41-34"><a href="#cb41-34" aria-hidden="true"></a></span>
+<span id="cb41-35"><a href="#cb41-35" aria-hidden="true"></a>  <span class="cf">case</span> LBM_TYPE_CONS:</span>
+<span id="cb41-36"><a href="#cb41-36" aria-hidden="true"></a>    head = lbm_car(ctx-&gt;curr_exp);</span>
+<span id="cb41-37"><a href="#cb41-37" aria-hidden="true"></a></span>
+<span id="cb41-38"><a href="#cb41-38" aria-hidden="true"></a>    <span class="cf">if</span> (lbm_type_of(head) == LBM_TYPE_SYMBOL) {</span>
+<span id="cb41-39"><a href="#cb41-39" aria-hidden="true"></a></span>
+<span id="cb41-40"><a href="#cb41-40" aria-hidden="true"></a>      lbm_uint sym_id = lbm_dec_sym(head);</span>
+<span id="cb41-41"><a href="#cb41-41" aria-hidden="true"></a></span>
+<span id="cb41-42"><a href="#cb41-42" aria-hidden="true"></a>      <span class="cf">switch</span>(sym_id) {</span>
+<span id="cb41-43"><a href="#cb41-43" aria-hidden="true"></a>      <span class="cf">case</span> SYM_QUOTE:   eval_quote(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-44"><a href="#cb41-44" aria-hidden="true"></a>      <span class="cf">case</span> SYM_DEFINE:  eval_define(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-45"><a href="#cb41-45" aria-hidden="true"></a>      <span class="cf">case</span> SYM_PROGN:   eval_progn(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-46"><a href="#cb41-46" aria-hidden="true"></a>      <span class="cf">case</span> SYM_LAMBDA:  eval_lambda(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-47"><a href="#cb41-47" aria-hidden="true"></a>      <span class="cf">case</span> SYM_IF:      eval_if(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-48"><a href="#cb41-48" aria-hidden="true"></a>      <span class="cf">case</span> SYM_LET:     eval_let(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-49"><a href="#cb41-49" aria-hidden="true"></a>      <span class="cf">case</span> SYM_AND:     eval_and(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-50"><a href="#cb41-50" aria-hidden="true"></a>      <span class="cf">case</span> SYM_OR:      eval_or(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-51"><a href="#cb41-51" aria-hidden="true"></a>      <span class="cf">case</span> SYM_MATCH:   eval_match(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-52"><a href="#cb41-52" aria-hidden="true"></a>      <span class="cf">case</span> SYM_RECEIVE: eval_receive(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-53"><a href="#cb41-53" aria-hidden="true"></a>      <span class="cf">case</span> SYM_CALLCC:  eval_callcc(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-54"><a href="#cb41-54" aria-hidden="true"></a></span>
+<span id="cb41-55"><a href="#cb41-55" aria-hidden="true"></a>      <span class="cf">case</span> SYM_MACRO:   <span class="co">/* fall through */</span></span>
+<span id="cb41-56"><a href="#cb41-56" aria-hidden="true"></a>      <span class="cf">case</span> SYM_CONT:</span>
+<span id="cb41-57"><a href="#cb41-57" aria-hidden="true"></a>      <span class="cf">case</span> SYM_CLOSURE: eval_selfevaluating(ctx); <span class="cf">return</span>;</span>
+<span id="cb41-58"><a href="#cb41-58" aria-hidden="true"></a></span>
+<span id="cb41-59"><a href="#cb41-59" aria-hidden="true"></a>      <span class="cf">default</span>: <span class="cf">break</span>; <span class="co">/* May be general application form. Checked below*/</span></span>
+<span id="cb41-60"><a href="#cb41-60" aria-hidden="true"></a>      }</span>
+<span id="cb41-61"><a href="#cb41-61" aria-hidden="true"></a>    } <span class="co">// If head is symbol</span></span>
+<span id="cb41-62"><a href="#cb41-62" aria-hidden="true"></a>    <span class="co">/*</span></span>
+<span id="cb41-63"><a href="#cb41-63" aria-hidden="true"></a><span class="co">     * At this point head can be a closure, fundamental, extension or a macro.</span></span>
+<span id="cb41-64"><a href="#cb41-64" aria-hidden="true"></a><span class="co">     * Anything else would be an error.</span></span>
+<span id="cb41-65"><a href="#cb41-65" aria-hidden="true"></a><span class="co">     */</span></span>
+<span id="cb41-66"><a href="#cb41-66" aria-hidden="true"></a>    lbm_value *reserved = lbm_stack_reserve(&amp;ctx-&gt;K, <span class="dv">3</span>);</span>
+<span id="cb41-67"><a href="#cb41-67" aria-hidden="true"></a>    <span class="cf">if</span> (!reserved) {</span>
+<span id="cb41-68"><a href="#cb41-68" aria-hidden="true"></a>      error_ctx(lbm_enc_sym(SYM_STACK_ERROR));</span>
+<span id="cb41-69"><a href="#cb41-69" aria-hidden="true"></a>      <span class="cf">return</span>;</span>
+<span id="cb41-70"><a href="#cb41-70" aria-hidden="true"></a>    }</span>
+<span id="cb41-71"><a href="#cb41-71" aria-hidden="true"></a>    reserved[<span class="dv">0</span>] = ctx-&gt;curr_env;</span>
+<span id="cb41-72"><a href="#cb41-72" aria-hidden="true"></a>    reserved[<span class="dv">1</span>] = lbm_cdr(ctx-&gt;curr_exp);</span>
+<span id="cb41-73"><a href="#cb41-73" aria-hidden="true"></a>    reserved[<span class="dv">2</span>] = APPLICATION_START;</span>
+<span id="cb41-74"><a href="#cb41-74" aria-hidden="true"></a></span>
+<span id="cb41-75"><a href="#cb41-75" aria-hidden="true"></a>    ctx-&gt;curr_exp = head; <span class="co">// evaluate the function</span></span>
+<span id="cb41-76"><a href="#cb41-76" aria-hidden="true"></a>    <span class="cf">break</span>;</span>
+<span id="cb41-77"><a href="#cb41-77" aria-hidden="true"></a>  <span class="cf">default</span>:</span>
+<span id="cb41-78"><a href="#cb41-78" aria-hidden="true"></a>    <span class="co">// </span><span class="al">BUG</span><span class="co"> No applicable case!</span></span>
+<span id="cb41-79"><a href="#cb41-79" aria-hidden="true"></a>    error_ctx(lbm_enc_sym(SYM_EERROR));</span>
+<span id="cb41-80"><a href="#cb41-80" aria-hidden="true"></a>    <span class="cf">break</span>;</span>
+<span id="cb41-81"><a href="#cb41-81" aria-hidden="true"></a>  }</span></code></pre></div>
 <p>And the part of LispBM that corresponds to <code>apply-cont</code> looks as follows.</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true"></a><span class="cf">if</span> (ctx-&gt;app_cont) {</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true"></a>    lbm_value k;</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true"></a>    lbm_pop(&amp;ctx-&gt;K, &amp;k);</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true"></a>    ctx-&gt;app_cont = false;</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true"></a></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true"></a>    <span class="cf">switch</span>(k) {</span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true"></a>    <span class="cf">case</span> DONE:              advance_ctx(); <span class="cf">return</span>;</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true"></a>    <span class="cf">case</span> SET_GLOBAL_ENV:    cont_set_global_env(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true"></a>    <span class="cf">case</span> PROGN_REST:        cont_progn_rest(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true"></a>    <span class="cf">case</span> WAIT:              cont_wait(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true"></a>    <span class="cf">case</span> APPLICATION_ARGS:  cont_application_args(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true"></a>    <span class="cf">case</span> AND:               cont_and(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true"></a>    <span class="cf">case</span> OR:                cont_or(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true"></a>    <span class="cf">case</span> BIND_TO_KEY_REST:  cont_bind_to_key_rest(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true"></a>    <span class="cf">case</span> IF:                cont_if(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true"></a>    <span class="cf">case</span> MATCH:             cont_match(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true"></a>    <span class="cf">case</span> MATCH_MANY:        cont_match_many(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-18"><a href="#cb40-18" aria-hidden="true"></a>    <span class="cf">case</span> READ:              cont_read(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-19"><a href="#cb40-19" aria-hidden="true"></a>    <span class="cf">case</span> APPLICATION_START: cont_application_start(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-20"><a href="#cb40-20" aria-hidden="true"></a>    <span class="cf">case</span> EVAL_R:            cont_eval_r(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-21"><a href="#cb40-21" aria-hidden="true"></a>    <span class="cf">case</span> SET_VARIABLE:      cont_set_var(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-22"><a href="#cb40-22" aria-hidden="true"></a>    <span class="cf">case</span> RESUME:            cont_resume(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-23"><a href="#cb40-23" aria-hidden="true"></a>    <span class="cf">case</span> EXPAND_MACRO:      cont_expand_macro(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-24"><a href="#cb40-24" aria-hidden="true"></a>    <span class="cf">case</span> CLOSURE_ARGS:      cont_closure_application_args(ctx); <span class="cf">return</span>;</span>
-<span id="cb40-25"><a href="#cb40-25" aria-hidden="true"></a>    <span class="cf">default</span>:</span>
-<span id="cb40-26"><a href="#cb40-26" aria-hidden="true"></a>      error_ctx(lbm_enc_sym(SYM_EERROR));</span>
-<span id="cb40-27"><a href="#cb40-27" aria-hidden="true"></a>      <span class="cf">return</span>;</span>
-<span id="cb40-28"><a href="#cb40-28" aria-hidden="true"></a>    }</span>
-<span id="cb40-29"><a href="#cb40-29" aria-hidden="true"></a>  }</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true"></a><span class="cf">if</span> (ctx-&gt;app_cont) {</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true"></a>    lbm_value k;</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true"></a>    lbm_pop(&amp;ctx-&gt;K, &amp;k);</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true"></a>    ctx-&gt;app_cont = false;</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true"></a></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true"></a>    <span class="cf">switch</span>(k) {</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true"></a>    <span class="cf">case</span> DONE:              advance_ctx(); <span class="cf">return</span>;</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true"></a>    <span class="cf">case</span> SET_GLOBAL_ENV:    cont_set_global_env(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true"></a>    <span class="cf">case</span> PROGN_REST:        cont_progn_rest(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true"></a>    <span class="cf">case</span> WAIT:              cont_wait(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true"></a>    <span class="cf">case</span> APPLICATION_ARGS:  cont_application_args(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true"></a>    <span class="cf">case</span> AND:               cont_and(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true"></a>    <span class="cf">case</span> OR:                cont_or(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true"></a>    <span class="cf">case</span> BIND_TO_KEY_REST:  cont_bind_to_key_rest(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true"></a>    <span class="cf">case</span> IF:                cont_if(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true"></a>    <span class="cf">case</span> MATCH:             cont_match(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true"></a>    <span class="cf">case</span> MATCH_MANY:        cont_match_many(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true"></a>    <span class="cf">case</span> READ:              cont_read(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true"></a>    <span class="cf">case</span> APPLICATION_START: cont_application_start(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true"></a>    <span class="cf">case</span> EVAL_R:            cont_eval_r(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true"></a>    <span class="cf">case</span> SET_VARIABLE:      cont_set_var(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true"></a>    <span class="cf">case</span> RESUME:            cont_resume(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true"></a>    <span class="cf">case</span> EXPAND_MACRO:      cont_expand_macro(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true"></a>    <span class="cf">case</span> CLOSURE_ARGS:      cont_closure_application_args(ctx); <span class="cf">return</span>;</span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true"></a>    <span class="cf">default</span>:</span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true"></a>      error_ctx(lbm_enc_sym(SYM_EERROR));</span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true"></a>      <span class="cf">return</span>;</span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true"></a>    }</span>
+<span id="cb42-29"><a href="#cb42-29" aria-hidden="true"></a>  }</span></code></pre></div>
 <p>The LispBM evaluator was not created by first writing it all in some higher order language and then defunctionalizing it. It was all come up with quite ad-hoc and that was actually quite messy.</p>
 <p>This experiment, of implementing a CPS evaluator in lisp and then defunctionalizing it and making the stack explicit was fun though. It also feels like I am a bit more confident about the LispBM evaluator implementation after performing this experiment.</p>
 <p>Constructive feedback, discovered bugs, deeper insights or general comments are most welcome! Thank you.</p>
