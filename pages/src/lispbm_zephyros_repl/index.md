@@ -20,7 +20,7 @@ about the steps involved in getting to a point where you can just edit
 your code and run make.
 
 The code in the listings here below, is all available within the
-[lispBM repository](www.github.com/svenssonjoel/lispBM) on github.
+[lispBM repository](https://www.github.com/svenssonjoel/lispBM) on github.
 
 
 ## Introduction to the Code

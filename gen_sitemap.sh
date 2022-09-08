@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sitemap-generator https://svenssonjoel.github.io
+sitemap-generator -v https://svenssonjoel.github.io
