@@ -492,7 +492,7 @@ void yield_ctx(uint32_t sleep_us) {
 
 Handling of the `yield` application is very similar to how
 [fundamental
-operations](.pages/lispbm_fundamentals_and_extensions/index.html) are
+operations](https://svenssonjoel.github.io/pages/lispbm_fundamentals_and_extensions/index.html) are
 applied. In the `apply_continuation` function and the `APPLICATION`
 case, there is a check to see if what is being applied is the `yield`
 function. in that case the `yield_ctx` function is applied.
