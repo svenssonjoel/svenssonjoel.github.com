@@ -275,7 +275,7 @@ $(function() {
 <p>You can give names to values in a global scope by using define. The form of define is <code>(define name expr)</code>. The expr is evaluated and it is the result of the evaluated expr that is stored in the environment. In lispbm you can redefine already defined values.</p>
 <p>Example </p><h1>@code{clj} (define apa 10) @endcode </h1>
 <h2>setvar</h2>
-<p>The <code>setvar</code> form is used to change the value of some variable in an environment. You can use <code>setvar</code> to change the value of a global definition, a local definition or a variable defintion (<code>#var</code>). An application of the <code>setvar</code> form looks like <code>(setvar var-expr val-expr)</code> where <code>var-expr</code> should evaluate to a symbol. The <code>val-expr</code> is evaluated before rebinding the variable.</p>
+<p>The <code>setvar</code> form is used to change the value of some variable in an environment. You can use <code>setvar</code> to change the value of a global definition, a local definition or a variable defintion (<code>#var</code>). An application of the <code>setvar</code> form looks like <code>(setvar var-expr val-expr)</code> where <code>var-expr</code> should evaluate to a symbol. The <code>val-expr</code> is evaluated before rebinding the variable. <code>setvar</code> returns the value that <code>val-expr</code> evaluates to.</p>
 <p>Examples: </p><div class="fragment"><div class="line">(define a 10)</div>
 </div><!-- fragment --><p> The variable <code>a</code> is now <code>10</code> in the global environment. </p><div class="fragment"><div class="line">(setvar &#39;a 20)</div>
 </div><!-- fragment --><p> Now, the value of <code>a</code> will be 20. Note that <code>a</code> is quoted in the <code>setvar</code> form application while it is not in the <code>define</code> form. This is because <code>define</code> requires the first argument to be a symbol while the <code>setvar</code> form requires the first argument to evaluate into a symbol.</p>
@@ -312,18 +312,69 @@ $(function() {
 <p>Evaluate a program you just read from a string with <a href="#eval-program">eval-program</a>. </p><div class="fragment"><div class="line">(eval-program (read-program &quot;(define apa 1) (+ 2 apa)&quot;))</div>
 </div><!-- fragment --><p> The expression above evaluates to 3 with the side effect that the global environment has been extended with the binding <code>(apa 1)</code>.</p>
 <hr  />
+<h2>namespace</h2>
+<p>Creates a new namespace to reduce the effect and likelyhood of colliding names for things. Use a namespace to hold definitions that are related to eachother.</p>
+<p>Namespaces in LBM form a multiply branching tree of subnamespaces. There is a root namespace that is unnamed. Definitions in a namespaces can only be reached from a parent namespace, not by siblings or children of that namespace.</p>
+<p>The example below creates a namespace as a child to the current namespace and defines a to be 1000 within the <code>myspace</code>. </p><div class="fragment"><div class="line">(namespace myspace</div>
+<div class="line">       (define a 1000))</div>
+</div><!-- fragment --><p>To access <code>a</code> from the parent namespace you use a namespace "path" expressed as symbols separated by <code>:</code></p>
+<div class="fragment"><div class="line"># myspace:a</div>
+<div class="line">&gt; 1000</div>
+</div><!-- fragment --><p>Multiple definitions can be added to a namespace in one go by using <code>progn</code></p>
+<div class="fragment"><div class="line">(namespace loads-a-stuff</div>
+<div class="line">       (progn</div>
+<div class="line">        (define a 1)</div>
+<div class="line">        (define b 2)</div>
+<div class="line">        (define c 3)</div>
+<div class="line">        (define f (lambda (x) (+ x 10)))))</div>
+</div><!-- fragment --><p>Namespaces can be nested as: </p><div class="fragment"><div class="line">(namespace n1</div>
+<div class="line">       (namespace n2</div>
+<div class="line">              (define a 42)))</div>
+</div><!-- fragment --><p>and to access <code>a</code> under n1 and n2 is done by:</p>
+<div class="fragment"><div class="line"># n1:n2:a</div>
+<div class="line">&gt; 42</div>
+</div><!-- fragment --><p>The last thing to occur in an <code>n1:n2: ...</code> sequence does not have to be a symbols. It can be an arbitrary expression that will be evaluated in the namespace identified by the path.</p>
+<div class="fragment"><div class="line"># n1:n2:(+ a 1000)</div>
+<div class="line">&gt; 1042</div>
+</div><!-- fragment --><p>The syntax using symbols separated by <code>:</code> (as <code>n1:n2:a</code>) expands into applications of the <code>namespace</code> form. For example <code>n1:n2:a</code> expands into <code>(namespace n1 (namespace n2 a))</code> upon parsing. So the following two programs do the same thing:</p>
+<div class="fragment"><div class="line">(namespace space (define stars 1000))</div>
+</div><!-- fragment --><p>and</p>
+<div class="fragment"><div class="line">space:(define stars 1000)</div>
+</div><!-- fragment --><p>Both of the programs above defines <code>stars</code> to 1000 in the namespace <code>space</code>. Both of the programs above also create the <code>space</code> namespace if it does not already exist.</p>
+<hr  />
+<p> <b>NOTE</b> Namespaces has no influence on #variables which all remain accessible from any space.</p>
+<p>The same is true for extensions. Extensions and #variables can be considered to be part of some other globally available namespace.</p>
+<hr  />
+<hr  />
 <h1>Lists and cons cells</h1>
-<p>Lists are build using cons cells. A cons cell is represented by the <a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> struct in the implementation and consists of two fields named the <code>car</code> and the <code>cdr</code>. There is no special meaning associated with the <code>car</code> and the <code>cdr</code> each can hold a <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>. See <a href="#cons">cons</a> and <a href="#list">list</a> for two ways to create structures of cons cells on the heap.</p>
+<p>Lists are build using cons cells. A cons cell is represented by the <a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> struct in the implementation and consists of two fields named the <code>car</code> and the <code>cdr</code>. There is no special meaning associated with the <code>car</code> and the <code>cdr</code> each can hold a lbm_value. See <a href="#cons">cons</a> and <a href="#list">list</a> for two ways to create structures of cons cells on the heap.</p>
+<p><img src="images/cons_cell.png?raw=true" alt="cons cell" title="cons cell" class="inline"/></p>
+<p>A cons cell can be used to store a pair of values. You create a pair by sticking a value in both the car and cdr field of a cons cell using either &lsquo;&rsquo;(1 . 2)<code>or </code>(cons 1 2)`.</p>
+<p><img src="images/pair.png?raw=true" alt="pair" title="pair" class="inline"/></p>
+<p>A list is a number of cons cells linked together where the car fields hold values and the cdr fields hold pointers (the last cdr field is nil). The list below can be created either as &lsquo;&rsquo;(1 2 3)<code>or as</code>(list 1 2 3)`.</p>
+<p><img src="images/list.png?raw=true" alt="list" title="pair" class="inline"/></p>
 <h2>car</h2>
 <p>Use <code>car</code> to access the <code>car</code> field of a cons cell. A <code>car</code> expression has the form <code>(car expr)</code>.</p>
 <p>Taking the <code>car</code> of a number of symbol type is in general a <a href="#type_error">type_error</a>. The following program results in <code>type_error</code>. </p><div class="fragment"><div class="line">(car 1)</div>
 </div><!-- fragment --><p> The next example evaluates to 1. </p><div class="fragment"><div class="line">(car (cons 1 2))</div>
 </div><!-- fragment --><p> The <code>car</code> operation accesses the head element of a list. The following program evaluates to 9. </p><div class="fragment"><div class="line">(car (list 9 8 7))</div>
 </div><!-- fragment --><hr  />
+<h2>first</h2>
+<p><code>first</code> is an alternative (and one that makes some sense) name for the <code>car</code> operation.</p>
+<p>Use <code>first</code> to access the first element of a list or pair. A <code>first</code> expression has the form <code>(first expr)</code>.</p>
+<div class="fragment"><div class="line"># (first (list 1 2 3 4))</div>
+<div class="line">&gt; 1</div>
+</div><!-- fragment --><hr  />
 <h2>cdr</h2>
 <p>Use <code>cdr</code> to access the <code>cdr</code> field of a cons cell. A <code>cdr</code> expression has the form <code>(cdr expr)</code>.</p>
 <p>The example below evaluates to 2. </p><div class="fragment"><div class="line">(cdr (cons 1 2))</div>
 </div><!-- fragment --><p> The <code>cdr</code> operation gives you the rest of a list. The example below evaluates to the list (8 7). </p><div class="fragment"><div class="line">(cdr (list 9 8 7))</div>
+</div><!-- fragment --><hr  />
+<h2>rest</h2>
+<p><code>rest</code> is an alternative name for the <code>cdr</code> operation.</p>
+<p>Use <code>rest</code> to access all elements except the first one of a list, or to access the second element in a pair. A <code>rest</code> expression has the form <code>(rest expr)</code>.</p>
+<div class="fragment"><div class="line"># (rest (list 1 2 3 4))</div>
+<div class="line">&gt; (2 3 4)</div>
 </div><!-- fragment --><hr  />
 <h2>cons</h2>
 <p>The <code>cons</code> operation allocates a cons cell from the heap and populates the <code>car</code> and the <code>cdr</code> fields of this cell with its two arguments. The form of a <code>cons</code> expression is <code>(cons expr1 expr2)</code>.</p>
@@ -372,9 +423,14 @@ $(function() {
 <div class="line">&gt; ((4 . lemur) (1 . horse) (2 . donkey) (3 . shark))</div>
 </div><!-- fragment --><hr  />
 <h2>assoc</h2>
-<p>The <code>assoc</code> function looks up a value in an alist given a key. The form of an <code>assoc</code> expression is <code>(assoc alist-expr key-expr)</code></p>
+<p>The <code>assoc</code> function looks up the first value in an alist matching a given a key. The form of an <code>assoc</code> expression is <code>(assoc alist-expr key-expr)</code></p>
 <p>Example that looks up the value of key <code>2</code> in an alist. </p><div class="fragment"><div class="line"># (assoc (list &#39;(1 . horse) &#39;(2 . donkey) &#39;(3 . shark)) 2)</div>
 <div class="line">&gt; donkey</div>
+</div><!-- fragment --><hr  />
+<h2>cossa</h2>
+<p>The <code>cossa</code> function looks up the first key in an alist that matches a given value. The form of an <code>cossa</code> expression is <code>(cossa alist-expr value-expr)</code></p>
+<p>Example that looks up the key for the value <code>donkey</code> in an alist. </p><div class="fragment"><div class="line"># (cossa (list &#39;(1 . horse) &#39;(2 . donkey) &#39;(3 . shark)) &#39;donkey)</div>
+<div class="line">&gt; 2</div>
 </div><!-- fragment --><hr  />
 <h2>setassoc</h2>
 <p>The <code>setassoc</code> function destructively updates a key-value mapping in an alist. The form of a <code>setassoc</code> expression is <code>(setassoc alist-expr key-expr value-expr)</code>.</p>
@@ -415,6 +471,11 @@ $(function() {
 <h2>array-write</h2>
 <p>The <code>array-write</code> function performs a destructive update of an array.</p>
 <p>Example that turns array "hello" into "heflo" </p><div class="fragment"><div class="line">(array-write &quot;hello&quot; 2 \#f)</div>
+</div><!-- fragment --><hr  />
+<h2>array-clear</h2>
+<p>Clears an array by writing zeroes to all locations.</p>
+<p>Example:</p>
+<div class="fragment"><div class="line">(array-clear arr)</div>
 </div><!-- fragment --><hr  />
 <h2>Array literal syntax</h2>
 <p>Array literals can be created using the <code>[</code> and <code>]</code> syntax to enclose values to initialize the array with. The <code>[</code> and <code>]</code> syntax is complete resolved in the parser and thus cannot contain arbitrary lisp terms. the values listed between the <code>[</code> and the <code>]</code> must be literals!</p>
@@ -616,7 +677,8 @@ $(function() {
 <h2>to-double</h2>
 <p>Convert any numerical value to a double precision floating point value. If the input is not a number the output of this function will be 0.</p>
 <hr  />
- </div></div><!-- contents -->
+<h1>Extensions reference</h1>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

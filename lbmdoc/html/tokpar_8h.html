@@ -73,16 +73,19 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="lbm__types_8h_source.html">lbm_types.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="lbm__channel_8h_source.html">lbm_channel.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for tokpar.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="tokpar_8h__incl.png" border="0" usemap="#atokpar_8h" alt=""/></div>
 <map name="atokpar_8h" id="atokpar_8h">
-<area shape="rect" title=" " alt="" coords="105,5,179,32"/>
-<area shape="rect" href="lbm__types_8h.html" title=" " alt="" coords="91,80,193,107"/>
-<area shape="rect" title=" " alt="" coords="5,155,76,181"/>
-<area shape="rect" title=" " alt="" coords="101,155,183,181"/>
-<area shape="rect" title=" " alt="" coords="208,155,295,181"/>
+<area shape="rect" title=" " alt="" coords="216,5,291,32"/>
+<area shape="rect" href="lbm__types_8h.html" title=" " alt="" coords="270,80,373,107"/>
+<area shape="rect" href="lbm__channel_8h.html" title=" " alt="" coords="128,80,245,107"/>
+<area shape="rect" title=" " alt="" coords="169,155,239,181"/>
+<area shape="rect" title=" " alt="" coords="264,155,347,181"/>
+<area shape="rect" title=" " alt="" coords="371,155,458,181"/>
+<area shape="rect" title=" " alt="" coords="5,155,144,181"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -105,35 +108,27 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae753b8347c86162016bb818fc6a7eeef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#ae753b8347c86162016bb818fc6a7eeef">lbm_create_char_stream_from_string</a> (<a class="el" href="structlbm__tokenizer__string__state__t.html">lbm_tokenizer_string_state_t</a> *state, <a class="el" href="lbm__types_8h.html#acfab2d63774ffdfc74751d5ffe193992">lbm_tokenizer_char_stream_t</a> *stream, const char *str)</td></tr>
-<tr class="separator:ae753b8347c86162016bb818fc6a7eeef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61b1fe2c5a767ff400dbf6bcc7b86756"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#a61b1fe2c5a767ff400dbf6bcc7b86756">lbm_get_next_token</a> (<a class="el" href="lbm__types_8h.html#acfab2d63774ffdfc74751d5ffe193992">lbm_tokenizer_char_stream_t</a> *str)</td></tr>
-<tr class="separator:a61b1fe2c5a767ff400dbf6bcc7b86756"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19e071dd7dcf78fd98e0c6240d4ccd57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#a19e071dd7dcf78fd98e0c6240d4ccd57">lbm_get_next_token</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *ch, bool peek)</td></tr>
+<tr class="separator:a19e071dd7dcf78fd98e0c6240d4ccd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ae753b8347c86162016bb818fc6a7eeef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae753b8347c86162016bb818fc6a7eeef">&#9670;&nbsp;</a></span>lbm_create_char_stream_from_string()</h2>
+<a id="a19e071dd7dcf78fd98e0c6240d4ccd57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19e071dd7dcf78fd98e0c6240d4ccd57">&#9670;&nbsp;</a></span>lbm_get_next_token()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void lbm_create_char_stream_from_string </td>
+          <td class="memname"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_get_next_token </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structlbm__tokenizer__string__state__t.html">lbm_tokenizer_string_state_t</a> *&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
+          <td class="paramtype"><a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *&#160;</td>
+          <td class="paramname"><em>ch</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="lbm__types_8h.html#acfab2d63774ffdfc74751d5ffe193992">lbm_tokenizer_char_stream_t</a> *&#160;</td>
-          <td class="paramname"><em>stream</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>str</em>&#160;</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>peek</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -142,37 +137,11 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Create an <a class="el" href="structlbm__tokenizer__string__state__t.html">lbm_tokenizer_string_state_t</a>, lbm_tokenizer_char_stream_t pair from a string.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">state</td><td>string tokenizer state is initialized in this arg. </td></tr>
-    <tr><td class="paramname">stream</td><td>tokenizer stream is created in this arg. </td></tr>
-    <tr><td class="paramname">str</td><td>String to tokenize. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a61b1fe2c5a767ff400dbf6bcc7b86756"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61b1fe2c5a767ff400dbf6bcc7b86756">&#9670;&nbsp;</a></span>lbm_get_next_token()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_get_next_token </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="lbm__types_8h.html#acfab2d63774ffdfc74751d5ffe193992">lbm_tokenizer_char_stream_t</a> *&#160;</td>
-          <td class="paramname"><em>str</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 <p>Get the next token from a tokenizer stream (lbm_tokenizer_char_stream_t).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">str</td><td>Tokenizer stream to get the next token from. </td></tr>
+    <tr><td class="paramname">peek</td><td>Boolean deciding if token is cleared out of channel or left. </td></tr>
   </table>
   </dd>
 </dl>

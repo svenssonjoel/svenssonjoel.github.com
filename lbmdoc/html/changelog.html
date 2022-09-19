@@ -65,7 +65,37 @@ $(function() {
 <div class="title">Changelog </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>May 24 2022: Version 0.5.3</p><ul>
+<div class="textblock"><p>Set 16 2022: Version 0.6.0</p><ul>
+<li>Source code can be streamed onto the heap. This means there is no need for a large buffer on the MCU (or area of flash) to parse source code from</li>
+</ul>
+<p>Sep 5 2022: Version 0.6.0</p><ul>
+<li>Refactoring of array-reader. Array reading is nolonger done monolithically inside of the tokpar framework, but rather as a cooperation between the evaluator and the tokenizer.</li>
+</ul>
+<p>Sep 3 2022: Version 0.6.0</p><ul>
+<li>Round-robin scheduling + Addition of an Atomic construct to use with care.</li>
+</ul>
+<p>Aug 1 2022: Version 0.5.4</p><ul>
+<li>Easing use of the LBM library from C++ code.</li>
+</ul>
+<p>Jul 25 2022: Version 0.5.4</p><ul>
+<li>lbm_define can now create variables (#var) in variable memory from the C side of things.</li>
+<li>Simple namespaces.</li>
+</ul>
+<p>Jul 18 2022: Version 0.5.4</p><ul>
+<li>Added pattern matching support for i64, u64 and double.</li>
+<li>Fixed issue with pattern matching on i32, u32.</li>
+</ul>
+<p>Jul 17 2022: Version 0.5.4</p><ul>
+<li>Refactoring with readability in focus.</li>
+<li>Computing encodings of commonly used symbol constants (for eval_cps) at compile time rather then repeatedly at runtime.</li>
+</ul>
+<p>Jul 13 2022: Version 0.5.4</p><ul>
+<li>Added function that lookups based on the second field in assoc structures. Called it "cossa" as it is like assoc but backwards.</li>
+</ul>
+<p>Jul 4 2022: Version 0.5.4</p><ul>
+<li>Added possibility to partially apply closures. A partially applied closure is again a closure.</li>
+</ul>
+<p>May 24 2022: Version 0.5.3</p><ul>
 <li>Fixed bug related to float-array literals not accepting whole numbers unless containing a decimal (0).</li>
 </ul>
 <p>May 22 2022: Version 0.5.3</p><ul>

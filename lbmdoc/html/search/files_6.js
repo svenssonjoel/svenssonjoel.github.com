@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['qq_5fexpand_2eh_248',['qq_expand.h',['../qq__expand_8h.html',1,'']]]
+  ['stack_2eh_257',['stack.h',['../stack_8h.html',1,'']]],
+  ['symrepr_2eh_258',['symrepr.h',['../symrepr_8h.html',1,'']]]
 ];

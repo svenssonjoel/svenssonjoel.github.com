@@ -89,26 +89,32 @@ $(function() {
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#define TOKPAR_H_</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="lbm__types_8h.html">lbm_types.h</a>&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="structlbm__tokenizer__string__state__t.html">   27</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> *str;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> pos;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> row;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> column;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;} <a class="code" href="structlbm__tokenizer__string__state__t.html">lbm_tokenizer_string_state_t</a>;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="tokpar_8h.html#ae753b8347c86162016bb818fc6a7eeef">   40</a></span>&#160;<span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code" href="tokpar_8h.html#ae753b8347c86162016bb818fc6a7eeef">lbm_create_char_stream_from_string</a>(<a class="code" href="structlbm__tokenizer__string__state__t.html">lbm_tokenizer_string_state_t</a> *state,</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                               <a class="code" href="structlbm__tcs.html">lbm_tokenizer_char_stream_t</a> *stream,</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                                               <span class="keyword">const</span> <span class="keywordtype">char</span> *str);</div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="tokpar_8h.html#a61b1fe2c5a767ff400dbf6bcc7b86756">   49</a></span>&#160;<span class="keyword">extern</span> <a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> <a class="code" href="tokpar_8h.html#a61b1fe2c5a767ff400dbf6bcc7b86756">lbm_get_next_token</a>(<a class="code" href="structlbm__tcs.html">lbm_tokenizer_char_stream_t</a> *str);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="lbm__channel_8h.html">lbm_channel.h</a>&quot;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="structlbm__tokenizer__string__state__t.html">   32</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> *str;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> pos;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> row;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> column;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;} <a class="code" href="structlbm__tokenizer__string__state__t.html">lbm_tokenizer_string_state_t</a>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">//lbm_value lbm_get_next_token(lbm_tokenizer_char_stream_t *str);</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="tokpar_8h.html#a19e071dd7dcf78fd98e0c6240d4ccd57">   47</a></span>&#160;<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> <a class="code" href="tokpar_8h.html#a19e071dd7dcf78fd98e0c6240d4ccd57">lbm_get_next_token</a>(<a class="code" href="structlbm__char__channel__s.html">lbm_char_channel_t</a> *ch, <span class="keywordtype">bool</span> peek);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="albm__channel_8h_html"><div class="ttname"><a href="lbm__channel_8h.html">lbm_channel.h</a></div></div>
 <div class="ttc" id="albm__types_8h_html"><div class="ttname"><a href="lbm__types_8h.html">lbm_types.h</a></div></div>
-<div class="ttc" id="albm__types_8h_html_aff516ca015a2565197543383355a7a06"><div class="ttname"><a href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a></div><div class="ttdeci">uint32_t lbm_value</div><div class="ttdef"><b>Definition:</b> lbm_types.h:39</div></div>
-<div class="ttc" id="astructlbm__tcs_html"><div class="ttname"><a href="structlbm__tcs.html">lbm_tcs</a></div><div class="ttdef"><b>Definition:</b> lbm_types.h:84</div></div>
-<div class="ttc" id="astructlbm__tokenizer__string__state__t_html"><div class="ttname"><a href="structlbm__tokenizer__string__state__t.html">lbm_tokenizer_string_state_t</a></div><div class="ttdef"><b>Definition:</b> tokpar.h:27</div></div>
-<div class="ttc" id="atokpar_8h_html_a61b1fe2c5a767ff400dbf6bcc7b86756"><div class="ttname"><a href="tokpar_8h.html#a61b1fe2c5a767ff400dbf6bcc7b86756">lbm_get_next_token</a></div><div class="ttdeci">lbm_value lbm_get_next_token(lbm_tokenizer_char_stream_t *str)</div></div>
-<div class="ttc" id="atokpar_8h_html_ae753b8347c86162016bb818fc6a7eeef"><div class="ttname"><a href="tokpar_8h.html#ae753b8347c86162016bb818fc6a7eeef">lbm_create_char_stream_from_string</a></div><div class="ttdeci">void lbm_create_char_stream_from_string(lbm_tokenizer_string_state_t *state, lbm_tokenizer_char_stream_t *stream, const char *str)</div></div>
+<div class="ttc" id="albm__types_8h_html_aff516ca015a2565197543383355a7a06"><div class="ttname"><a href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a></div><div class="ttdeci">uint32_t lbm_value</div><div class="ttdef"><b>Definition:</b> lbm_types.h:43</div></div>
+<div class="ttc" id="astructlbm__char__channel__s_html"><div class="ttname"><a href="structlbm__char__channel__s.html">lbm_char_channel_s</a></div><div class="ttdef"><b>Definition:</b> lbm_channel.h:66</div></div>
+<div class="ttc" id="astructlbm__tokenizer__string__state__t_html"><div class="ttname"><a href="structlbm__tokenizer__string__state__t.html">lbm_tokenizer_string_state_t</a></div><div class="ttdef"><b>Definition:</b> tokpar.h:32</div></div>
+<div class="ttc" id="atokpar_8h_html_a19e071dd7dcf78fd98e0c6240d4ccd57"><div class="ttname"><a href="tokpar_8h.html#a19e071dd7dcf78fd98e0c6240d4ccd57">lbm_get_next_token</a></div><div class="ttdeci">lbm_value lbm_get_next_token(lbm_char_channel_t *ch, bool peek)</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
