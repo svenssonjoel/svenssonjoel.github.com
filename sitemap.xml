@@ -145,13 +145,16 @@
     <loc>https://svenssonjoel.github.io/pages/zynq_hls_opencl/index.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/fp_talk_28_jan.pdf</loc>
+    <loc>https://svenssonjoel.github.io/writing/blinkledzynq.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/lecture2.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/docent_presentation.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/slides/fp_talk_28_jan.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/lecture1.pdf</loc>
@@ -163,13 +166,13 @@
     <loc>https://svenssonjoel.github.io/slides/Harbb.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/blinkledzynq.pdf</loc>
-  </url>
-  <url>
     <loc>https://svenssonjoel.github.io/slides/shadowmapping.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/docent_presentation.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/slides/licpres.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/slides/obsidian_090514.pdf</loc>
@@ -178,19 +181,16 @@
     <loc>https://svenssonjoel.github.io/slides/ifl2008_obsidian.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/masterpres.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/dcc2008_obsidian.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/slides/licpres.pdf</loc>
+    <loc>https://svenssonjoel.github.io/slides/masterpres.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/zynqreduce.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/ZynqBandwidth.pdf</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/slides/dcc2008_obsidian.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/thesis/thesis.pdf</loc>
@@ -205,10 +205,10 @@
     <loc>https://svenssonjoel.github.io/writing/GPGPU_tech.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/sensevm_mplr.pdf</loc>
+    <loc>https://svenssonjoel.github.io/writing/fhpc16-preprint.pdf</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/writing/fhpc16-preprint.pdf</loc>
+    <loc>https://svenssonjoel.github.io/writing/sensevm_mplr.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/writing/pldi16-crossmod.pdf</loc>
@@ -247,13 +247,13 @@
     <loc>https://svenssonjoel.github.io/writing/dccpaper_obsidian.pdf</loc>
   </url>
   <url>
+    <loc>https://svenssonjoel.github.io/writing/fossi_chalmers.pdf</loc>
+  </url>
+  <url>
     <loc>https://svenssonjoel.github.io/writing/GPUFL.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/csort.html</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/writing/fossi_chalmers.pdf</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/code/lbm_benchmarks_2022_02_27/index.html</loc>
@@ -337,7 +337,7 @@
     <loc>https://svenssonjoel.github.io/lbmdoc/html/stack_8h.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/lbmdoc/html/streams_8h.html</loc>
+    <loc>https://svenssonjoel.github.io/lbmdoc/html/lbm__channel_8h.html</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/lbm__memory_8h.html</loc>
@@ -379,10 +379,10 @@
     <loc>http://svenssonjoel.github.io/privacy_policy.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/lbmdoc/html/env_8h_source.html</loc>
+    <loc>https://svenssonjoel.github.io/lbmdoc/html/dir_d44c64559bbebec7f509842c48db8b23.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/lbmdoc/html/dir_d44c64559bbebec7f509842c48db8b23.html</loc>
+    <loc>https://svenssonjoel.github.io/lbmdoc/html/env_8h_source.html</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/symrepr_8h_source.html</loc>
@@ -392,9 +392,6 @@
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/heap_8h_source.html</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/lbmdoc/html/streams_8h_source.html</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/tokpar_8h_source.html</loc>
@@ -407,6 +404,9 @@
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/lbm__types_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/lbmdoc/html/lbm__channel_8h_source.html</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/lbm__c__interop_8h_source.html</loc>
@@ -436,16 +436,10 @@
     <loc>https://svenssonjoel.github.io/lbmdoc/html/structlbm__array__header__t.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/lbmdoc/html/structlbm__stream__s.html</loc>
-  </url>
-  <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/print_8h_source.html</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/prelude_8h_source.html</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/lbmdoc/html/compression_8h_source.html</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/lbm__custom__type_8h_source.html</loc>
@@ -455,6 +449,15 @@
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/structlbm__stack__t.html</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/lbmdoc/html/structlbm__buffered__channel__state__t.html</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/lbmdoc/html/structlbm__string__channel__state__t.html</loc>
+  </url>
+  <url>
+    <loc>https://svenssonjoel.github.io/lbmdoc/html/structlbm__char__channel__s.html</loc>
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/structlbm__tcs.html</loc>
@@ -592,37 +595,28 @@
     <loc>http://svenssonjoel.github.io/slides/fp_talk_28_jan.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
-  </url>
-  <url>
     <loc>http://svenssonjoel.github.io/slides/lecture2.pdf</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/slides/AlmostFreePresentation.pdf</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/slides/lecture1.pdf</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/slides/Harbb.pdf</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/slides/shadowmapping.pdf</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/slides/ifl2008_obsidian.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/slides/docent_presentation.pdf</loc>
   </url>
   <url>
+    <loc>http://svenssonjoel.github.io/slides/lecture1.pdf</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/slides/AlmostFreePresentation.pdf</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/slides/PFP_LECTURE_2016.pdf</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/slides/shadowmapping.pdf</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/slides/Harbb.pdf</loc>
+  </url>
+  <url>
     <loc>http://svenssonjoel.github.io/slides/obsidian_090514.pdf</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/writing/zynqreduce.pdf</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/slides/masterpres.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/slides/licpres.pdf</loc>
@@ -631,10 +625,16 @@
     <loc>http://svenssonjoel.github.io/slides/dcc2008_obsidian.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/writing/ZynqBandwidth.pdf</loc>
+    <loc>http://svenssonjoel.github.io/slides/ifl2008_obsidian.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/writing/lic.pdf</loc>
+    <loc>http://svenssonjoel.github.io/writing/zynqreduce.pdf</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/slides/masterpres.pdf</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/writing/ZynqBandwidth.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/jslic.bib</loc>
@@ -646,13 +646,13 @@
     <loc>http://svenssonjoel.github.io/writing/GPGPU_tech.pdf</loc>
   </url>
   <url>
+    <loc>http://svenssonjoel.github.io/writing/lic.pdf</loc>
+  </url>
+  <url>
     <loc>http://svenssonjoel.github.io/writing/sensevm_mplr.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/fhpc16-preprint.pdf</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/writing/pldi16-crossmod.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/MetaAuto.pdf</loc>
@@ -661,22 +661,25 @@
     <loc>http://svenssonjoel.github.io/writing/defuncEmb.pdf</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/writing/bb.pdf</loc>
+    <loc>http://svenssonjoel.github.io/writing/pldi16-crossmod.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/multidev.pdf</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/writing/bb.pdf</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/writing/almost_free.pdf</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/writing/csort.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/expressive.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/expressive.html</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/writing/csort.pdf</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/writing/almost_free.pdf</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/writing/faspp2011_haskell_arbb.pdf</loc>
@@ -703,9 +706,6 @@
     <loc>http://svenssonjoel.github.io/lbmdoc/html/index.html</loc>
   </url>
   <url>
-    <loc>https://svenssonjoel.github.io/lbmdoc/html/compression_8h.html</loc>
-  </url>
-  <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/heap__vis_8h.html</loc>
   </url>
   <url>
@@ -728,12 +728,6 @@
   </url>
   <url>
     <loc>https://svenssonjoel.github.io/lbmdoc/html/graph_legend.html</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/lbmdoc/html/structdecomp__state.html</loc>
-  </url>
-  <url>
-    <loc>https://svenssonjoel.github.io/lbmdoc/html/structtokenizer__compressed__state__t.html</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/pages/lispbm_compilation_1/</loc>
@@ -799,7 +793,7 @@
     <loc>http://svenssonjoel.github.io/lbmdoc/html/stack_8h.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/streams_8h.html</loc>
+    <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__channel_8h.html</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__memory_8h.html</loc>
@@ -808,10 +802,10 @@
     <loc>http://svenssonjoel.github.io/lbmdoc/html/symrepr_8h.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__version_8h.html</loc>
+    <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__types_8h.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__types_8h.html</loc>
+    <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__version_8h.html</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/qq__expand_8h.html</loc>
@@ -832,9 +826,6 @@
     <loc>http://svenssonjoel.github.io/lbmdoc/html/heap_8h_source.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/streams_8h_source.html</loc>
-  </url>
-  <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/tokpar_8h_source.html</loc>
   </url>
   <url>
@@ -847,7 +838,13 @@
     <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__types_8h_source.html</loc>
   </url>
   <url>
+    <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__channel_8h_source.html</loc>
+  </url>
+  <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__c__interop_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/lbmdoc/html/stack_8h_source.html</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/structeval__context__s.html</loc>
@@ -871,19 +868,10 @@
     <loc>http://svenssonjoel.github.io/lbmdoc/html/structlbm__array__header__t.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/structlbm__stream__s.html</loc>
-  </url>
-  <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/print_8h_source.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/stack_8h_source.html</loc>
-  </url>
-  <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/prelude_8h_source.html</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/compression_8h_source.html</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__custom__type_8h_source.html</loc>
@@ -895,16 +883,22 @@
     <loc>http://svenssonjoel.github.io/lbmdoc/html/structlbm__stack__t.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__version_8h_source.html</loc>
+    <loc>http://svenssonjoel.github.io/lbmdoc/html/structlbm__buffered__channel__state__t.html</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/lbmdoc/html/structlbm__string__channel__state__t.html</loc>
+  </url>
+  <url>
+    <loc>http://svenssonjoel.github.io/lbmdoc/html/structlbm__char__channel__s.html</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/structlbm__tcs.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/qq__expand_8h_source.html</loc>
+    <loc>http://svenssonjoel.github.io/lbmdoc/html/lbm__version_8h_source.html</loc>
   </url>
   <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/compression_8h.html</loc>
+    <loc>http://svenssonjoel.github.io/lbmdoc/html/qq__expand_8h_source.html</loc>
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/heap__vis_8h.html</loc>
@@ -929,11 +923,5 @@
   </url>
   <url>
     <loc>http://svenssonjoel.github.io/lbmdoc/html/graph_legend.html</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/structdecomp__state.html</loc>
-  </url>
-  <url>
-    <loc>http://svenssonjoel.github.io/lbmdoc/html/structtokenizer__compressed__state__t.html</loc>
   </url>
 </urlset>
