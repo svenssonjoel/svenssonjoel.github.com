@@ -514,6 +514,13 @@ $(function() {
 <h2>spawn</h2>
 <p>Use <code>spawn</code> to launch a concurrent task. Spawn takes a closure and and arguments to pass to that closure as its arguments: <code>(spawn closure arg1 ... argN)</code>. Optionally you can provide a numerical first argument that specifies stack size that the runtime system should allocate to run the task in: <code>(spawn stack-size closure args1 ... argN)</code>.</p>
 <hr  />
+<h2>spawn-trap</h2>
+<p>Use <code>spawn-trap</code> to spawn a child process and enable trapping of exit conditions for that child. The form of a <code>spawn-trap</code> expression is <code>(spawn-trap closure arg1 .. argN)</code>. If the child process is terminated because of an error, a message is sent to the parent process of the form <code>(exit-error tid err-val)</code>. If the child process terminates successfully a message of the form <code>(exit-ok tid value)</code> is sent to the parent.</p>
+<p>Example: </p><div class="fragment"><div class="line">(spawn-trap my-thread)</div>
+<div class="line"> </div>
+<div class="line">(recv  ((exit-error (? tid) (? e)) ...)</div>
+<div class="line">       ((exit-ok    (? tid) (? v)) ...))</div>
+</div><!-- fragment --><hr  />
 <h2>wait</h2>
 <p>Use <code>wait</code> to wait for a spawned process to finish. The argument to <code>wait</code> should be a process id. The <code>wait</code> blocks until the process with the given process id finishes. When the process with with the given id finishes, the wait function returns True.</p>
 <p>Be careful to only wait for processes that actually exist and do finish. Otherwise you will wait forever.</p>
@@ -530,6 +537,12 @@ $(function() {
 <div class="line">     b</div>
 <div class="line">     c))</div>
 </div><!-- fragment --><hr  />
+<h2>exit-ok</h2>
+<p>The <code>exit-ok</code> function terminates the thread in a "successful" way and returnes a result specified by the programmer. The form of an <code>exit-ok</code> expression is <code>(exit-ok value)</code>. If the process that calls <code>exit-ok</code> was created using <code>spawn-trap</code> a message of the form <code>(exit-ok tid value)</code> is be sent to the parent of this process.</p>
+<hr  />
+<h2>exit-error</h2>
+<p>The <code>exit-error</code> function terminates the thread with an error specified by the programmer. The form of an <code>exit-error</code> expression is <code>(exit-error err_val)</code>. If the process that calls <code>exit-error</code> was created using <code>spawn-trap</code> a message of the form <code>(exit-error tid err_val)</code> is sent to the parent of this process.</p>
+<hr  />
 <h1>Message-passing</h1>
 <h2>send</h2>
 <p>Messages can be sent to a process by using <code>send</code>. The form of a <code>send</code> expression is <code>(send pid msg)</code>. The message, msg, can be any LispBM value.</p>
