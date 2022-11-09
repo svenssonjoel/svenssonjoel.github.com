@@ -114,11 +114,17 @@ $(function() {
 </div><!-- fragment --><p>The <code>eq</code> comparison can be used on tree shaped data. The following expression evaluates to <code>t</code>.</p>
 <div class="fragment"><div class="line">(eq &#39;(1 (1 2)) &#39;(1 (1 2)))</div>
 </div><!-- fragment --><hr  />
+<h2>not-eq</h2>
+<p><code>not-eq</code> implements the negation of eq. In other words, <code>(not-eq a b c)</code> evaluates to the same result as <code>(not (eq a b c))</code>.</p>
+<hr  />
 <h2>=</h2>
 <p>The <code>=</code> operation can only be used on numerical arguments. If you know you are comparing numbers, it will be more efficient to use <code>=</code>.</p>
 <p>An important difference between <code>eq</code> and <code>=</code> is that <code>=</code> compare the numerical values of the arguments. A 3 is a 3 independent of them being different types. <code>eq</code> on the other hand compares the representations of the arguments exactly and they must match in structure, type and value to be considered equal.</p>
 <p>Example of <code>=</code> comparison. </p><div class="fragment"><div class="line">(= (+ 2 3) (+ 1 4))</div>
 </div><!-- fragment --><hr  />
+<h2>!=</h2>
+<p>The <code>!=</code> operation implements the negation of <code>=</code>. So, <code>(!= a b)</code> evaluates to the same result as <code>(not (= a b))</code>.</p>
+<hr  />
 <h2>&gt;</h2>
 <p>Greater than comparison. A greater than comparison has the form <code>(&gt; expr1 ... exprN)</code> and evaluates to <code>t</code> if expr1 is greater than all of expr2 ... exprN.</p>
 <p>Example </p><div class="fragment"><div class="line">(&gt; 5 2)</div>
