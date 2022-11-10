@@ -69,7 +69,7 @@ $(function() {
 <p>Symbols are very important and fundamental to LispBM and also perhaps a bit different from identifiers/names used in languages such as C, so a short intro could be good here.</p>
 <p>A symbol can be thought of as a name and can be used to give names to functions or values (variables). A symbol can also be treated and used as a value in and of itself a value (or data). So it can be used to name data and functions and is itself also data.</p>
 <hr  />
-<p> <b>NOTE</b></p>
+<p><b>NOTE</b></p>
 <p>Symbols are expressed as strings in your program such as <code>a</code>, <code>let</code>, <code>define</code>, <code>+</code> or <code>orange</code>. The "reader", the part of LBM that parses code, translates each symbol into a 28bit value. The string <code>orange</code> for example is only of interest if you print a symbol and then the runtime system will look up what string corresponds to the 28bit identifier you want to print. So the runtime system is never wasting time comparing strings to see if a symbol is this or that symbol, it's all integer comparisons.</p>
 <hr  />
 <p>You associate values with symbols using, <a href="#define">define</a>, <a href="#let">let</a> and you can change the value bound to a "variable" using <a href="#setvar">setvar</a></p>
@@ -493,6 +493,9 @@ $(function() {
 <div class="line">       (orange 2)</div>
 <div class="line">       (blue 3))</div>
 </div><!-- fragment --><hr  />
+<h2>no_match</h2>
+<p>The <code>no_match</code> symbol is returned from pattern matching if no case matches the expression. </p><pre class="fragment">- Add a catch-all case to your pattern-matching. `_`.
+</pre> <hr  />
 <h2>_</h2>
 <p>The underscore pattern matches anything.</p>
 <p>An example that evaluates to <code>i-dont-know</code> </p><div class="fragment"><div class="line">(match &#39;fish</div>
@@ -583,11 +586,12 @@ $(function() {
 <div class="line">                     nil)</div>
 <div class="line">                 (print &quot;Gizmo!&quot; \#newline)))))</div>
 </div><!-- fragment --><hr  />
-<h1>Unparsable symbols</h1>
-<p>Unparsable symbols cannot be written into a program. The unparsable symbols signals different kinds of error conditions that may point at something being wrong in the code (or that it is exhausting all resources).</p>
-<h2>no_match</h2>
-<p>The <code>no_match</code> symbol is returned from pattern matching if no case matches the expression. </p><pre class="fragment">- Add a catch-all case to your pattern-matching. `_`. 
-</pre> <hr  />
+<h1>Error handling</h1>
+<p>If an error occurs while evaluating a program, the process that runs that program is killed. The result of the killed process is set to an error symbol indicating what went wrong.</p>
+<p>If the process was created using <code>spawn</code> (or equivalently, started by a issuing a command in the repl), the process dies and an error message is presented over the registered printing callback (dependent on how LispBM is integrated into your system). The <code>ctx_done_callback</code> is also called and performs other integration dependent tasks related to the shutting down of a process.</p>
+<p>If the process was created using <code>spawn-trap</code>, in addition to the above, a message is sent to the parent process (the process that executed the spawn-trap) containing information about the process that struck an error. See <a href="#spawn-trap">spawn-trap</a>. The parent process can now choose to restart the process that crashed or to take some other action.</p>
+<hr  />
+<h1>Error Symbols</h1>
 <h2>read_error</h2>
 <p>The <code>read_error</code> symbol is returned if the reader cannot parse the input code.</p>
 <p>Read errors are most likely caused by syntactically incorrect input programs. </p><pre class="fragment">- Check that all opening parenthesis are properly closed.
@@ -651,7 +655,7 @@ $(function() {
 <hr  />
 <h2>type-ref</h2>
 <hr  />
-<h2>type-stream</h2>
+<h2>type-channel</h2>
 <hr  />
 <h1>Type convertion functions</h1>
 <h2>to-byte</h2>
