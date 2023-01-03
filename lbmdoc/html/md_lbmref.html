@@ -134,7 +134,7 @@ $(function() {
 <p>Example </p><div class="fragment"><div class="line">(&lt; 5 2)</div>
 </div><!-- fragment --><hr  />
 <h2>&gt;=</h2>
-<p>Greater than or equal comparison. A less than comparison has the form <code>(&gt;= expr1 ... exprN)</code> and evaluates to <code>t</code> if expr1 is greater than or equal to all of expr2 ... exprN.</p>
+<p>Greater than or equal comparison. A greater than comparison has the form <code>(&gt;= expr1 ... exprN)</code> and evaluates to <code>t</code> if expr1 is greater than or equal to all of expr2 ... exprN.</p>
 <p>Example </p><div class="fragment"><div class="line">(&gt;= 5 2)</div>
 </div><!-- fragment --><hr  />
 <h2>&lt;=</h2>
@@ -145,7 +145,7 @@ $(function() {
 <h2>and</h2>
 <p>Boolean <code>and</code> operation between n arguments. The form of an <code>and</code> expression is <code>(and expr1 ... exprN)</code>. This operation treats all non-nil values as true. Boolean <code>and</code> is "shirt-circuiting" and only evaluates until a false is encountered.</p>
 <p>The example below evaluates to <code>t</code> </p><div class="fragment"><div class="line">(and t t)</div>
-</div><!-- fragment --><p> The folowing example evaluates to 3 </p><div class="fragment"><div class="line">(and t t (+ 1 2))</div>
+</div><!-- fragment --><p> The following example evaluates to 3 </p><div class="fragment"><div class="line">(and t t (+ 1 2))</div>
 </div><!-- fragment --><p> And lastly an example that evaluates to nil (for false). </p><div class="fragment"><div class="line">(and t (&lt; 5 3))</div>
 </div><!-- fragment --><hr  />
 <h2>or</h2>
@@ -239,7 +239,7 @@ $(function() {
 <hr  />
 <h1>Special forms</h1>
 <h2>if</h2>
-<p>Conditionals are written as <code>(if cond-expr then-expr else-expr)</code>. If the cond-expr evaluates to <a href="#nil">nil </a> the else-expr will be evaluated. for any other value of cond-expr the then-expr will be evalated.</p>
+<p>Conditionals are written as <code>(if cond-expr then-expr else-expr)</code>. If the cond-expr evaluates to <a href="#nil">nil </a> the else-expr will be evaluated. for any other value of cond-expr the then-expr will be evaluated.</p>
 <p>The example below evaluates to 0 if a is less than or equal to 4. Otherwise it evaluates to a + 10. </p><div class="fragment"><div class="line">(if (&gt; a 4) (+ a 10) 0)</div>
 </div><!-- fragment --><hr  />
 <h2>cond</h2>
@@ -518,11 +518,18 @@ $(function() {
 <div class="line">       ( (? y) (= y 0) &#39;equal-to-zero))</div>
 </div><!-- fragment --><hr  />
 <h1>Concurrency</h1>
-<p>The concurrency support in LispBM is provided by the set of functions, <code>spawn</code>, <code>wait</code>, <code>yeild</code> and <code>atomic</code> described below. Concurrency in LispBM is scheduled by a round-robin scheduler that splits the runtime system evaluator fairly (with caveats, below) between all running tasks.</p>
-<p>When a task is scheduled to run, made active, it is given a quota of evaluator "steps" to use up. The task then runs until that quota is exhausted or the task itself has signaled it wants to sleep by yielding or blocking (for example by waiting for a message using the message passing system).</p>
-<p>A task can also request to not be "pre-empted" while executing a certain expression by invoking <code>atomic</code>. One should take care to make blocks of atomic code as small as possible as it disrupts the fairness of the scheduler. While executing inside of an atomic block the task has sole ownership of the shared global environment and can perform atomic read-modify-write sequences to global data.</p>
+<p>The concurrency support in LispBM is provided by the set of functions, <code>spawn</code>, <code>wait</code>, <code>yeild</code> and <code>atomic</code> described below. Concurrency in LispBM is scheduled by a round-robin scheduler that splits the runtime system evaluator fairly (with caveats, below) between all running processes.</p>
+<p>When a process is scheduled to run, made active, it is given a quota of evaluator "steps" to use up. The process then runs until that quota is exhausted or the process itself has signaled it wants to sleep by yielding or blocking (for example by waiting for a message using the message passing system).</p>
+<p>A process can also request to not be "pre-empted" while executing a certain expression by invoking <code>atomic</code>. One should take care to make blocks of atomic code as small as possible as it disrupts the fairness of the scheduler. While executing inside of an atomic block the process has sole ownership of the shared global environment and can perform atomic read-modify-write sequences to global data.</p>
 <h2>spawn</h2>
-<p>Use <code>spawn</code> to launch a concurrent task. Spawn takes a closure and and arguments to pass to that closure as its arguments: <code>(spawn closure arg1 ... argN)</code>. Optionally you can provide a numerical first argument that specifies stack size that the runtime system should allocate to run the task in: <code>(spawn stack-size closure args1 ... argN)</code>.</p>
+<p>Use <code>spawn</code> to launch a concurrent process. Spawn takes a closure and and arguments to pass to that closure as its arguments: <code>(spawn closure arg1 ... argN)</code>. Optionally you can provide a numerical first argument that specifies stack size that the runtime system should allocate to run the process in: <code>(spawn stack-size closure args1 ... argN)</code>.</p>
+<p>Each process has a runtime-stack which is used for the evaluation of expressions within that process. The stack size needed by a process depends on</p><ol type="1">
+<li>How deeply nested expressions evaluated by the process are.</li>
+<li>Number of recursive calls (Only if a function is NOT tail-recursive).</li>
+<li>The Number of arguments that functions called by the process take.</li>
+</ol>
+<p>Having a stack that is too small will result in a <code>out_of_stack</code> error.</p>
+<p>The default stack size is 256 words (1K Bytes) and should be more than enough for reasonable programs. Many processes will work perfectly fine with a lot less stack. You can find a good size by trial and error.</p>
 <hr  />
 <h2>spawn-trap</h2>
 <p>Use <code>spawn-trap</code> to spawn a child process and enable trapping of exit conditions for that child. The form of a <code>spawn-trap</code> expression is <code>(spawn-trap closure arg1 .. argN)</code>. If the child process is terminated because of an error, a message is sent to the parent process of the form <code>(exit-error tid err-val)</code>. If the child process terminates successfully a message of the form <code>(exit-ok tid value)</code> is sent to the parent.</p>
@@ -539,7 +546,7 @@ $(function() {
 <p>To put a process to sleep, call <code>yield</code>. The argument to <code>yield</code> is number indicating at least how many microseconds the process should sleep.</p>
 <hr  />
 <h2>atomic</h2>
-<p><code>atomic</code> can be used to execute a LispBM one or more expression without allowing the runtime system to switch task during that time.</p>
+<p><code>atomic</code> can be used to execute a LispBM one or more expression without allowing the runtime system to switch process during that time.</p>
 <p>An example that atomically perfoms operations a,b and c.</p>
 <h1>@code{clj} (atomic a b c) @endcode </h1>
 <h2>exit-ok</h2>

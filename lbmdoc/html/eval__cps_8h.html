@@ -189,8 +189,6 @@ Functions</h2></td></tr>
 <tr class="separator:af9b437223bf63d0be3a5edef9bee912e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42f3162c9f54d156cba7cf681a2659b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a42f3162c9f54d156cba7cf681a2659b8">lbm_blocked_iterator</a> (<a class="el" href="eval__cps_8h.html#ac027b6619adcd4a0a10aea060e10e4df">ctx_fun</a> f, void *, void *)</td></tr>
 <tr class="separator:a42f3162c9f54d156cba7cf681a2659b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd57f74e74eecae2e18026664e0a2889"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#abd57f74e74eecae2e18026664e0a2889">lbm_done_iterator</a> (<a class="el" href="eval__cps_8h.html#ac027b6619adcd4a0a10aea060e10e4df">ctx_fun</a> f, void *, void *)</td></tr>
-<tr class="separator:abd57f74e74eecae2e18026664e0a2889"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8977d9c157ec8d93e33f4f1dad798d6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a8977d9c157ec8d93e33f4f1dad798d6c">lbm_sleeping_iterator</a> (<a class="el" href="eval__cps_8h.html#ac027b6619adcd4a0a10aea060e10e4df">ctx_fun</a> f, void *, void *)</td></tr>
 <tr class="separator:a8977d9c157ec8d93e33f4f1dad798d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac80d7fc44bcbf975b80e056c866111de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#ac80d7fc44bcbf975b80e056c866111de">lbm_toggle_verbose</a> (void)</td></tr>
@@ -427,49 +425,6 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd></dd></dl>
-
-</div>
-</div>
-<a id="abd57f74e74eecae2e18026664e0a2889"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abd57f74e74eecae2e18026664e0a2889">&#9670;&nbsp;</a></span>lbm_done_iterator()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void lbm_done_iterator </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="eval__cps_8h.html#ac027b6619adcd4a0a10aea060e10e4df">ctx_fun</a>&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Iterate over all done contexts and apply function on each context.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">f</td><td>Function to apply to each context. </td></tr>
-    <tr><td class="paramname">arg1</td><td>Pointer argument that can be used to convey information back to user. </td></tr>
-    <tr><td class="paramname">arg2</td><td>Same as above </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>
@@ -1113,12 +1068,12 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Iterate over all sleeping contexts and apply function on each context.</p>
+<p>Iterate over all done contexts and apply function on each context.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">f</td><td>Function to apply to each context. </td></tr>
     <tr><td class="paramname">arg1</td><td>Pointer argument that can be used to convey information back to user. </td></tr>
-    <tr><td class="paramname">arg2</td><td>Same as above. </td></tr>
+    <tr><td class="paramname">arg2</td><td>Same as above </td></tr>
   </table>
   </dd>
 </dl>

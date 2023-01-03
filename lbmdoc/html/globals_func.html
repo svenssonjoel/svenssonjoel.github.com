@@ -159,6 +159,18 @@ $(function() {
 <li>lbm_channel_writer_close()
 : <a class="el" href="lbm__channel_8h.html#af887b892fe64368ed61e0daa291bd0c4">lbm_channel.h</a>
 </li>
+<li>lbm_check_argn()
+: <a class="el" href="extensions_8h.html#a03c67f99083eddcf14ded21f357cb78b">extensions.h</a>
+</li>
+<li>lbm_check_argn_number()
+: <a class="el" href="extensions_8h.html#a9dde7c66a979ed438ec3e8e24a67feb4">extensions.h</a>
+</li>
+<li>lbm_check_number_all()
+: <a class="el" href="extensions_8h.html#a9c8791d52546e5e79b787e272b0ec4a4">extensions.h</a>
+</li>
+<li>lbm_check_true_false()
+: <a class="el" href="extensions_8h.html#a4549c145bd47d0f91ce16cb5dc43f6ef">extensions.h</a>
+</li>
 <li>lbm_clr_extension()
 : <a class="el" href="extensions_8h.html#afc59a9128a4438526d9868abb8515ece">extensions.h</a>
 </li>
@@ -231,9 +243,6 @@ $(function() {
 <li>lbm_define()
 : <a class="el" href="lbm__c__interop_8h.html#a60f218abc8d94c2b8b33c9ae76c3760a">lbm_c_interop.h</a>
 </li>
-<li>lbm_done_iterator()
-: <a class="el" href="eval__cps_8h.html#abd57f74e74eecae2e18026664e0a2889">eval_cps.h</a>
-</li>
 <li>lbm_enc_double()
 : <a class="el" href="heap_8h.html#a0d7f3d58b2e128c3c873f7123eb0c07c">heap.h</a>
 </li>
@@ -254,9 +263,6 @@ $(function() {
 </li>
 <li>lbm_env_build_params_args()
 : <a class="el" href="env_8h.html#aead63f3c866292cf3e7e8cebac669d93">env.h</a>
-</li>
-<li>lbm_env_copy_shallow()
-: <a class="el" href="env_8h.html#a466657a4c4b74e1151dd0f19ca3bcc5a">env.h</a>
 </li>
 <li>lbm_env_drop_binding()
 : <a class="el" href="env_8h.html#a4100d94e9f62414fa73eb7d2de378441">env.h</a>
@@ -297,6 +303,9 @@ $(function() {
 <li>lbm_find_receiver_and_send()
 : <a class="el" href="eval__cps_8h.html#a7224a5aec0e0430ff90fabc96c89ebe8">eval_cps.h</a>
 </li>
+<li>lbm_free()
+: <a class="el" href="lbm__memory_8h.html#a5257f1459508bc7fe5b84b8bbeecefe4">lbm_memory.h</a>
+</li>
 <li>lbm_gc_mark_aux()
 : <a class="el" href="heap_8h.html#a069b32c46a287cf5c955de12002cbca0">heap.h</a>
 </li>
@@ -304,7 +313,7 @@ $(function() {
 : <a class="el" href="heap_8h.html#ae7a0616a62278a8108a73bdc6b8284fb">heap.h</a>
 </li>
 <li>lbm_gc_mark_phase()
-: <a class="el" href="heap_8h.html#a3dc9f3482aec23d187932f3de34fb84b">heap.h</a>
+: <a class="el" href="heap_8h.html#ac7bc7a217d5d42d984eb0543d8eae099">heap.h</a>
 </li>
 <li>lbm_gc_state_inc()
 : <a class="el" href="heap_8h.html#a6a5e35b5721a0f5a4b8626f349e5e6e4">heap.h</a>
@@ -333,11 +342,17 @@ $(function() {
 <li>lbm_get_heap_state()
 : <a class="el" href="heap_8h.html#a40d7fc3962c8d8bc6cc0617edecb134a">heap.h</a>
 </li>
+<li>lbm_get_max_extensions()
+: <a class="el" href="extensions_8h.html#a1d919b95038cea1181b44bd9241f3f8f">extensions.h</a>
+</li>
 <li>lbm_get_name_by_symbol()
 : <a class="el" href="symrepr_8h.html#a0ff81786d0a97fba0fc3cd572f3c3e04">symrepr.h</a>
 </li>
 <li>lbm_get_next_token()
 : <a class="el" href="tokpar_8h.html#a19e071dd7dcf78fd98e0c6240d4ccd57">tokpar.h</a>
+</li>
+<li>lbm_get_num_extensions()
+: <a class="el" href="extensions_8h.html#ae8bc120f56c3c319e027d6dc85a47f29">extensions.h</a>
 </li>
 <li>lbm_get_stack_ptr()
 : <a class="el" href="stack_8h.html#a3a7b3a42c16841055f0e15ac4ab6ea88">stack.h</a>
@@ -368,6 +383,12 @@ $(function() {
 </li>
 <li>lbm_heap_allocate_cell()
 : <a class="el" href="heap_8h.html#a67f43bf6872d048d6b9edbfdd5427003">heap.h</a>
+</li>
+<li>lbm_heap_allocate_list()
+: <a class="el" href="heap_8h.html#a35c8398bd86cd081c46d6072992fdd4b">heap.h</a>
+</li>
+<li>lbm_heap_allocate_list_init()
+: <a class="el" href="heap_8h.html#a8266efb55d13b7bc60b02428c7a1a4f3">heap.h</a>
 </li>
 <li>lbm_heap_explicit_free_array()
 : <a class="el" href="heap_8h.html#ae0f432be8396f2495ba256fe1801f63e">heap.h</a>
@@ -440,6 +461,9 @@ $(function() {
 </li>
 <li>lbm_mailbox_change_size()
 : <a class="el" href="eval__cps_8h.html#a73ed5b9c3916ec5e720d511d2d96c330">eval_cps.h</a>
+</li>
+<li>lbm_malloc()
+: <a class="el" href="lbm__memory_8h.html#a1ead70276dceaf26e5c1adea3af80b51">lbm_memory.h</a>
 </li>
 <li>lbm_memory_allocate()
 : <a class="el" href="lbm__memory_8h.html#a8e861e92f4438ef734b2683079c686cd">lbm_memory.h</a>

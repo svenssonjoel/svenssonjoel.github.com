@@ -76,26 +76,29 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="symrepr_8h_source.html">symrepr.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="heap_8h_source.html">heap.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="lbm__types_8h_source.html">lbm_types.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="lbm__constants_8h_source.html">lbm_constants.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for extensions.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="extensions_8h__incl.png" border="0" usemap="#aextensions_8h" alt=""/></div>
 <map name="aextensions_8h" id="aextensions_8h">
-<area shape="rect" title=" " alt="" coords="241,5,347,32"/>
-<area shape="rect" href="symrepr_8h.html" title=" " alt="" coords="251,155,337,181"/>
-<area shape="rect" href="lbm__types_8h.html" title=" " alt="" coords="100,229,203,256"/>
-<area shape="rect" href="heap_8h.html" title=" " alt="" coords="343,80,410,107"/>
-<area shape="rect" title=" " alt="" coords="212,304,283,331"/>
-<area shape="rect" title=" " alt="" coords="470,304,553,331"/>
-<area shape="rect" href="lbm__defines_8h_source.html" title=" " alt="" coords="329,229,443,256"/>
-<area shape="rect" title=" " alt="" coords="101,304,188,331"/>
-<area shape="rect" title=" " alt="" coords="540,155,611,181"/>
-<area shape="rect" href="stack_8h.html" title=" " alt="" coords="446,155,515,181"/>
-<area shape="rect" href="lbm__memory_8h.html" title=" " alt="" coords="5,155,124,181"/>
-<area shape="rect" href="lbm__channel_8h.html" title=" " alt="" coords="755,229,873,256"/>
-<area shape="rect" title=" " alt="" coords="519,229,589,256"/>
-<area shape="rect" title=" " alt="" coords="614,229,681,256"/>
-<area shape="rect" title=" " alt="" coords="745,304,883,331"/>
+<area shape="rect" title=" " alt="" coords="284,5,389,32"/>
+<area shape="rect" href="symrepr_8h.html" title=" " alt="" coords="259,155,345,181"/>
+<area shape="rect" href="lbm__types_8h.html" title=" " alt="" coords="123,229,225,256"/>
+<area shape="rect" href="heap_8h.html" title=" " alt="" coords="339,80,406,107"/>
+<area shape="rect" href="lbm__constants_8h.html" title=" " alt="" coords="431,80,560,107"/>
+<area shape="rect" title=" " alt="" coords="235,304,305,331"/>
+<area shape="rect" title=" " alt="" coords="561,304,643,331"/>
+<area shape="rect" href="lbm__defines_8h_source.html" title=" " alt="" coords="301,229,415,256"/>
+<area shape="rect" title=" " alt="" coords="124,304,211,331"/>
+<area shape="rect" title=" " alt="" coords="369,155,440,181"/>
+<area shape="rect" href="stack_8h.html" title=" " alt="" coords="529,155,598,181"/>
+<area shape="rect" href="lbm__memory_8h.html" title=" " alt="" coords="9,155,128,181"/>
+<area shape="rect" href="lbm__channel_8h.html" title=" " alt="" coords="778,229,895,256"/>
+<area shape="rect" title=" " alt="" coords="541,229,612,256"/>
+<area shape="rect" title=" " alt="" coords="637,229,703,256"/>
+<area shape="rect" title=" " alt="" coords="23,229,98,256"/>
+<area shape="rect" title=" " alt="" coords="767,304,906,331"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -115,6 +118,15 @@ Macros</h2></td></tr>
 <tr class="memitem:ab82620fffd75c4d8858196872e2dbdc8"><td class="memItemLeft" align="right" valign="top"><a id="ab82620fffd75c4d8858196872e2dbdc8"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_EXTENSION</b>(name,  argv,  argn)&#160;&#160;&#160;  __attribute__((aligned(LBM_STORABLE_ADDRESS_ALIGNMENT))) <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> name(<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *(argv), lbm_uint (argn))</td></tr>
 <tr class="separator:ab82620fffd75c4d8858196872e2dbdc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c9aa00977e62b02e99465c0025c27cf"><td class="memItemLeft" align="right" valign="top"><a id="a9c9aa00977e62b02e99465c0025c27cf"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_CHECK_NUMBER_ALL</b>()&#160;&#160;&#160;if (!<a class="el" href="extensions_8h.html#a9c8791d52546e5e79b787e272b0ec4a4">lbm_check_number_all</a>(args, argn)) {return ENC_SYM_EERROR;}</td></tr>
+<tr class="separator:a9c9aa00977e62b02e99465c0025c27cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49b72673a826ecd9f913be9ebd4c9911"><td class="memItemLeft" align="right" valign="top"><a id="a49b72673a826ecd9f913be9ebd4c9911"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_CHECK_ARGN</b>(n)&#160;&#160;&#160;if (!<a class="el" href="extensions_8h.html#a03c67f99083eddcf14ded21f357cb78b">lbm_check_argn</a>(argn, n)) {return ENC_SYM_EERROR;}</td></tr>
+<tr class="separator:a49b72673a826ecd9f913be9ebd4c9911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5db7b034e6a20a90c2fe4f3a137b35ed"><td class="memItemLeft" align="right" valign="top"><a id="a5db7b034e6a20a90c2fe4f3a137b35ed"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_CHECK_ARGN_NUMBER</b>(n)&#160;&#160;&#160;if (!<a class="el" href="extensions_8h.html#a9dde7c66a979ed438ec3e8e24a67feb4">lbm_check_argn_number</a>(args, argn, n)) {return ENC_SYM_EERROR;}</td></tr>
+<tr class="separator:a5db7b034e6a20a90c2fe4f3a137b35ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -125,6 +137,10 @@ Typedefs</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:aedb3e95581627b6636f953cb17e7824f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#aedb3e95581627b6636f953cb17e7824f">lbm_extensions_init</a> (<a class="el" href="extensions_8h.html#a827b7befeee649f25bf11ae14b5f3aa9">extension_fptr</a> *extension_storage, int extension_storage_size)</td></tr>
 <tr class="separator:aedb3e95581627b6636f953cb17e7824f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d919b95038cea1181b44bd9241f3f8f"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#a1d919b95038cea1181b44bd9241f3f8f">lbm_get_max_extensions</a> (void)</td></tr>
+<tr class="separator:a1d919b95038cea1181b44bd9241f3f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8bc120f56c3c319e027d6dc85a47f29"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#ae8bc120f56c3c319e027d6dc85a47f29">lbm_get_num_extensions</a> (void)</td></tr>
+<tr class="separator:ae8bc120f56c3c319e027d6dc85a47f29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f08b58ef5dc5aea093ba5dc7648b743"><td class="memItemLeft" align="right" valign="top"><a class="el" href="extensions_8h.html#a827b7befeee649f25bf11ae14b5f3aa9">extension_fptr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#a5f08b58ef5dc5aea093ba5dc7648b743">lbm_get_extension</a> (lbm_uint sym)</td></tr>
 <tr class="separator:a5f08b58ef5dc5aea093ba5dc7648b743"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc59a9128a4438526d9868abb8515ece"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#afc59a9128a4438526d9868abb8515ece">lbm_clr_extension</a> (lbm_uint sym_id)</td></tr>
@@ -133,6 +149,14 @@ Functions</h2></td></tr>
 <tr class="separator:ada642000aa03faeb52a22a9e629fe104"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09883c797aba431c65ac2fefcd04f2ba"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#a09883c797aba431c65ac2fefcd04f2ba">lbm_is_extension</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp)</td></tr>
 <tr class="separator:a09883c797aba431c65ac2fefcd04f2ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4549c145bd47d0f91ce16cb5dc43f6ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#a4549c145bd47d0f91ce16cb5dc43f6ef">lbm_check_true_false</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> v)</td></tr>
+<tr class="separator:a4549c145bd47d0f91ce16cb5dc43f6ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c8791d52546e5e79b787e272b0ec4a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#a9c8791d52546e5e79b787e272b0ec4a4">lbm_check_number_all</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *args, lbm_uint argn)</td></tr>
+<tr class="separator:a9c8791d52546e5e79b787e272b0ec4a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03c67f99083eddcf14ded21f357cb78b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#a03c67f99083eddcf14ded21f357cb78b">lbm_check_argn</a> (lbm_uint argn, lbm_uint n)</td></tr>
+<tr class="separator:a03c67f99083eddcf14ded21f357cb78b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dde7c66a979ed438ec3e8e24a67feb4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="extensions_8h.html#a9dde7c66a979ed438ec3e8e24a67feb4">lbm_check_argn_number</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *args, lbm_uint argn, lbm_uint n)</td></tr>
+<tr class="separator:a9dde7c66a979ed438ec3e8e24a67feb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a827b7befeee649f25bf11ae14b5f3aa9"></a>
@@ -191,6 +215,146 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success and false on failure. </dd></dl>
+
+</div>
+</div>
+<a id="a03c67f99083eddcf14ded21f357cb78b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03c67f99083eddcf14ded21f357cb78b">&#9670;&nbsp;</a></span>lbm_check_argn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_check_argn </td>
+          <td>(</td>
+          <td class="paramtype">lbm_uint&#160;</td>
+          <td class="paramname"><em>argn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lbm_uint&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check if the number of arguments is n. Sets error-reason if result is false. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">argn</td><td>number of arguments. </td></tr>
+    <tr><td class="paramname">n</td><td>number of expected arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the number of arguments is correct. false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a9dde7c66a979ed438ec3e8e24a67feb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dde7c66a979ed438ec3e8e24a67feb4">&#9670;&nbsp;</a></span>lbm_check_argn_number()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_check_argn_number </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *&#160;</td>
+          <td class="paramname"><em>args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lbm_uint&#160;</td>
+          <td class="paramname"><em>argn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lbm_uint&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check if all arguments are numbers and that there is n of them. Sets error-reason if result is false. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The argument array. </td></tr>
+    <tr><td class="paramname">argn</td><td>The number of arguments. </td></tr>
+    <tr><td class="paramname">n</td><td>The expected number of arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true or false. </dd></dl>
+
+</div>
+</div>
+<a id="a9c8791d52546e5e79b787e272b0ec4a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c8791d52546e5e79b787e272b0ec4a4">&#9670;&nbsp;</a></span>lbm_check_number_all()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_check_number_all </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *&#160;</td>
+          <td class="paramname"><em>args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lbm_uint&#160;</td>
+          <td class="paramname"><em>argn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check if all arguments are numbers. Sets error-reason if result is false. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The argument array. </td></tr>
+    <tr><td class="paramname">argn</td><td>The number of arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if all arguments are numbers, false otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a4549c145bd47d0f91ce16cb5dc43f6ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4549c145bd47d0f91ce16cb5dc43f6ef">&#9670;&nbsp;</a></span>lbm_check_true_false()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_check_true_false </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check if a value is the symbol t or the symbol nil </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td>The value. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the value is t or nil otherwise false. </dd></dl>
 
 </div>
 </div>
@@ -280,6 +444,44 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>extension_fptr on success or NULL on failure. </dd></dl>
+
+</div>
+</div>
+<a id="a1d919b95038cea1181b44bd9241f3f8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d919b95038cea1181b44bd9241f3f8f">&#9670;&nbsp;</a></span>lbm_get_max_extensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lbm_uint lbm_get_max_extensions </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The number of extensions that can be allocated. </p><dl class="section return"><dt>Returns</dt><dd>The maximum number of extensions that can be added. </dd></dl>
+
+</div>
+</div>
+<a id="ae8bc120f56c3c319e027d6dc85a47f29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8bc120f56c3c319e027d6dc85a47f29">&#9670;&nbsp;</a></span>lbm_get_num_extensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lbm_uint lbm_get_num_extensions </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the number of allocated extensions </p><dl class="section return"><dt>Returns</dt><dd>The number of extensions that have been added. </dd></dl>
 
 </div>
 </div>
