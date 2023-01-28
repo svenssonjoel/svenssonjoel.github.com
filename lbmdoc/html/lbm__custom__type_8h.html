@@ -74,17 +74,32 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
+<code>#include &lt;stddef.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="lbm__types_8h_source.html">lbm_types.h</a>&gt;</code><br />
+<code>#include &lt;lbm_defines.h&gt;</code><br />
+<code>#include &lt;<a class="el" href="heap_8h_source.html">heap.h</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for lbm_custom_type.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="lbm__custom__type_8h__incl.png" border="0" usemap="#albm__custom__type_8h" alt=""/></div>
 <map name="albm__custom__type_8h" id="albm__custom__type_8h">
-<area shape="rect" title=" " alt="" coords="21,5,171,32"/>
-<area shape="rect" title=" " alt="" coords="5,155,88,181"/>
-<area shape="rect" href="lbm__types_8h.html" title=" " alt="" coords="93,80,195,107"/>
-<area shape="rect" title=" " alt="" coords="113,155,183,181"/>
-<area shape="rect" title=" " alt="" coords="207,155,294,181"/>
+<area shape="rect" title=" " alt="" coords="381,5,531,32"/>
+<area shape="rect" title=" " alt="" coords="613,304,696,331"/>
+<area shape="rect" title=" " alt="" coords="5,229,80,256"/>
+<area shape="rect" href="lbm__types_8h.html" title=" " alt="" coords="219,229,322,256"/>
+<area shape="rect" href="lbm__defines_8h_source.html" title=" " alt="" coords="453,229,566,256"/>
+<area shape="rect" href="heap_8h.html" title=" " alt="" coords="423,80,489,107"/>
+<area shape="rect" title=" " alt="" coords="331,304,402,331"/>
+<area shape="rect" title=" " alt="" coords="221,304,307,331"/>
+<area shape="rect" title=" " alt="" coords="271,155,342,181"/>
+<area shape="rect" title=" " alt="" coords="367,155,441,181"/>
+<area shape="rect" href="symrepr_8h.html" title=" " alt="" coords="466,155,553,181"/>
+<area shape="rect" href="stack_8h.html" title=" " alt="" coords="679,155,748,181"/>
+<area shape="rect" href="lbm__memory_8h.html" title=" " alt="" coords="26,155,145,181"/>
+<area shape="rect" href="lbm__channel_8h.html" title=" " alt="" coords="879,229,996,256"/>
+<area shape="rect" title=" " alt="" coords="693,229,763,256"/>
+<area shape="rect" title=" " alt="" coords="788,229,855,256"/>
+<area shape="rect" title=" " alt="" coords="868,304,1007,331"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -126,6 +141,12 @@ Functions</h2></td></tr>
 <tr class="separator:a220eebd649b23455eadcfb37b5a5e492"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05c2e41d99d95769203a82d1face0833"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__custom__type_8h.html#a05c2e41d99d95769203a82d1face0833">lbm_custom_type_destroy</a> (lbm_uint *lbm_mem_ptr)</td></tr>
 <tr class="separator:a05c2e41d99d95769203a82d1face0833"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a877c38b414f320b943708269fe758436"><td class="memItemLeft" align="right" valign="top"><a id="a877c38b414f320b943708269fe758436"></a>
+static const char *&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_get_custom_descriptor</b> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> value)</td></tr>
+<tr class="separator:a877c38b414f320b943708269fe758436"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d5be4ca1515acd7138689c6d9756c39"><td class="memItemLeft" align="right" valign="top"><a id="a7d5be4ca1515acd7138689c6d9756c39"></a>
+static lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_get_custom_value</b> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> value)</td></tr>
+<tr class="separator:a7d5be4ca1515acd7138689c6d9756c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a220eebd649b23455eadcfb37b5a5e492"></a>

@@ -1,9 +1,10 @@
 <map id="stack.h" name="stack.h">
-<area shape="rect" id="node1" title=" " alt="" coords="101,5,171,32"/>
-<area shape="rect" id="node2" href="$eval__cps_8h.html" title=" " alt="" coords="40,80,131,107"/>
-<area shape="rect" id="node5" href="$heap_8h.html" title=" " alt="" coords="155,80,221,107"/>
+<area shape="rect" id="node1" title=" " alt="" coords="103,5,172,32"/>
+<area shape="rect" id="node2" href="$eval__cps_8h.html" title=" " alt="" coords="41,80,132,107"/>
+<area shape="rect" id="node5" href="$heap_8h.html" title=" " alt="" coords="197,80,264,107"/>
 <area shape="rect" id="node3" href="$lbm__c__interop_8h.html" title=" " alt="" coords="23,155,150,181"/>
-<area shape="rect" id="node4" href="$lispbm_8h.html" title=" " alt="" coords="98,229,177,256"/>
+<area shape="rect" id="node4" href="$lispbm_8h.html" title=" " alt="" coords="149,229,227,256"/>
 <area shape="rect" id="node6" href="$exp__kind_8h.html" title=" " alt="" coords="225,155,319,181"/>
 <area shape="rect" id="node7" href="$extensions_8h.html" title=" " alt="" coords="343,155,449,181"/>
+<area shape="rect" id="node8" href="$lbm__custom__type_8h.html" title=" " alt="" coords="473,155,623,181"/>
 </map>

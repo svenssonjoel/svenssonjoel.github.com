@@ -75,6 +75,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;stdarg.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="lbm__types_8h_source.html">lbm_types.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="symrepr_8h_source.html">symrepr.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="stack_8h_source.html">stack.h</a>&quot;</code><br />
@@ -86,21 +87,22 @@ Include dependency graph for heap.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="heap_8h__incl.png" border="0" usemap="#aheap_8h" alt=""/></div>
 <map name="aheap_8h" id="aheap_8h">
-<area shape="rect" title=" " alt="" coords="263,5,330,32"/>
-<area shape="rect" title=" " alt="" coords="21,80,92,107"/>
-<area shape="rect" href="lbm__types_8h.html" title=" " alt="" coords="245,155,348,181"/>
-<area shape="rect" href="symrepr_8h.html" title=" " alt="" coords="168,80,255,107"/>
-<area shape="rect" href="lbm__defines_8h_source.html" title=" " alt="" coords="5,155,119,181"/>
-<area shape="rect" href="stack_8h.html" title=" " alt="" coords="514,80,583,107"/>
-<area shape="rect" href="lbm__memory_8h.html" title=" " alt="" coords="343,80,461,107"/>
-<area shape="rect" href="lbm__channel_8h.html" title=" " alt="" coords="810,155,927,181"/>
-<area shape="rect" title=" " alt="" coords="500,229,571,256"/>
-<area shape="rect" title=" " alt="" coords="379,229,462,256"/>
-<area shape="rect" title=" " alt="" coords="253,229,340,256"/>
-<area shape="rect" title=" " alt="" coords="715,155,785,181"/>
-<area shape="rect" title=" " alt="" coords="623,155,690,181"/>
-<area shape="rect" title=" " alt="" coords="373,155,447,181"/>
-<area shape="rect" title=" " alt="" coords="799,229,938,256"/>
+<area shape="rect" title=" " alt="" coords="301,5,367,32"/>
+<area shape="rect" title=" " alt="" coords="5,80,76,107"/>
+<area shape="rect" title=" " alt="" coords="101,80,175,107"/>
+<area shape="rect" href="lbm__types_8h.html" title=" " alt="" coords="324,155,427,181"/>
+<area shape="rect" href="symrepr_8h.html" title=" " alt="" coords="251,80,337,107"/>
+<area shape="rect" href="lbm__defines_8h_source.html" title=" " alt="" coords="84,155,197,181"/>
+<area shape="rect" href="stack_8h.html" title=" " alt="" coords="593,80,662,107"/>
+<area shape="rect" href="lbm__memory_8h.html" title=" " alt="" coords="421,80,540,107"/>
+<area shape="rect" href="lbm__channel_8h.html" title=" " alt="" coords="889,155,1006,181"/>
+<area shape="rect" title=" " alt="" coords="579,229,649,256"/>
+<area shape="rect" title=" " alt="" coords="458,229,541,256"/>
+<area shape="rect" title=" " alt="" coords="332,229,419,256"/>
+<area shape="rect" title=" " alt="" coords="793,155,864,181"/>
+<area shape="rect" title=" " alt="" coords="702,155,769,181"/>
+<area shape="rect" title=" " alt="" coords="451,155,526,181"/>
+<area shape="rect" title=" " alt="" coords="878,229,1017,256"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -108,11 +110,12 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="heap_8h__dep__incl.png" border="0" usemap="#aheap_8hdep" alt=""/></div>
 <map name="aheap_8hdep" id="aheap_8hdep">
-<area shape="rect" title=" " alt="" coords="188,5,255,32"/>
+<area shape="rect" title=" " alt="" coords="233,5,300,32"/>
 <area shape="rect" href="exp__kind_8h.html" title=" " alt="" coords="5,80,99,107"/>
 <area shape="rect" href="extensions_8h.html" title=" " alt="" coords="123,80,229,107"/>
-<area shape="rect" href="lispbm_8h.html" title=" " alt="" coords="227,155,306,181"/>
+<area shape="rect" href="lispbm_8h.html" title=" " alt="" coords="278,155,357,181"/>
 <area shape="rect" href="lbm__c__interop_8h.html" title=" " alt="" coords="305,80,431,107"/>
+<area shape="rect" href="lbm__custom__type_8h.html" title=" " alt="" coords="455,80,606,107"/>
 </map>
 </div>
 </div>
@@ -171,6 +174,8 @@ Functions</h2></td></tr>
 <tr class="separator:a67f43bf6872d048d6b9edbfdd5427003"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35c8398bd86cd081c46d6072992fdd4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a35c8398bd86cd081c46d6072992fdd4b">lbm_heap_allocate_list</a> (unsigned int n)</td></tr>
 <tr class="separator:a35c8398bd86cd081c46d6072992fdd4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac639c620cf6ef371c1a59322f6331685"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ac639c620cf6ef371c1a59322f6331685">lbm_heap_allocate_list_init_va</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *ls, unsigned int n, va_list valist)</td></tr>
+<tr class="separator:ac639c620cf6ef371c1a59322f6331685"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8266efb55d13b7bc60b02428c7a1a4f3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a8266efb55d13b7bc60b02428c7a1a4f3">lbm_heap_allocate_list_init</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *ls, unsigned int n,...)</td></tr>
 <tr class="separator:a8266efb55d13b7bc60b02428c7a1a4f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa91e7850c4bb0f80ba879418d628b408"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aa91e7850c4bb0f80ba879418d628b408">lbm_dec_str</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> val)</td></tr>
@@ -214,6 +219,8 @@ lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_raw</b> (
 <tr class="separator:ac717c44b9df72386e801f58b691afb58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f5c5fc0208d9a1c34b994f7bc872c81"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1f5c5fc0208d9a1c34b994f7bc872c81">lbm_list_length</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> c)</td></tr>
 <tr class="separator:a1f5c5fc0208d9a1c34b994f7bc872c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add6d276b7f7ae1b4dca5059ea239d65d"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#add6d276b7f7ae1b4dca5059ea239d65d">lbm_list_length_pred</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> c, bool *pres, bool(*pred)(<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>))</td></tr>
+<tr class="separator:add6d276b7f7ae1b4dca5059ea239d65d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1012700b1f6cd537d44f7d8cf089a644"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1012700b1f6cd537d44f7d8cf089a644">lbm_list_reverse</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list)</td></tr>
 <tr class="separator:a1012700b1f6cd537d44f7d8cf089a644"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed7af5ca4d4358815a2a9b631912d51d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aed7af5ca4d4358815a2a9b631912d51d">lbm_list_destructive_reverse</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list)</td></tr>
@@ -238,6 +245,8 @@ lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_raw</b> (
 <tr class="separator:ad5dfa361fe508b4dbd76578626205468"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9b304ad844ad7599f4b0d846045fa29"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ae9b304ad844ad7599f4b0d846045fa29">lbm_heap_allocate_array</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *res, lbm_uint size, <a class="el" href="lbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a> type)</td></tr>
 <tr class="separator:ae9b304ad844ad7599f4b0d846045fa29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaded647947aa89c8f14c847fabead0e4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aaded647947aa89c8f14c847fabead0e4">lbm_lift_array</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *value, char *data, <a class="el" href="lbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a> type, lbm_uint num_elt)</td></tr>
+<tr class="separator:aaded647947aa89c8f14c847fabead0e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0f432be8396f2495ba256fe1801f63e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ae0f432be8396f2495ba256fe1801f63e">lbm_heap_explicit_free_array</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> arr)</td></tr>
 <tr class="separator:ae0f432be8396f2495ba256fe1801f63e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9da664df13e84778ec84ec5ba9a8f353"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="lbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x)</td></tr>
@@ -1321,8 +1330,50 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <p>Allocate a list of n heap-cells and initialize the values. \pram ls The result list is passed through this ptr. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">m</td><td>The length of list to allocate. </td></tr>
+    <tr><td class="paramname">n</td><td>The length of list to allocate. </td></tr>
     <tr><td class="paramname">...</td><td>The values to initialize the list with. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True of False depending on success of allocation. </dd></dl>
+
+</div>
+</div>
+<a id="ac639c620cf6ef371c1a59322f6331685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac639c620cf6ef371c1a59322f6331685">&#9670;&nbsp;</a></span>lbm_heap_allocate_list_init_va()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_heap_allocate_list_init_va </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *&#160;</td>
+          <td class="paramname"><em>ls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">va_list&#160;</td>
+          <td class="paramname"><em>valist</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Allocate a list of n heap-cells and initialize the values. \pram ls The result list is passed through this ptr. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n</td><td>The length of list to allocate. </td></tr>
+    <tr><td class="paramname">valist</td><td>The values in a va_list to initialize the list with. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1578,6 +1629,56 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="aaded647947aa89c8f14c847fabead0e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaded647947aa89c8f14c847fabead0e4">&#9670;&nbsp;</a></span>lbm_lift_array()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lbm_lift_array </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#af148f3f1bbb927cd381129a56b84c635">lbm_type</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lbm_uint&#160;</td>
+          <td class="paramname"><em>num_elt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Convert a C array into an lbm array. If the C array is allocated in LBM MEMORY the lifetime of the array will be managed by GC. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">res</td><td>lbm_value result pointer for storage of the result array. </td></tr>
+    <tr><td class="paramname">data</td><td>C array. </td></tr>
+    <tr><td class="paramname">type</td><td>The type tag to assign to the resulting LBM array. </td></tr>
+    <tr><td class="paramname">num_elt</td><td>Number of elements in the array. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 for success and 0 for failure. </dd></dl>
+
+</div>
+</div>
 <a id="a14b66d531d4be881c4734b47b5469bea"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a14b66d531d4be881c4734b47b5469bea">&#9670;&nbsp;</a></span>lbm_list_append()</h2>
 
@@ -1690,6 +1791,49 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The length of the list. Unless the value is a cyclic structure on the heap, this function will terminate. </dd></dl>
+
+</div>
+</div>
+<a id="add6d276b7f7ae1b4dca5059ea239d65d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add6d276b7f7ae1b4dca5059ea239d65d">&#9670;&nbsp;</a></span>lbm_list_length_pred()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int lbm_list_length_pred </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>pres</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool(*)(<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>)&#160;</td>
+          <td class="paramname"><em>pred</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate the length of a proper list and evaluate a predicate for each element. </p><dl class="section warning"><dt>Warning</dt><dd>This is a dangerous function that should be used carefully. Cyclic structures on the heap may lead to the function not terminating.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">c</td><td>A list </td></tr>
+    <tr><td class="paramname">pres</td><td>Boolean result of predicate, false if predicate is false for any of the elements in the list, otherwise true. </td></tr>
+    <tr><td class="paramname">pred</td><td>Predicate to evaluate for each element of the list. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

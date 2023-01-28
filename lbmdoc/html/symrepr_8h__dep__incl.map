@@ -1,8 +1,9 @@
 <map id="symrepr.h" name="symrepr.h">
-<area shape="rect" id="node1" title=" " alt="" coords="237,5,323,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="306,5,393,32"/>
 <area shape="rect" id="node2" href="$exp__kind_8h.html" title=" " alt="" coords="5,155,99,181"/>
-<area shape="rect" id="node3" href="$extensions_8h.html" title=" " alt="" coords="326,155,431,181"/>
-<area shape="rect" id="node4" href="$lispbm_8h.html" title=" " alt="" coords="294,229,373,256"/>
-<area shape="rect" id="node5" href="$heap_8h.html" title=" " alt="" coords="247,80,313,107"/>
+<area shape="rect" id="node3" href="$extensions_8h.html" title=" " alt="" coords="501,155,606,181"/>
+<area shape="rect" id="node4" href="$lispbm_8h.html" title=" " alt="" coords="423,229,502,256"/>
+<area shape="rect" id="node5" href="$heap_8h.html" title=" " alt="" coords="316,80,383,107"/>
 <area shape="rect" id="node6" href="$lbm__c__interop_8h.html" title=" " alt="" coords="123,155,250,181"/>
+<area shape="rect" id="node7" href="$lbm__custom__type_8h.html" title=" " alt="" coords="274,155,425,181"/>
 </map>

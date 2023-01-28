@@ -1,18 +1,19 @@
 <map id="exp_kind.h" name="exp_kind.h">
-<area shape="rect" id="node1" title=" " alt="" coords="555,5,648,32"/>
-<area shape="rect" id="node2" href="$heap_8h.html" title=" " alt="" coords="533,80,600,107"/>
-<area shape="rect" id="node8" href="$symrepr_8h.html" title=" " alt="" coords="733,155,819,181"/>
-<area shape="rect" id="node3" title=" " alt="" coords="579,155,650,181"/>
-<area shape="rect" id="node4" href="$lbm__types_8h.html" title=" " alt="" coords="358,229,461,256"/>
-<area shape="rect" id="node9" href="$lbm__defines_8h_source.html" title=" " alt="" coords="722,229,835,256"/>
-<area shape="rect" id="node10" href="$stack_8h.html" title=" " alt="" coords="485,155,555,181"/>
-<area shape="rect" id="node13" href="$lbm__memory_8h.html" title=" " alt="" coords="219,155,338,181"/>
-<area shape="rect" id="node15" href="$lbm__channel_8h.html" title=" " alt="" coords="16,229,133,256"/>
-<area shape="rect" id="node5" title=" " alt="" coords="278,304,349,331"/>
-<area shape="rect" id="node6" title=" " alt="" coords="567,304,649,331"/>
-<area shape="rect" id="node7" title=" " alt="" coords="373,304,459,331"/>
-<area shape="rect" id="node11" title=" " alt="" coords="485,229,555,256"/>
-<area shape="rect" id="node12" title=" " alt="" coords="580,229,647,256"/>
-<area shape="rect" id="node14" title=" " alt="" coords="208,229,283,256"/>
-<area shape="rect" id="node16" title=" " alt="" coords="5,304,144,331"/>
+<area shape="rect" id="node1" title=" " alt="" coords="200,5,293,32"/>
+<area shape="rect" id="node2" href="$heap_8h.html" title=" " alt="" coords="335,80,401,107"/>
+<area shape="rect" id="node9" href="$symrepr_8h.html" title=" " alt="" coords="102,155,189,181"/>
+<area shape="rect" id="node3" title=" " alt="" coords="570,155,641,181"/>
+<area shape="rect" id="node4" title=" " alt="" coords="665,155,740,181"/>
+<area shape="rect" id="node5" href="$lbm__types_8h.html" title=" " alt="" coords="207,229,310,256"/>
+<area shape="rect" id="node10" href="$lbm__defines_8h_source.html" title=" " alt="" coords="70,229,183,256"/>
+<area shape="rect" id="node11" href="$stack_8h.html" title=" " alt="" coords="333,155,403,181"/>
+<area shape="rect" id="node14" href="$lbm__memory_8h.html" title=" " alt="" coords="427,155,546,181"/>
+<area shape="rect" id="node16" href="$lbm__channel_8h.html" title=" " alt="" coords="772,229,889,256"/>
+<area shape="rect" id="node6" title=" " alt="" coords="454,304,525,331"/>
+<area shape="rect" id="node7" title=" " alt="" coords="337,304,420,331"/>
+<area shape="rect" id="node8" title=" " alt="" coords="215,304,302,331"/>
+<area shape="rect" id="node12" title=" " alt="" coords="527,229,598,256"/>
+<area shape="rect" id="node13" title=" " alt="" coords="335,229,401,256"/>
+<area shape="rect" id="node15" title=" " alt="" coords="623,229,697,256"/>
+<area shape="rect" id="node17" title=" " alt="" coords="761,304,900,331"/>
 </map>
