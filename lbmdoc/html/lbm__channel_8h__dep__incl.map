@@ -1,11 +1,13 @@
 <map id="lbm_channel.h" name="lbm_channel.h">
-<area shape="rect" id="node1" title=" " alt="" coords="149,5,267,32"/>
-<area shape="rect" id="node2" href="$eval__cps_8h.html" title=" " alt="" coords="5,80,96,107"/>
-<area shape="rect" id="node3" href="$lbm__c__interop_8h.html" title=" " alt="" coords="43,155,170,181"/>
-<area shape="rect" id="node4" href="$lispbm_8h.html" title=" " alt="" coords="219,229,298,256"/>
-<area shape="rect" id="node5" href="$heap_8h.html" title=" " alt="" coords="293,80,360,107"/>
-<area shape="rect" id="node9" href="$tokpar_8h.html" title=" " alt="" coords="171,80,245,107"/>
-<area shape="rect" id="node6" href="$exp__kind_8h.html" title=" " alt="" coords="601,155,695,181"/>
-<area shape="rect" id="node7" href="$extensions_8h.html" title=" " alt="" coords="297,155,402,181"/>
-<area shape="rect" id="node8" href="$lbm__custom__type_8h.html" title=" " alt="" coords="426,155,577,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="109,5,227,32"/>
+<area shape="rect" id="node2" href="$eval__cps_8h.html" title=" " alt="" coords="256,229,347,256"/>
+<area shape="rect" id="node4" href="$lbm__c__interop_8h.html" title=" " alt="" coords="70,304,197,331"/>
+<area shape="rect" id="node5" href="$lispbm_8h.html" title=" " alt="" coords="450,379,529,405"/>
+<area shape="rect" id="node6" href="$heap_8h.html" title=" " alt="" coords="424,80,491,107"/>
+<area shape="rect" id="node11" href="$tokpar_8h.html" title=" " alt="" coords="5,229,80,256"/>
+<area shape="rect" id="node3" href="$fundamental_8h.html" title=" " alt="" coords="272,304,389,331"/>
+<area shape="rect" id="node7" href="$exp__kind_8h.html" title=" " alt="" coords="411,155,504,181"/>
+<area shape="rect" id="node8" href="$extensions_8h.html" title=" " alt="" coords="630,229,735,256"/>
+<area shape="rect" id="node9" href="$lbm__custom__type_8h.html" title=" " alt="" coords="414,304,565,331"/>
+<area shape="rect" id="node10" href="$lbm__flat__value_8h_source.html" title=" " alt="" coords="256,155,387,181"/>
 </map>

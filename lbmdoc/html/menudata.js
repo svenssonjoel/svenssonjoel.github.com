@@ -43,9 +43,9 @@ var menudata={children:[
 {text:"p",url:"globals_p.html#index_p"}]},
 {text:"Functions",url:"globals_func.html",children:[
 {text:"e",url:"globals_func.html#index_e"},
-{text:"h",url:"globals_func.html#index_h"},
-{text:"l",url:"globals_func.html#index_l"},
-{text:"p",url:"globals_func.html#index_p"}]},
+{text:"h",url:"globals_func_h.html#index_h"},
+{text:"l",url:"globals_func_l.html#index_l"},
+{text:"p",url:"globals_func_p.html#index_p"}]},
 {text:"Typedefs",url:"globals_type.html"},
 {text:"Enumerations",url:"globals_enum.html"},
 {text:"Enumerator",url:"globals_eval.html"},

@@ -79,21 +79,30 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="lbm__types_8h_source.html">lbm_types.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="stack_8h_source.html">stack.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="lbm__channel_8h_source.html">lbm_channel.h</a>&quot;</code><br />
+<code>#include &quot;lbm_flat_value.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for eval_cps.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="eval__cps_8h__incl.png" border="0" usemap="#aeval__cps_8h" alt=""/></div>
 <map name="aeval__cps_8h" id="aeval__cps_8h">
-<area shape="rect" title=" " alt="" coords="311,5,401,32"/>
-<area shape="rect" href="lbm__types_8h.html" title=" " alt="" coords="465,155,567,181"/>
-<area shape="rect" href="stack_8h.html" title=" " alt="" coords="321,80,391,107"/>
-<area shape="rect" href="lbm__channel_8h.html" title=" " alt="" coords="35,155,152,181"/>
-<area shape="rect" title=" " alt="" coords="385,229,455,256"/>
-<area shape="rect" title=" " alt="" coords="168,229,251,256"/>
-<area shape="rect" title=" " alt="" coords="479,229,566,256"/>
-<area shape="rect" title=" " alt="" coords="227,155,298,181"/>
-<area shape="rect" title=" " alt="" coords="323,155,389,181"/>
-<area shape="rect" title=" " alt="" coords="5,229,144,256"/>
+<area shape="rect" title=" " alt="" coords="523,5,614,32"/>
+<area shape="rect" href="lbm__types_8h.html" title=" " alt="" coords="769,304,872,331"/>
+<area shape="rect" href="stack_8h.html" title=" " alt="" coords="350,229,419,256"/>
+<area shape="rect" href="lbm__channel_8h.html" title=" " alt="" coords="145,229,262,256"/>
+<area shape="rect" href="lbm__flat__value_8h_source.html" title=" " alt="" coords="607,80,738,107"/>
+<area shape="rect" title=" " alt="" coords="689,379,760,405"/>
+<area shape="rect" title=" " alt="" coords="401,379,483,405"/>
+<area shape="rect" title=" " alt="" coords="784,379,871,405"/>
+<area shape="rect" title=" " alt="" coords="383,304,453,331"/>
+<area shape="rect" title=" " alt="" coords="291,304,358,331"/>
+<area shape="rect" title=" " alt="" coords="27,304,166,331"/>
+<area shape="rect" href="heap_8h.html" title=" " alt="" coords="595,155,662,181"/>
+<area shape="rect" href="symrepr_8h.html" title=" " alt="" coords="688,229,775,256"/>
+<area shape="rect" href="lbm__memory_8h.html" title=" " alt="" coords="851,229,969,256"/>
+<area shape="rect" title=" " alt="" coords="593,229,664,256"/>
+<area shape="rect" title=" " alt="" coords="443,229,518,256"/>
+<area shape="rect" href="lbm__defines_8h_source.html" title=" " alt="" coords="529,304,643,331"/>
+<area shape="rect" title=" " alt="" coords="947,304,1022,331"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -101,9 +110,10 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="eval__cps_8h__dep__incl.png" border="0" usemap="#aeval__cps_8hdep" alt=""/></div>
 <map name="aeval__cps_8hdep" id="aeval__cps_8hdep">
-<area shape="rect" title=" " alt="" coords="74,5,165,32"/>
-<area shape="rect" href="lbm__c__interop_8h.html" title=" " alt="" coords="5,80,132,107"/>
-<area shape="rect" href="lispbm_8h.html" title=" " alt="" coords="80,155,159,181"/>
+<area shape="rect" title=" " alt="" coords="165,5,256,32"/>
+<area shape="rect" href="fundamental_8h.html" title=" " alt="" coords="5,80,123,107"/>
+<area shape="rect" href="lbm__c__interop_8h.html" title=" " alt="" coords="147,80,274,107"/>
+<area shape="rect" href="lispbm_8h.html" title=" " alt="" coords="222,155,301,181"/>
 </map>
 </div>
 </div>
@@ -154,14 +164,8 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a0129b6bb854ffdfc778c3ad2d32a8d62"><td class="memItemLeft" align="right" valign="top"><a id="a0129b6bb854ffdfc778c3ad2d32a8d62"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>lbm_event_type_t</b> { <br />
-&#160;&#160;<b>LBM_EVENT_SYM</b> = 0
-, <b>LBM_EVENT_SYM_INT</b>
-, <b>LBM_EVENT_SYM_INT_INT</b>
-, <b>LBM_EVENT_SYM_ARRAY</b>
-, <br />
-&#160;&#160;<b>LBM_EVENT_SYM_INT_ARRAY</b>
-<br />
+<tr class="memitem:a0129b6bb854ffdfc778c3ad2d32a8d62"><td class="memItemLeft" align="right" valign="top"><a id="a0129b6bb854ffdfc778c3ad2d32a8d62"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>lbm_event_type_t</b> { <b>LBM_EVENT_FOR_HANDLER</b> = 0
+, <b>LBM_EVENT_UNBLOCK_CTX</b>
  }</td></tr>
 <tr class="separator:a0129b6bb854ffdfc778c3ad2d32a8d62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -179,8 +183,12 @@ Functions</h2></td></tr>
 <tr class="separator:a2260e84a569ac8a7f1e0e8596a2a527b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66455c1e43cb560cf9092dcd20c9574b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a66455c1e43cb560cf9092dcd20c9574b">lbm_set_event_handler_pid</a> (lbm_cid pid)</td></tr>
 <tr class="separator:a66455c1e43cb560cf9092dcd20c9574b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19d09e70b29963a5eefe5c249254d65a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a19d09e70b29963a5eefe5c249254d65a">lbm_event</a> (<a class="el" href="structlbm__event__t.html">lbm_event_t</a> event, uint8_t *opt_array, int opt_array_len)</td></tr>
-<tr class="separator:a19d09e70b29963a5eefe5c249254d65a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c4e24b50575b001bdfa1f99423734b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a71c4e24b50575b001bdfa1f99423734b">lbm_event_handler_exists</a> (void)</td></tr>
+<tr class="separator:a71c4e24b50575b001bdfa1f99423734b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a389a2b65ff03af0f4b538f3bf9f5b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a1a389a2b65ff03af0f4b538f3bf9f5b4">lbm_event</a> (<a class="el" href="structlbm__flat__value__t.html">lbm_flat_value_t</a> *fv)</td></tr>
+<tr class="separator:a1a389a2b65ff03af0f4b538f3bf9f5b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9abbe7ab1f36bb2014234994692b8dfe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a9abbe7ab1f36bb2014234994692b8dfe">lbm_event_unboxed</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> unboxed)</td></tr>
+<tr class="separator:a9abbe7ab1f36bb2014234994692b8dfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbe5fa10b6817ede3abf80d11549ad02"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#abbe5fa10b6817ede3abf80d11549ad02">lbm_remove_done_ctx</a> (lbm_cid cid, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *v)</td></tr>
 <tr class="separator:abbe5fa10b6817ede3abf80d11549ad02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06e9ae9e542a861adaec6b06a01c6eba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a06e9ae9e542a861adaec6b06a01c6eba">lbm_wait_ctx</a> (lbm_cid cid, lbm_uint timeout_ms)</td></tr>
@@ -207,8 +215,10 @@ Functions</h2></td></tr>
 <tr class="separator:ae3fba24f80cfb2c55912c57a4e3acf2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad24d4c3a16c52971ef31755804610be0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#ad24d4c3a16c52971ef31755804610be0">lbm_block_ctx_from_extension</a> (void)</td></tr>
 <tr class="separator:ad24d4c3a16c52971ef31755804610be0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ce6ccb122269e3dad4354ce9e137a24"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a8ce6ccb122269e3dad4354ce9e137a24">lbm_unblock_ctx</a> (lbm_cid cid, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> result)</td></tr>
-<tr class="separator:a8ce6ccb122269e3dad4354ce9e137a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f3854d0d51ab74cc48b77c74717a3bf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a7f3854d0d51ab74cc48b77c74717a3bf">lbm_unblock_ctx</a> (lbm_cid cid, <a class="el" href="structlbm__flat__value__t.html">lbm_flat_value_t</a> *fv)</td></tr>
+<tr class="separator:a7f3854d0d51ab74cc48b77c74717a3bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f9e99db09367d51f569bcf8b1ed546b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a3f9e99db09367d51f569bcf8b1ed546b">lbm_unblock_ctx_unboxed</a> (lbm_cid cid, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> unboxed)</td></tr>
+<tr class="separator:a3f9e99db09367d51f569bcf8b1ed546b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9b437223bf63d0be3a5edef9bee912e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#af9b437223bf63d0be3a5edef9bee912e">lbm_running_iterator</a> (<a class="el" href="eval__cps_8h.html#ac027b6619adcd4a0a10aea060e10e4df">ctx_fun</a> f, void *, void *)</td></tr>
 <tr class="separator:af9b437223bf63d0be3a5edef9bee912e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42f3162c9f54d156cba7cf681a2659b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a42f3162c9f54d156cba7cf681a2659b8">lbm_blocked_iterator</a> (<a class="el" href="eval__cps_8h.html#ac027b6619adcd4a0a10aea060e10e4df">ctx_fun</a> f, void *, void *)</td></tr>
@@ -560,8 +570,8 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
 
 </div>
 </div>
-<a id="a19d09e70b29963a5eefe5c249254d65a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19d09e70b29963a5eefe5c249254d65a">&#9670;&nbsp;</a></span>lbm_event()</h2>
+<a id="a1a389a2b65ff03af0f4b538f3bf9f5b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a389a2b65ff03af0f4b538f3bf9f5b4">&#9670;&nbsp;</a></span>lbm_event()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -569,29 +579,13 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
         <tr>
           <td class="memname">bool lbm_event </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structlbm__event__t.html">lbm_event_t</a>&#160;</td>
-          <td class="paramname"><em>event</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype"><a class="el" href="structlbm__flat__value__t.html">lbm_flat_value_t</a> *&#160;</td>
+          <td class="paramname"><em>fv</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>opt_array</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>opt_array_len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Send an event to the registered event handler process. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Send an event to the registered event handler process. If lbm_event returns false the C code will still be responsible for the flat_value passed into lbm_event. If lbm_event returns true, the LBM runtime system will take responsibility for the freeing of the memory allocated in the flat_value. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">event</td><td>The event to send to the registered handler. </td></tr>
     <tr><td class="paramname">opt_array</td><td>An optional array to pass to the event handler. </td></tr>
@@ -600,6 +594,50 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the event was successfully enqueued to be sent, false otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a71c4e24b50575b001bdfa1f99423734b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71c4e24b50575b001bdfa1f99423734b">&#9670;&nbsp;</a></span>lbm_event_handler_exists()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_event_handler_exists </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check if an event handler is registerd. </p><dl class="section return"><dt>Returns</dt><dd>True if event handler exists, otherwise false. </dd></dl>
+
+</div>
+</div>
+<a id="a9abbe7ab1f36bb2014234994692b8dfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9abbe7ab1f36bb2014234994692b8dfe">&#9670;&nbsp;</a></span>lbm_event_unboxed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_event_unboxed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>unboxed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Send an unboxed value as an event to the event handler. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unboxed.</td><td>An lbm_value (encoded) such as a symbol. int, uint, character. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true on success. </dd></dl>
 
 </div>
 </div>
@@ -1234,8 +1272,8 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
 
 </div>
 </div>
-<a id="a8ce6ccb122269e3dad4354ce9e137a24"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8ce6ccb122269e3dad4354ce9e137a24">&#9670;&nbsp;</a></span>lbm_unblock_ctx()</h2>
+<a id="a7f3854d0d51ab74cc48b77c74717a3bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f3854d0d51ab74cc48b77c74717a3bf">&#9670;&nbsp;</a></span>lbm_unblock_ctx()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1249,8 +1287,8 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
-          <td class="paramname"><em>result</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structlbm__flat__value__t.html">lbm_flat_value_t</a> *&#160;</td>
+          <td class="paramname"><em>fv</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1262,10 +1300,46 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
 <p>Unblock a context that has been blocked by a C extension Trying to unblock a context that is waiting on a message in a mailbox is not encouraged </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cid</td><td>Lisp process to wake up. </td></tr>
-    <tr><td class="paramname">result</td><td>Value passed to the lisp process as the result from the blocking function. </td></tr>
+    <tr><td class="paramname">fv</td><td>lbm_flat_value to give return as result from the unblocket process. </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a3f9e99db09367d51f569bcf8b1ed546b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f9e99db09367d51f569bcf8b1ed546b">&#9670;&nbsp;</a></span>lbm_unblock_ctx_unboxed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_unblock_ctx_unboxed </td>
+          <td>(</td>
+          <td class="paramtype">lbm_cid&#160;</td>
+          <td class="paramname"><em>cid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>unboxed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Unblock a context bypassing the event-queue. Since the context will be unblocked in a separate tread it cannot take a composite return value. Only unboxed lbm_values are allowed. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cid</td><td>Lisp process to inblock. </td></tr>
+    <tr><td class="paramname">unboxed</td><td>An unboxed lbm_value: char, i, u or symbol type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True on successfully unblocking. False otherwise. </dd></dl>
 
 </div>
 </div>

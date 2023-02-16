@@ -93,13 +93,16 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="lbm__memory_8h__dep__incl.png" border="0" usemap="#albm__memory_8hdep" alt=""/></div>
 <map name="albm__memory_8hdep" id="albm__memory_8hdep">
-<area shape="rect" title=" " alt="" coords="483,5,602,32"/>
-<area shape="rect" href="heap_8h.html" title=" " alt="" coords="291,80,357,107"/>
-<area shape="rect" href="lispbm_8h.html" title=" " alt="" coords="341,229,419,256"/>
-<area shape="rect" href="lbm__c__interop_8h.html" title=" " alt="" coords="479,155,606,181"/>
-<area shape="rect" href="exp__kind_8h.html" title=" " alt="" coords="5,155,99,181"/>
-<area shape="rect" href="extensions_8h.html" title=" " alt="" coords="123,155,229,181"/>
-<area shape="rect" href="lbm__custom__type_8h.html" title=" " alt="" coords="305,155,455,181"/>
+<area shape="rect" title=" " alt="" coords="416,5,535,32"/>
+<area shape="rect" href="heap_8h.html" title=" " alt="" coords="290,80,357,107"/>
+<area shape="rect" href="lispbm_8h.html" title=" " alt="" coords="335,379,413,405"/>
+<area shape="rect" href="lbm__c__interop_8h.html" title=" " alt="" coords="361,304,488,331"/>
+<area shape="rect" href="lbm__flat__value_8h_source.html" title=" " alt="" coords="462,155,593,181"/>
+<area shape="rect" href="exp__kind_8h.html" title=" " alt="" coords="91,155,185,181"/>
+<area shape="rect" href="extensions_8h.html" title=" " alt="" coords="180,229,285,256"/>
+<area shape="rect" href="lbm__custom__type_8h.html" title=" " alt="" coords="5,229,156,256"/>
+<area shape="rect" href="eval__cps_8h.html" title=" " alt="" coords="482,229,573,256"/>
+<area shape="rect" href="fundamental_8h.html" title=" " alt="" coords="563,304,681,331"/>
 </map>
 </div>
 </div>
@@ -184,6 +187,10 @@ Macros</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a7b0db3b30d3207d343496f8d2d9a36cd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a7b0db3b30d3207d343496f8d2d9a36cd">lbm_memory_init</a> (lbm_uint *data, lbm_uint data_size, lbm_uint *bitmap, lbm_uint bitmap_size)</td></tr>
 <tr class="separator:a7b0db3b30d3207d343496f8d2d9a36cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e6d242edd591c5beb486e5f8b239f7a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a9e6d242edd591c5beb486e5f8b239f7a">lbm_memory_set_reserve</a> (lbm_uint num_words)</td></tr>
+<tr class="separator:a9e6d242edd591c5beb486e5f8b239f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a564395f900051a9715f100c79774e3f7"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a564395f900051a9715f100c79774e3f7">lbm_memory_get_reserve</a> (void)</td></tr>
+<tr class="separator:a564395f900051a9715f100c79774e3f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a922a510ea933cf5ae2296503482c1bbb"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a922a510ea933cf5ae2296503482c1bbb">lbm_memory_num_words</a> (void)</td></tr>
 <tr class="separator:a922a510ea933cf5ae2296503482c1bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9997976fe721c409169cb53e80beecb9"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a9997976fe721c409169cb53e80beecb9">lbm_memory_num_free</a> (void)</td></tr>
@@ -196,6 +203,8 @@ Functions</h2></td></tr>
 <tr class="separator:aac12ef3b205c8daeb29e727999a2eead"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ead70276dceaf26e5c1adea3af80b51"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a1ead70276dceaf26e5c1adea3af80b51">lbm_malloc</a> (size_t size)</td></tr>
 <tr class="separator:a1ead70276dceaf26e5c1adea3af80b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50d99d55379f82419c1a9869895ef200"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a50d99d55379f82419c1a9869895ef200">lbm_malloc_reserve</a> (size_t size)</td></tr>
+<tr class="separator:a50d99d55379f82419c1a9869895ef200"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5257f1459508bc7fe5b84b8bbeecefe4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a5257f1459508bc7fe5b84b8bbeecefe4">lbm_free</a> (void *ptr)</td></tr>
 <tr class="separator:a5257f1459508bc7fe5b84b8bbeecefe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4525cfb75b47112abc14fa115d767cdd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__memory_8h.html#a4525cfb75b47112abc14fa115d767cdd">lbm_memory_shrink</a> (lbm_uint *ptr, lbm_uint n)</td></tr>
@@ -256,6 +265,31 @@ lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_memory_address
 
 </div>
 </div>
+<a id="a50d99d55379f82419c1a9869895ef200"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50d99d55379f82419c1a9869895ef200">&#9670;&nbsp;</a></span>lbm_malloc_reserve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* lbm_malloc_reserve </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Allocate memory potentially from the reserved memory. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>Size in bytes of memory to allocate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to array or NULL. </dd></dl>
+
+</div>
+</div>
 <a id="a8e861e92f4438ef734b2683079c686cd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8e861e92f4438ef734b2683079c686cd">&#9670;&nbsp;</a></span>lbm_memory_allocate()</h2>
 
@@ -305,6 +339,25 @@ lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_memory_address
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>1 on success and 0 on failure. </dd></dl>
+
+</div>
+</div>
+<a id="a564395f900051a9715f100c79774e3f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a564395f900051a9715f100c79774e3f7">&#9670;&nbsp;</a></span>lbm_memory_get_reserve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lbm_uint lbm_memory_get_reserve </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the number of words of memory that is treated as reserve. </p><dl class="section return"><dt>Returns</dt><dd>Number of words that are reserved </dd></dl>
 
 </div>
 </div>
@@ -413,7 +466,7 @@ lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_memory_address
       </table>
 </div><div class="memdoc">
 <p>Size of of the symbols and arrays memory in uint32_t chunks.</p>
-<dl class="section return"><dt>Returns</dt><dd>Numberof uint32_t words. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Number of uint32_t words. </dd></dl>
 
 </div>
 </div>
@@ -440,6 +493,30 @@ lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_memory_address
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>1 for yes and 0 for no. </dd></dl>
+
+</div>
+</div>
+<a id="a9e6d242edd591c5beb486e5f8b239f7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e6d242edd591c5beb486e5f8b239f7a">&#9670;&nbsp;</a></span>lbm_memory_set_reserve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_memory_set_reserve </td>
+          <td>(</td>
+          <td class="paramtype">lbm_uint&#160;</td>
+          <td class="paramname"><em>num_words</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the size of the memory reserve in words. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">num_words</td><td>Number of words to treat as reserve. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

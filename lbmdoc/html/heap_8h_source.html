@@ -510,98 +510,92 @@ $(function() {
 <div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;          (lbm_dec_sym(symrep) &lt; SPECIAL_SYMBOLS_END));</div>
 <div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;}</div>
 <div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160; </div>
-<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_fundamental(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> symrep) {</div>
-<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;  <span class="keywordflow">return</span> ((<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(symrep) == LBM_TYPE_SYMBOL)  &amp;&amp;</div>
-<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;          (lbm_dec_sym(symrep) &gt;= FUNDAMENTALS_START) &amp;&amp;</div>
-<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;          (lbm_dec_sym(symrep) &lt;= FUNDAMENTALS_END));</div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_closure(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
+<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;  <span class="keywordflow">return</span> ((<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(exp) == LBM_TYPE_CONS) &amp;&amp;</div>
+<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;          (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == LBM_TYPE_SYMBOL) &amp;&amp;</div>
+<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;          (lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == SYM_CLOSURE));</div>
 <div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;}</div>
 <div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160; </div>
-<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_closure(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
+<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_continuation(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
 <div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;  <span class="keywordflow">return</span> ((<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(exp) == LBM_TYPE_CONS) &amp;&amp;</div>
 <div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;          (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == LBM_TYPE_SYMBOL) &amp;&amp;</div>
-<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;          (lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == SYM_CLOSURE));</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;          (lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == SYM_CONT));</div>
 <div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;}</div>
 <div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160; </div>
-<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_continuation(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_macro(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
 <div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;  <span class="keywordflow">return</span> ((<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(exp) == LBM_TYPE_CONS) &amp;&amp;</div>
 <div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;          (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == LBM_TYPE_SYMBOL) &amp;&amp;</div>
-<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;          (lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == SYM_CONT));</div>
+<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;          (lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == SYM_MACRO));</div>
 <div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;}</div>
 <div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160; </div>
-<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_macro(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
+<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_match_binder(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
 <div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;  <span class="keywordflow">return</span> ((<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(exp) == LBM_TYPE_CONS) &amp;&amp;</div>
 <div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;          (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == LBM_TYPE_SYMBOL) &amp;&amp;</div>
-<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;          (lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == SYM_MACRO));</div>
+<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;          ((lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == SYM_MATCH_ANY)));</div>
 <div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;}</div>
 <div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160; </div>
-<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_match_binder(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
-<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;  <span class="keywordflow">return</span> ((<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(exp) == LBM_TYPE_CONS) &amp;&amp;</div>
+<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_comma_qualified_symbol(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
+<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;  <span class="keywordflow">return</span> (lbm_is_cons(exp) &amp;&amp;</div>
 <div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;          (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == LBM_TYPE_SYMBOL) &amp;&amp;</div>
-<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;          ((lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == SYM_MATCH_ANY)));</div>
-<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;}</div>
-<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160; </div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_comma_qualified_symbol(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
-<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;  <span class="keywordflow">return</span> (lbm_is_cons(exp) &amp;&amp;</div>
-<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;          (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == LBM_TYPE_SYMBOL) &amp;&amp;</div>
-<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;          (lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == SYM_COMMA) &amp;&amp;</div>
-<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;          (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(<a class="code" href="heap_8h.html#a59724a6d1b267124e23d01f267d43644">lbm_cdr</a>(exp))) == LBM_TYPE_SYMBOL));</div>
-<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;}</div>
-<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160; </div>
-<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_symbol(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
-<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;  <span class="keywordflow">return</span> (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(exp) == LBM_TYPE_SYMBOL);</div>
-<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;}</div>
-<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160; </div>
-<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_symbol_nil(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
-<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;  <span class="keywordflow">return</span> (lbm_is_symbol(exp) &amp;&amp; lbm_dec_sym(exp) == SYM_NIL);</div>
-<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;}</div>
-<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160; </div>
-<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_symbol_true(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
-<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;  <span class="keywordflow">return</span> (lbm_is_symbol(exp) &amp;&amp; lbm_dec_sym(exp) == SYM_TRUE);</div>
-<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;}</div>
-<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160; </div>
-<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_symbol_eval(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
-<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;  <span class="keywordflow">return</span> (lbm_is_symbol(exp) &amp;&amp; lbm_dec_sym(exp) == SYM_EVAL);</div>
-<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;}</div>
-<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160; </div>
-<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_symbol_merror(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
-<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;  <span class="keywordflow">return</span> (lbm_is_symbol(exp) &amp;&amp; lbm_dec_sym(exp) == SYM_MERROR);</div>
-<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;}</div>
-<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160; </div>
-<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_list(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x) {</div>
-<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;  <span class="keywordflow">return</span> (lbm_is_cons(x) || lbm_is_symbol_nil(x));</div>
-<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;}</div>
-<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160; </div>
-<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_quoted_list(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x) {</div>
-<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;  <span class="keywordflow">return</span> (lbm_is_cons(x) &amp;&amp;</div>
-<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;          lbm_is_symbol(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(x)) &amp;&amp;</div>
-<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;          (lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(x)) == SYM_QUOTE) &amp;&amp;</div>
-<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;          lbm_is_cons(<a class="code" href="heap_8h.html#a59724a6d1b267124e23d01f267d43644">lbm_cdr</a>(x)) &amp;&amp;</div>
-<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;          lbm_is_cons(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(<a class="code" href="heap_8h.html#a59724a6d1b267124e23d01f267d43644">lbm_cdr</a>(x))));</div>
-<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;}</div>
+<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;          (lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(exp)) == SYM_COMMA) &amp;&amp;</div>
+<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;          (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(<a class="code" href="heap_8h.html#a59724a6d1b267124e23d01f267d43644">lbm_cdr</a>(exp))) == LBM_TYPE_SYMBOL));</div>
+<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;}</div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160; </div>
+<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_symbol(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
+<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;  <span class="keywordflow">return</span> (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(exp) == LBM_TYPE_SYMBOL);</div>
+<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;}</div>
+<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160; </div>
+<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_symbol_nil(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
+<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;  <span class="keywordflow">return</span> (lbm_is_symbol(exp) &amp;&amp; lbm_dec_sym(exp) == SYM_NIL);</div>
+<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;}</div>
+<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160; </div>
+<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_symbol_true(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
+<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;  <span class="keywordflow">return</span> (lbm_is_symbol(exp) &amp;&amp; lbm_dec_sym(exp) == SYM_TRUE);</div>
+<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;}</div>
+<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160; </div>
+<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_symbol_eval(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
+<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;  <span class="keywordflow">return</span> (lbm_is_symbol(exp) &amp;&amp; lbm_dec_sym(exp) == SYM_EVAL);</div>
+<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;}</div>
+<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160; </div>
+<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_symbol_merror(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> exp) {</div>
+<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;  <span class="keywordflow">return</span> (lbm_is_symbol(exp) &amp;&amp; lbm_dec_sym(exp) == SYM_MERROR);</div>
+<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;}</div>
+<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160; </div>
+<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_list(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x) {</div>
+<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;  <span class="keywordflow">return</span> (lbm_is_cons(x) || lbm_is_symbol_nil(x));</div>
+<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;}</div>
+<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160; </div>
+<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_quoted_list(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> x) {</div>
+<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;  <span class="keywordflow">return</span> (lbm_is_cons(x) &amp;&amp;</div>
+<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;          lbm_is_symbol(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(x)) &amp;&amp;</div>
+<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;          (lbm_dec_sym(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(x)) == SYM_QUOTE) &amp;&amp;</div>
+<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;          lbm_is_cons(<a class="code" href="heap_8h.html#a59724a6d1b267124e23d01f267d43644">lbm_cdr</a>(x)) &amp;&amp;</div>
+<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;          lbm_is_cons(<a class="code" href="heap_8h.html#ab2c1cd386a0ce7a7ca076e865ece53e1">lbm_car</a>(<a class="code" href="heap_8h.html#a59724a6d1b267124e23d01f267d43644">lbm_cdr</a>(x))));</div>
+<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;}</div>
+<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160; </div>
+<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;<span class="preprocessor">#ifndef LBM64</span></div>
+<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;<span class="preprocessor">#define ERROR_SYMBOL_MASK 0xFFFFFF20</span></div>
+<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;<span class="preprocessor">#define ERROR_SYMBOL_MASK 0xFFFFFFFFFFFFFF20</span></div>
+<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160; </div>
-<div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;<span class="preprocessor">#ifndef LBM64</span></div>
-<div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160;<span class="preprocessor">#define ERROR_SYMBOL_MASK 0xFFFFFF20</span></div>
-<div class="line"><a name="l00822"></a><span class="lineno">  822</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00823"></a><span class="lineno">  823</span>&#160;<span class="preprocessor">#define ERROR_SYMBOL_MASK 0xFFFFFFFFFFFFFF20</span></div>
-<div class="line"><a name="l00824"></a><span class="lineno">  824</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;<span class="comment">/* all error signaling symbols are in the range 0x20 - 0x2F */</span></div>
+<div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_error(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> v){</div>
+<div class="line"><a name="l00822"></a><span class="lineno">  822</span>&#160;  <span class="keywordflow">return</span> (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(v) == LBM_TYPE_SYMBOL &amp;&amp;</div>
+<div class="line"><a name="l00823"></a><span class="lineno">  823</span>&#160;          ((lbm_dec_sym(v) &amp; ERROR_SYMBOL_MASK) == 0x20));</div>
+<div class="line"><a name="l00824"></a><span class="lineno">  824</span>&#160;}</div>
 <div class="line"><a name="l00825"></a><span class="lineno">  825</span>&#160; </div>
-<div class="line"><a name="l00826"></a><span class="lineno">  826</span>&#160;<span class="comment">/* all error signaling symbols are in the range 0x20 - 0x2F */</span></div>
-<div class="line"><a name="l00827"></a><span class="lineno">  827</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">bool</span> lbm_is_error(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> v){</div>
-<div class="line"><a name="l00828"></a><span class="lineno">  828</span>&#160;  <span class="keywordflow">return</span> (<a class="code" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">lbm_type_of</a>(v) == LBM_TYPE_SYMBOL &amp;&amp;</div>
-<div class="line"><a name="l00829"></a><span class="lineno">  829</span>&#160;          ((lbm_dec_sym(v) &amp; ERROR_SYMBOL_MASK) == 0x20));</div>
-<div class="line"><a name="l00830"></a><span class="lineno">  830</span>&#160;}</div>
-<div class="line"><a name="l00831"></a><span class="lineno">  831</span>&#160; </div>
-<div class="line"><a name="l00832"></a><span class="lineno">  832</span>&#160;<span class="comment">// ref_cell: returns a reference to the cell addressed by bits 3 - 26</span></div>
-<div class="line"><a name="l00833"></a><span class="lineno">  833</span>&#160;<span class="comment">//           Assumes user has checked that is_ptr was set</span></div>
-<div class="line"><a name="l00834"></a><span class="lineno">  834</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <a class="code" href="structlbm__cons__t.html">lbm_cons_t</a>* lbm_ref_cell(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> addr) {</div>
-<div class="line"><a name="l00835"></a><span class="lineno">  835</span>&#160;  <span class="keywordflow">return</span> &amp;lbm_heap_state.heap[lbm_dec_ptr(addr)];</div>
-<div class="line"><a name="l00836"></a><span class="lineno">  836</span>&#160;  <span class="comment">//  return (cons_t*)(heap_base + (addr &amp; PTR_VAL_MASK));</span></div>
-<div class="line"><a name="l00837"></a><span class="lineno">  837</span>&#160;}</div>
-<div class="line"><a name="l00838"></a><span class="lineno">  838</span>&#160; </div>
-<div class="line"><a name="l00839"></a><span class="lineno">  839</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00840"></a><span class="lineno">  840</span>&#160;}</div>
-<div class="line"><a name="l00841"></a><span class="lineno">  841</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00842"></a><span class="lineno">  842</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00826"></a><span class="lineno">  826</span>&#160;<span class="comment">// ref_cell: returns a reference to the cell addressed by bits 3 - 26</span></div>
+<div class="line"><a name="l00827"></a><span class="lineno">  827</span>&#160;<span class="comment">//           Assumes user has checked that is_ptr was set</span></div>
+<div class="line"><a name="l00828"></a><span class="lineno">  828</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <a class="code" href="structlbm__cons__t.html">lbm_cons_t</a>* lbm_ref_cell(<a class="code" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> addr) {</div>
+<div class="line"><a name="l00829"></a><span class="lineno">  829</span>&#160;  <span class="keywordflow">return</span> &amp;lbm_heap_state.heap[lbm_dec_ptr(addr)];</div>
+<div class="line"><a name="l00830"></a><span class="lineno">  830</span>&#160;  <span class="comment">//  return (cons_t*)(heap_base + (addr &amp; PTR_VAL_MASK));</span></div>
+<div class="line"><a name="l00831"></a><span class="lineno">  831</span>&#160;}</div>
+<div class="line"><a name="l00832"></a><span class="lineno">  832</span>&#160; </div>
+<div class="line"><a name="l00833"></a><span class="lineno">  833</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00834"></a><span class="lineno">  834</span>&#160;}</div>
+<div class="line"><a name="l00835"></a><span class="lineno">  835</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00836"></a><span class="lineno">  836</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aheap_8h_html_a001fe87d4710e1b63be311049e81f859"><div class="ttname"><a href="heap_8h.html#a001fe87d4710e1b63be311049e81f859">lbm_dec_as_i32</a></div><div class="ttdeci">int32_t lbm_dec_as_i32(lbm_value val)</div></div>
 <div class="ttc" id="aheap_8h_html_a02980920525f40142d019f7cb892a382"><div class="ttname"><a href="heap_8h.html#a02980920525f40142d019f7cb892a382">lbm_heap_size_bytes</a></div><div class="ttdeci">lbm_uint lbm_heap_size_bytes(void)</div></div>
 <div class="ttc" id="aheap_8h_html_a069b32c46a287cf5c955de12002cbca0"><div class="ttname"><a href="heap_8h.html#a069b32c46a287cf5c955de12002cbca0">lbm_gc_mark_aux</a></div><div class="ttdeci">int lbm_gc_mark_aux(lbm_uint *data, lbm_uint n)</div></div>
