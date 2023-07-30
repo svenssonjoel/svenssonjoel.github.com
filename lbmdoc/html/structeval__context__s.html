@@ -67,8 +67,6 @@ $(function() {
 <div class="title">eval_context_s Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;<a class="el" href="eval__cps_8h_source.html">eval_cps.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for eval_context_s:</div>
 <div class="dyncontent">
@@ -108,9 +106,6 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>flags</b></td></t
 <tr class="memitem:a59b78b12227ae5e43c230a55361a67f5"><td class="memItemLeft" align="right" valign="top"><a id="a59b78b12227ae5e43c230a55361a67f5"></a>
 char *&#160;</td><td class="memItemRight" valign="bottom"><b>error_reason</b></td></tr>
 <tr class="separator:a59b78b12227ae5e43c230a55361a67f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac08abf6f520b44bab3d7ac98d72fcd09"><td class="memItemLeft" align="right" valign="top"><a id="ac08abf6f520b44bab3d7ac98d72fcd09"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>done</b></td></tr>
-<tr class="separator:ac08abf6f520b44bab3d7ac98d72fcd09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6adcf81b9d939373f33d9cebce22239"><td class="memItemLeft" align="right" valign="top"><a id="ac6adcf81b9d939373f33d9cebce22239"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>app_cont</b></td></tr>
 <tr class="separator:ac6adcf81b9d939373f33d9cebce22239"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,12 +118,27 @@ lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>timestamp</b></td
 <tr class="memitem:afe7f2332e5ac390323f27deb87e22a53"><td class="memItemLeft" align="right" valign="top"><a id="afe7f2332e5ac390323f27deb87e22a53"></a>
 lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>sleep_us</b></td></tr>
 <tr class="separator:afe7f2332e5ac390323f27deb87e22a53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebb5b290bd860ec3843148938737684d"><td class="memItemLeft" align="right" valign="top"><a id="aebb5b290bd860ec3843148938737684d"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>state</b></td></tr>
+<tr class="separator:aebb5b290bd860ec3843148938737684d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a096998debc424b60fd6121c575b9ea2c"><td class="memItemLeft" align="right" valign="top"><a id="a096998debc424b60fd6121c575b9ea2c"></a>
+char *&#160;</td><td class="memItemRight" valign="bottom"><b>name</b></td></tr>
+<tr class="separator:a096998debc424b60fd6121c575b9ea2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abcf1bb947b1165dce3b99da0720af6ee"><td class="memItemLeft" align="right" valign="top"><a id="abcf1bb947b1165dce3b99da0720af6ee"></a>
 lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><b>id</b></td></tr>
 <tr class="separator:abcf1bb947b1165dce3b99da0720af6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57b4cf6be5ce5300461f61e79edeb07c"><td class="memItemLeft" align="right" valign="top"><a id="a57b4cf6be5ce5300461f61e79edeb07c"></a>
 lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><b>parent</b></td></tr>
 <tr class="separator:a57b4cf6be5ce5300461f61e79edeb07c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b035d48087c7017bf218baa5bebb6fb"><td class="memItemLeft" align="right" valign="top"><a id="a1b035d48087c7017bf218baa5bebb6fb"></a>
+lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>wait_mask</b></td></tr>
+<tr class="separator:a1b035d48087c7017bf218baa5bebb6fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01eea1f01682654f3dddc7b02424b871"><td class="memItemLeft" align="right" valign="top"><a id="a01eea1f01682654f3dddc7b02424b871"></a>
+lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>row0</b></td></tr>
+<tr class="separator:a01eea1f01682654f3dddc7b02424b871"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa059157b50557f054f2efb4f53dc456d"><td class="memItemLeft" align="right" valign="top"><a id="aa059157b50557f054f2efb4f53dc456d"></a>
+lbm_int&#160;</td><td class="memItemRight" valign="bottom"><b>row1</b></td></tr>
+<tr class="separator:aa059157b50557f054f2efb4f53dc456d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22f2c47d6b5dd8f3ab42b4734523b071"><td class="memItemLeft" align="right" valign="top"><a id="a22f2c47d6b5dd8f3ab42b4734523b071"></a>
 struct <a class="el" href="structeval__context__s.html">eval_context_s</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>prev</b></td></tr>
 <tr class="separator:a22f2c47d6b5dd8f3ab42b4734523b071"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,9 +146,7 @@ struct <a class="el" href="structeval__context__s.html">eval_context_s</a> *&#16
 struct <a class="el" href="structeval__context__s.html">eval_context_s</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>next</b></td></tr>
 <tr class="separator:af538995e83f24007669376c023ccf88d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The eval_context_t struct represents a lispbm process. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="eval__cps_8h_source.html">eval_cps.h</a></li>
 </ul>
 </div><!-- contents -->

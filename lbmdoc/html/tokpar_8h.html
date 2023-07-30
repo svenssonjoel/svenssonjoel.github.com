@@ -67,7 +67,10 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">tokpar.h File Reference</div>  </div>
 </div><!--header-->
@@ -105,30 +108,154 @@ This graph shows which files directly or indirectly include this file:</div>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlbm__tokenizer__string__state__t.html">lbm_tokenizer_string_state_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtoken__int.html">token_int</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtoken__float.html">token_float</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:af0b095fac6c6bb00acd95abf414465e6"><td class="memItemLeft" align="right" valign="top"><a id="af0b095fac6c6bb00acd95abf414465e6"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKOPENPAR</b>&#160;&#160;&#160;1u</td></tr>
+<tr class="separator:af0b095fac6c6bb00acd95abf414465e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cc75387c29b75ac8ed5ef1a03379227"><td class="memItemLeft" align="right" valign="top"><a id="a3cc75387c29b75ac8ed5ef1a03379227"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKCLOSEPAR</b>&#160;&#160;&#160;2u</td></tr>
+<tr class="separator:a3cc75387c29b75ac8ed5ef1a03379227"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4b5fdef2985a1d54cc0f340ea248ea5"><td class="memItemLeft" align="right" valign="top"><a id="ab4b5fdef2985a1d54cc0f340ea248ea5"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKOPENBRACK</b>&#160;&#160;&#160;3u</td></tr>
+<tr class="separator:ab4b5fdef2985a1d54cc0f340ea248ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa27f2e3d60dbdf5252fe39d451da38fa"><td class="memItemLeft" align="right" valign="top"><a id="aa27f2e3d60dbdf5252fe39d451da38fa"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKCLOSEBRACK</b>&#160;&#160;&#160;4u</td></tr>
+<tr class="separator:aa27f2e3d60dbdf5252fe39d451da38fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45112d141305612d61d4285b17cd2df8"><td class="memItemLeft" align="right" valign="top"><a id="a45112d141305612d61d4285b17cd2df8"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKDOT</b>&#160;&#160;&#160;5u</td></tr>
+<tr class="separator:a45112d141305612d61d4285b17cd2df8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a956340525d3f57cbbe4f4d9a9aabf825"><td class="memItemLeft" align="right" valign="top"><a id="a956340525d3f57cbbe4f4d9a9aabf825"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKDONTCARE</b>&#160;&#160;&#160;6u</td></tr>
+<tr class="separator:a956340525d3f57cbbe4f4d9a9aabf825"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e86b9faa240c6a918ffa7374e74b257"><td class="memItemLeft" align="right" valign="top"><a id="a3e86b9faa240c6a918ffa7374e74b257"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKQUOTE</b>&#160;&#160;&#160;7u</td></tr>
+<tr class="separator:a3e86b9faa240c6a918ffa7374e74b257"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428aa9c73ad8fe2ab30ffa0e8db75975"><td class="memItemLeft" align="right" valign="top"><a id="a428aa9c73ad8fe2ab30ffa0e8db75975"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKBACKQUOTE</b>&#160;&#160;&#160;8u</td></tr>
+<tr class="separator:a428aa9c73ad8fe2ab30ffa0e8db75975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d9693cf4c997a2c796526cee030c3d8"><td class="memItemLeft" align="right" valign="top"><a id="a6d9693cf4c997a2c796526cee030c3d8"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKCOMMAAT</b>&#160;&#160;&#160;9u</td></tr>
+<tr class="separator:a6d9693cf4c997a2c796526cee030c3d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b3153e05da29b66ecbe1c73ce2b73e0"><td class="memItemLeft" align="right" valign="top"><a id="a3b3153e05da29b66ecbe1c73ce2b73e0"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKCOMMA</b>&#160;&#160;&#160;10u</td></tr>
+<tr class="separator:a3b3153e05da29b66ecbe1c73ce2b73e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af30f74e4971599b1f6de2610089a1901"><td class="memItemLeft" align="right" valign="top"><a id="af30f74e4971599b1f6de2610089a1901"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKMATCHANY</b>&#160;&#160;&#160;11u</td></tr>
+<tr class="separator:af30f74e4971599b1f6de2610089a1901"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc2a69d2f2a2189dcd74f30a3b9d8618"><td class="memItemLeft" align="right" valign="top"><a id="abc2a69d2f2a2189dcd74f30a3b9d8618"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKOPENCURL</b>&#160;&#160;&#160;12u</td></tr>
+<tr class="separator:abc2a69d2f2a2189dcd74f30a3b9d8618"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae927cfecde452d465f6127300f1b9755"><td class="memItemLeft" align="right" valign="top"><a id="ae927cfecde452d465f6127300f1b9755"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKCLOSECURL</b>&#160;&#160;&#160;13u</td></tr>
+<tr class="separator:ae927cfecde452d465f6127300f1b9755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cb326167d19a8778ebef9d6f3702466"><td class="memItemLeft" align="right" valign="top"><a id="a8cb326167d19a8778ebef9d6f3702466"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKCONSTSTART</b>&#160;&#160;&#160;14u</td></tr>
+<tr class="separator:a8cb326167d19a8778ebef9d6f3702466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac531e5735cb42e7af25cc718e3395703"><td class="memItemLeft" align="right" valign="top"><a id="ac531e5735cb42e7af25cc718e3395703"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKCONSTEND</b>&#160;&#160;&#160;15u</td></tr>
+<tr class="separator:ac531e5735cb42e7af25cc718e3395703"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e5deefb25a65afead5cdd1827ccc7bc"><td class="memItemLeft" align="right" valign="top"><a id="a8e5deefb25a65afead5cdd1827ccc7bc"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKCONSTSYMSTR</b>&#160;&#160;&#160;16u</td></tr>
+<tr class="separator:a8e5deefb25a65afead5cdd1827ccc7bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5dbd218825af949d842dd2268895ee8"><td class="memItemLeft" align="right" valign="top"><a id="ad5dbd218825af949d842dd2268895ee8"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKTYPEBYTE</b>&#160;&#160;&#160;100u</td></tr>
+<tr class="separator:ad5dbd218825af949d842dd2268895ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a549326fa563dc259683c0278f00c215b"><td class="memItemLeft" align="right" valign="top"><a id="a549326fa563dc259683c0278f00c215b"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKTYPEI</b>&#160;&#160;&#160;101u</td></tr>
+<tr class="separator:a549326fa563dc259683c0278f00c215b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affc27a90d24bf79579d09c06374f0841"><td class="memItemLeft" align="right" valign="top"><a id="affc27a90d24bf79579d09c06374f0841"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKTYPEU</b>&#160;&#160;&#160;102u</td></tr>
+<tr class="separator:affc27a90d24bf79579d09c06374f0841"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb0b15563e765b58339b003181c6ca7f"><td class="memItemLeft" align="right" valign="top"><a id="acb0b15563e765b58339b003181c6ca7f"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKTYPEI32</b>&#160;&#160;&#160;103u</td></tr>
+<tr class="separator:acb0b15563e765b58339b003181c6ca7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a693514c021b6175c175a7b12150defb8"><td class="memItemLeft" align="right" valign="top"><a id="a693514c021b6175c175a7b12150defb8"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKTYPEU32</b>&#160;&#160;&#160;104u</td></tr>
+<tr class="separator:a693514c021b6175c175a7b12150defb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bf3d53342629a301be395e99bef327f"><td class="memItemLeft" align="right" valign="top"><a id="a7bf3d53342629a301be395e99bef327f"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKTYPEI64</b>&#160;&#160;&#160;105u</td></tr>
+<tr class="separator:a7bf3d53342629a301be395e99bef327f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1b32e5b2639a4e000e592d2c1b93578"><td class="memItemLeft" align="right" valign="top"><a id="ab1b32e5b2639a4e000e592d2c1b93578"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKTYPEU64</b>&#160;&#160;&#160;106u</td></tr>
+<tr class="separator:ab1b32e5b2639a4e000e592d2c1b93578"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85c5cfce74e459b7f8803c151beb8b72"><td class="memItemLeft" align="right" valign="top"><a id="a85c5cfce74e459b7f8803c151beb8b72"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKTYPEF32</b>&#160;&#160;&#160;107u</td></tr>
+<tr class="separator:a85c5cfce74e459b7f8803c151beb8b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f69876536643ec5fc3978045281ebb9"><td class="memItemLeft" align="right" valign="top"><a id="a9f69876536643ec5fc3978045281ebb9"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKTYPEF64</b>&#160;&#160;&#160;108u</td></tr>
+<tr class="separator:a9f69876536643ec5fc3978045281ebb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51618e6343fdfdcab6aeafad96f661c2"><td class="memItemLeft" align="right" valign="top"><a id="a51618e6343fdfdcab6aeafad96f661c2"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKENIZER_ERROR</b>&#160;&#160;&#160;1024u</td></tr>
+<tr class="separator:a51618e6343fdfdcab6aeafad96f661c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2346144317499ebcaa91752e046e5c8"><td class="memItemLeft" align="right" valign="top"><a id="ac2346144317499ebcaa91752e046e5c8"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKENIZER_END</b>&#160;&#160;&#160;2048u</td></tr>
+<tr class="separator:ac2346144317499ebcaa91752e046e5c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3719389a865b031b8b1e99d22cc5cd54"><td class="memItemLeft" align="right" valign="top"><a id="a3719389a865b031b8b1e99d22cc5cd54"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKENIZER_NO_TOKEN</b>&#160;&#160;&#160;0</td></tr>
+<tr class="separator:a3719389a865b031b8b1e99d22cc5cd54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4aaf828620a76b89dbcb59709fed9ffe"><td class="memItemLeft" align="right" valign="top"><a id="a4aaf828620a76b89dbcb59709fed9ffe"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKENIZER_NEED_MORE</b>&#160;&#160;&#160;-1</td></tr>
+<tr class="separator:a4aaf828620a76b89dbcb59709fed9ffe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cc3612aea17ad58094018b972905685"><td class="memItemLeft" align="right" valign="top"><a id="a1cc3612aea17ad58094018b972905685"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKENIZER_STRING_ERROR</b>&#160;&#160;&#160;-2</td></tr>
+<tr class="separator:a1cc3612aea17ad58094018b972905685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c093027dfc0f339dd9f5ef946af02f2"><td class="memItemLeft" align="right" valign="top"><a id="a5c093027dfc0f339dd9f5ef946af02f2"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>TOKENIZER_MAX_SYMBOL_AND_STRING_LENGTH</b>&#160;&#160;&#160;256</td></tr>
+<tr class="separator:a5c093027dfc0f339dd9f5ef946af02f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a620427293c83a63335fef85f2591ac1c"><td class="memItemLeft" align="right" valign="top"><a id="a620427293c83a63335fef85f2591ac1c"></a>
+typedef struct <a class="el" href="structtoken__float.html">token_float</a>&#160;</td><td class="memItemRight" valign="bottom"><b>token_float</b></td></tr>
+<tr class="separator:a620427293c83a63335fef85f2591ac1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a19e071dd7dcf78fd98e0c6240d4ccd57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#a19e071dd7dcf78fd98e0c6240d4ccd57">lbm_get_next_token</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *ch, bool peek)</td></tr>
-<tr class="separator:a19e071dd7dcf78fd98e0c6240d4ccd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3794c6df316def5599de5ce39d50d82"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#ad3794c6df316def5599de5ce39d50d82">tok_syntax</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *chan, uint32_t *res)</td></tr>
+<tr class="separator:ad3794c6df316def5599de5ce39d50d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada81ce25fb24351c262fa8ef9fa57f84"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#ada81ce25fb24351c262fa8ef9fa57f84">tok_symbol</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *chan)</td></tr>
+<tr class="separator:ada81ce25fb24351c262fa8ef9fa57f84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1c4fc8018d916509f3f4bd895e4dffd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#ad1c4fc8018d916509f3f4bd895e4dffd">tok_string</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *chan, unsigned int *string_len)</td></tr>
+<tr class="separator:ad1c4fc8018d916509f3f4bd895e4dffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15908615774df0548fada31dce59d25d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#a15908615774df0548fada31dce59d25d">tok_char</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *chan, char *res)</td></tr>
+<tr class="separator:a15908615774df0548fada31dce59d25d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a3dbc1db03a446e12f6eb08198d46cd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#a3a3dbc1db03a446e12f6eb08198d46cd">tok_double</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *chan, <a class="el" href="structtoken__float.html">token_float</a> *result)</td></tr>
+<tr class="separator:a3a3dbc1db03a446e12f6eb08198d46cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0bdba495e2b9ce305ad983204ed87a8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#ae0bdba495e2b9ce305ad983204ed87a8">tok_integer</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *chan, <a class="el" href="structtoken__int.html">token_int</a> *result)</td></tr>
+<tr class="separator:ae0bdba495e2b9ce305ad983204ed87a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af85809eb46bd9bd2b67788caf0119c8c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokpar_8h.html#af85809eb46bd9bd2b67788caf0119c8c">tok_clean_whitespace</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *chan)</td></tr>
+<tr class="separator:af85809eb46bd9bd2b67788caf0119c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:af88682adc4a5d3886e150e61f283766e"><td class="memItemLeft" align="right" valign="top"><a id="af88682adc4a5d3886e150e61f283766e"></a>
+char&#160;</td><td class="memItemRight" valign="bottom"><b>tokpar_sym_str</b> [TOKENIZER_MAX_SYMBOL_AND_STRING_LENGTH]</td></tr>
+<tr class="separator:af88682adc4a5d3886e150e61f283766e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a19e071dd7dcf78fd98e0c6240d4ccd57"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19e071dd7dcf78fd98e0c6240d4ccd57">&#9670;&nbsp;</a></span>lbm_get_next_token()</h2>
+<a id="a15908615774df0548fada31dce59d25d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15908615774df0548fada31dce59d25d">&#9670;&nbsp;</a></span>tok_char()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_get_next_token </td>
+          <td class="memname">int tok_char </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *&#160;</td>
-          <td class="paramname"><em>ch</em>, </td>
+          <td class="paramname"><em>chan</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>peek</em>&#160;</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>res</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -137,15 +264,201 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the next token from a tokenizer stream (lbm_tokenizer_char_stream_t).</p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Attempt to read a character from the character stream. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>Tokenizer stream to get the next token from. </td></tr>
-    <tr><td class="paramname">peek</td><td>Boolean deciding if token is cleared out of channel or left. </td></tr>
+    <tr><td class="paramname">chan</td><td>Character channel to read characters from. </td></tr>
+    <tr><td class="paramname">res</td><td>Result character if successful. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>an lbm_value representing the token. This token is semi-parsed at this stage and values for example are already in proper value form. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A positive value indicating number of characters used if successful. Otherwise a negative status indicator. </dd></dl>
+
+</div>
+</div>
+<a id="af85809eb46bd9bd2b67788caf0119c8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af85809eb46bd9bd2b67788caf0119c8c">&#9670;&nbsp;</a></span>tok_clean_whitespace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool tok_clean_whitespace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *&#160;</td>
+          <td class="paramname"><em>chan</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Clean off whitespace from head of the character stream </p><dl class="section return"><dt>Returns</dt><dd>True if whitespace could be cleaned. False if stream has no more available characters at the moment. </dd></dl>
+
+</div>
+</div>
+<a id="a3a3dbc1db03a446e12f6eb08198d46cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a3dbc1db03a446e12f6eb08198d46cd">&#9670;&nbsp;</a></span>tok_double()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tok_double </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *&#160;</td>
+          <td class="paramname"><em>chan</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structtoken__float.html">token_float</a> *&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Attempt to read a floating point number from the character stream. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>Character channel to read characters from. </td></tr>
+    <tr><td class="paramname">res</td><td>Result token_float-object if successful. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A positive value indicating number of characters used if successful. Otherwise a negative status indicator. </dd></dl>
+
+</div>
+</div>
+<a id="ae0bdba495e2b9ce305ad983204ed87a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0bdba495e2b9ce305ad983204ed87a8">&#9670;&nbsp;</a></span>tok_integer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tok_integer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *&#160;</td>
+          <td class="paramname"><em>chan</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structtoken__int.html">token_int</a> *&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Attempt to read an integer value from the character stream. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>Character channel to read characters from. </td></tr>
+    <tr><td class="paramname">res</td><td>Result token_int-object if successful. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A positive value indicating number of characters used if successful. Otherwise a negative status indicator. </dd></dl>
+
+</div>
+</div>
+<a id="ad1c4fc8018d916509f3f4bd895e4dffd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1c4fc8018d916509f3f4bd895e4dffd">&#9670;&nbsp;</a></span>tok_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tok_string </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *&#160;</td>
+          <td class="paramname"><em>chan</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int *&#160;</td>
+          <td class="paramname"><em>string_len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Attempt to read a string from the character stream. If successful the resulting string is found in tokpar_sym_str. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>Character channel to read characters from. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A positive value indicating number of characters used if successful. Otherwise a negative status indicator. </dd></dl>
+
+</div>
+</div>
+<a id="ada81ce25fb24351c262fa8ef9fa57f84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada81ce25fb24351c262fa8ef9fa57f84">&#9670;&nbsp;</a></span>tok_symbol()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tok_symbol </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *&#160;</td>
+          <td class="paramname"><em>chan</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Attempt to read a symbol from the character stream. If successful the resulting symbol string is found in tokpar_sym_str. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>Character channel to read characters from. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A positive value indicating number of characters used if successful. Otherwise a negative status indicator. </dd></dl>
+
+</div>
+</div>
+<a id="ad3794c6df316def5599de5ce39d50d82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3794c6df316def5599de5ce39d50d82">&#9670;&nbsp;</a></span>tok_syntax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tok_syntax </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *&#160;</td>
+          <td class="paramname"><em>chan</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramname"><em>res</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Attempt to read a "syntax" token from the character stream. A "syntax" token is for example '(', ')', '@' and so on. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>Character channel to read characters from. </td></tr>
+    <tr><td class="paramname">res</td><td>Result token identifier. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A positive value indicating number of characters used if successful. Otherwise a negative status indicator. </dd></dl>
 
 </div>
 </div>

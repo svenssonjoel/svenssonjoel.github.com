@@ -1,13 +1,14 @@
 <map id="lbm_channel.h" name="lbm_channel.h">
-<area shape="rect" id="node1" title=" " alt="" coords="109,5,227,32"/>
-<area shape="rect" id="node2" href="$eval__cps_8h.html" title=" " alt="" coords="256,229,347,256"/>
-<area shape="rect" id="node4" href="$lbm__c__interop_8h.html" title=" " alt="" coords="70,304,197,331"/>
-<area shape="rect" id="node5" href="$lispbm_8h.html" title=" " alt="" coords="450,379,529,405"/>
-<area shape="rect" id="node6" href="$heap_8h.html" title=" " alt="" coords="424,80,491,107"/>
-<area shape="rect" id="node11" href="$tokpar_8h.html" title=" " alt="" coords="5,229,80,256"/>
-<area shape="rect" id="node3" href="$fundamental_8h.html" title=" " alt="" coords="272,304,389,331"/>
-<area shape="rect" id="node7" href="$exp__kind_8h.html" title=" " alt="" coords="411,155,504,181"/>
-<area shape="rect" id="node8" href="$extensions_8h.html" title=" " alt="" coords="630,229,735,256"/>
-<area shape="rect" id="node9" href="$lbm__custom__type_8h.html" title=" " alt="" coords="414,304,565,331"/>
-<area shape="rect" id="node10" href="$lbm__flat__value_8h_source.html" title=" " alt="" coords="256,155,387,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="597,5,715,32"/>
+<area shape="rect" id="node2" href="$eval__cps_8h.html" title=" " alt="" coords="496,229,587,256"/>
+<area shape="rect" id="node4" href="$lbm__c__interop_8h.html" title=" " alt="" coords="643,304,770,331"/>
+<area shape="rect" id="node5" href="$lispbm_8h.html" title=" " alt="" coords="243,379,322,405"/>
+<area shape="rect" id="node7" href="$heap_8h.html" title=" " alt="" coords="351,80,417,107"/>
+<area shape="rect" id="node12" href="$tokpar_8h.html" title=" " alt="" coords="795,229,869,256"/>
+<area shape="rect" id="node3" href="$fundamental_8h.html" title=" " alt="" coords="435,304,552,331"/>
+<area shape="rect" id="node6" href="$lbm__prof_8h_source.html" title=" " alt="" coords="320,304,411,331"/>
+<area shape="rect" id="node8" href="$exp__kind_8h.html" title=" " alt="" coords="525,155,619,181"/>
+<area shape="rect" id="node9" href="$extensions_8h.html" title=" " alt="" coords="55,229,161,256"/>
+<area shape="rect" id="node10" href="$lbm__custom__type_8h.html" title=" " alt="" coords="94,155,245,181"/>
+<area shape="rect" id="node11" href="$lbm__flat__value_8h_source.html" title=" " alt="" coords="371,155,501,181"/>
 </map>

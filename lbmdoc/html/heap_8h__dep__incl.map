@@ -1,11 +1,12 @@
 <map id="heap.h" name="heap.h">
-<area shape="rect" id="node1" title=" " alt="" coords="300,5,367,32"/>
-<area shape="rect" id="node2" href="$exp__kind_8h.html" title=" " alt="" coords="5,80,99,107"/>
-<area shape="rect" id="node3" href="$extensions_8h.html" title=" " alt="" coords="557,155,662,181"/>
-<area shape="rect" id="node4" href="$lispbm_8h.html" title=" " alt="" coords="311,304,390,331"/>
-<area shape="rect" id="node5" href="$lbm__c__interop_8h.html" title=" " alt="" coords="287,229,414,256"/>
-<area shape="rect" id="node6" href="$lbm__custom__type_8h.html" title=" " alt="" coords="174,155,325,181"/>
-<area shape="rect" id="node7" href="$lbm__flat__value_8h_source.html" title=" " alt="" coords="400,80,531,107"/>
-<area shape="rect" id="node8" href="$eval__cps_8h.html" title=" " alt="" coords="413,155,504,181"/>
-<area shape="rect" id="node9" href="$fundamental_8h.html" title=" " alt="" coords="489,229,607,256"/>
+<area shape="rect" id="node1" title=" " alt="" coords="293,5,359,32"/>
+<area shape="rect" id="node2" href="$exp__kind_8h.html" title=" " alt="" coords="42,80,135,107"/>
+<area shape="rect" id="node3" href="$extensions_8h.html" title=" " alt="" coords="467,155,572,181"/>
+<area shape="rect" id="node4" href="$lispbm_8h.html" title=" " alt="" coords="213,304,292,331"/>
+<area shape="rect" id="node5" href="$lbm__c__interop_8h.html" title=" " alt="" coords="88,229,215,256"/>
+<area shape="rect" id="node6" href="$lbm__custom__type_8h.html" title=" " alt="" coords="5,155,156,181"/>
+<area shape="rect" id="node7" href="$lbm__flat__value_8h_source.html" title=" " alt="" coords="261,80,391,107"/>
+<area shape="rect" id="node10" href="$lbm__prof_8h_source.html" title=" " alt="" coords="431,229,522,256"/>
+<area shape="rect" id="node8" href="$eval__cps_8h.html" title=" " alt="" coords="281,155,371,181"/>
+<area shape="rect" id="node9" href="$fundamental_8h.html" title=" " alt="" coords="290,229,407,256"/>
 </map>

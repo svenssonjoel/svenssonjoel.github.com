@@ -275,6 +275,11 @@ $(function() {
 <div class="line">  (f 11))</div>
 </div><!-- fragment --><p> The mutually recursive program above evaluates to 1.</p>
 <hr  />
+<p>Let supports deconstructive bindings. These are bindings that decompose a complex value into constituents.</p>
+<p>Example:</p>
+<div class="fragment"><div class="line">(let (( ( a . b) &#39;(1 . 2) ))</div>
+<div class="line">   (+ a b))</div>
+</div><!-- fragment --><p>In the example, the bindings a = 1 and b = 2 are created for use in the let body.</p>
 <h2>define</h2>
 <p>You can give names to values in a global scope by using define. The form of define is <code>(define name expr)</code>. The expr is evaluated and it is the result of the evaluated expr that is stored in the environment. In lispbm you can redefine already defined values.</p>
 <p>Example </p><h1>@code{clj} (define apa 10) @endcode </h1>
@@ -296,6 +301,24 @@ $(function() {
 <div class="line">(setvar &#39;#a 20)</div>
 </div><!-- fragment --><p> <code>#a</code> is now 20.</p>
 <hr  />
+<h2>set</h2>
+<p>The <code>set</code> form is used to change the value of a variable in an environment. It behaves identical to <code>setvar</code>.</p>
+<p>Example:</p>
+<div class="fragment"><div class="line">(define a 10)</div>
+</div><!-- fragment --><p> The variable <code>a</code> is now 10 in the global environment.</p>
+<div class="fragment"><div class="line">(set &#39;a 20)</div>
+</div><!-- fragment --><p>And now <code>a</code> is associated with 20 in the global environment.</p>
+<p><code>set</code> works in local environments too such as in the body of a <code>let</code> or in a <code>progn</code>-local variable created using <code>var</code>.</p>
+<p>Example:</p>
+<div class="fragment"><div class="line">(progn (var a 10) (set &#39;a 20) a)</div>
+</div><!-- fragment --><p>The expression above evaluates to 20.</p>
+<h2>setq</h2>
+<p>The <code>setq</code> special-form is similar to <code>set</code> and to <code>setvar</code> but expects the first argument to be a symbol. The first argument to <code>setq</code> is NOT evaluated.</p>
+<p>Example: </p><div class="fragment"><div class="line">(define a 10)</div>
+</div><!-- fragment --><p> The variable <code>a</code> is now 10 in the global environment.</p>
+<div class="fragment"><div class="line">(setq a 20)</div>
+</div><!-- fragment --><p>And now <code>a</code> has been associated with the value 20 in the global env.</p>
+<p>Just like <code>set</code> and <code>setvar</code>, <code>setq</code> can be used on variables that are bound locally such as in the body of a <code>let</code> or a <code>progn</code>-local variable created using <code>var</code>.</p>
 <h2>progn</h2>
 <p>The progn special form allows you to sequence a number of expressions. The form of a progn expression is: </p><div class="fragment"><div class="line">(progn expr1</div>
 <div class="line">       expr2</div>
@@ -310,7 +333,38 @@ $(function() {
 <div class="line">        (+ a b))</div>
 </div><!-- fragment --><p> This program evaluates 30 but also extends the global environment with the 2 bindings <code>(a 10)</code> and <code>(b 20)</code> created using <a href="#define">define</a>.</p>
 <hr  />
-<h2>read</h2>
+<h2>{</h2>
+<p>The curlybrace <code>{</code> syntax is a short-form (syntactic sugar) for <code>(progn</code>. The parser replaces occurrences of <code>{</code> with <code>(progn</code>. The <code>{</code> should be closed with an <code>}</code>.</p>
+<p>These two programs are thus equivalent:</p>
+<div class="fragment"><div class="line">(progn</div>
+<div class="line">  (define a 10)</div>
+<div class="line">  (define b 20)</div>
+<div class="line">  (+ a b))</div>
+</div><!-- fragment --><p>And</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  (define a 10)</div>
+<div class="line">  (define b 20)</div>
+<div class="line">  (+ a b)</div>
+<div class="line">}</div>
+</div><!-- fragment --><hr  />
+<h2>}</h2>
+<p>The closing curlybrace <code>}</code> should be used to close an opening <code>{</code> but purely for esthetical reasons. The <code>}</code> is treated identically to a regular closing parenthesis <code>)</code>.</p>
+<p>The opening <code>{</code> and closing <code>}</code> curlybraces are used as a short-form for <code>progn</code>-blocks of sequences expressions.</p>
+<h2>var</h2>
+<p>The var special form allows local bindings in a progn expression. A var expression is of the form (var symbol expr) and the symbol <code>symbol</code> is bound to the value that <code>expr</code> evaluates to withing the rest of the progn expression.</p>
+<p>Example:</p>
+<div class="fragment"><div class="line">(defun f ()</div>
+<div class="line">  (progn</div>
+<div class="line">    (var a 10)</div>
+<div class="line">    (var b 20)</div>
+<div class="line">    (+ a b)))</div>
+</div><!-- fragment --><p>and:</p>
+<div class="fragment"><div class="line">(defun f ()</div>
+<div class="line">  (progn</div>
+<div class="line">    (var a 10)</div>
+<div class="line">    (var b (+ a 10))</div>
+<div class="line">    (+ a b)))</div>
+</div><!-- fragment --><h2>read</h2>
 <p>Parses a string resulting in either an expression or the <a href="#read_error">read_error</a> in case the string can not be parsed into an expression. The form of a read expression is <code>(read string)</code>.</p>
 <p>The example below evaluates to the value 1: </p><div class="fragment"><div class="line">(read &quot;1&quot;)</div>
 </div><!-- fragment --><p> You can also read code: </p><div class="fragment"><div class="line">(read &quot;(lambda (x) (+ x 1))&quot;)</div>
@@ -322,8 +376,15 @@ $(function() {
 <p>Evaluate a program you just read from a string with <a href="#eval-program">eval-program</a>. </p><div class="fragment"><div class="line">(eval-program (read-program &quot;(define apa 1) (+ 2 apa)&quot;))</div>
 </div><!-- fragment --><p> The expression above evaluates to 3 with the side effect that the global environment has been extended with the binding <code>(apa 1)</code>.</p>
 <hr  />
+<h2>read-eval-program</h2>
+<p>Parses and evaluates a program incrementally. <code>read-eval-program</code> reads a top-level expression then evaluates it before reading the next.</p>
+<p>Example that evaluates to 20:</p>
+<div class="fragment"><div class="line">(read-eval-program &quot;(define a 10) (+ a 10)&quot;)</div>
+</div><!-- fragment --><p><code>read-eval-program</code> supports the <code>@const-start</code>, <code>@const-end</code> which moved all global definitions created in the program to constant memory (flash).</p>
+<p>Example that evaluates to 20:</p>
+<h1>@code{clj} (read-eval-program "@const-start (define a 10) (+ a 10) @const-end") @endcode </h1>
 <h1>Lists and cons cells</h1>
-<p>Lists are build using cons cells. A cons cell is represented by the <a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> struct in the implementation and consists of two fields named the <code>car</code> and the <code>cdr</code>. There is no special meaning associated with the <code>car</code> and the <code>cdr</code> each can hold a lbm_value. See <a href="#cons">cons</a> and <a href="#list">list</a> for two ways to create structures of cons cells on the heap.</p>
+<p>Lists are built using cons cells. A cons cell is represented by the <a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> struct in the implementation and consists of two fields named the <code>car</code> and the <code>cdr</code>. There is no special meaning associated with the <code>car</code> and the <code>cdr</code> each can hold a lbm_value. See <a href="#cons">cons</a> and <a href="#list">list</a> for two ways to create structures of cons cells on the heap.</p>
 <p><img src="images/cons_cell.png?raw=true" alt="cons cell" title="cons cell" class="inline"/></p>
 <p>A cons cell can be used to store a pair of values. You create a pair by sticking a value in both the car and cdr field of a cons cell using either &lsquo;&rsquo;(1 . 2)<code>or </code>(cons 1 2)`.</p>
 <p><img src="images/pair.png?raw=true" alt="pair" title="pair" class="inline"/></p>
@@ -401,6 +462,21 @@ $(function() {
 <p>Define <code>apa</code> to be the pair <code>(1 . 2)</code> </p><div class="fragment"><div class="line">(define apa &#39;(1 . 2))</div>
 </div><!-- fragment --><p> Now change the value in the cdr field of apa to 42. </p><div class="fragment"><div class="line">(setcdr apa 42)</div>
 </div><!-- fragment --><p> The <code>apa</code> pair is now <code>(1 . 42)</code>.</p>
+<hr  />
+<h2>take</h2>
+<p><code>take</code> creates a list containing the <code>n</code> first elements of another list. The form of a <code>take</code> expression is <code>(take list-exp n-exp)</code>.</p>
+<p>Example that takes 5 elements from a list: </p><div class="fragment"><div class="line">(define ls (list 1 2 3 4 5 6 7 8 9 10))</div>
+<div class="line"> </div>
+<div class="line">(take ls 5)</div>
+</div><!-- fragment --><p>In the example above, the result of <code>(take ls 5)</code> is <code>(1 2 3 4 5)</code>.</p>
+<hr  />
+<h2>drop</h2>
+<p><code>drop</code> creates a list from another list by dropping the <code>n</code> first elements of that list. The form of a <code>drop</code> expression is <code>(drop list-exp n-exp)</code>.</p>
+<p>Example that drops 5 elements from a list: </p><div class="fragment"><div class="line">(define ls (list 1 2 3 4 5 6 7 8 9 10))</div>
+<div class="line"> </div>
+<div class="line">(drop ls 5)</div>
+</div><!-- fragment --><p>Here <code>(drop ls 5)</code> evaluates to the list <code>(6 7 8 9 10)</code>.</p>
+<hr  />
 <h1>Associations lists (alists)</h1>
 <p>Association lists (alists) are, just like regular lists, built out of cons-cells. The difference is that an alist is a list of pairs where the first element in each par can be thought of as a key and the second element can be thought of as the value. So alists implement a key-value lookup structure.</p>
 <p>&lsquo;(list &rsquo;(1 . horse) '(2 . donkey) '(3 . shark))` is an example of an alist with integer keys and symbol values.</p>
@@ -422,68 +498,59 @@ $(function() {
 </div><!-- fragment --><hr  />
 <h2>setassoc</h2>
 <p>The <code>setassoc</code> function destructively updates a key-value mapping in an alist. The form of a <code>setassoc</code> expression is <code>(setassoc alist-expr key-expr value-expr)</code>.</p>
-<h1>Arrays</h1>
-<h2>array-create</h2>
-<p>Create an array of a given type, default is an array of bytes. The form of an <code>array-create</code> expression is either <code>(array-create type size-expr)</code> or <code>(array-create size-expr)</code>. If no type is specified, the default is to create an array of bytes.</p>
-<p>Currently the following types can be used for the type field:</p>
-<table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Type    </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">type-char    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">type-byte    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">type-i32    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">type-u32    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">type-float    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">type-i64    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">type-u64    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">type-double   </td></tr>
-</table>
+<h1>Arrays (byte-buffers)</h1>
+<h2>bufcreate</h2>
+<p>Create an array of bytes. The form of an <code>bufcreate</code> expression is <code>(bufcreate size-expr)</code></p>
+<p>Example that creates a 10 element buffer caled data:</p>
+<div class="fragment"><div class="line">(define data (bufcreate 10))</div>
+</div><!-- fragment --><p>Use the buffer extensions to operate <code>data</code>. See the <a href="https://github.com/vedderb/bldc/tree/master/lispBM#byte-arrays">VESC</a> lbm documentation for details on operations on buffers.</p>
 <hr  />
-<h2>array-size</h2>
-<p>Returns the size of an array in number of elements. The form of an <code>array-size</code> expression is <code>(array-size arr-expr)</code> where arr-expr has to evaluate into an array.</p>
+<h2>buflen</h2>
+<p>Returns the size of a buffer in number of bytes. The form of an <code>buflen</code> expression is <code>(buflen buf-expr)</code> where buf-expr has to evaluate into a buffer.</p>
 <hr  />
-<h2>array-read</h2>
-<p>Read one or many elements from an array. The form of an <code>array-read</code> expression is either <code>(array-read array-expr index-expr)</code> of <code>(array-read array-expr start-index-expr end-index-expr)</code> for reading a range of values into a list.</p>
-<p>Example that evaluates to the character l. </p><div class="fragment"><div class="line">(array-read &quot;hello&quot; 3)</div>
-</div><!-- fragment --><p> The next example reads a range values </p><div class="fragment"><div class="line">(array-read &quot;hello&quot; 1 3)</div>
-</div><!-- fragment --><p> and results in the list <code>(\#e \#l \#l)</code>.</p>
-<hr  />
-<h2>array-write</h2>
-<p>The <code>array-write</code> function performs a destructive update of an array.</p>
-<p>Example that turns array "hello" into "heflo" </p><div class="fragment"><div class="line">(array-write &quot;hello&quot; 2 \#f)</div>
+<h2>bufget-[X]</h2>
+<p>Read a value from a buffer. The contents of a buffer can be read as a sized integer or unsigned value using as many bytes from the buffer as the X portion of the function name implies. The form of a bufget expression is <code>(bufget-[X] buf-expr ix-expr)</code> where <code>ix-expr</code> evaluates to a number indicating the byte position to start reading from.</p>
+<ul>
+<li><code>bufget-i8</code></li>
+<li><code>bufget-i16</code></li>
+<li><code>bufget-i24</code></li>
+<li><code>bufget-i32</code></li>
+<li><code>bufget-u8</code></li>
+<li><code>bufget-u16</code></li>
+<li><code>bufget-u24</code></li>
+<li><code>bufget-u32</code></li>
+</ul>
+<p>Example that reads an u8 from a buffer at position 1:</p>
+<div class="fragment"><div class="line">(define buf [1 2 3 4])</div>
+<div class="line"> </div>
+<div class="line">(bufget-u8 buf 1)</div>
 </div><!-- fragment --><hr  />
-<h2>array-clear</h2>
-<p>Clears an array by writing zeroes to all locations.</p>
-<p>Example:</p>
-<div class="fragment"><div class="line">(array-clear arr)</div>
+<h2>bufset-[X]</h2>
+<p>The <code>bufset</code> functions performs a destructive updates to a buffer. The form of a <code>bufset</code> expression is <code>(bufset-[X] buf-expr ix-expr val-expr)</code> where <code>ix-expr</code> evaluates to a number indicating where in the buffer to start writing and <code>val-expr</code> is the value to write.</p>
+<ul>
+<li><code>bufset-i8</code></li>
+<li><code>bufset-i16</code></li>
+<li><code>bufset-i24</code></li>
+<li><code>bufset-i32</code></li>
+<li><code>bufset-u8</code></li>
+<li><code>bufset-u16</code></li>
+<li><code>bufset-u24</code></li>
+<li><code>bufset-u32</code></li>
+</ul>
+<p>Example that updates position 1 in a buffer:</p>
+<div class="fragment"><div class="line">(define buf [1 2 3 4])</div>
+<div class="line"> </div>
+<div class="line">(bufset-u8 buf 1 100)</div>
 </div><!-- fragment --><hr  />
-<h2>Array literal syntax</h2>
-<p>Array literals can be created using the <code>[</code> and <code>]</code> syntax to enclose values to initialize the array with. The <code>[</code> and <code>]</code> syntax is complete resolved in the parser and thus cannot contain arbitrary lisp terms. the values listed between the <code>[</code> and the <code>]</code> must be literals!</p>
-<p>The form of the <code>[</code> and <code>]</code> syntax is <code>[ type-qualifier val1 ... valN ]</code> or <code>[ val1 ... valN]</code>. If no type-qualifier is specified the default is to create an array with byte values.</p>
-<p>The currently valid type qualifiers are:</p>
-<table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Type qualifier    </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">type-byte    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">type-i32    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">type-u32    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">type-float   </td></tr>
-</table>
-<p>(The rest of the numerical types will be supported in the future)</p>
+<h2>bufclear</h2>
+<p>To clear a byte array the function bufclear can be used:</p>
+<div class="fragment"><div class="line">(bufclear arr optByte optStart optLen)</div>
+</div><!-- fragment --><p>Where arr is the byte array to clear, optByte is the optional argument of what to clear with (default 0), optStart is the optional argument of which position to start clearing (default 0) and optLen is the optional argument of how many bytes to clear after start (default the entire array). Example:</p>
+<h1>@code{clj} (bufclear arr) ; Clear all of arr (bufclear arr 0xFF) ; Fill arr with 0xFF (bufclear arr 0 5) ; Clear from index 5 to the end (bufclear arr 0 5 10) ; Clear 10 bytes starting from index 5 (bufclear arr 0xAA 5 10) ; Set 10 bytes to 0xAA starting from index 5 @endcode </h1>
+<h2>Byte-array literal syntax</h2>
+<p>Byte-array (buffer) literals can be created using the <code>[</code> and <code>]</code> syntax to enclose values to initialize the array with. The <code>[</code> and <code>]</code> syntax is complete resolved in the parser and thus cannot contain arbitrary lisp terms. the values listed between the <code>[</code> and the <code>]</code> must be literals!</p>
+<p>The form of the <code>[</code> and <code>]</code> syntax is <code>[ val1 ... valN ]</code>.</p>
 <p>Example that creates a byte array </p><div class="fragment"><div class="line">[ 1 2 3 4 5 6 7 8 9 10 ]</div>
-</div><!-- fragment --><p>Example that create an array of i32 values </p><div class="fragment"><div class="line">[ type-i32 1 2 3 4 5 6 7 8 9 10 ]</div>
 </div><!-- fragment --><hr  />
 <h1>Pattern-matching</h1>
 <h2>match</h2>
@@ -522,7 +589,7 @@ $(function() {
 <p>When a process is scheduled to run, made active, it is given a quota of evaluator "steps" to use up. The process then runs until that quota is exhausted or the process itself has signaled it wants to sleep by yielding or blocking (for example by waiting for a message using the message passing system).</p>
 <p>A process can also request to not be "pre-empted" while executing a certain expression by invoking <code>atomic</code>. One should take care to make blocks of atomic code as small as possible as it disrupts the fairness of the scheduler. While executing inside of an atomic block the process has sole ownership of the shared global environment and can perform atomic read-modify-write sequences to global data.</p>
 <h2>spawn</h2>
-<p>Use <code>spawn</code> to launch a concurrent process. Spawn takes a closure and and arguments to pass to that closure as its arguments: <code>(spawn closure arg1 ... argN)</code>. Optionally you can provide a numerical first argument that specifies stack size that the runtime system should allocate to run the process in: <code>(spawn stack-size closure args1 ... argN)</code>.</p>
+<p>Use <code>spawn</code> to launch a concurrent process. Spawn takes a closure and arguments to pass to that closure as its arguments. The form of a spawn expression is <code>(spawn opt-name opt-stack-size closure arg1 ... argN)</code>.</p>
 <p>Each process has a runtime-stack which is used for the evaluation of expressions within that process. The stack size needed by a process depends on</p><ol type="1">
 <li>How deeply nested expressions evaluated by the process are.</li>
 <li>Number of recursive calls (Only if a function is NOT tail-recursive).</li>
@@ -532,7 +599,7 @@ $(function() {
 <p>The default stack size is 256 words (1K Bytes) and should be more than enough for reasonable programs. Many processes will work perfectly fine with a lot less stack. You can find a good size by trial and error.</p>
 <hr  />
 <h2>spawn-trap</h2>
-<p>Use <code>spawn-trap</code> to spawn a child process and enable trapping of exit conditions for that child. The form of a <code>spawn-trap</code> expression is <code>(spawn-trap closure arg1 .. argN)</code>. If the child process is terminated because of an error, a message is sent to the parent process of the form <code>(exit-error tid err-val)</code>. If the child process terminates successfully a message of the form <code>(exit-ok tid value)</code> is sent to the parent.</p>
+<p>Use <code>spawn-trap</code> to spawn a child process and enable trapping of exit conditions for that child. The form of a <code>spawn-trap</code> expression is <code>(spawn-trap opt-name opt-stack-size closure arg1 .. argN)</code>. If the child process is terminated because of an error, a message is sent to the parent process of the form <code>(exit-error tid err-val)</code>. If the child process terminates successfully a message of the form <code>(exit-ok tid value)</code> is sent to the parent.</p>
 <p>Example: </p><div class="fragment"><div class="line">(spawn-trap my-thread)</div>
 <div class="line"> </div>
 <div class="line">(recv  ((exit-error (? tid) (? e)) ...)</div>
@@ -562,6 +629,17 @@ $(function() {
 <h2>recv</h2>
 <p>To receive a message use the <code>recv</code> command. A process will block on a <code>recv</code> until there is a matching message in the mailbox. The <code>recv</code> syntax is very similar to <a href="./lbmref.md#match">match</a>.</p>
 <p>Example where a process waits for an integer <code>?i</code>. </p><div class="fragment"><div class="line">(recv ( (?i n) (+ n 1) ))</div>
+</div><!-- fragment --><hr  />
+<h2>recv-to</h2>
+<p>Like <a href="./lbmref.md#recv">recv</a>, <code>recv-to</code> is used to receive messages but <code>recv-to</code> takes an extra timeout argument.</p>
+<p>The form of an <code>recv-to</code> expression is </p><div class="fragment"><div class="line">(recv-to timeout-secs</div>
+<div class="line">                (pattern1 exp1)</div>
+<div class="line">                ...</div>
+<div class="line">                (patternN expN))</div>
+</div><!-- fragment --><p>If no message is received before the timout, the message <code>timeout</code> is delivered to the waiting process. This <code>timeout</code> message can be handled in one of the receive patterns.</p>
+<p>Example </p><div class="fragment"><div class="line">(recv-to 0.5</div>
+<div class="line">         ( timeout (handle-timeout))</div>
+<div class="line">         ( _       (do-something-else)))</div>
 </div><!-- fragment --><hr  />
 <h2>set-mailbox-size</h2>
 <p>Change the size of the mailbox in the current process. Standard mailbox size is 10 elements.</p>
@@ -633,6 +711,42 @@ $(function() {
 </pre> <hr  />
 <h2>variable_not_bound</h2>
 <p>The <code>variable_not_bound</code> symbol is returned when evaluating a variable (symbol) that is neighter bound nor special (built-in function).</p>
+<h1>Flash memory</h1>
+<p>Flash memory can be used to store data and functions that are constant. Things can be moved to flash explicitly using the <code>move-to-flash</code> function or as part of the reading procedure. To move things automatically to flash during reading, there are <code>@</code>directives.</p>
+<hr  />
+<h2>@const-symbol-strings</h2>
+<p>if <code>@const-symbol-strings</code> directive is placed in a file, symbols will be created in flash memory instead of the arrays memory.</p>
+<hr  />
+<h2>@const-start</h2>
+<p><code>@const-start</code> opens a block of code where each global definition is moved to constant memory (flash) automatically. This can be used only together with the incremental reader (such as <code>read-eval-program</code>).</p>
+<p>A <code>@const-start</code> opened block should be closed with a <code>@const-end</code>. Constant blocks cannot be nested.</p>
+<p>Example:</p>
+<div class="fragment"><div class="line">@const-start</div>
+<div class="line"> </div>
+<div class="line">(defun f (x) (+ x 1))  ; a function stored in constant memory</div>
+<div class="line"> </div>
+<div class="line">@const-end</div>
+<div class="line"> </div>
+<div class="line">(+ f 2)</div>
+</div><!-- fragment --><hr  />
+<h2>@const-end</h2>
+<p><code>@const-end</code> closes an block opened by <code>@const-start</code>.</p>
+<hr  />
+<h2>move-to-flash</h2>
+<p>A value can be moved to flash storage to save space on the normal evaluation heap or lbm memory. A <code>move-to-flash</code> expression is of the form <code>(move-to-flash sym opt-sym1 ... opt-symN)</code>. The symbols <code>sym</code>, <code>opt-sym1 ... opt-symN</code> should be globally bound to the values you want moved to flash. After the value has been moved, the environment binding is updated to point into flash memory. <b>CAUTION</b> This function should be used carefully. Ideally a value should be moved to flash immediately after it is created so there is no chance that other references to original value exists.</p>
+<p>Example that moves an array to flash storage:</p>
+<div class="fragment"><div class="line">(define a [1 2 3 4 5 6])</div>
+<div class="line"> </div>
+<div class="line">(move-to-flash a)</div>
+</div><!-- fragment --><p>Example that moves a list to flash storage:</p>
+<div class="fragment"><div class="line">(define ls &#39;(1 2 3 4 5))</div>
+<div class="line"> </div>
+<div class="line">(move-to-flash ls)</div>
+</div><!-- fragment --><p>Functions can be moved to flash storage as well:</p>
+<div class="fragment"><div class="line">(defun f (x) (+ x 1))</div>
+<div class="line"> </div>
+<div class="line">(move-to-flash f)</div>
+</div><!-- fragment --><hr  />
 <h1>Types</h1>
 <h2>type-list</h2>
 <hr  />
@@ -692,8 +806,7 @@ $(function() {
 <h2>to-double</h2>
 <p>Convert any numerical value to a double precision floating point value. If the input is not a number the output of this function will be 0.</p>
 <hr  />
-<h1>Extensions reference</h1>
-</div></div><!-- contents -->
+ </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -99,6 +99,8 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a5810d1b59dddd59ff5d6ae09c6ee5ebf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="print_8h.html#a5810d1b59dddd59ff5d6ae09c6ee5ebf">lbm_value_is_printable_string</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> v, char **str)</td></tr>
+<tr class="separator:a5810d1b59dddd59ff5d6ae09c6ee5ebf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06c27d830a1596d376d2a061b27e425f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="print_8h.html#a06c27d830a1596d376d2a061b27e425f">lbm_print_init</a> (lbm_uint *print_stack_storage, lbm_uint print_stack_size)</td></tr>
 <tr class="separator:a06c27d830a1596d376d2a061b27e425f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88c5c7e337c98860c38921f11fb7429f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="print_8h.html#a88c5c7e337c98860c38921f11fb7429f">lbm_print_value</a> (char *buf, unsigned int len, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> t)</td></tr>
@@ -182,6 +184,42 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>negative number for failure and the number of printed characters on success. </dd></dl>
+
+</div>
+</div>
+<a id="a5810d1b59dddd59ff5d6ae09c6ee5ebf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5810d1b59dddd59ff5d6ae09c6ee5ebf">&#9670;&nbsp;</a></span>lbm_value_is_printable_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lbm_value_is_printable_string </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check if an lbm_value (very likely) is a printable string</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td>Value to check stringyness of. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the value likely is a string, otherwise false. </dd></dl>
 
 </div>
 </div>

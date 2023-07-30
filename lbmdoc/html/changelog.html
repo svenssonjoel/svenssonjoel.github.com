@@ -65,7 +65,57 @@ $(function() {
 <div class="title">Changelog </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Feb 5 2023: Version 0.8.1</p><ul>
+<div class="textblock"><p>JUL 29 2023: Version 0.17.0</p><ul>
+<li>Addition of a timeout functionality to blocked contexts.</li>
+<li>recv-to special form added for receives with a timeout.</li>
+<li>block_context_from_extension_timeout function added.</li>
+<li>Unified sleeping and blocked queues.</li>
+<li>Added a new optional argument to spawn and spawn-trap that can be used to provide a name for the thread.</li>
+<li>Added profiler functionality.</li>
+</ul>
+<p>JUL 16 2023: Version 0.16.0</p><ul>
+<li>Addition of flat values as a type in the language.</li>
+<li>Addition of kill function for termination of threads.</li>
+</ul>
+<p>JUN 29 2023: version 0.15.0</p><ul>
+<li>Bug fix in lift_array_flash.</li>
+<li>Bug fix in map.</li>
+<li>Bug fix in reader.</li>
+<li>Bug fix in dynamic load.</li>
+<li>Bug fix in quasiquotation expansion.</li>
+<li></li>
+</ul>
+<p>JUN 8 2023: Version 0.14.0</p><ul>
+<li>wait-for that blocks code unless a flag is set.</li>
+<li>Bug fix in undefine.</li>
+<li>Lots of cleaning and refactoring.</li>
+</ul>
+<p>MAJ 5 2023: Version 0.13.0</p><ul>
+<li>Changed behavior of closure application to zero args. Used to be equivalent to application to nil.</li>
+<li>Removed make-env and in-env.</li>
+<li>Refactoring for readability. allocate_closure in eval_cps.</li>
+</ul>
+<p>APR 30 2023: Version 0.12.0</p><ul>
+<li>added make-env and in-env for a kind of namespace management.</li>
+<li>Deeply nested errors are resolved using longjmp.</li>
+</ul>
+<p>Apr 4 2023: Version 0.11.0</p><ul>
+<li>Incremental read evaluates expressions as soon as possible while reading.</li>
+<li>move-to-flash for storing constant parts of program in flash.</li>
+<li>All arrays are now byte-arrays. [type-X 1 2 3]-syntax removed.</li>
+</ul>
+<p>Mar 19 2023: Version 0.10.0</p><ul>
+<li>Added deconstructive let bindings with optional dont-care fields.</li>
+<li>Added (var x (....)) for local bindings in progn.</li>
+<li>Added setq</li>
+<li>Curly brackets { .... } syntax as sugar over progn.</li>
+</ul>
+<p>Feb 18 2023: Version 0.9.0</p><ul>
+<li>Arrays in flat_value are stored verbatim, not as ptr.</li>
+<li>Mutex locking granularity changed in multiple places.</li>
+</ul>
+<p>Feb 10 2023: Version 0.8.1</p><ul>
+<li>Flat representation of heap values added.</li>
 <li>Added queue locking to GC</li>
 <li>As an experiment blocked contexts are unblocked by the evaluator in a safe state.</li>
 </ul>
