@@ -3,7 +3,7 @@
   <HEAD>
      <meta charset="UTF-8">
      <meta name="description" content="Lisp for microcontrollers">
-     <meta name="keywords" content="Lisp, Scheme, LispBM, documentation, performance, lisp on microcontrollers">
+     <meta name="keywords" content="Lisp, Scheme, LispBM, LBM, scripting, microcontrollers, documentation, performance, lisp on microcontrollers">
      <meta name="author" content="Bo Joel Svensson">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -98,13 +98,18 @@
 
     <h2> LispBM </h2>
 
-    LispBM is a lisp/scheme like language implemented in C targeting microcontrollers such
+    LispBM is a lisp or scheme like language implemented in C targeting microcontrollers such
     as the STM32 or the NRF52. LispBM can be "embedded" into an application running
     on a microcontroller to make your application scriptable using a lisp-like language.<br>
     <br>
     LispBM sources can be found on <a href="https://github.com/svenssonjoel/lispbm">GitHub</a>.<br>
     <br>
-    LispBM is currently being embedded into the future <a href="https://vesc-project.com/node/3385">VESC firmware version 6.00</a>.
+    LispBM has been integrated as a scripting engine in VESC BLDC Open Source motorcontroller since <a href="https://vesc-project.com/node/3385">VESC firmware version 6.00</a>.
+    LispBM is also integrated into the <a href="https://github.com/vedderb/vesc_express">VESC EXPRESS firmware</a> which is a code-base that can used when implementing your
+    own custom VESC "compatible" hardware devices or with <a href="https://trampaboards.com/vesc-express-with-canbus-power-cable-p-35231.html"> off-the-shelf VESC Express hardware </a>
+
+    Getting an <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32c3/hw-reference/esp32c3/user-guide-devkitm-1.html">ESP32C3 devkit</a> and using the VESC Express
+    firmware on that devkit is probably the easiest way to get started with LispBM. The VESC Express firmware comes with a lot of functionality built in and gives a good head start. 
 
     <h2> LispBM performance </h2>
 
