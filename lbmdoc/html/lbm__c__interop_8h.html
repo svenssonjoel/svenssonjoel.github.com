@@ -123,10 +123,10 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0b876a161e29d758e0f972015f07cde5"><td class="memItemLeft" align="right" valign="top">lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__c__interop_8h.html#a0b876a161e29d758e0f972015f07cde5">lbm_load_and_eval_program</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *tokenizer)</td></tr>
-<tr class="separator:a0b876a161e29d758e0f972015f07cde5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d550a2e4db41294fba6a5cc5806b165"><td class="memItemLeft" align="right" valign="top">lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__c__interop_8h.html#a7d550a2e4db41294fba6a5cc5806b165">lbm_load_and_eval_program_incremental</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *tokenizer)</td></tr>
-<tr class="separator:a7d550a2e4db41294fba6a5cc5806b165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5a66c3e221849cab8624287c991112b"><td class="memItemLeft" align="right" valign="top">lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__c__interop_8h.html#ab5a66c3e221849cab8624287c991112b">lbm_load_and_eval_program</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *tokenizer, char *name)</td></tr>
+<tr class="separator:ab5a66c3e221849cab8624287c991112b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d8bd035c401bca592a35af3d8602d76"><td class="memItemLeft" align="right" valign="top">lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__c__interop_8h.html#a9d8bd035c401bca592a35af3d8602d76">lbm_load_and_eval_program_incremental</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *tokenizer, char *name)</td></tr>
+<tr class="separator:a9d8bd035c401bca592a35af3d8602d76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1961e877bc43aec05076faccf56c0c2d"><td class="memItemLeft" align="right" valign="top">lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__c__interop_8h.html#a1961e877bc43aec05076faccf56c0c2d">lbm_load_and_eval_expression</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *tokenizer)</td></tr>
 <tr class="separator:a1961e877bc43aec05076faccf56c0c2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a990c6f193ec5ea1b63e1627ffcbd24"><td class="memItemLeft" align="right" valign="top">lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lbm__c__interop_8h.html#a5a990c6f193ec5ea1b63e1627ffcbd24">lbm_load_and_define_program</a> (<a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *tokenizer, char *symbol)</td></tr>
@@ -376,8 +376,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0b876a161e29d758e0f972015f07cde5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b876a161e29d758e0f972015f07cde5">&#9670;&nbsp;</a></span>lbm_load_and_eval_program()</h2>
+<a id="ab5a66c3e221849cab8624287c991112b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5a66c3e221849cab8624287c991112b">&#9670;&nbsp;</a></span>lbm_load_and_eval_program()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -386,8 +386,18 @@ Functions</h2></td></tr>
           <td class="memname">lbm_cid lbm_load_and_eval_program </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *&#160;</td>
-          <td class="paramname"><em>tokenizer</em></td><td>)</td>
+          <td class="paramname"><em>tokenizer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -395,6 +405,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">tokenizer</td><td>The tokenizer to read the program from. </td></tr>
+    <tr><td class="paramname">name</td><td>Name of thread (or NULL) thread doing the load and eval. </td></tr>
   </table>
   </dd>
 </dl>
@@ -402,8 +413,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a7d550a2e4db41294fba6a5cc5806b165"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d550a2e4db41294fba6a5cc5806b165">&#9670;&nbsp;</a></span>lbm_load_and_eval_program_incremental()</h2>
+<a id="a9d8bd035c401bca592a35af3d8602d76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d8bd035c401bca592a35af3d8602d76">&#9670;&nbsp;</a></span>lbm_load_and_eval_program_incremental()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -412,8 +423,18 @@ Functions</h2></td></tr>
           <td class="memname">lbm_cid lbm_load_and_eval_program_incremental </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="lbm__channel_8h.html#a626a49bb68281ff070092d656077028a">lbm_char_channel_t</a> *&#160;</td>
-          <td class="paramname"><em>tokenizer</em></td><td>)</td>
+          <td class="paramname"><em>tokenizer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -421,6 +442,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">tokenizer</td><td>The tokenizer to read the program from. </td></tr>
+    <tr><td class="paramname">name</td><td>Name of the thread (or NULL) that performs the incremental load. </td></tr>
   </table>
   </dd>
 </dl>

@@ -182,10 +182,13 @@ $(function() {
 : <a class="el" href="lbm__channel_8h.html#abec4020a271a86c1b62e20272ee452c8">lbm_channel.h</a>
 </li>
 <li>lbm_create_ctx()
-: <a class="el" href="eval__cps_8h.html#ae3fba24f80cfb2c55912c57a4e3acf2d">eval_cps.h</a>
+: <a class="el" href="eval__cps_8h.html#a80e2c325af0267b9225896c74a0e2874">eval_cps.h</a>
 </li>
 <li>lbm_create_string_char_channel()
 : <a class="el" href="lbm__channel_8h.html#a2c3d64fef5b1e439ec2a7e06441e55c4">lbm_channel.h</a>
+</li>
+<li>lbm_critical_error()
+: <a class="el" href="eval__cps_8h.html#a340aa464c4d0c73c56a2682de102ead9">eval_cps.h</a>
 </li>
 <li>lbm_custom_type_create()
 : <a class="el" href="lbm__custom__type_8h.html#a220eebd649b23455eadcfb37b5a5e492">lbm_custom_type.h</a>
@@ -242,7 +245,7 @@ $(function() {
 : <a class="el" href="heap_8h.html#a0d7f3d58b2e128c3c873f7123eb0c07c">heap.h</a>
 </li>
 <li>lbm_enc_float()
-: <a class="el" href="heap_8h.html#a232fd5e52579baeea1ddd5ea9ccd2961">heap.h</a>
+: <a class="el" href="heap_8h.html#a34b909cbdee7ba50cfba19c864c5dac7">heap.h</a>
 </li>
 <li>lbm_enc_i32()
 : <a class="el" href="heap_8h.html#ac8a3a0e489ab2914e43109aed5db3fc4">heap.h</a>
@@ -319,14 +322,23 @@ $(function() {
 <li>lbm_free()
 : <a class="el" href="lbm__memory_8h.html#a5257f1459508bc7fe5b84b8bbeecefe4">lbm_memory.h</a>
 </li>
+<li>lbm_gc_lock()
+: <a class="el" href="heap_8h.html#a49489d3605ad526648388fa48b179a4f">heap.h</a>
+</li>
 <li>lbm_gc_mark_aux()
-: <a class="el" href="heap_8h.html#a069b32c46a287cf5c955de12002cbca0">heap.h</a>
+: <a class="el" href="heap_8h.html#a61261fed55ab599102ee021d8c79ea3f">heap.h</a>
+</li>
+<li>lbm_gc_mark_env()
+: <a class="el" href="heap_8h.html#a113bebeb4284d9bf19169c63dd61ec77">heap.h</a>
 </li>
 <li>lbm_gc_mark_freelist()
 : <a class="el" href="heap_8h.html#ae7a0616a62278a8108a73bdc6b8284fb">heap.h</a>
 </li>
 <li>lbm_gc_mark_phase()
-: <a class="el" href="heap_8h.html#ac7bc7a217d5d42d984eb0543d8eae099">heap.h</a>
+: <a class="el" href="heap_8h.html#af806ccaca6764769d82c7d7dc43202e2">heap.h</a>
+</li>
+<li>lbm_gc_mark_roots()
+: <a class="el" href="heap_8h.html#ae6ccc1c7af029e6e1254e7607d1b6773">heap.h</a>
 </li>
 <li>lbm_gc_state_inc()
 : <a class="el" href="heap_8h.html#a6a5e35b5721a0f5a4b8626f349e5e6e4">heap.h</a>
@@ -354,6 +366,12 @@ $(function() {
 </li>
 <li>lbm_get_extension()
 : <a class="el" href="extensions_8h.html#a5f08b58ef5dc5aea093ba5dc7648b743">extensions.h</a>
+</li>
+<li>lbm_get_gc_stack_max()
+: <a class="el" href="heap_8h.html#a32e3a08eccf2526d33ab212c9672a2ae">heap.h</a>
+</li>
+<li>lbm_get_gc_stack_size()
+: <a class="el" href="heap_8h.html#ae13438773934a32c03f06cf7fbc12a09">heap.h</a>
 </li>
 <li>lbm_get_heap_state()
 : <a class="el" href="heap_8h.html#a40d7fc3962c8d8bc6cc0617edecb134a">heap.h</a>
@@ -422,7 +440,7 @@ $(function() {
 : <a class="el" href="heap_8h.html#ae0f432be8396f2495ba256fe1801f63e">heap.h</a>
 </li>
 <li>lbm_heap_init()
-: <a class="el" href="heap_8h.html#ab96a3d1371f9255f1263f1e3466b1304">heap.h</a>
+: <a class="el" href="heap_8h.html#aa9c5a082a428c0247b98ae9d178e3143">heap.h</a>
 </li>
 <li>lbm_heap_new_freelist_length()
 : <a class="el" href="heap_8h.html#acd95aae9dad2ec9e0498301eaa51e8f4">heap.h</a>
@@ -443,7 +461,7 @@ $(function() {
 : <a class="el" href="heap_8h.html#a02980920525f40142d019f7cb892a382">heap.h</a>
 </li>
 <li>lbm_init()
-: <a class="el" href="lispbm_8h.html#ad74e89dc631c3145b4a882f6c99aacac">lispbm.h</a>
+: <a class="el" href="lispbm_8h.html#abca4ec7c493cf7bab07251d6f2d51592">lispbm.h</a>
 </li>
 <li>lbm_init_env()
 : <a class="el" href="env_8h.html#abf15fc9635a4fa0f0bd6287b320daf90">env.h</a>
@@ -467,7 +485,7 @@ $(function() {
 : <a class="el" href="heap_8h.html#a14b66d531d4be881c4734b47b5469bea">heap.h</a>
 </li>
 <li>lbm_list_copy()
-: <a class="el" href="heap_8h.html#a1a6c2e744125b9cf58735233aef5f32c">heap.h</a>
+: <a class="el" href="heap_8h.html#a4fc0059e3ae3d4001fe63c420e36f910">heap.h</a>
 </li>
 <li>lbm_list_destructive_reverse()
 : <a class="el" href="heap_8h.html#aed7af5ca4d4358815a2a9b631912d51d">heap.h</a>
@@ -494,10 +512,10 @@ $(function() {
 : <a class="el" href="lbm__c__interop_8h.html#a1961e877bc43aec05076faccf56c0c2d">lbm_c_interop.h</a>
 </li>
 <li>lbm_load_and_eval_program()
-: <a class="el" href="lbm__c__interop_8h.html#a0b876a161e29d758e0f972015f07cde5">lbm_c_interop.h</a>
+: <a class="el" href="lbm__c__interop_8h.html#ab5a66c3e221849cab8624287c991112b">lbm_c_interop.h</a>
 </li>
 <li>lbm_load_and_eval_program_incremental()
-: <a class="el" href="lbm__c__interop_8h.html#a7d550a2e4db41294fba6a5cc5806b165">lbm_c_interop.h</a>
+: <a class="el" href="lbm__c__interop_8h.html#a9d8bd035c401bca592a35af3d8602d76">lbm_c_interop.h</a>
 </li>
 <li>lbm_mailbox_change_size()
 : <a class="el" href="eval__cps_8h.html#a73ed5b9c3916ec5e720d511d2d96c330">eval_cps.h</a>
@@ -595,6 +613,9 @@ $(function() {
 <li>lbm_set_cdr()
 : <a class="el" href="heap_8h.html#aa79ac3129c42cc1ee9aa5927a3d690e0">heap.h</a>
 </li>
+<li>lbm_set_critical_error_callback()
+: <a class="el" href="eval__cps_8h.html#a45b3ce44ecc7218a558eadb53d05c160">eval_cps.h</a>
+</li>
 <li>lbm_set_ctx_done_callback()
 : <a class="el" href="eval__cps_8h.html#a5d59d7b208376735581c413e6c31bd41">eval_cps.h</a>
 </li>
@@ -602,7 +623,10 @@ $(function() {
 : <a class="el" href="eval__cps_8h.html#a3895d975f4604285b9070e70c94c2ed7">eval_cps.h</a>
 </li>
 <li>lbm_set_error_reason()
-: <a class="el" href="eval__cps_8h.html#afeae5261f66e4eee2d91beb3e3924acb">eval_cps.h</a>
+: <a class="el" href="eval__cps_8h.html#a2ec2796fd2121a8bce72ba75fd2124b5">eval_cps.h</a>
+</li>
+<li>lbm_set_error_suspect()
+: <a class="el" href="eval__cps_8h.html#aff8c927101d538d0919a92d45d4eac7f">eval_cps.h</a>
 </li>
 <li>lbm_set_eval_step_quota()
 : <a class="el" href="eval__cps_8h.html#acb1c8b396c2ed4ee0e3c2ac300c796b9">eval_cps.h</a>
@@ -666,9 +690,6 @@ $(function() {
 </li>
 <li>lbm_toggle_verbose()
 : <a class="el" href="eval__cps_8h.html#ac80d7fc44bcbf975b80e056c866111de">eval_cps.h</a>
-</li>
-<li>lbm_trigger_flags()
-: <a class="el" href="eval__cps_8h.html#a8e32d7469d8798c3e3386e65cec7e357">eval_cps.h</a>
 </li>
 <li>lbm_type_of()
 : <a class="el" href="heap_8h.html#a9da664df13e84778ec84ec5ba9a8f353">heap.h</a>

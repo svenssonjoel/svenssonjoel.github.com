@@ -280,6 +280,13 @@ $(function() {
 <div class="fragment"><div class="line">(let (( ( a . b) &#39;(1 . 2) ))</div>
 <div class="line">   (+ a b))</div>
 </div><!-- fragment --><p>In the example, the bindings a = 1 and b = 2 are created for use in the let body.</p>
+<h2>loop</h2>
+<p>loop allows to repeatedly evaluate an expression for as long as a condition holds. The form of a loop is <code>(loop list-of-local-bindings condition-exp body-exp)</code>.</p>
+<p>The <code>list-of-local-bindings</code> are very similar to how <code>let</code> works, just that here the <code>body-exp</code> is repeated.</p>
+<p>Example that prints hello world 5 times: </p><div class="fragment"><div class="line">(loop ( (a 5) ) (&gt; a 0) { (print &quot;hello world&quot;) (setq a (- a 1))})</div>
+</div><!-- fragment --><p>When the <code>cond-exp</code> evaluates to false, the loop exits and the entire loop expression returns the value <code>nil</code>.</p>
+<p>Here is an example of a "for each element in a list do something": </p><div class="fragment"><div class="line">(loop ( (a &#39;(1 2 3 4)) ) a { (print (car a)) (setq a (cdr a))})</div>
+</div><!-- fragment --><p>The example above loops for as long as there are elements in a. Each element is printed and a is updated in the body.</p>
 <h2>define</h2>
 <p>You can give names to values in a global scope by using define. The form of define is <code>(define name expr)</code>. The expr is evaluated and it is the result of the evaluated expr that is stored in the environment. In lispbm you can redefine already defined values.</p>
 <p>Example </p><h1>@code{clj} (define apa 10) @endcode </h1>
@@ -477,6 +484,21 @@ $(function() {
 <div class="line">(drop ls 5)</div>
 </div><!-- fragment --><p>Here <code>(drop ls 5)</code> evaluates to the list <code>(6 7 8 9 10)</code>.</p>
 <hr  />
+<h2>Merge</h2>
+<p><code>merge</code> merges two lists that are ordered according to a comparator into a single ordered list. The form of a <code>merge</code> expression is <code>(merge comparator-exp list-exp1 list-exp2)</code>.</p>
+<p>Example: </p><div class="fragment"><div class="line">(define a &#39;(2 4 6 8 10 12))</div>
+<div class="line">(define b &#39;(1 3 5))</div>
+<div class="line"> </div>
+<div class="line">(merge &lt; a b)</div>
+</div><!-- fragment --><p>Here <code>(merge &lt; a b)</code> evaluates to the list <code>(1 2 3 4 5 6 8 10 12)</code>.</p>
+<hr  />
+<h2>Sort</h2>
+<p><code>sort</code> orders a list of values according to a comparator. The sorting algorithm used is an in-place merge-sort. A copy of the input list is created at the beginning of the sort to provide a functional interface from the user's point of view. The form of a sort expression is <code>(sort comparator-exp list-exp)</code></p>
+<p>Example: </p><div class="fragment"><div class="line">(define ls &#39;( 1 9 2 5 1 8 3))</div>
+<div class="line"> </div>
+<div class="line">(sort &lt; ls)</div>
+</div><!-- fragment --><p>Here <code>(sort &lt; ls)</code> evaluates to the list <code>(1 1 2 3 5 8 9)</code>.</p>
+<hr  />
 <h1>Associations lists (alists)</h1>
 <p>Association lists (alists) are, just like regular lists, built out of cons-cells. The difference is that an alist is a list of pairs where the first element in each par can be thought of as a key and the second element can be thought of as the value. So alists implement a key-value lookup structure.</p>
 <p>&lsquo;(list &rsquo;(1 . horse) '(2 . donkey) '(3 . shark))` is an example of an alist with integer keys and symbol values.</p>
@@ -605,6 +627,9 @@ $(function() {
 <div class="line">(recv  ((exit-error (? tid) (? e)) ...)</div>
 <div class="line">       ((exit-ok    (? tid) (? v)) ...))</div>
 </div><!-- fragment --><hr  />
+<h2>self</h2>
+<p>Use <code>self</code> to obtain the thread-id of the thread in which <code>self</code> is evaluated. The form of a <code>self</code> expression is <code>(self)</code>. The thread id is of an integer type.</p>
+<p>Example: </p><h1>@code{clj} # (self) &gt; 314 @endcode </h1>
 <h2>wait</h2>
 <p>Use <code>wait</code> to wait for a spawned process to finish. The argument to <code>wait</code> should be a process id. The <code>wait</code> blocks until the process with the given process id finishes. When the process with with the given id finishes, the wait function returns True.</p>
 <p>Be careful to only wait for processes that actually exist and do finish. Otherwise you will wait forever.</p>
@@ -645,7 +670,30 @@ $(function() {
 <p>Change the size of the mailbox in the current process. Standard mailbox size is 10 elements.</p>
 <p>Example that changes mailbox size to 100 elements. </p><div class="fragment"><div class="line">(set-mailbox-size 100)</div>
 </div><!-- fragment --><hr  />
-<h1>Macros</h1>
+<h1>Flat values</h1>
+<p>Lisp values can be "flattened" into an array representation. The flat representation of a value contains all information needed so that the value can be recreated, "unflattened", in another instance of the runtime system (for example running on another microcontroller).</p>
+<p>Not all values can be flattened, custom types for example cannot.</p>
+<h2>flatten</h2>
+<p>The <code>flatten</code> function takes a value as single argument and returns the flat representation if successful. A flatten expression has the form <code>(flatten expr)</code>. Note that <code>expr</code> is evaluated before the flattening.</p>
+<p>Example: </p><div class="fragment"><div class="line"># (define a (flatten (+ 1 2)))</div>
+<div class="line">&gt; &quot;&#x2405;&quot;</div>
+</div><!-- fragment --><p> The example above creates a byte-array representating the the value <code>3</code>.</p>
+<div class="fragment"><div class="line"># (define a (flatten &#39;(+ 1 2)))</div>
+<div class="line">&gt; &quot;&#x2403;+&quot;</div>
+</div><!-- fragment --><p>Now the byte-array contains a representation of the list <code>(+ 1 2)</code></p>
+<hr  />
+<h2>unflatten</h2>
+<p><code>unflatten</code> converts a flat value back into a lisp value. Te form of an <code>unflatten</code> expression is <code>(unflatten flat-value)</code></p>
+<p>Example: </p><div class="fragment"><div class="line"># (define a (flatten (+ 1 2)))</div>
+<div class="line">&gt; &quot;&#x2405;&quot;</div>
+<div class="line"># (unflatten a)</div>
+<div class="line">&gt; 3</div>
+</div><!-- fragment --><p>and:</p>
+<div class="fragment"><div class="line"># (define a (flatten &#39;(+ 1 2)))</div>
+<div class="line">&gt; &quot;&#x2403;+&quot;</div>
+<div class="line"># (unflatten a)</div>
+<div class="line">&gt; (+ 1 2)</div>
+</div><!-- fragment --><h1>Macros</h1>
 <p>lispBM macros are created using the <code>macro</code> keyword. A macro is quite similar to <a href="./lbmref.mb#lambda">lambda</a> in lispBM except that arguments are passed in unevaluated. Together with the code-splicing capabilities given by <a href="./lbmref.md#quasiquotation">quasiquotation</a>, this provides a powerful code-generation tool.</p>
 <p>A macro application is run through the interpreter two times. Once to evaluate the body of the macro on the unevaluated arguments. The result of this first application should be a program. The resulting program then goes through the interpreter again to compute final values.</p>
 <p>Given this repeated evaluation, macros are not a performance boost in lispbm. Macros are really a feature that should be used to invent new programming abstractions in cases where it is ok to pay a little for the overhead for benefits in expressivity.</p>

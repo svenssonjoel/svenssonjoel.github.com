@@ -158,6 +158,9 @@ Macros</h2></td></tr>
 <tr class="memitem:a903a5e0651966b895c66b4bb0e0b3c82"><td class="memItemLeft" align="right" valign="top"><a id="a903a5e0651966b895c66b4bb0e0b3c82"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_PTR_TYPE_MASK</b>&#160;&#160;&#160;0xFC000000u</td></tr>
 <tr class="separator:a903a5e0651966b895c66b4bb0e0b3c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca3b16891a4b97c379e5739f546db3d6"><td class="memItemLeft" align="right" valign="top"><a id="aca3b16891a4b97c379e5739f546db3d6"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_PTR_NULL</b>&#160;&#160;&#160;(0x03FFFFFCu &gt;&gt; 2)</td></tr>
+<tr class="separator:aca3b16891a4b97c379e5739f546db3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38fa35849b5d0ad3dee9b975b16a0151"><td class="memItemLeft" align="right" valign="top"><a id="a38fa35849b5d0ad3dee9b975b16a0151"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_PTR_TO_CONSTANT_BIT</b>&#160;&#160;&#160;0x04000000u</td></tr>
 <tr class="separator:a38fa35849b5d0ad3dee9b975b16a0151"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,7 +171,7 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_PTR_TO_CONSTANT_SHIFT</b>&#160;&#160;&#160;26</td></tr>
 <tr class="separator:af0cc35a83a6f8e291d88c196a1d5bbfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a280729ac438a11aaeed2fac3dfcf92ea"><td class="memItemLeft" align="right" valign="top"><a id="a280729ac438a11aaeed2fac3dfcf92ea"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>ERROR_SYMBOL_MASK</b>&#160;&#160;&#160;0xFFFFFF20</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>ERROR_SYMBOL_MASK</b>&#160;&#160;&#160;0xFFFFFFF0</td></tr>
 <tr class="separator:a280729ac438a11aaeed2fac3dfcf92ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -187,8 +190,13 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab96a3d1371f9255f1263f1e3466b1304"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ab96a3d1371f9255f1263f1e3466b1304">lbm_heap_init</a> (<a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> *addr, lbm_uint num_cells, lbm_uint *gc_stack_storage, lbm_uint gc_stack_size)</td></tr>
-<tr class="separator:ab96a3d1371f9255f1263f1e3466b1304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49489d3605ad526648388fa48b179a4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a49489d3605ad526648388fa48b179a4f">lbm_gc_lock</a> (void)</td></tr>
+<tr class="separator:a49489d3605ad526648388fa48b179a4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a882954fdab5b2f2fdf5424c7bb2ed777"><td class="memItemLeft" align="right" valign="top"><a id="a882954fdab5b2f2fdf5424c7bb2ed777"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_gc_unlock</b> (void)</td></tr>
+<tr class="separator:a882954fdab5b2f2fdf5424c7bb2ed777"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9c5a082a428c0247b98ae9d178e3143"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aa9c5a082a428c0247b98ae9d178e3143">lbm_heap_init</a> (<a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> *addr, lbm_uint num_cells, lbm_uint gc_stack_size)</td></tr>
+<tr class="separator:aa9c5a082a428c0247b98ae9d178e3143"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a174823a3efec64c8bf9cf549620c6042"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a174823a3efec64c8bf9cf549620c6042">lbm_heap_new_gc_time</a> (lbm_uint dur)</td></tr>
 <tr class="separator:a174823a3efec64c8bf9cf549620c6042"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd95aae9dad2ec9e0498301eaa51e8f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#acd95aae9dad2ec9e0498301eaa51e8f4">lbm_heap_new_freelist_length</a> (void)</td></tr>
@@ -258,24 +266,32 @@ lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><b>lbm_dec_raw</b> (
 <tr class="separator:a1012700b1f6cd537d44f7d8cf089a644"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed7af5ca4d4358815a2a9b631912d51d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aed7af5ca4d4358815a2a9b631912d51d">lbm_list_destructive_reverse</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list)</td></tr>
 <tr class="separator:aed7af5ca4d4358815a2a9b631912d51d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a6c2e744125b9cf58735233aef5f32c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a1a6c2e744125b9cf58735233aef5f32c">lbm_list_copy</a> (int m, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list)</td></tr>
-<tr class="separator:a1a6c2e744125b9cf58735233aef5f32c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fc0059e3ae3d4001fe63c420e36f910"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a4fc0059e3ae3d4001fe63c420e36f910">lbm_list_copy</a> (int *m, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list)</td></tr>
+<tr class="separator:a4fc0059e3ae3d4001fe63c420e36f910"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14b66d531d4be881c4734b47b5469bea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a14b66d531d4be881c4734b47b5469bea">lbm_list_append</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list1, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> list2)</td></tr>
 <tr class="separator:a14b66d531d4be881c4734b47b5469bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae34562ca2c8b04862f2a6032a89e0d93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ae34562ca2c8b04862f2a6032a89e0d93">lbm_list_drop</a> (unsigned int n, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> ls)</td></tr>
 <tr class="separator:ae34562ca2c8b04862f2a6032a89e0d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40d7fc3962c8d8bc6cc0617edecb134a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a40d7fc3962c8d8bc6cc0617edecb134a">lbm_get_heap_state</a> (<a class="el" href="structlbm__heap__state__t.html">lbm_heap_state_t</a> *)</td></tr>
 <tr class="separator:a40d7fc3962c8d8bc6cc0617edecb134a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32e3a08eccf2526d33ab212c9672a2ae"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a32e3a08eccf2526d33ab212c9672a2ae">lbm_get_gc_stack_max</a> (void)</td></tr>
+<tr class="separator:a32e3a08eccf2526d33ab212c9672a2ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae13438773934a32c03f06cf7fbc12a09"><td class="memItemLeft" align="right" valign="top">lbm_uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ae13438773934a32c03f06cf7fbc12a09">lbm_get_gc_stack_size</a> (void)</td></tr>
+<tr class="separator:ae13438773934a32c03f06cf7fbc12a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a5e35b5721a0f5a4b8626f349e5e6e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a6a5e35b5721a0f5a4b8626f349e5e6e4">lbm_gc_state_inc</a> (void)</td></tr>
 <tr class="separator:a6a5e35b5721a0f5a4b8626f349e5e6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade2a804db9c85468ff7dda8e08a05a02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ade2a804db9c85468ff7dda8e08a05a02">lbm_nil_freelist</a> (void)</td></tr>
 <tr class="separator:ade2a804db9c85468ff7dda8e08a05a02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7a0616a62278a8108a73bdc6b8284fb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ae7a0616a62278a8108a73bdc6b8284fb">lbm_gc_mark_freelist</a> (void)</td></tr>
 <tr class="separator:ae7a0616a62278a8108a73bdc6b8284fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7bc7a217d5d42d984eb0543d8eae099"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ac7bc7a217d5d42d984eb0543d8eae099">lbm_gc_mark_phase</a> (int num,...)</td></tr>
-<tr class="separator:ac7bc7a217d5d42d984eb0543d8eae099"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a069b32c46a287cf5c955de12002cbca0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a069b32c46a287cf5c955de12002cbca0">lbm_gc_mark_aux</a> (lbm_uint *data, lbm_uint n)</td></tr>
-<tr class="separator:a069b32c46a287cf5c955de12002cbca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a113bebeb4284d9bf19169c63dd61ec77"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a113bebeb4284d9bf19169c63dd61ec77">lbm_gc_mark_env</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>)</td></tr>
+<tr class="separator:a113bebeb4284d9bf19169c63dd61ec77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af806ccaca6764769d82c7d7dc43202e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#af806ccaca6764769d82c7d7dc43202e2">lbm_gc_mark_phase</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> root)</td></tr>
+<tr class="separator:af806ccaca6764769d82c7d7dc43202e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61261fed55ab599102ee021d8c79ea3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a61261fed55ab599102ee021d8c79ea3f">lbm_gc_mark_aux</a> (lbm_uint *data, lbm_uint n)</td></tr>
+<tr class="separator:a61261fed55ab599102ee021d8c79ea3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6ccc1c7af029e6e1254e7607d1b6773"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ae6ccc1c7af029e6e1254e7607d1b6773">lbm_gc_mark_roots</a> (lbm_uint *roots, lbm_uint num_roots)</td></tr>
+<tr class="separator:ae6ccc1c7af029e6e1254e7607d1b6773"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5dfa361fe508b4dbd76578626205468"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ad5dfa361fe508b4dbd76578626205468">lbm_gc_sweep_phase</a> (void)</td></tr>
 <tr class="separator:ad5dfa361fe508b4dbd76578626205468"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ca19940ac0ba9794f0a5657a2ef8e63"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a7ca19940ac0ba9794f0a5657a2ef8e63">lbm_heap_allocate_array</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *res, lbm_uint size)</td></tr>
@@ -341,8 +357,8 @@ static <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06"
 <tr class="separator:ac8a3a0e489ab2914e43109aed5db3fc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab635ae796710c337307eec1727819712"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ab635ae796710c337307eec1727819712">lbm_enc_u32</a> (uint32_t x)</td></tr>
 <tr class="separator:ab635ae796710c337307eec1727819712"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a232fd5e52579baeea1ddd5ea9ccd2961"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a232fd5e52579baeea1ddd5ea9ccd2961">lbm_enc_float</a> (lbm_float x)</td></tr>
-<tr class="separator:a232fd5e52579baeea1ddd5ea9ccd2961"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34b909cbdee7ba50cfba19c864c5dac7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#a34b909cbdee7ba50cfba19c864c5dac7">lbm_enc_float</a> (float x)</td></tr>
+<tr class="separator:a34b909cbdee7ba50cfba19c864c5dac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aceeba1a880c8b3044992bd357aa806f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#aceeba1a880c8b3044992bd357aa806f5">lbm_enc_i64</a> (int64_t x)</td></tr>
 <tr class="separator:aceeba1a880c8b3044992bd357aa806f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad167efd1251da29c46a93fb828ccae0c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heap_8h.html#ad167efd1251da29c46a93fb828ccae0c">lbm_enc_u64</a> (uint64_t x)</td></tr>
@@ -1011,8 +1027,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a232fd5e52579baeea1ddd5ea9ccd2961"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a232fd5e52579baeea1ddd5ea9ccd2961">&#9670;&nbsp;</a></span>lbm_enc_float()</h2>
+<a id="a34b909cbdee7ba50cfba19c864c5dac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34b909cbdee7ba50cfba19c864c5dac7">&#9670;&nbsp;</a></span>lbm_enc_float()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1020,7 +1036,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_enc_float </td>
           <td>(</td>
-          <td class="paramtype">lbm_float&#160;</td>
+          <td class="paramtype">float&#160;</td>
           <td class="paramname"><em>x</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1136,14 +1152,33 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a069b32c46a287cf5c955de12002cbca0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a069b32c46a287cf5c955de12002cbca0">&#9670;&nbsp;</a></span>lbm_gc_mark_aux()</h2>
+<a id="a49489d3605ad526648388fa48b179a4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49489d3605ad526648388fa48b179a4f">&#9670;&nbsp;</a></span>lbm_gc_lock()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int lbm_gc_mark_aux </td>
+          <td class="memname">void lbm_gc_lock </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Lock GC mutex Locks a mutex during GC marking when using the pointer reversal algorithm. Does nothing when using stack based GC mark. </p>
+
+</div>
+</div>
+<a id="a61261fed55ab599102ee021d8c79ea3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61261fed55ab599102ee021d8c79ea3f">&#9670;&nbsp;</a></span>lbm_gc_mark_aux()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_gc_mark_aux </td>
           <td>(</td>
           <td class="paramtype">lbm_uint *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
@@ -1161,15 +1196,37 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Performs lbm_gc_mark_phase on all the values of an array.</p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Performs lbm_gc_mark_phase on all the values of an array. This function is similar to lbm_gc_mark_roots but performs extra checks to not traverse into non-standard values. TODO: Check if this function is really needed. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>Array of roots to traverse from. </td></tr>
     <tr><td class="paramname">n</td><td>Number of elements in roots-array. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>1 on success or 0 for failure. </dd></dl>
+
+</div>
+</div>
+<a id="a113bebeb4284d9bf19169c63dd61ec77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a113bebeb4284d9bf19169c63dd61ec77">&#9670;&nbsp;</a></span>lbm_gc_mark_env()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_gc_mark_env </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Mark all heap cells reachable from an environment. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">environment.</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1193,23 +1250,47 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ac7bc7a217d5d42d984eb0543d8eae099"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac7bc7a217d5d42d984eb0543d8eae099">&#9670;&nbsp;</a></span>lbm_gc_mark_phase()</h2>
+<a id="af806ccaca6764769d82c7d7dc43202e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af806ccaca6764769d82c7d7dc43202e2">&#9670;&nbsp;</a></span>lbm_gc_mark_phase()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int lbm_gc_mark_phase </td>
+          <td class="memname">void lbm_gc_mark_phase </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num</em>, </td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>root</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Mark heap cells reachable from the lbm_value v. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">root</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae6ccc1c7af029e6e1254e7607d1b6773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6ccc1c7af029e6e1254e7607d1b6773">&#9670;&nbsp;</a></span>lbm_gc_mark_roots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_gc_mark_roots </td>
+          <td>(</td>
+          <td class="paramtype">lbm_uint *&#160;</td>
+          <td class="paramname"><em>roots</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
+          <td class="paramtype">lbm_uint&#160;</td>
+          <td class="paramname"><em>num_roots</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1218,15 +1299,13 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Mark heap cells reachable from the lbm_value v.</p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Performs lbm_gc_mark_phase on all the values in the roots array. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">m</td><td>Number of Root nodes to start marking from. </td></tr>
-    <tr><td class="paramname">...</td><td>list of root nodes. </td></tr>
+    <tr><td class="paramname">roots</td><td>pointer to array of roots. </td></tr>
+    <tr><td class="paramname">num_roots</td><td>size of array of roots. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>1 on success and 0 if the stack used internally is full. </dd></dl>
 
 </div>
 </div>
@@ -1266,6 +1345,44 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <p>Sweep up all non marked heap cells and place them on the free list.</p>
 <dl class="section return"><dt>Returns</dt><dd>1 </dd></dl>
+
+</div>
+</div>
+<a id="a32e3a08eccf2526d33ab212c9672a2ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32e3a08eccf2526d33ab212c9672a2ae">&#9670;&nbsp;</a></span>lbm_get_gc_stack_max()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lbm_uint lbm_get_gc_stack_max </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the maximum stack level of the GC stack </p><dl class="section return"><dt>Returns</dt><dd>maximum value the gc stack sp reached so far. </dd></dl>
+
+</div>
+</div>
+<a id="ae13438773934a32c03f06cf7fbc12a09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae13438773934a32c03f06cf7fbc12a09">&#9670;&nbsp;</a></span>lbm_get_gc_stack_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lbm_uint lbm_get_gc_stack_size </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the size of the GC stack. </p><dl class="section return"><dt>Returns</dt><dd>the size of the gc stack. </dd></dl>
 
 </div>
 </div>
@@ -1546,8 +1663,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ab96a3d1371f9255f1263f1e3466b1304"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab96a3d1371f9255f1263f1e3466b1304">&#9670;&nbsp;</a></span>lbm_heap_init()</h2>
+<a id="aa9c5a082a428c0247b98ae9d178e3143"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9c5a082a428c0247b98ae9d178e3143">&#9670;&nbsp;</a></span>lbm_heap_init()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1567,12 +1684,6 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">lbm_uint *&#160;</td>
-          <td class="paramname"><em>gc_stack_storage</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">lbm_uint&#160;</td>
           <td class="paramname"><em>gc_stack_size</em>&#160;</td>
         </tr>
@@ -1587,7 +1698,6 @@ Variables</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">addr</td><td>Pointer to an array of <a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> elements. This array must at least be aligned 4. </td></tr>
     <tr><td class="paramname">num_cells</td><td>Number of <a class="el" href="structlbm__cons__t.html">lbm_cons_t</a> elements in the array. </td></tr>
-    <tr><td class="paramname">gc_stack_storage</td><td>uint32_t pointer to space to use as "recursion" stack for GC </td></tr>
     <tr><td class="paramname">gc_stack_size</td><td>Size of the gc_stack in number of words. </td></tr>
   </table>
   </dd>
@@ -1859,8 +1969,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a1a6c2e744125b9cf58735233aef5f32c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a6c2e744125b9cf58735233aef5f32c">&#9670;&nbsp;</a></span>lbm_list_copy()</h2>
+<a id="a4fc0059e3ae3d4001fe63c420e36f910"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fc0059e3ae3d4001fe63c420e36f910">&#9670;&nbsp;</a></span>lbm_list_copy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1868,7 +1978,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> lbm_list_copy </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">int *&#160;</td>
           <td class="paramname"><em>m</em>, </td>
         </tr>
         <tr>
@@ -1887,7 +1997,7 @@ Variables</h2></td></tr>
 <p>Copy a list </p><dl class="section warning"><dt>Warning</dt><dd>This is a dangerous function that should be used carefully. Cyclic structures on the heap may lead to the function not terminating.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">m</td><td>Number of elements to copy or -1 for all. </td></tr>
+    <tr><td class="paramname">m</td><td>Number of elements to copy or -1 for all. If 1, m will be updated with the length of the list </td></tr>
     <tr><td class="paramname">list</td><td>A list. </td></tr>
   </table>
   </dd>

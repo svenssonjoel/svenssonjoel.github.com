@@ -159,17 +159,23 @@ Macros</h2></td></tr>
 <tr class="memitem:aea1bbf5b9907cfc50f896c33023b1621"><td class="memItemLeft" align="right" valign="top"><a id="aea1bbf5b9907cfc50f896c33023b1621"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>EVAL_CPS_CONTEXT_FLAG_CONST_SYMBOL_STRINGS</b>&#160;&#160;&#160;(uint32_t)0x4</td></tr>
 <tr class="separator:aea1bbf5b9907cfc50f896c33023b1621"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc3cdd248c8051174c60f6bbcea0ff28"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#adc3cdd248c8051174c60f6bbcea0ff28">LBM_THREAD_STATE_READY</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memitem:af25f8ec8e74cef63b809fbda125b6a42"><td class="memItemLeft" align="right" valign="top"><a id="af25f8ec8e74cef63b809fbda125b6a42"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>EVAL_CPS_CONTEXT_FLAG_INCREMENTAL_READ</b>&#160;&#160;&#160;(uint32_t)0x8</td></tr>
+<tr class="separator:af25f8ec8e74cef63b809fbda125b6a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc3cdd248c8051174c60f6bbcea0ff28"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#adc3cdd248c8051174c60f6bbcea0ff28">LBM_THREAD_STATE_READY</a>&#160;&#160;&#160;(uint32_t)0</td></tr>
 <tr class="separator:adc3cdd248c8051174c60f6bbcea0ff28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fcb05fe5cb16ef32758e104e2018bab"><td class="memItemLeft" align="right" valign="top"><a id="a1fcb05fe5cb16ef32758e104e2018bab"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_THREAD_STATE_BLOCKED</b>&#160;&#160;&#160;1</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_THREAD_STATE_BLOCKED</b>&#160;&#160;&#160;(uint32_t)1</td></tr>
 <tr class="separator:a1fcb05fe5cb16ef32758e104e2018bab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a760c2b9386c94f5f7560775cac67368a"><td class="memItemLeft" align="right" valign="top"><a id="a760c2b9386c94f5f7560775cac67368a"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_THREAD_STATE_TIMEOUT</b>&#160;&#160;&#160;2</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_THREAD_STATE_TIMEOUT</b>&#160;&#160;&#160;(uint32_t)2</td></tr>
 <tr class="separator:a760c2b9386c94f5f7560775cac67368a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a972fc95b4c26c04bbc5d0a6a338f5834"><td class="memItemLeft" align="right" valign="top"><a id="a972fc95b4c26c04bbc5d0a6a338f5834"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_THREAD_STATE_SLEEPING</b>&#160;&#160;&#160;3</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_THREAD_STATE_SLEEPING</b>&#160;&#160;&#160;(uint32_t)3</td></tr>
 <tr class="separator:a972fc95b4c26c04bbc5d0a6a338f5834"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22f4983863f1ffe14df3cbde649dcade"><td class="memItemLeft" align="right" valign="top"><a id="a22f4983863f1ffe14df3cbde649dcade"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>LBM_THREAD_STATE_GC_BIT</b>&#160;&#160;&#160;(uint32_t)(1 &lt;&lt; 31)</td></tr>
+<tr class="separator:a22f4983863f1ffe14df3cbde649dcade"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -208,8 +214,6 @@ Functions</h2></td></tr>
 <tr class="separator:a1a389a2b65ff03af0f4b538f3bf9f5b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9abbe7ab1f36bb2014234994692b8dfe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a9abbe7ab1f36bb2014234994692b8dfe">lbm_event_unboxed</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> unboxed)</td></tr>
 <tr class="separator:a9abbe7ab1f36bb2014234994692b8dfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e32d7469d8798c3e3386e65cec7e357"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a8e32d7469d8798c3e3386e65cec7e357">lbm_trigger_flags</a> (uint32_t wait_for_flags)</td></tr>
-<tr class="separator:a8e32d7469d8798c3e3386e65cec7e357"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbe5fa10b6817ede3abf80d11549ad02"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#abbe5fa10b6817ede3abf80d11549ad02">lbm_remove_done_ctx</a> (lbm_cid cid, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> *v)</td></tr>
 <tr class="separator:abbe5fa10b6817ede3abf80d11549ad02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06e9ae9e542a861adaec6b06a01c6eba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a06e9ae9e542a861adaec6b06a01c6eba">lbm_wait_ctx</a> (lbm_cid cid, lbm_uint timeout_ms)</td></tr>
@@ -230,10 +234,16 @@ Functions</h2></td></tr>
 <tr class="separator:a138fd2dc369c1970fc96d340a7eabadc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acba5ff074e742c34305bda154100f6bc"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#acba5ff074e742c34305bda154100f6bc">lbm_get_eval_state</a> (void)</td></tr>
 <tr class="separator:acba5ff074e742c34305bda154100f6bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afeae5261f66e4eee2d91beb3e3924acb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#afeae5261f66e4eee2d91beb3e3924acb">lbm_set_error_reason</a> (char *error_str)</td></tr>
-<tr class="separator:afeae5261f66e4eee2d91beb3e3924acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3fba24f80cfb2c55912c57a4e3acf2d"><td class="memItemLeft" align="right" valign="top">lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#ae3fba24f80cfb2c55912c57a4e3acf2d">lbm_create_ctx</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> program, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> env, lbm_uint stack_size)</td></tr>
-<tr class="separator:ae3fba24f80cfb2c55912c57a4e3acf2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ec2796fd2121a8bce72ba75fd2124b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a2ec2796fd2121a8bce72ba75fd2124b5">lbm_set_error_reason</a> (char *error_str)</td></tr>
+<tr class="separator:a2ec2796fd2121a8bce72ba75fd2124b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff8c927101d538d0919a92d45d4eac7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#aff8c927101d538d0919a92d45d4eac7f">lbm_set_error_suspect</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> suspect)</td></tr>
+<tr class="separator:aff8c927101d538d0919a92d45d4eac7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a340aa464c4d0c73c56a2682de102ead9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a340aa464c4d0c73c56a2682de102ead9">lbm_critical_error</a> (void)</td></tr>
+<tr class="separator:a340aa464c4d0c73c56a2682de102ead9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45b3ce44ecc7218a558eadb53d05c160"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a45b3ce44ecc7218a558eadb53d05c160">lbm_set_critical_error_callback</a> (void(*fptr)(void))</td></tr>
+<tr class="separator:a45b3ce44ecc7218a558eadb53d05c160"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e2c325af0267b9225896c74a0e2874"><td class="memItemLeft" align="right" valign="top">lbm_cid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#a80e2c325af0267b9225896c74a0e2874">lbm_create_ctx</a> (<a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> program, <a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a> env, lbm_uint stack_size, char *name)</td></tr>
+<tr class="separator:a80e2c325af0267b9225896c74a0e2874"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad24d4c3a16c52971ef31755804610be0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#ad24d4c3a16c52971ef31755804610be0">lbm_block_ctx_from_extension</a> (void)</td></tr>
 <tr class="separator:ad24d4c3a16c52971ef31755804610be0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee56a538790e09fdfb594f750772dfe3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eval__cps_8h.html#aee56a538790e09fdfb594f750772dfe3">lbm_block_ctx_from_extension_timeout</a> (float s)</td></tr>
@@ -296,7 +306,7 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define LBM_THREAD_STATE_READY&#160;&#160;&#160;0</td>
+          <td class="memname">#define LBM_THREAD_STATE_READY&#160;&#160;&#160;(uint32_t)0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -467,8 +477,8 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
 
 </div>
 </div>
-<a id="ae3fba24f80cfb2c55912c57a4e3acf2d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3fba24f80cfb2c55912c57a4e3acf2d">&#9670;&nbsp;</a></span>lbm_create_ctx()</h2>
+<a id="a80e2c325af0267b9225896c74a0e2874"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80e2c325af0267b9225896c74a0e2874">&#9670;&nbsp;</a></span>lbm_create_ctx()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -489,7 +499,13 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">lbm_uint&#160;</td>
-          <td class="paramname"><em>stack_size</em>&#160;</td>
+          <td class="paramname"><em>stack_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -504,10 +520,30 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
     <tr><td class="paramname">program</td><td>The program to evaluate in the context. </td></tr>
     <tr><td class="paramname">env</td><td>An initial environment. </td></tr>
     <tr><td class="paramname">stack_size</td><td>Stack size for the context. </td></tr>
+    <tr><td class="paramname">name</td><td>Name of thread or NULL. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a340aa464c4d0c73c56a2682de102ead9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a340aa464c4d0c73c56a2682de102ead9">&#9670;&nbsp;</a></span>lbm_critical_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_critical_error </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Terminate the runtime system in response to an error that it is not possible to recover from. </p>
 
 </div>
 </div>
@@ -1022,6 +1058,25 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
 
 </div>
 </div>
+<a id="a45b3ce44ecc7218a558eadb53d05c160"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45b3ce44ecc7218a558eadb53d05c160">&#9670;&nbsp;</a></span>lbm_set_critical_error_callback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_set_critical_error_callback </td>
+          <td>(</td>
+          <td class="paramtype">void(*)(void)&#160;</td>
+          <td class="paramname"><em>fptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the critical error callback </p>
+
+</div>
+</div>
 <a id="a5d59d7b208376735581c413e6c31bd41"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5d59d7b208376735581c413e6c31bd41">&#9670;&nbsp;</a></span>lbm_set_ctx_done_callback()</h2>
 
@@ -1066,14 +1121,14 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
 
 </div>
 </div>
-<a id="afeae5261f66e4eee2d91beb3e3924acb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afeae5261f66e4eee2d91beb3e3924acb">&#9670;&nbsp;</a></span>lbm_set_error_reason()</h2>
+<a id="a2ec2796fd2121a8bce72ba75fd2124b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ec2796fd2121a8bce72ba75fd2124b5">&#9670;&nbsp;</a></span>lbm_set_error_reason()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int lbm_set_error_reason </td>
+          <td class="memname">void lbm_set_error_reason </td>
           <td>(</td>
           <td class="paramtype">char *&#160;</td>
           <td class="paramname"><em>error_str</em></td><td>)</td>
@@ -1088,7 +1143,30 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>1 on success and 0 on failure. </dd></dl>
+
+</div>
+</div>
+<a id="aff8c927101d538d0919a92d45d4eac7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff8c927101d538d0919a92d45d4eac7f">&#9670;&nbsp;</a></span>lbm_set_error_suspect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lbm_set_error_suspect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lbm__types_8h.html#aff516ca015a2565197543383355a7a06">lbm_value</a>&#160;</td>
+          <td class="paramname"><em>suspect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Provide the expression that is most suspicious in relation to the error at hand. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lbm_value</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1256,30 +1334,6 @@ const <a class="el" href="eval__cps_8h.html#a1e3a351e9477612bea0bc6b32dc115e8">f
       </table>
 </div><div class="memdoc">
 <p>toggle verbosity level of error messages </p>
-
-</div>
-</div>
-<a id="a8e32d7469d8798c3e3386e65cec7e357"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e32d7469d8798c3e3386e65cec7e357">&#9670;&nbsp;</a></span>lbm_trigger_flags()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void lbm_trigger_flags </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>wait_for_flags</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Trigger a flag to wake up all tasks waiting on that flag. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">wait_for_flags</td><td>Flags to trigger. </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>
